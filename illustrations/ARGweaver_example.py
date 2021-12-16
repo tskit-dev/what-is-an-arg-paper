@@ -82,7 +82,7 @@ n6	gene	0.0	0	3
 n7	gene	0.0	0	6	
 """))
 
-with open(Path(__file__).parent / "ARGweaver.svg", "wt") as f:
+with open(Path(__file__).parent / "ARGweaver_trees.svg", "wt") as f:
     f.write(ts.draw_svg())
 
 ts = ts_process.flag_unary_nodes(ts) 
