@@ -7,7 +7,20 @@ import tskit
 
 from constants import NODE_IS_RECOMB
 
-def arg_to_ts(file):
+def arg_to_ts(file, epsilon_scale = 1e-5):
+    """
+    Convert an ARGweaver .arg file (e.g. the example at
+    
+    https://github.com/CshlSiepelLab/argweaver/blob/master/test/data/test_trans/0.arg
+    
+    to a tree sequence. Note that this assumes that the ARGweaver nodes are listed
+    so that the parents in a timeslice always come *after* their children.
+   
+    Times are adjusted so that parents are older than children by a small amount
+    `epsilon` which is calculated by taking the largest number of nodes at a single time
+    and dividing the smalles gap between node times by that value, then multiplying by
+    a small value given by `epsilon_scale`.
+    """
     start, end = next(file).strip().split()
     assert start.startswith("start=")
     start = int(start[len("start="):])
@@ -26,7 +39,7 @@ def arg_to_ts(file):
     epsilon = np.diff(df["age"])
     _, max_in_age = np.unique(df["age"], return_counts=True)
     max_in_age = max(max_in_age)
-    epsilon = min(epsilon[epsilon > 0]) / max_in_age / 1e5
+    epsilon = epsilon_scale * min(epsilon[epsilon > 0]) / max_in_age 
 
     prev_time = 0
     for i, r in df.iterrows():
