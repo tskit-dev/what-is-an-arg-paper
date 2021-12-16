@@ -13,19 +13,41 @@
 \linenumbers
 \title{What is an Ancestral Recombination Graph?}
 % First authors
-\author{Authory McAuthor}
+\author{Author McAuthory}
 % Corresponding
 
 \maketitle
 
+% JK: this is a rough first pass for a slightly different paper. Needs
+% substantial revision.
 \begin{abstract}
-The ARG. Argh!
+It has recently become possible to infer genetic ancestry in the presence of
+recombination at scale for the first time. This has created exciting
+possibilities, with many downstream applications becoming possible based on
+these inferred genealogies. The inferred genetic ancestries are usually
+referred to as Ancestral Recombination Graphs, or ARGs. Although initially well
+defined as a graphical representation of the coalescent with recombination
+stochastic process, the interpretation has become unclear as it is now
+also understood to represent a particular realisation of a genetic
+ancestry.
+Inference methods do not all infer the same information:
+although all output marginal trees along the genome, there is a great deal of
+variation in how much information is inferred and retained in the relationships
+between the trees. An important programme of work over the coming years is to
+develop and refine ancestry inference methods, assessing the relative strengths
+and weaknesses of the various approaches. Using the blanket term ARG hides the
+important differences in the approaches, and hampers our ability to compare and
+improve inference methods. In this paper we discuss the different approaches we
+may use to encode genetic ancestry, and of the differing amounts of information
+about the ancestral process that we can represent and hope to observe. We
+classify existing inference methods according to the type of ancestry they
+infer, and discuss the strengths and weaknesses of the inferred structure for
+downstream applications.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral Recombination Graphs
 
 \section*{Introduction}
-
 
 \section*{The ARG as a stochastic process}
 The coalescent
