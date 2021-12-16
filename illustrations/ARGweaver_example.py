@@ -7,8 +7,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # useful scripts in the top level dir
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
-from constants import NODE_IS_RECOMB, NODE_IS_ALWAYS_UNARY, NODE_IS_SOMETIMES_UNARY
+sys.path.append(str(Path(__file__).parent.parent.absolute() / "utils"))
 import convert
 import ts_process
 import argdraw
@@ -90,32 +89,9 @@ ts = ts_process.add_individuals_to_coalescence_nodes(ts) # optional - can help i
 
 G = ts_process.to_networkx_graph(ts)
 
-nodes_at_time = collections.defaultdict(list)
-colour_map = []
-for nd in G.nodes(data=True):
-    nodes_at_time[nd[1]["time"]].append(nd[0])
-    colour = "lightgreen"
-    if nd[1]["flags"] & NODE_IS_RECOMB:
-        colour = "red"
-    elif nd[1]["flags"] & NODE_IS_ALWAYS_UNARY:
-        colour = "cyan"
-    elif nd[1]["flags"] & NODE_IS_SOMETIMES_UNARY:
-        colour = "lightseagreen"
-    colour_map.append(colour)
-        
-    
-# Turn into graphviz
-A = nx.nx_agraph.to_agraph(G)
-# First cluster all nodes at the same times (probably mostly samples)
-for t, nodes in nodes_at_time.items():
-    if len(nodes) > 1:
-        A.add_subgraph(nodes, level="same", name=f"cluster_t{t}")
-# We could also cluster nodes from a single individual together here
-
-# Get the positions from graphviz
-A.layout(prog="dot")
-pos = {n: [float(x) for x in A.get_node(n).attr["pos"].split(",")] for n in G.nodes()}
+colour_map = argdraw.nx_ts_colour_map(G)
+pos = argdraw.nx_get_dot_pos(G)
 
 fig = plt.figure(1, figsize=(10, 15))
-argdraw.draw_with_curved_multi_edges(G, pos, colour_map, 20)
+argdraw.nx_draw_with_curved_multi_edges(G, pos, colour_map, 20)
 plt.savefig(Path(__file__).parent / 'ARGweaver_arg.pdf')  
