@@ -1,4 +1,5 @@
 import re
+import graphlib  # requires python >= 3.9
 
 import msprime
 import numpy as np
@@ -9,13 +10,10 @@ from constants import NODE_IS_RECOMB
 
 def arg_to_ts(file, epsilon_scale = 1e-5):
     """
-    Convert an ARGweaver .arg file (e.g. the example at
+    Convert an ARGweaver .arg file to a tree sequence. An example .arg file is at
     
     https://github.com/CshlSiepelLab/argweaver/blob/master/test/data/test_trans/0.arg
     
-    to a tree sequence. Note that this assumes that the ARGweaver nodes are listed
-    so that the parents in a timeslice always come *after* their children.
-   
     Times are adjusted so that parents are older than children by a small amount
     `epsilon` which is calculated by taking the largest number of nodes at a single time
     and dividing the smalles gap between node times by that value, then multiplying by
@@ -26,12 +24,20 @@ def arg_to_ts(file, epsilon_scale = 1e-5):
     start = int(start[len("start="):])
     assert end.startswith("end=")
     end = int(end[len("end="):])
-    df = pd.read_csv(file, header=0, sep="\t", index_col=0)
-    df["tskit_id"] = np.arange(len(df))  # allocate temporarily
-    # sort by time, then name
-    df.sort_values(by=["age", "tskit_id"], inplace=True)
+    # the "name" field can be a string. Force it to be so, in case it is just numbers
+    df = pd.read_csv(file, header=0, sep="\t", dtype={'name': str, 'parents': str})
+    df.set_index('name', inplace=True)
+    # sort topologically, so parents are after children
+    graph = {
+        r.name: set([] if pd.isna(r.parents) else r.parents.split(","))
+        for i, r in df.iterrows()
+    }
+    sorter = graphlib.TopologicalSorter(graph)
+    items = tuple(sorter.static_order())
+    df.loc[items, 'topo_order'] = np.arange(len(df))[::-1]
+    # sort by time first, then put parents after children within a timeslice
+    df.sort_values(by=["age", "topo_order"], inplace=True)
     df["tskit_id"] = np.arange(len(df))
-
 
     tables = tskit.TableCollection(sequence_length=end)
 
