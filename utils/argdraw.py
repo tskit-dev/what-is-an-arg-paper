@@ -1,5 +1,7 @@
 """
 Some networkx utilities for drawing an ARG
+
+Some of this should get tidied up and moved to https://github.com/tskit-dev/tsviz
 """
 import collections
 import itertools
@@ -27,15 +29,19 @@ def nx_ts_colour_map(G, flags_attribute_name="flags"):
         colour_map.append(colour)
     return colour_map
 
-def nx_draw_with_curved_multi_edges(G, pos, colour_map, curve_scale=1, node_labels=None):
+def nx_draw_with_curved_multi_edges(
+    G, pos, colour_map, ax=None, labels=None, arrows=False, curve_scale=1
+):
     """
     networkx matlib plots show all edges as straight lines by default.
     This function curves the edges if there is more than one edge with identical parent/child values
     At the moment curve_scale is a hack to adjust the fact that we don't know the measurement scale on
     the x or the y axis.
     """
-    nx.draw_networkx_nodes(G, pos, node_color=colour_map)
-    nx.draw_networkx_labels(G, pos, labels=node_labels)
+    nx.draw(
+        G, pos, node_color=colour_map,
+        node_shape='o', node_size=200, font_size=9, labels=labels,
+        ax=ax, edgelist=[])
 
 
     for (start, end), edge_iter in itertools.groupby(G.edges()):
@@ -52,9 +58,13 @@ def nx_draw_with_curved_multi_edges(G, pos, colour_map, curve_scale=1, node_labe
                 G,
                 pos,
                 edgelist=[e],
-                connectionstyle=f'arc3, rad = {curve_prop * curvature}')
+                connectionstyle=f'arc3, rad = {curve_prop * curvature}',
+                arrowstyle="-|>" if arrows else "-",
+                ax=ax,
+            )
 
-def nx_get_dot_pos(G, time_attribute_name="time"):
+
+def nx_get_dot_pos(G, add_invisibles=False, time_attribute_name="time"):
     """
     Layout using graphviz's "dot" algorithm and return a dict of positions in the
     format required by networkx. We assume that the nodes have a "time" attribute
@@ -68,8 +78,15 @@ def nx_get_dot_pos(G, time_attribute_name="time"):
     for t, nodes in nodes_at_time.items():
         if len(nodes) > 1:
             A.add_subgraph(nodes, level="same", name=f"cluster_t{t}")
-    
-    # We could also cluster nodes from a single individual together here
+    if add_invisibles:
+        # Must add in "invisible" edges between different levels, to stop them clustering
+        # on the same level
+        prev_node = None
+        for t, nodes in nodes_at_time.items():
+            if prev_node is not None:
+                A.add_edge(prev_node, nodes[0], style="invis")
+            prev_node = nodes[0]
+        # We could also cluster nodes from a single individual together here
     A.layout(prog="dot")
     return {n: [float(x) for x in A.get_node(n).attr["pos"].split(",")] for n in G.nodes()}
 

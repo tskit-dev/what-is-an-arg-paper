@@ -1,6 +1,8 @@
 DATA=
 FIGURES=
-ILLUSTRATIONS=
+ILLUSTRATIONS=\
+	illustrations/ARG_recomb_node_deletion.pdf
+
 
 all: paper.pdf
 
@@ -9,6 +11,12 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	bibtex paper
 	pdflatex paper.tex
 	pdflatex paper.tex
+
+illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deletion.py 
+	python3 $<
+
+%.pdf : %.svg
+	inkscape --export-type="pdf" $<
 
 paper.ps: paper.dvi
 	dvips paper
@@ -25,6 +33,8 @@ spellcheck: aspell.conf
 
 clean:
 	rm -f *.pdf
+	rm -f illustrations/*.pdf
+	rm -f illustrations/*.svg
 	rm -f *.log *.dvi *.aux
 	rm -f *.blg *.bbl
 	rm -f *.eps *.[1-9]
