@@ -51,16 +51,23 @@ downstream applications.
 
 % HYW: this is a rough first pass, aiming to be concise. We should flash out the "recombination" aspect of ARGs here a bit, I think
 
-For a long time, the Ancestral Recombination Graph (ARG) has been an object of fascination
-to those interested in theoretical evolutionary genetics, as it captures all knowable genetic
-history of a collection of individual genomes. Recently advances in our ability to infer ARGs
-has led to a resurgence of interest in this field. However, these have also given rise to certain 
+For a long time, the Ancestral Recombination Graph (ARG) has been an object of
+fascination to those interested in theoretical evolutionary genetics, as it
+captures all knowable genetic history of a collection of individual genomes.
+Recently advances in our ability to infer ARGs has led to a resurgence of
+interest in this field. However, these have also given rise to certain
 terminological confusion, which we aim to clear up in this paper.
 
-One major source of confusion is the use of the term "ARG" to refer to both a backwards-in-time
-generative process (Griffiths) and a structure which can be created by that process \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}. 
+One major source of confusion is the use of the term "ARG" to refer to both a
+backwards-in-time generative process (Griffiths) and a structure which can be
+created by that process
+\citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
 
-\section*{The ARG as a stochastic process}
+\section*{Ancestral graphs and stochastic processes}
+
+% See https://github.com/tskit-dev/what-is-an-arg-paper/discussions/13
+% for discussions on this section
+
 The coalescent
 process~\citep{kingman1982coalescent,kingman1982genealogy,hudson1983testing,
 tajima1983evolutionary}
@@ -71,7 +78,18 @@ The ``big'' ARG~\citep{ethier1990two},
 and the ``little ARG'' traversed by
 Hudson's algorithm~\citep{hudson1983properties}.
 
-We suggest that the process definition should be called the "coalescent with recombination" (CwR), reserving the term ARG to refer to the graph structure itself.
+
+In the theoretical literature, ancestral graphs such as the ARG refer to the
+ancestral \emph{process} rather than the outcome of a process.
+\begin{itemize}
+\item Ancestral Selection
+Graph~\citep{krone1997ancestral,neuhauser1999ancestral} models selection
+as a graph with virtual lineages [etc etc.]. Importantly, the graph structure
+of the ASG does \emph{not} correspond to a realised ancestry, but rather
+models possible outcomes.
+Other papers possibly worth citing:\citep{etheridge2009coalescent}
+\item Ancestral Gene Transfer Graph~\citep{baumdicker2014infinitely}
+\end{itemize}
 
 \section*{The ARG as a structure}
 
@@ -80,54 +98,90 @@ We suggest that the process definition should be called the "coalescent with rec
 % HYW: this is a rough first pass. We should take care not to assume that the tree sequence
 % approach is the only encoding
 
-The other use of the the term ARG, and the one for which we suggest the term be reserved, 
-is to describe the *structure* resulting from the genetic process of inheritance. This structure, 
-like any other graph, consists of *nodes* connected by *edges*. In the context of genetics, the
-nodes represent (haploid) genomes, and the edges represent paths of inheritance. Although for
-theoretical purposes a graph like this can be created by backwards-in-time simulations using
-the CwR, in reality it is created forwards-in-time, as a population evolves.
+The other use of the the term ARG, and the one for which we suggest the term be
+reserved, is to describe the *structure* resulting from the genetic process of
+inheritance. This structure, like any other graph, consists of *nodes*
+connected by *edges*. In the context of genetics, the nodes represent (haploid)
+genomes, and the edges represent paths of inheritance. Although for theoretical
+purposes a graph like this can be created by backwards-in-time simulations
+using the CwR, in reality it is created forwards-in-time, as a population
+evolves.
 
-Since genetic inheritance is unidirectional, the edges in this graph structure are *directed*,
-with a "parent" and "child" node. Moreover, there is a strict temporal order, so that children
-cannot be their own parents: in other words, there are no cycles in the graph, and it is
-technically a form of "directed acyclic graph" (DAG).
+Since genetic inheritance is unidirectional, the edges in this graph structure
+are *directed*, with a "parent" and "child" node. Moreover, there is a strict
+temporal order, so that children cannot be their own parents: in other words,
+there are no cycles in the graph, and it is technically a form of "directed
+acyclic graph" (DAG).
 
 % HYW: NB: worded carefully below, as it should also be possible to encode ARGs even if there is not a single fixed coordinate system
 
-There is one key feature which distinguishes an ARG for other graphs. Although a genome
-(graph node) may have more than one parent, the particulate nature of genetic inheritance
-means that each letter in the genome can only come from a *single* parent. Hence if we
-compare the equivalent letters from multiple extant genomes, their paths of inheritance must
-form a *tree* (which, incidentally, is why phylogenetics plays such an important role in evolutionary
-theory). As we shall argue, the ability to generate these "local trees" from an ARG is of key
-importance.
+There is one key feature which distinguishes an ARG for other graphs. Although
+a genome (graph node) may have more than one parent, the particulate nature of
+genetic inheritance means that each letter in the genome can only come from a
+*single* parent. Hence if we compare the equivalent letters from multiple
+extant genomes, their paths of inheritance must form a *tree* (which,
+incidentally, is why phylogenetics plays such an important role in evolutionary
+theory). As we shall argue, the ability to generate these "local trees" from an
+ARG is of key importance.
 
-When describing an ARG, the primary issue, from a practical point of view, is how to annotate
-the graph with the details of which piece of genome has come from which parent. There
-are two possibilities: the annotations can be associated either with the nodes, or with the edges.
+When describing an ARG, the primary issue, from a practical point of view, is
+how to annotate the graph with the details of which piece of genome has come
+from which parent. There are two possibilities: the annotations can be
+associated either with the nodes, or with the edges.
 
 \subsection*{Node annotated recombination}
 
-In the original (Griffiths) formulation, nodes which have multiple parents are annotated with a
-*breakpoint*, representing a genomic position. The genome lying to the left of that position is then taken to come from one parent, while the genome lying to the right is taken to come from the other parent. This is an elegantly concise encoding of the parental source, and is used, for example in the ARGweaver .arg format. However, it suffers from three principal drawbacks:
+In the original (Griffiths) formulation, nodes which have multiple parents are
+annotated with a breakpoint, representing a genomic position. The genome
+lying to the left of that position is then taken to come from one parent, while
+the genome lying to the right is taken to come from the other parent. This is
+an elegantly concise encoding of the parental source, and is used, for example
+in the ARGweaver .arg format. However, it suffers from three principal
+drawbacks:
 
-1. It assumes only a single breakpoint per node: problematic for representing e.g. gene conversion or 
-multiple chromosomes (but this could be circumvented by having multiple breakpoints)
-2. Nodes can only have a maximum of 2 parents. At first sight, this seems a reasonable limitation,
-but it turns out that it can be helpful to collapse multiple nodes into one, which potentially results
-in more than two parents for any given node (see section XXXX)
-3. Generating local trees from such an encoding is time consuming (XXX describe *how* time consuming - i,e. scaling properties with number of nodes - and why this is, theoretically)
+
+1. It assumes only a single breakpoint per node: problematic for representing
+e.g. gene conversion or multiple chromosomes (but this could be circumvented by
+having multiple breakpoints)
+2. Nodes can only have a maximum of 2 parents. At
+first sight, this seems a reasonable limitation, but it turns out that it can
+be helpful to collapse multiple nodes into one, which potentially results in
+more than two parents for any given node (see section XXXX)
+3. Generating local
+trees from such an encoding is time consuming (XXX describe *how* time
+consuming - i,e. scaling properties with number of nodes - and why this is,
+theoretically)
 
 \subsection*{Edge annotated recombination}
 
-An alternative approach to annotating nodes with the parent of origin of each section of genome is
-to annotate each edge with the genomic region which is inherited via that route. This approach
-was first introduced by Kelleher et al (cite msprime paper) and now forms the basis of a comprehensive
-software library.
+An alternative approach to annotating nodes with the parent of origin of each
+section of genome is to annotate each edge with the genomic region which is
+inherited via that route. This approach was first introduced by Kelleher et al
+(cite msprime paper) and now forms the basis of a comprehensive software
+library.
 
+% HYW: should discuss the link to biology & mitosis/meiosis: a "node" is
+% strictly a cell - it is shorthand to associate it with an "individual"
 
-% HYW: should discuss the link to biology & mitosis/meiosis: a "node" is strictly a cell - it is shorthand to associate it with an "individual"
+\section*{ARG inference methods}
+Using the terminology developed here to classify ARGs, we review methods developed
+to infer ARGs. We focus our attention on some recent methods and discuss the
+properties of the ARGs inferred.
 
+\begin{itemize}
+\item Early methods \citep{hein1990reconstructing}
+\item Those sampling from the coalescent with recombination
+\citep{griffiths1996ancestral,kuhner2000maximum,fearnhead2001estimating},
+or SMC
+\citep{rasmussen2014genome}
+\item Hueristic methods~\citep{song2005efficient,minichiello2006mapping,
+parida2008estimating,fallon2013acg,mirzaei2016rent}
+\item Discussions of the complexity of inferring ARGs (but we need to
+dig into this: is this the complexity of sampling from the coalescent,
+finding a ``min ARG'', or something else?
+\citep{bordewich2005computational,wang2001perfect,hein1990reconstructing,song2005constructing}
+\item Recent methods: Relate, tsinfer, tsdate, etc.
+\end{itemize}
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
