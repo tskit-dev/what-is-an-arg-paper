@@ -54,13 +54,13 @@ downstream applications.
 For a long time, the Ancestral Recombination Graph (ARG) has been an object of fascination
 to those interested in theoretical evolutionary genetics, as it captures all knowable genetic
 history of a collection of individual genomes. Recently advances in our ability to infer ARGs
-has led to a resurgence of interest in this field. However, these have also given rise to certain 
+has led to a resurgence of interest in this field. However, these have also given rise to certain
 terminological confusion, which we aim to clear up in this paper.
 
 One major source of confusion is the use of the term "ARG" to refer to both a backwards-in-time
-generative process (Griffiths) and a structure which can be created by that process \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}. 
+generative process (Griffiths) and a structure which can be created by that process \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
 
-\section*{The ARG as a stochastic process}
+\section*{Ancestral graphs and stochastic processes}
 The coalescent
 process~\citep{kingman1982coalescent,kingman1982genealogy,hudson1983testing,
 tajima1983evolutionary}
@@ -71,7 +71,15 @@ The ``big'' ARG~\citep{ethier1990two},
 and the ``little ARG'' traversed by
 Hudson's algorithm~\citep{hudson1983properties}.
 
-We suggest that the process definition should be called the "coalescent with recombination" (CwR), reserving the term ARG to refer to the graph structure itself.
+
+In the theoretical literature, ancestral graphs such as the ARG refer to the
+ancestral \emph{process} rather than the outcome of a process.
+For example, the Ancestral Selection
+Graph~\citep{krone1997ancestral,neuhauser1999ancestral} models selection
+as a graph with virtual lineages [etc etc.]. Importantly, the graph structure
+of the ASG does \emph{not} correspond to a realised ancestry, but rather
+models possible outcomes.
+
 
 \section*{The ARG as a structure}
 
@@ -80,8 +88,8 @@ We suggest that the process definition should be called the "coalescent with rec
 % HYW: this is a rough first pass. We should take care not to assume that the tree sequence
 % approach is the only encoding
 
-The other use of the the term ARG, and the one for which we suggest the term be reserved, 
-is to describe the *structure* resulting from the genetic process of inheritance. This structure, 
+The other use of the the term ARG, and the one for which we suggest the term be reserved,
+is to describe the *structure* resulting from the genetic process of inheritance. This structure,
 like any other graph, consists of *nodes* connected by *edges*. In the context of genetics, the
 nodes represent (haploid) genomes, and the edges represent paths of inheritance. Although for
 theoretical purposes a graph like this can be created by backwards-in-time simulations using
@@ -111,7 +119,7 @@ are two possibilities: the annotations can be associated either with the nodes, 
 In the original (Griffiths) formulation, nodes which have multiple parents are annotated with a
 *breakpoint*, representing a genomic position. The genome lying to the left of that position is then taken to come from one parent, while the genome lying to the right is taken to come from the other parent. This is an elegantly concise encoding of the parental source, and is used, for example in the ARGweaver .arg format. However, it suffers from three principal drawbacks:
 
-1. It assumes only a single breakpoint per node: problematic for representing e.g. gene conversion or 
+1. It assumes only a single breakpoint per node: problematic for representing e.g. gene conversion or
 multiple chromosomes (but this could be circumvented by having multiple breakpoints)
 2. Nodes can only have a maximum of 2 parents. At first sight, this seems a reasonable limitation,
 but it turns out that it can be helpful to collapse multiple nodes into one, which potentially results
