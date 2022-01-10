@@ -95,6 +95,18 @@ Other papers possibly worth citing:\citep{etheridge2009coalescent}
 
 \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
 
+\begin{figure}
+\vspace{5em}
+\caption{\label{fig-pedigree-and-arg}
+The (unannotated) ARG is closely related to the pedigree
+graph, where each ``individual'' node is replace by two ``genome''
+nodes, and edges between parents and children are only included if there is
+transfer of ancestral material. We usually only include nodes in an ARG
+that affect our sample, so that, for example, individuals that are ancestral
+to only one sampled genome are not included.}
+\end{figure}
+
+
 % HYW: this is a rough first pass. We should take care not to assume that the tree sequence
 % approach is the only encoding
 
@@ -128,6 +140,20 @@ When describing an ARG, the primary issue, from a practical point of view, is
 how to annotate the graph with the details of which piece of genome has come
 from which parent. There are two possibilities: the annotations can be
 associated either with the nodes, or with the edges.
+
+\begin{figure}
+\vspace{5em}
+% NB: not clear if this figure is better off on its own or should be
+% merged with the pedigree one.
+\caption{\label{fig-arg-annotations}
+The specific path through the ARG for a given genome position (and therefore
+the local genealogical tree) cannot be determined without annotations
+to the graph. (A) The classical Griffiths approach annotates recombination
+nodes with the corresponding breakpoint. (B) We can equivalently
+annotate the \emph{edges} with the genomic intervals carrying ancestral
+material. Edge annotations are somewhat more general, and have
+significant computational advantages.}
+\end{figure}
 
 \subsection*{Node annotated recombination}
 
@@ -163,6 +189,16 @@ library.
 % HYW: should discuss the link to biology & mitosis/meiosis: a "node" is
 % strictly a cell - it is shorthand to associate it with an "individual"
 
+\begin{figure}
+\vspace{5em}
+\caption{\label{fig-recombination-nodes}
+Recombination nodes are optional in an edge-annotated ARG. (A) A simulated
+ARG including all recombination nodes. (B) The same ARG with recombination
+nodes removed. (C) The corresponding sequence of trees.
+}
+\end{figure}
+
+
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we review methods developed
 to infer ARGs. We focus our attention on some recent methods and discuss the
@@ -182,6 +218,14 @@ finding a ``min ARG'', or something else?
 \citep{bordewich2005computational,wang2001perfect,hein1990reconstructing,song2005constructing}
 \item Recent methods: Relate, tsinfer, tsdate, etc.
 \end{itemize}
+
+\begin{figure}
+\vspace{5em}
+\caption{\label{fig-inferred-args}
+ARGs inferred by different methods from a small dataset. Notes about these
+ARGs.
+}
+\end{figure}
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
