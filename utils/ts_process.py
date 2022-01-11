@@ -66,7 +66,7 @@ def to_networkx_graph(ts):
         edge_attr=True,
         create_using=nx.MultiDiGraph
     )
-    nx.set_node_attributes(G, {n.id: {'flags':n.flags, 'time': n.time, 'labels': "foo"} for n in ts.nodes()})
+    nx.set_node_attributes(G, {n.id: {'flags':n.flags, 'time': n.time} for n in ts.nodes()})
     return G
 
 def add_individuals_to_coalescence_nodes(ts):

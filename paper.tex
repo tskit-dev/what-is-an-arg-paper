@@ -190,11 +190,24 @@ library.
 % strictly a cell - it is shorthand to associate it with an "individual"
 
 \begin{figure}
+\centering
 \vspace{5em}
-\caption{\label{fig-recombination-nodes}
-Recombination nodes are optional in an edge-annotated ARG. (A) A simulated
-ARG including all recombination nodes. (B) The same ARG with recombination
-nodes removed. (C) The corresponding sequence of trees.
+\includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
+\caption{\label{fig-recombinati on-nodes}
+Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
+ARG including all recombination nodes (red). (b) The same ARG having removed both
+recombination nodes and nodes of common ancestors in which no genetic
+lineages coalesce (cyan). (c) The sequence of trees corresponding to (b): if we were
+to plot out the trees corresponding to (a) we would have more trees, but the topologies
+and MRCA nodes at each genomic location would be identical. For clarity, nodes are
+plotted by ranked time rather than true time on the y-axis.
+% HYW: note that we also truncate nodes for portions in which they are unary,
+% so that nodes which are coalescent nodes over only some of their length
+% (blue-green) become coalescent nodes over their entire length (green). This
+% can, however, throw away some useful information, for example node 4 has
+% only a single parent edge in (a), but 2 parent edges (one of which appears
+% to bypass node 11) in (b). In fact, this edge should go through node 11, but
+% there may be no way to detect this from real data.
 }
 \end{figure}
 
