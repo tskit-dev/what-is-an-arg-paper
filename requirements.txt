@@ -1,4 +1,12 @@
 graphlib_backport  # for python < 3.9
-# On Debian, use `sudo apt-get install graphviz graphviz-dev` for C deps
+matplotlib
+msprime>=1.0.0
+numpy
+networkx
+pandas
 pygraphviz  
+tsinfer>=0.2.1
+tskit>=0.3.4
+# Extra non-python requirements: graphviz, inkscape
+# On Debian, use `sudo apt-get install graphviz graphviz-dev inkscape` for these deps
 
