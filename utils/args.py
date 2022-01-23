@@ -28,8 +28,25 @@ def draw_arg(ts):
     print(ts.draw_text(node_labels=node_labels))
 
 
+# AncestryInterval is the equivalent of msprime's Segment class. The
+# important different here is that we don't associated nodes with
+# individual intervals here: because this is an ARG, nodes that
+# we pass through are recorded.
+#
+# (The ancestral_to field is also different here, but that's because
+# I realised that the way we're tracking extant ancestral material
+# in msprime is unnecessarily complicated, and we can actually
+# track it locally. There is potentially quite a large performance
+# increase available in msprime from this.)
+
+
 @dataclasses.dataclass
 class AncestryInterval:
+    """
+    Records that the specified interval contains genetic material ancestral
+    to the specified number of samples.
+    """
+
     left: int
     right: int
     ancestral_to: int
@@ -37,6 +54,14 @@ class AncestryInterval:
 
 @dataclasses.dataclass
 class Lineage:
+    """
+    A single lineage that is present during the simulation of the coalescent
+    with recombination. The node field represents the last (as we go backwards
+    in time) genome in which an ARG event occured. That is, we can imagine
+    a lineage representing the passage of the ancestral material through
+    a sequence of ancestral genomes in which it is not modified.
+    """
+
     node: int
     ancestry: List[AncestryInterval]
 
@@ -51,6 +76,10 @@ class Lineage:
 
     @property
     def num_recombination_links(self):
+        """
+        The number of positions along this lineage's genome at which a recombination
+        event can occur.
+        """
         return self.right - self.left - 1
 
     @property
@@ -88,6 +117,11 @@ class Lineage:
         return Lineage(self.node, right_ancestry)
 
 
+# The details of the machinery in the next two functions aren't important.
+# It could be done more cleanly and efficiently. The basic idea is that
+# we're providing a simple way to find the overlaps in the ancestral
+# material of two or more lineages, abstracting the complex interval
+# logic out of the main simulation.
 @dataclasses.dataclass
 class MappingSegment:
     left: int
@@ -131,6 +165,12 @@ def overlapping_segments(segments):
 
 
 def merge_ancestry(lineages):
+    """
+    Return an iterator over the ancestral material for the specified lineages.
+    For each distinct interval at which ancestral material exists, we return
+    the AncestryInterval and the corresponding list of lineages.
+    """
+    # See note above on the implementation - this could be done more cleanly.
     segments = []
     for lineage in lineages:
         for interval in lineage.ancestry:
@@ -144,8 +184,13 @@ def merge_ancestry(lineages):
         yield interval, [u.value[0] for u in U]
 
 
-# NOTE! This hasn't been statistically tested and is probably not correct.
 def arg_sim(n, rho, L, seed=None):
+    """
+    Simulate an ancestry-resolved ARG under the coalescent with recombination
+    and return the tskit TreeSequence object.
+
+    NOTE! This hasn't been statistically tested and is probably not correct.
+    """
     rng = random.Random(seed)
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
@@ -168,21 +213,17 @@ def arg_sim(n, rho, L, seed=None):
         t_ca = rng.expovariate(ca_rate)
         t_inc = min(t_re, t_ca)
         t += t_inc
+
         if t_inc == t_re:
             left_lineage = rng.choices(lineages, weights=lineage_links)[0]
             breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
             assert left_lineage.left < breakpoint < left_lineage.right
-            child = left_lineage.node
-            left_parent = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
-            right_parent = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
             right_lineage = left_lineage.split(breakpoint)
-            left_lineage.node = left_parent
-            right_lineage.node = right_parent
-            for lineage in [left_lineage, right_lineage]:
+            child = left_lineage.node
+            for lineage in left_lineage, right_lineage:
+                lineage.node = tables.nodes.add_row(
+                    flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
+                )
                 for interval in lineage.ancestry:
                     tables.edges.add_row(
                         interval.left, interval.right, lineage.node, child
@@ -191,8 +232,6 @@ def arg_sim(n, rho, L, seed=None):
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
-            # print(f"\ta = {a}")
-            # print(f"\tb = {b}")
             c = Lineage(len(tables.nodes), [])
             flags = NODE_IS_NONCOAL_CA
             for interval, intersecting_lineages in merge_ancestry([a, b]):
@@ -205,7 +244,6 @@ def arg_sim(n, rho, L, seed=None):
                         interval.left, interval.right, c.node, lineage.node
                     )
             tables.nodes.add_row(flags=flags, time=t, metadata={})
-            # print(f"\tc = {c}")
             if len(c.ancestry) > 0:
                 lineages.append(c)
 
@@ -213,8 +251,27 @@ def arg_sim(n, rho, L, seed=None):
     return tables.tree_sequence()
 
 
-# NOTE! This hasn't been statistically tested and is probably not correct.
-def node_arg_sim(n, rho, L, seed=None):
+def unresolved_arg_sim(n, rho, L, seed=None):
+    """
+    Simulate an non-ancestry-resolved ARG under the coalescent with recombination
+    and return the tskit TableCollection object. In this only the existance
+    of an edge between two different nodes is encoded, and the specific intervals
+    of ancestral material not recorded.
+
+    For common ancestor events we have two child nodes a and b, and a parent
+    c. We record edges (-inf, inf, a, c) and (-inf, inf, b, c).
+
+    For recombination events we have one child u and two parent nodes v an w,
+    and a breakpoint x. We record edges (-inf, x, u, v) and (x, inf, u, w).
+    We also record the breakpoint x with the parent nodes v and w, although
+    it is strictly redundant.
+
+    The resulting ARG is identical to that simulated using the arg_sim function
+    above, and can be converted into an ancestry-resolved ARG for use in
+    tskit using the convert_arg function.
+
+    NOTE! This hasn't been statistically tested and is probably not correct.
+    """
     rng = random.Random(seed)
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
@@ -237,6 +294,7 @@ def node_arg_sim(n, rho, L, seed=None):
         t_ca = rng.expovariate(ca_rate)
         t_inc = min(t_re, t_ca)
         t += t_inc
+
         if t_inc == t_re:
             left_lineage = rng.choices(lineages, weights=lineage_links)[0]
             child = left_lineage.node
@@ -268,14 +326,18 @@ def node_arg_sim(n, rho, L, seed=None):
             # print(f"\tc = {c}")
             if len(c.ancestry) > 0:
                 lineages.append(c)
-    # tables.sort()
-    # return tables.tree_sequence()
     return tables
 
 
 def convert_arg(tables):
     """
     Converts the specified non-ancestry tracking ARG to a tskit ARG.
+
+    Note: the implementation is currently quite ropey, and has a
+    few assumptions about the form of the input that aren't necessary.
+    Ideally we'd work just from the edge table and node times, as
+    we can work out the existance of recombinations and the breakpoints
+    from it.
     """
     out = tables.copy()
     out.edges.clear()
@@ -330,7 +392,6 @@ def convert_arg(tables):
                         lineage.node,
                         child,
                     )
-            #     lineage.node = parent
         else:
             parent = node_id
             # print("COAL", parent)
@@ -354,9 +415,7 @@ def convert_arg(tables):
                     out.edges.add_row(
                         interval.left, interval.right, c.node, lineage.node
                     )
-            # print(node.flags, flags)
-            # assert node.flags == flags
-            # tables.nodes.add_row(flags=flags, time=t, metadata={})
+            assert node.flags == flags
             # print(f"\ta = {a}")
             # print(f"\tb = {b}")
             # print(f"\tc = {c}")
@@ -371,13 +430,12 @@ def convert_arg(tables):
     return out.tree_sequence()
 
 
-n = 30
+n = 5
 rho = 0.3
-L = 100
-seed = 234
+L = 10
 for seed in range(1, 100):
     ts = arg_sim(n, rho, L, seed=seed)
-    tables = node_arg_sim(n, rho, L, seed=seed)
+    tables = unresolved_arg_sim(n, rho, L, seed=seed)
     # print(ts.tables)
     ts2 = convert_arg(tables)
 
