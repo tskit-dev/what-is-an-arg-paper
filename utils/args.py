@@ -167,20 +167,25 @@ def arg_sim(n, rho, L, seed=None):
         t_inc = min(t_re, t_ca)
         t += t_inc
         if t_inc == t_re:
-            lineage = rng.choices(lineages, weights=lineage_links)[0]
-            breakpoint = rng.randrange(lineage.left + 1, lineage.right)
-            assert lineage.left < breakpoint < lineage.right
-            node = tables.nodes.add_row(
+            left_lineage = rng.choices(lineages, weights=lineage_links)[0]
+            breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
+            assert left_lineage.left < breakpoint < left_lineage.right
+            child = left_lineage.node
+            left_parent = tables.nodes.add_row(
                 flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
             )
-            right = lineage.split(breakpoint)
-            lineages.append(right)
-            for lineage in [lineage, right]:
+            right_parent = tables.nodes.add_row(
+                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
+            )
+            right_lineage = left_lineage.split(breakpoint)
+            left_lineage.node = left_parent
+            right_lineage.node = right_parent
+            for lineage in [left_lineage, right_lineage]:
                 for interval in lineage.ancestry:
                     tables.edges.add_row(
-                        interval.left, interval.right, node, lineage.node
+                        interval.left, interval.right, lineage.node, child
                     )
-                lineage.node = node
+            lineages.append(right_lineage)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
@@ -231,16 +236,20 @@ def node_arg_sim(n, rho, L, seed=None):
         t_inc = min(t_re, t_ca)
         t += t_inc
         if t_inc == t_re:
-            lineage = rng.choices(lineages, weights=lineage_links)[0]
-            breakpoint = rng.randrange(lineage.left + 1, lineage.right)
-            assert lineage.left < breakpoint < lineage.right
-            node = tables.nodes.add_row(
+            left_lineage = rng.choices(lineages, weights=lineage_links)[0]
+            child = left_lineage.node
+            breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
+            assert left_lineage.left < breakpoint < left_lineage.right
+            left_lineage.node = tables.nodes.add_row(
                 flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
             )
-            tables.edges.add_row(-math.inf, math.inf, node, lineage.node)
-            lineage.node = node
-            right = lineage.split(breakpoint)
-            lineages.append(right)
+            tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
+            right_lineage = left_lineage.split(breakpoint)
+            right_lineage.node = tables.nodes.add_row(
+                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
+            )
+            tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
+            lineages.append(right_lineage)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
@@ -270,10 +279,8 @@ def convert_arg(tables):
     out.edges.clear()
     nodes = sorted(tables.nodes, key=lambda x: x.time)
 
-    parent = collections.defaultdict(list)
     children = collections.defaultdict(list)
     for edge in tables.edges:
-        parent[edge.child].append(edge.parent)
         children[edge.parent].append(edge.child)
 
     lineages = []
@@ -286,33 +293,41 @@ def convert_arg(tables):
         lineages.append(Lineage(node_id, [AncestryInterval(0, tables.sequence_length, 1)]))
         node_id += 1
         n += 1
-
-    for node_id in range(node_id, len(nodes)):
+    while node_id < len(nodes):
         node = nodes[node_id]
-        parent = node_id
         # print("VISIT", node_id, node.time)
         # for lineage in lineages:
         #     print(f"\t{lineage}")
         if (node.flags & NODE_IS_RECOMB) != 0:
-            # print("RE EVENT")
-            child = children[parent][0]
-            assert len(children[parent]) == 1
+            left_parent = node_id
+            node_id +=1
+            right_parent = node_id
+
+            print("RE EVENT", left_parent, right_parent)
+            child = children[left_parent][0]
+            assert len(children[left_parent]) == 1
+            assert len(children[right_parent]) == 1
+            assert children[right_parent][0] == child
+
             # print(f"parent = {parent} child = {child}")
             breakpoint = node.metadata["breakpoint"]
-            for lineage in lineages:
-                if lineage.node == child:
+            for left_lineage in lineages:
+                if left_lineage.node == child:
                     break
-            right = lineage.split(breakpoint)
-            lineages.append(right)
-            for lineage in [lineage, right]:
+            right_lineage = left_lineage.split(breakpoint)
+            left_lineage.node = left_parent
+            right_lineage.node = right_parent
+            lineages.append(right_lineage)
+            for lineage in [left_lineage, right_lineage]:
                 for interval in lineage.ancestry:
                     out.edges.add_row(
-                        interval.left, interval.right, parent, child,
+                        interval.left, interval.right, lineage.node, child,
                     )
-                lineage.node = parent
+            #     lineage.node = parent
         else:
-            # print("COAL")
-            # print(children[parent])
+            parent = node_id
+            print("COAL", parent)
+            print(children[parent])
             assert len(children[parent]) == 2
             children_lineages = []
             for child in children[parent]:
@@ -343,6 +358,7 @@ def convert_arg(tables):
         print(f"t = {node.time:.2f}")
         for lineage in lineages:
             print(f"\t{lineage}")
+        node_id += 1
     print(out)
     out.sort()
     return out.tree_sequence()
@@ -352,9 +368,11 @@ rho = 0.3
 L = 10
 seed = 234
 ts = arg_sim(n, rho, L, seed=seed)
-# tables = node_arg_sim(n, rho, L, seed=seed)
-# print(tables)
-# ts2 = convert_arg(tables)
+tables = node_arg_sim(n, rho, L, seed=seed)
+print(ts.tables)
+ts2 = convert_arg(tables)
 
 draw_arg(ts)
 draw_arg(ts2)
+
+ts.tables.assert_equals(ts2.tables)
