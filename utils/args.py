@@ -14,6 +14,7 @@ import numpy as np
 NODE_IS_RECOMB = 1 << 1
 NODE_IS_NONCOAL_CA = 1 << 2  # TODO better name
 
+
 def draw_arg(ts):
 
     node_labels = {}
@@ -25,6 +26,7 @@ def draw_arg(ts):
             label = f"N{node.id}"
         node_labels[node.id] = label
     print(ts.draw_text(node_labels=node_labels))
+
 
 @dataclasses.dataclass
 class AncestryInterval:
@@ -223,9 +225,9 @@ def node_arg_sim(n, rho, L, seed=None):
         lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
     t = 0
     while len(lineages) > 0:
-        print(f"t = {t:.2f} k = {len(lineages)}")
-        for lineage in lineages:
-            print(f"\t{lineage}")
+        # print(f"t = {t:.2f} k = {len(lineages)}")
+        # for lineage in lineages:
+        #     print(f"\t{lineage}")
         lineage_links = [lineage.num_recombination_links for lineage in lineages]
         total_links = sum(lineage_links)
         re_rate = total_links * rho
@@ -288,9 +290,11 @@ def convert_arg(tables):
     n = 0
     while node_id < len(nodes) and (nodes[node_id].flags & tskit.NODE_IS_SAMPLE != 0):
         node = nodes[node_id]
-        print("sample:", node)
+        # print("sample:", node)
         assert nodes[node_id].time == 0
-        lineages.append(Lineage(node_id, [AncestryInterval(0, tables.sequence_length, 1)]))
+        lineages.append(
+            Lineage(node_id, [AncestryInterval(0, tables.sequence_length, 1)])
+        )
         node_id += 1
         n += 1
     while node_id < len(nodes):
@@ -300,10 +304,10 @@ def convert_arg(tables):
         #     print(f"\t{lineage}")
         if (node.flags & NODE_IS_RECOMB) != 0:
             left_parent = node_id
-            node_id +=1
+            node_id += 1
             right_parent = node_id
 
-            print("RE EVENT", left_parent, right_parent)
+            # print("RE EVENT", left_parent, right_parent)
             child = children[left_parent][0]
             assert len(children[left_parent]) == 1
             assert len(children[right_parent]) == 1
@@ -321,13 +325,16 @@ def convert_arg(tables):
             for lineage in [left_lineage, right_lineage]:
                 for interval in lineage.ancestry:
                     out.edges.add_row(
-                        interval.left, interval.right, lineage.node, child,
+                        interval.left,
+                        interval.right,
+                        lineage.node,
+                        child,
                     )
             #     lineage.node = parent
         else:
             parent = node_id
-            print("COAL", parent)
-            print(children[parent])
+            # print("COAL", parent)
+            # print(children[parent])
             assert len(children[parent]) == 2
             children_lineages = []
             for child in children[parent]:
@@ -335,7 +342,7 @@ def convert_arg(tables):
                     if lineages[j].node == child:
                         children_lineages.append(lineages.pop(j))
                         break
-            a, b  = children_lineages
+            a, b = children_lineages
             c = Lineage(parent, [])
             flags = NODE_IS_NONCOAL_CA
             for interval, intersecting_lineages in merge_ancestry([a, b]):
@@ -355,24 +362,26 @@ def convert_arg(tables):
             # print(f"\tc = {c}")
             if len(c.ancestry) > 0:
                 lineages.append(c)
-        print(f"t = {node.time:.2f}")
-        for lineage in lineages:
-            print(f"\t{lineage}")
+        # print(f"t = {node.time:.2f}")
+        # for lineage in lineages:
+        #     print(f"\t{lineage}")
         node_id += 1
-    print(out)
+    # print(out)
     out.sort()
     return out.tree_sequence()
 
-n = 3
+
+n = 30
 rho = 0.3
-L = 10
+L = 100
 seed = 234
-ts = arg_sim(n, rho, L, seed=seed)
-tables = node_arg_sim(n, rho, L, seed=seed)
-print(ts.tables)
-ts2 = convert_arg(tables)
+for seed in range(1, 100):
+    ts = arg_sim(n, rho, L, seed=seed)
+    tables = node_arg_sim(n, rho, L, seed=seed)
+    # print(ts.tables)
+    ts2 = convert_arg(tables)
 
-draw_arg(ts)
-draw_arg(ts2)
+    draw_arg(ts)
+    # draw_arg(ts2)
 
-ts.tables.assert_equals(ts2.tables)
+    ts.tables.assert_equals(ts2.tables)
