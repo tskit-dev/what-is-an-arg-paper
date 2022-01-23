@@ -28,7 +28,17 @@ class Interval:
 
 @dataclasses.dataclass
 class Lineage:
+    node: int
     ancestry: List[Interval]
+
+    def __str__(self):
+        s = f"{self.node}:["
+        for interval in self.ancestry:
+            s += str(
+                (interval.left, interval.right, interval.node, interval.ancestral_to)
+            )
+            s += ", "
+        return s[:-2] + "]"
 
     @property
     def num_recombination_links(self):
@@ -66,7 +76,7 @@ class Lineage:
                 left_ancestry.append(dataclasses.replace(interval, right=breakpoint))
                 right_ancestry.append(dataclasses.replace(interval, left=breakpoint))
         self.ancestry = left_ancestry
-        return Lineage(right_ancestry)
+        return Lineage(self.node, right_ancestry)
 
 
 def overlapping_segments(segments):
@@ -103,6 +113,16 @@ def overlapping_segments(segments):
             right = min(x.right for x in X)
             yield left, right, X
 
+def merge_ancestry(lineages):
+    node_map = {lineage.node: lineage for lineage in lineages}
+    segments = []
+    for lineage in lineages:
+        segments.extend(lineage.ancestry)
+
+    for left, right, U in overlapping_segments(segments):
+        ancestral_to = sum(u.ancestral_to for u in U)
+        interval = Interval(left, right, -1, ancestral_to)
+        yield interval, [node_map[u.node] for u in U]
 
 # NOTE! This hasn't been statistically tested and is probably not correct.
 def arg_sim(n, rho, L, seed=None):
@@ -112,18 +132,18 @@ def arg_sim(n, rho, L, seed=None):
     lineages = []
     for _ in range(n):
         node = tables.nodes.add_row(time=0, flags=tskit.NODE_IS_SAMPLE)
-        lineages.append(Lineage([Interval(0, L, node, 1)]))
+        lineages.append(Lineage(node, [Interval(0, L, node, 1)]))
 
     t = 0
     while len(lineages) > 0:
-        # print(lineages)
+        print(f"t = {t:.2f} k = {len(lineages)}")
+        for lineage in lineages:
+            print(f"\t{lineage}")
         lineage_links = [lineage.num_recombination_links for lineage in lineages]
-        # print(lineage_links)
         total_links = sum(lineage_links)
         re_rate = total_links * rho
         t_re = math.inf if re_rate == 0 else rng.expovariate(re_rate)
         k = len(lineages)
-        # print("t = ", t, "k=", k, "lineage_links", total_links)
         ca_rate = k * (k - 1) / 2
         t_ca = rng.expovariate(ca_rate)
         t_inc = min(t_re, t_ca)
@@ -132,7 +152,6 @@ def arg_sim(n, rho, L, seed=None):
             # Choose a lineage to recombine with probability equal to the
             # number of recombination links it subtends.
             lineage = rng.choices(lineages, weights=lineage_links)[0]
-
             # Choose a breakpoint uniformly on that lineage
             breakpoint = rng.randrange(lineage.left + 1, lineage.right)
             assert lineage.left < breakpoint < lineage.right
@@ -142,34 +161,41 @@ def arg_sim(n, rho, L, seed=None):
             right = lineage.split(breakpoint)
             lineages.append(right)
             for lineage in [lineage, right]:
+                # lineage.node = node
                 for interval in lineage.ancestry:
                     tables.edges.add_row(
-                        interval.left, interval.right, node, interval.node
+                        interval.left, interval.right, node, lineage.node
                     )
                     interval.node = node
+                lineage.node = node
 
         else:
             # print("CA EVENT")
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
-            # print("\ta = ", a)
-            # print("\tb = ", b)
+            print(f"\ta = {a}")
+            print(f"\tb = {b}")
             ancestry = []
             flags = NODE_IS_NONCOAL_CA
             node = len(tables.nodes)
-            for left, right, U in overlapping_segments(a.ancestry + b.ancestry):
-                ancestral_to = sum(u.ancestral_to for u in U)
-                assert left < right
-                if len(U) > 1:
+            # for left, right, U in overlapping_segments(a.ancestry + b.ancestry):
+            for interval, intersecting_lineages in merge_ancestry([a, b]):
+                # ancestral_to = sum(u.ancestral_to for u in U)
+                # assert left < right
+                if len(intersecting_lineages) > 1:
                     flags = 0  # This is a coalescence, treat this as ordinary tree node
-                if ancestral_to < n:
-                    ancestry.append(Interval(left, right, node, ancestral_to))
-                for u in U:
-                    tables.edges.add_row(left, right, node, u.node)
+                if interval.ancestral_to < n:
+                    interval.node = node
+                    ancestry.append(interval)
+                for lineage in intersecting_lineages:
+                    tables.edges.add_row(interval.left, interval.right, node,
+                            lineage.node)
             tables.nodes.add_row(flags=flags, time=t, metadata={})
             # print("\tdone:", ancestry)
             if len(ancestry) > 0:
-                lineages.append(Lineage(ancestry))
+                c = Lineage(node, ancestry)
+                print(f"\tc = {c}")
+                lineages.append(c)
     # print()
     # print(tables)
     tables.sort()
@@ -177,6 +203,14 @@ def arg_sim(n, rho, L, seed=None):
     return tables.tree_sequence()
 
 
-ts = arg_sim(5, 0.1, 10, seed=234)
+ts = arg_sim(5, 0.2, 10, seed=234)
 
-print(ts.draw_text())
+node_labels = {}
+for node in ts.nodes():
+    label = str(node.id)
+    if node.flags == NODE_IS_RECOMB:
+        label = f"R{node.id}"
+    elif node.flags == NODE_IS_NONCOAL_CA:
+        label = f"N{node.id}"
+    node_labels[node.id] = label
+print(ts.draw_text(node_labels=node_labels))
