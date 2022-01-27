@@ -329,6 +329,123 @@ def unresolved_arg_sim(n, rho, L, seed=None):
     return tables
 
 
+@dataclasses.dataclass
+class Individual:
+    id: int = -1
+    lineages: List[Lineage] = dataclasses.field(default_factory=list)
+    collected_lineages: List[List[Lineage]] = dataclasses.field(
+        default_factory=lambda: [[], []]
+    )
+
+
+def unresolved_wf_arg_sim(n, N, L, seed=None):
+    """
+    NOTE! This hasn't been statistically tested and is probably not correct.
+
+    We don't keep track of the pedigree because this is inconsistent
+    with the practise of dropping "pass through" nodes in which
+    nothing happens.
+    """
+    rng = random.Random(seed)
+    tables = tskit.TableCollection(L)
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+
+    ancestors = []
+    for _ in range(n):
+        ind = Individual(tables.individuals.add_row(), [])
+        for _ in range(2):
+            node = tables.nodes.add_row(
+                time=0, flags=tskit.NODE_IS_SAMPLE, individual=ind.id
+            )
+            ind.lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
+        ancestors.append(ind)
+    t = 0
+    while len(ancestors) > 0:
+        t += 1
+        # print("===")
+        # print("T = ", t, "|A|=", len(ancestors))
+        # for ancestor in ancestors:
+        #     print(ancestor)
+        # Group the ancestral lineages among the parent individuals chosen
+        # among the previous generation. We map the individual's index
+        # in the population to the lineages inherited from is maternal
+        # and paternal genomes
+        parents = {}
+        recombinant_nodes = set()
+        for ancestor in ancestors:
+            for lineage in ancestor.lineages:
+                parent_index = rng.randrange(N)
+                if parent_index not in parents:
+                    parents[parent_index] = Individual()
+                parent = parents[parent_index]
+                # Randomise the order we add the lineages
+                rng.shuffle(parent.collected_lineages)
+                j = 0
+                breakpoint = rng.randrange(1, L)
+                # print("breakpoint", breakpoint)
+                if lineage.left < breakpoint < lineage.right:
+                    # print("effective recombination!", lineage.node)
+                    recombinant_nodes.add(lineage.node)
+                    right_lineage = lineage.split(breakpoint)
+                    parent.collected_lineages[j].append(right_lineage)
+                    j += 1
+                parent.collected_lineages[j].append(lineage)
+
+        # All the ancestral material has been distributed to the parental
+        # lineages.
+        ancestors.clear()
+
+        # print("|P| = ", len(parents), "RE_children = ", recombinant_nodes)
+        for parent in parents.values():
+            # print("\t", parent)
+            for lineages in parent.collected_lineages:
+                # These are all the lineages that have been collected
+                # together for this lineage on this individual. If there
+                # is at least one piece of ancestral material going through,
+                # we create a node for it.
+                # print("\tlineages = ")
+                # for lin in lineages:
+                #     print("\t\t", lin)
+
+                if len(lineages) == 1:
+                    merged_lineage = lineages[0]
+                    # print("\t\tPASS THROUGH")
+                else:
+                    # if True:
+                    # if len(lineages) >= 1 or lineage.node in recombinant_nodes:
+                    if parent.id == -1:
+                        parent.id = tables.individuals.add_row()
+                    flags = NODE_IS_RECOMB if lineage.node in recombinant_nodes else 0
+                    node = tables.nodes.add_row(
+                        time=t, flags=flags, individual=parent.id
+                    )
+                    # print("\t\tNEW NODE", node)
+                    merged_lineage = Lineage(node, [])
+                    for interval, intersecting_lineages in merge_ancestry(lineages):
+                        if interval.ancestral_to < 2 * n:  # n is *diploid* sample size
+                            merged_lineage.ancestry.append(interval)
+                        for child_lineage in intersecting_lineages:
+                            tables.edges.add_row(
+                                interval.left, interval.right, node, child_lineage.node
+                            )
+                if len(merged_lineage.ancestry) > 0:
+                    parent.lineages.append(merged_lineage)
+                # print("\tmerged lineage = ", merged_lineage)
+            if len(parent.lineages) > 0:
+                ancestors.append(parent)
+
+        assert len(ancestors) <= N
+
+        # ind = Individual(tables.individuals.add_row(), [])
+        # unique_parents = set([item for sublist in ancestor_parents for item in sublist])
+        # print(unique_parents)
+        # # unique_parents = [parent for
+        # # for ancestor, parents in zip(ancestor
+    print(tables)
+    tables.sort()
+    return tables.tree_sequence()
+
+
 def convert_arg(tables):
     """
     Converts the specified non-ancestry tracking ARG to a tskit ARG.
@@ -430,10 +547,13 @@ def convert_arg(tables):
     return out.tree_sequence()
 
 
-n = 5
-rho = 0.3
-L = 10
-for seed in range(1, 100):
+def simplest_example():
+
+    n = 2
+    rho = 0.01
+    L = 10
+    seed = 14
+    print(seed)
     ts = arg_sim(n, rho, L, seed=seed)
     tables = unresolved_arg_sim(n, rho, L, seed=seed)
     # print(ts.tables)
@@ -443,3 +563,26 @@ for seed in range(1, 100):
     # draw_arg(ts2)
 
     ts.tables.assert_equals(ts2.tables)
+
+
+# simplest_example()
+
+ts = unresolved_wf_arg_sim(2, 10, 10, 46)
+
+print(ts.draw_text())
+
+
+# n = 2
+# rho = 0.01
+# L = 10
+# for seed in range(1, 100):
+#     print(seed)
+#     ts = arg_sim(n, rho, L, seed=seed)
+#     tables = unresolved_arg_sim(n, rho, L, seed=seed)
+#     # print(ts.tables)
+#     ts2 = convert_arg(tables)
+
+#     draw_arg(ts)
+#     # draw_arg(ts2)
+
+#     ts.tables.assert_equals(ts2.tables)
