@@ -338,9 +338,12 @@ class Individual:
     )
 
 
-def resolved_wf_arg_sim(n, N, L, seed=None):
+def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
+
+    If gametes=True, store RE nodes for the recombinant gametes rather
+    than the individual genomes.
 
     We don't keep track of the pedigree because this is inconsistent
     with the practise of dropping "pass through" nodes in which
@@ -385,10 +388,22 @@ def resolved_wf_arg_sim(n, N, L, seed=None):
                 # print("breakpoint", breakpoint)
                 if lineage.left < breakpoint < lineage.right:
                     # print("effective recombination!", lineage.node)
-                    recombinant_nodes.add(lineage.node)
                     right_lineage = lineage.split(breakpoint)
                     parent.collected_lineages[j].append(right_lineage)
                     j += 1
+                    if gametes:
+                        # NOTE: This code path is exploratory, just to see what the
+                        # result looks like. Probably should be removed.
+                        # Add in a new node to represent the RE event
+                        node = tables.nodes.add_row(time=t - 0.5, flags=NODE_IS_RECOMB)
+                        for lin in lineage, right_lineage:
+                            for interval in lin.ancestry:
+                                tables.edges.add_row(interval.left, interval.right,
+                                        node, lin.node)
+                            lin.node = node
+                    else:
+                        recombinant_nodes.add(lineage.node)
+
                 parent.collected_lineages[j].append(lineage)
 
         # All the ancestral material has been distributed to the parental
@@ -564,7 +579,8 @@ def simplest_example():
 
 # simplest_example()
 
-ts = resolved_wf_arg_sim(2, 5, 4, 46)
+ts = resolved_wf_arg_sim(2, 5, 4, 46, gametes=False)
+print(ts.tables)
 draw_arg(ts)
 
 
