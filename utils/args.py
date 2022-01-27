@@ -338,7 +338,7 @@ class Individual:
     )
 
 
-def unresolved_wf_arg_sim(n, N, L, seed=None):
+def resolved_wf_arg_sim(n, N, L, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
 
@@ -407,15 +407,19 @@ def unresolved_wf_arg_sim(n, N, L, seed=None):
                 # for lin in lineages:
                 #     print("\t\t", lin)
 
-                if len(lineages) == 1:
+                # Debateable whether the flags mean much here, but let's call
+                # it an RE node if any effective recombination happened on
+                # any of the child lineages. We could also try to detect
+                # NODE_IS_NONCOAL_CA
+                flags = 0
+                for lineage in lineages:
+                    if lineage.node in recombinant_nodes:
+                        flags = NODE_IS_RECOMB
+                if len(lineages) == 1 and flags == 0:
                     merged_lineage = lineages[0]
-                    # print("\t\tPASS THROUGH")
                 else:
-                    # if True:
-                    # if len(lineages) >= 1 or lineage.node in recombinant_nodes:
                     if parent.id == -1:
                         parent.id = tables.individuals.add_row()
-                    flags = NODE_IS_RECOMB if lineage.node in recombinant_nodes else 0
                     node = tables.nodes.add_row(
                         time=t, flags=flags, individual=parent.id
                     )
@@ -430,18 +434,11 @@ def unresolved_wf_arg_sim(n, N, L, seed=None):
                             )
                 if len(merged_lineage.ancestry) > 0:
                     parent.lineages.append(merged_lineage)
-                # print("\tmerged lineage = ", merged_lineage)
             if len(parent.lineages) > 0:
                 ancestors.append(parent)
 
         assert len(ancestors) <= N
 
-        # ind = Individual(tables.individuals.add_row(), [])
-        # unique_parents = set([item for sublist in ancestor_parents for item in sublist])
-        # print(unique_parents)
-        # # unique_parents = [parent for
-        # # for ancestor, parents in zip(ancestor
-    print(tables)
     tables.sort()
     return tables.tree_sequence()
 
@@ -567,9 +564,8 @@ def simplest_example():
 
 # simplest_example()
 
-ts = unresolved_wf_arg_sim(2, 10, 10, 46)
-
-print(ts.draw_text())
+ts = resolved_wf_arg_sim(2, 5, 4, 46)
+draw_arg(ts)
 
 
 # n = 2
