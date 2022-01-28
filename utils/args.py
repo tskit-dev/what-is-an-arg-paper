@@ -200,7 +200,7 @@ class Node:
     metadata: dict = dataclasses.field(default_factory=dict)
 
 
-def arg_sim(n, rho, L, seed=None, include_parent_nodes=False):
+def arg_sim(n, rho, L, seed=None):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
     and return the tskit TreeSequence object.
@@ -238,16 +238,17 @@ def arg_sim(n, rho, L, seed=None, include_parent_nodes=False):
             assert left_lineage.left < breakpoint < left_lineage.right
             right_lineage = left_lineage.split(breakpoint)
             child = left_lineage.node
+            assert nodes[child].flags & NODE_IS_RECOMB == 0
             nodes[child].flags |= NODE_IS_RECOMB
+            assert "breakpoint" not in nodes[child].metadata
             nodes[child].metadata["breakpoint"] = breakpoint
-            if include_parent_nodes:
-                for lineage in left_lineage, right_lineage:
-                    lineage.node = len(nodes)
-                    nodes.append(Node(time=t))
-                    for interval in lineage.ancestry:
-                        tables.edges.add_row(
-                            interval.left, interval.right, lineage.node, child
-                        )
+            for lineage in left_lineage, right_lineage:
+                lineage.node = len(nodes)
+                nodes.append(Node(time=t))
+                for interval in lineage.ancestry:
+                    tables.edges.add_row(
+                        interval.left, interval.right, lineage.node, child
+                    )
             lineages.append(right_lineage)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
@@ -589,10 +590,10 @@ def simplest_example():
 # simplest_example()
 
 # ts = resolved_wf_arg_sim(2, 2, 4, 46)
-for include_parent_nodes in [False, True]:
-    ts = arg_sim(6, 0.1, 5, 46, include_parent_nodes=include_parent_nodes)
+ts = arg_sim(6, 0.1, 50, 46)
 # print(ts.tables)
-    draw_arg(ts)
+
+draw_arg(ts)
 
 
 # n = 2
