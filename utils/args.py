@@ -590,7 +590,7 @@ def simplest_example():
 # simplest_example()
 
 # ts = resolved_wf_arg_sim(2, 2, 4, 46)
-ts = arg_sim(6, 0.1, 50, 46)
+ts = arg_sim(6, 0.1, 5, 47)
 # print(ts.tables)
 
 draw_arg(ts)
