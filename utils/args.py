@@ -20,10 +20,16 @@ def draw_arg(ts):
     node_labels = {}
     for node in ts.nodes():
         label = str(node.id)
-        if node.flags == NODE_IS_RECOMB:
+        if node.flags & NODE_IS_RECOMB > 0:
             label = f"R{node.id}"
         elif node.flags == NODE_IS_NONCOAL_CA:
             label = f"N{node.id}"
+        if "total_span" in node.metadata:
+            total_span = node.metadata["total_span"]
+            coal_span = node.metadata["coal_span"]
+            # Putting in an extra space at the end as a quick hack
+            # to workaround spacing problems.
+            label += f":{coal_span}/{total_span} "
         node_labels[node.id] = label
     print(ts.draw_text(node_labels=node_labels))
 
@@ -50,6 +56,10 @@ class AncestryInterval:
     left: int
     right: int
     ancestral_to: int
+
+    @property
+    def span(self):
+        return self.right - self.left
 
 
 @dataclasses.dataclass
@@ -196,7 +206,10 @@ def arg_sim(n, rho, L, seed=None):
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     lineages = []
     for _ in range(n):
-        node = tables.nodes.add_row(time=0, flags=tskit.NODE_IS_SAMPLE)
+        node = tables.nodes.add_row(
+            time=0,
+            flags=tskit.NODE_IS_SAMPLE,
+        )
         lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
 
     t = 0
@@ -354,14 +367,18 @@ def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
 
     ancestors = []
+    node_flags = []
     for _ in range(n):
         ind = Individual(tables.individuals.add_row(), [])
         for _ in range(2):
+            # Arbitrarily setting coal span to L
             node = tables.nodes.add_row(
-                time=0, flags=tskit.NODE_IS_SAMPLE, individual=ind.id
+                time=0, individual=ind.id, metadata={"coal_span": L, "total_span": L}
             )
             ind.lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
+            node_flags.append(tskit.NODE_IS_SAMPLE)
         ancestors.append(ind)
+
     t = 0
     while len(ancestors) > 0:
         t += 1
@@ -374,7 +391,6 @@ def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
         # in the population to the lineages inherited from is maternal
         # and paternal genomes
         parents = {}
-        recombinant_nodes = set()
         for ancestor in ancestors:
             for lineage in ancestor.lineages:
                 parent_index = rng.randrange(N)
@@ -391,19 +407,7 @@ def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
                     right_lineage = lineage.split(breakpoint)
                     parent.collected_lineages[j].append(right_lineage)
                     j += 1
-                    if gametes:
-                        # NOTE: This code path is exploratory, just to see what the
-                        # result looks like. Probably should be removed.
-                        # Add in a new node to represent the RE event
-                        node = tables.nodes.add_row(time=t - 0.5, flags=NODE_IS_RECOMB)
-                        for lin in lineage, right_lineage:
-                            for interval in lin.ancestry:
-                                tables.edges.add_row(interval.left, interval.right,
-                                        node, lin.node)
-                            lin.node = node
-                    else:
-                        recombinant_nodes.add(lineage.node)
-
+                    node_flags[lineage.node] |= NODE_IS_RECOMB
                 parent.collected_lineages[j].append(lineage)
 
         # All the ancestral material has been distributed to the parental
@@ -412,7 +416,6 @@ def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
 
         # print("|P| = ", len(parents), "RE_children = ", recombinant_nodes)
         for parent in parents.values():
-            # print("\t", parent)
             for lineages in parent.collected_lineages:
                 # These are all the lineages that have been collected
                 # together for this lineage on this individual. If there
@@ -422,37 +425,40 @@ def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
                 # for lin in lineages:
                 #     print("\t\t", lin)
 
-                # Debateable whether the flags mean much here, but let's call
-                # it an RE node if any effective recombination happened on
-                # any of the child lineages. We could also try to detect
-                # NODE_IS_NONCOAL_CA
-                flags = 0
-                for lineage in lineages:
-                    if lineage.node in recombinant_nodes:
-                        flags = NODE_IS_RECOMB
-                if len(lineages) == 1 and flags == 0:
+                if len(lineages) == 1 and node_flags[lineage.node] == 0:
                     merged_lineage = lineages[0]
-                else:
+                elif len(lineages) > 0:
                     if parent.id == -1:
                         parent.id = tables.individuals.add_row()
-                    node = tables.nodes.add_row(
-                        time=t, flags=flags, individual=parent.id
-                    )
-                    # print("\t\tNEW NODE", node)
+                    node = len(tables.nodes)
                     merged_lineage = Lineage(node, [])
+                    node_flags.append(0)
+                    total_span = 0
+                    coal_span = 0
                     for interval, intersecting_lineages in merge_ancestry(lineages):
+                        total_span += interval.span
+                        coal_span += interval.span * (len(intersecting_lineages) > 1)
                         if interval.ancestral_to < 2 * n:  # n is *diploid* sample size
                             merged_lineage.ancestry.append(interval)
                         for child_lineage in intersecting_lineages:
                             tables.edges.add_row(
                                 interval.left, interval.right, node, child_lineage.node
                             )
+                    tables.nodes.add_row(
+                        time=t,
+                        individual=parent.id,
+                        metadata={"total_span": total_span, "coal_span": coal_span},
+                    )
+                else:
+                    merged_lineage = Lineage(-1, [])
                 if len(merged_lineage.ancestry) > 0:
                     parent.lineages.append(merged_lineage)
             if len(parent.lineages) > 0:
                 ancestors.append(parent)
 
         assert len(ancestors) <= N
+
+    tables.nodes.flags = node_flags
 
     tables.sort()
     return tables.tree_sequence()
@@ -579,7 +585,7 @@ def simplest_example():
 
 # simplest_example()
 
-ts = resolved_wf_arg_sim(2, 5, 4, 46, gametes=False)
+ts = resolved_wf_arg_sim(2, 2, 4, 46, gametes=False)
 print(ts.tables)
 draw_arg(ts)
 
