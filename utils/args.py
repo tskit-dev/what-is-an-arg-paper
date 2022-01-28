@@ -193,8 +193,14 @@ def merge_ancestry(lineages):
         interval = AncestryInterval(left, right, ancestral_to)
         yield interval, [u.value[0] for u in U]
 
+@dataclasses.dataclass
+class Node:
+    time: float
+    flags: int = 0
+    metadata: dict = dataclasses.field(default_factory=dict)
 
-def arg_sim(n, rho, L, seed=None):
+
+def arg_sim(n, rho, L, seed=None, include_parent_nodes=False):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
     and return the tskit TreeSequence object.
@@ -205,14 +211,13 @@ def arg_sim(n, rho, L, seed=None):
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     lineages = []
+    nodes = []
     for _ in range(n):
-        node = tables.nodes.add_row(
-            time=0,
-            flags=tskit.NODE_IS_SAMPLE,
-        )
-        lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
+        lineages.append(Lineage(len(nodes), [AncestryInterval(0, L, 1)]))
+        nodes.append(Node(time=0, flags=tskit.NODE_IS_SAMPLE))
 
     t = 0
+
     while len(lineages) > 0:
         # print(f"t = {t:.2f} k = {len(lineages)}")
         # for lineage in lineages:
@@ -233,33 +238,34 @@ def arg_sim(n, rho, L, seed=None):
             assert left_lineage.left < breakpoint < left_lineage.right
             right_lineage = left_lineage.split(breakpoint)
             child = left_lineage.node
-            for lineage in left_lineage, right_lineage:
-                lineage.node = tables.nodes.add_row(
-                    flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-                )
-                for interval in lineage.ancestry:
-                    tables.edges.add_row(
-                        interval.left, interval.right, lineage.node, child
-                    )
+            nodes[child].flags |= NODE_IS_RECOMB
+            nodes[child].metadata["breakpoint"] = breakpoint
+            if include_parent_nodes:
+                for lineage in left_lineage, right_lineage:
+                    lineage.node = len(nodes)
+                    nodes.append(Node(time=t))
+                    for interval in lineage.ancestry:
+                        tables.edges.add_row(
+                            interval.left, interval.right, lineage.node, child
+                        )
             lineages.append(right_lineage)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
-            c = Lineage(len(tables.nodes), [])
-            flags = NODE_IS_NONCOAL_CA
+            c = Lineage(len(nodes), [])
             for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if len(intersecting_lineages) > 1:
-                    flags = 0  # This is a coalescence, treat this as ordinary tree node
                 if interval.ancestral_to < n:
                     c.ancestry.append(interval)
                 for lineage in intersecting_lineages:
                     tables.edges.add_row(
                         interval.left, interval.right, c.node, lineage.node
                     )
-            tables.nodes.add_row(flags=flags, time=t, metadata={})
+            nodes.append(Node(time=t))
             if len(c.ancestry) > 0:
                 lineages.append(c)
 
+    for node in nodes:
+        tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
     tables.sort()
     return tables.tree_sequence()
 
@@ -351,12 +357,9 @@ class Individual:
     )
 
 
-def resolved_wf_arg_sim(n, N, L, seed=None, gametes=False):
+def resolved_wf_arg_sim(n, N, L, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
-
-    If gametes=True, store RE nodes for the recombinant gametes rather
-    than the individual genomes.
 
     We don't keep track of the pedigree because this is inconsistent
     with the practise of dropping "pass through" nodes in which
@@ -585,9 +588,11 @@ def simplest_example():
 
 # simplest_example()
 
-ts = resolved_wf_arg_sim(2, 2, 4, 46, gametes=False)
-print(ts.tables)
-draw_arg(ts)
+# ts = resolved_wf_arg_sim(2, 2, 4, 46)
+for include_parent_nodes in [False, True]:
+    ts = arg_sim(6, 0.1, 5, 46, include_parent_nodes=include_parent_nodes)
+# print(ts.tables)
+    draw_arg(ts)
 
 
 # n = 2
