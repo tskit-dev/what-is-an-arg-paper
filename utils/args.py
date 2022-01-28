@@ -20,10 +20,16 @@ def draw_arg(ts):
     node_labels = {}
     for node in ts.nodes():
         label = str(node.id)
-        if node.flags == NODE_IS_RECOMB:
+        if node.flags & NODE_IS_RECOMB > 0:
             label = f"R{node.id}"
         elif node.flags == NODE_IS_NONCOAL_CA:
             label = f"N{node.id}"
+        if "total_span" in node.metadata:
+            total_span = node.metadata["total_span"]
+            coal_span = node.metadata["coal_span"]
+            # Putting in an extra space at the end as a quick hack
+            # to workaround spacing problems.
+            label += f":{coal_span}/{total_span} "
         node_labels[node.id] = label
     print(ts.draw_text(node_labels=node_labels))
 
@@ -50,6 +56,10 @@ class AncestryInterval:
     left: int
     right: int
     ancestral_to: int
+
+    @property
+    def span(self):
+        return self.right - self.left
 
 
 @dataclasses.dataclass
@@ -183,8 +193,14 @@ def merge_ancestry(lineages):
         interval = AncestryInterval(left, right, ancestral_to)
         yield interval, [u.value[0] for u in U]
 
+@dataclasses.dataclass
+class Node:
+    time: float
+    flags: int = 0
+    metadata: dict = dataclasses.field(default_factory=dict)
 
-def arg_sim(n, rho, L, seed=None):
+
+def arg_sim(n, rho, L, seed=None, include_parent_nodes=False):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
     and return the tskit TreeSequence object.
@@ -195,11 +211,13 @@ def arg_sim(n, rho, L, seed=None):
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     lineages = []
+    nodes = []
     for _ in range(n):
-        node = tables.nodes.add_row(time=0, flags=tskit.NODE_IS_SAMPLE)
-        lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
+        lineages.append(Lineage(len(nodes), [AncestryInterval(0, L, 1)]))
+        nodes.append(Node(time=0, flags=tskit.NODE_IS_SAMPLE))
 
     t = 0
+
     while len(lineages) > 0:
         # print(f"t = {t:.2f} k = {len(lineages)}")
         # for lineage in lineages:
@@ -220,33 +238,34 @@ def arg_sim(n, rho, L, seed=None):
             assert left_lineage.left < breakpoint < left_lineage.right
             right_lineage = left_lineage.split(breakpoint)
             child = left_lineage.node
-            for lineage in left_lineage, right_lineage:
-                lineage.node = tables.nodes.add_row(
-                    flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-                )
-                for interval in lineage.ancestry:
-                    tables.edges.add_row(
-                        interval.left, interval.right, lineage.node, child
-                    )
+            nodes[child].flags |= NODE_IS_RECOMB
+            nodes[child].metadata["breakpoint"] = breakpoint
+            if include_parent_nodes:
+                for lineage in left_lineage, right_lineage:
+                    lineage.node = len(nodes)
+                    nodes.append(Node(time=t))
+                    for interval in lineage.ancestry:
+                        tables.edges.add_row(
+                            interval.left, interval.right, lineage.node, child
+                        )
             lineages.append(right_lineage)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
-            c = Lineage(len(tables.nodes), [])
-            flags = NODE_IS_NONCOAL_CA
+            c = Lineage(len(nodes), [])
             for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if len(intersecting_lineages) > 1:
-                    flags = 0  # This is a coalescence, treat this as ordinary tree node
                 if interval.ancestral_to < n:
                     c.ancestry.append(interval)
                 for lineage in intersecting_lineages:
                     tables.edges.add_row(
                         interval.left, interval.right, c.node, lineage.node
                     )
-            tables.nodes.add_row(flags=flags, time=t, metadata={})
+            nodes.append(Node(time=t))
             if len(c.ancestry) > 0:
                 lineages.append(c)
 
+    for node in nodes:
+        tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
     tables.sort()
     return tables.tree_sequence()
 
@@ -327,6 +346,125 @@ def unresolved_arg_sim(n, rho, L, seed=None):
             if len(c.ancestry) > 0:
                 lineages.append(c)
     return tables
+
+
+@dataclasses.dataclass
+class Individual:
+    id: int = -1
+    lineages: List[Lineage] = dataclasses.field(default_factory=list)
+    collected_lineages: List[List[Lineage]] = dataclasses.field(
+        default_factory=lambda: [[], []]
+    )
+
+
+def resolved_wf_arg_sim(n, N, L, seed=None):
+    """
+    NOTE! This hasn't been statistically tested and is probably not correct.
+
+    We don't keep track of the pedigree because this is inconsistent
+    with the practise of dropping "pass through" nodes in which
+    nothing happens.
+    """
+    rng = random.Random(seed)
+    tables = tskit.TableCollection(L)
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+
+    ancestors = []
+    node_flags = []
+    for _ in range(n):
+        ind = Individual(tables.individuals.add_row(), [])
+        for _ in range(2):
+            # Arbitrarily setting coal span to L
+            node = tables.nodes.add_row(
+                time=0, individual=ind.id, metadata={"coal_span": L, "total_span": L}
+            )
+            ind.lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
+            node_flags.append(tskit.NODE_IS_SAMPLE)
+        ancestors.append(ind)
+
+    t = 0
+    while len(ancestors) > 0:
+        t += 1
+        # print("===")
+        # print("T = ", t, "|A|=", len(ancestors))
+        # for ancestor in ancestors:
+        #     print(ancestor)
+        # Group the ancestral lineages among the parent individuals chosen
+        # among the previous generation. We map the individual's index
+        # in the population to the lineages inherited from is maternal
+        # and paternal genomes
+        parents = {}
+        for ancestor in ancestors:
+            for lineage in ancestor.lineages:
+                parent_index = rng.randrange(N)
+                if parent_index not in parents:
+                    parents[parent_index] = Individual()
+                parent = parents[parent_index]
+                # Randomise the order we add the lineages
+                rng.shuffle(parent.collected_lineages)
+                j = 0
+                breakpoint = rng.randrange(1, L)
+                # print("breakpoint", breakpoint)
+                if lineage.left < breakpoint < lineage.right:
+                    # print("effective recombination!", lineage.node)
+                    right_lineage = lineage.split(breakpoint)
+                    parent.collected_lineages[j].append(right_lineage)
+                    j += 1
+                    node_flags[lineage.node] |= NODE_IS_RECOMB
+                parent.collected_lineages[j].append(lineage)
+
+        # All the ancestral material has been distributed to the parental
+        # lineages.
+        ancestors.clear()
+
+        # print("|P| = ", len(parents), "RE_children = ", recombinant_nodes)
+        for parent in parents.values():
+            for lineages in parent.collected_lineages:
+                # These are all the lineages that have been collected
+                # together for this lineage on this individual. If there
+                # is at least one piece of ancestral material going through,
+                # we create a node for it.
+                # print("\tlineages = ")
+                # for lin in lineages:
+                #     print("\t\t", lin)
+
+                if len(lineages) == 1 and node_flags[lineage.node] == 0:
+                    merged_lineage = lineages[0]
+                elif len(lineages) > 0:
+                    if parent.id == -1:
+                        parent.id = tables.individuals.add_row()
+                    node = len(tables.nodes)
+                    merged_lineage = Lineage(node, [])
+                    node_flags.append(0)
+                    total_span = 0
+                    coal_span = 0
+                    for interval, intersecting_lineages in merge_ancestry(lineages):
+                        total_span += interval.span
+                        coal_span += interval.span * (len(intersecting_lineages) > 1)
+                        if interval.ancestral_to < 2 * n:  # n is *diploid* sample size
+                            merged_lineage.ancestry.append(interval)
+                        for child_lineage in intersecting_lineages:
+                            tables.edges.add_row(
+                                interval.left, interval.right, node, child_lineage.node
+                            )
+                    tables.nodes.add_row(
+                        time=t,
+                        individual=parent.id,
+                        metadata={"total_span": total_span, "coal_span": coal_span},
+                    )
+                else:
+                    merged_lineage = Lineage(-1, [])
+                if len(merged_lineage.ancestry) > 0:
+                    parent.lineages.append(merged_lineage)
+            if len(parent.lineages) > 0:
+                ancestors.append(parent)
+
+        assert len(ancestors) <= N
+
+    tables.nodes.flags = node_flags
+
+    tables.sort()
+    return tables.tree_sequence()
 
 
 def convert_arg(tables):
@@ -430,10 +568,13 @@ def convert_arg(tables):
     return out.tree_sequence()
 
 
-n = 5
-rho = 0.3
-L = 10
-for seed in range(1, 100):
+def simplest_example():
+
+    n = 2
+    rho = 0.01
+    L = 10
+    seed = 14
+    print(seed)
     ts = arg_sim(n, rho, L, seed=seed)
     tables = unresolved_arg_sim(n, rho, L, seed=seed)
     # print(ts.tables)
@@ -443,3 +584,28 @@ for seed in range(1, 100):
     # draw_arg(ts2)
 
     ts.tables.assert_equals(ts2.tables)
+
+
+# simplest_example()
+
+# ts = resolved_wf_arg_sim(2, 2, 4, 46)
+for include_parent_nodes in [False, True]:
+    ts = arg_sim(6, 0.1, 5, 46, include_parent_nodes=include_parent_nodes)
+# print(ts.tables)
+    draw_arg(ts)
+
+
+# n = 2
+# rho = 0.01
+# L = 10
+# for seed in range(1, 100):
+#     print(seed)
+#     ts = arg_sim(n, rho, L, seed=seed)
+#     tables = unresolved_arg_sim(n, rho, L, seed=seed)
+#     # print(ts.tables)
+#     ts2 = convert_arg(tables)
+
+#     draw_arg(ts)
+#     # draw_arg(ts2)
+
+#     ts.tables.assert_equals(ts2.tables)
