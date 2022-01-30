@@ -114,6 +114,85 @@ the properties of the structures inferred by different methods, and illustrate
 with some examples.
 \end{enumerate}
 
+\section*{Ancestral recombination graphs}
+The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
+hudson1983testing, tajima1983evolutionary}
+provides the theoretical underpinning for much of contemporary population genetics.
+Hudson extended the coalescent to include
+recombination~\citep{hudson1983properties,hudson1990gene}
+and the model has proved to be especially powerful basis for
+simulations~\citep{hudson2002generating,kelleher2016efficient,kelleher2020coalescent,
+baumdicker2021efficient}.
+Hudson's algorithm is concerned with simulating the process of
+the coalescent with recombination as efficiently as possible, and operates by
+tracking segments of ancestral material carried by ancestors as
+we go backwards in time. The details of Hudson's algorithm and how the
+results of the ancestral process are represented are critical to later
+discussions, and so we will explain the process in some detail.
+See~\cite{kelleher2016efficient} for a more detailed
+description of the algorithm, and how it may be implemented efficiently.
+
+Hudson's algorithm operates by tracking the state of a set of ancestral
+lineages as we go backwards in time. Each lineage consists of a list of
+disjoint ancestry segments $(\ell, r, a)$, where
+$[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
+tracking the number of samples the lineage is ancestral to over the interval.
+(We also usually track the tree node associated with each segment, but
+that is not important for our purposes here so we omit it.)
+If we have $n$ samples and genome of length $L$, the process begins with $n$ lineages
+of the form $[(0, L, 1)]$. The process then works backwards in time from
+the present day as a series of random common ancestor or recombination events.
+Recombination events occur at a rate determined by the amount and spatial
+distribution of ancestral material among lineages.
+Let $A$ be the set of ancestors at a given time $t$. Recombination events
+happen at rate $\rho \nu / (L - 1)$ where
+\[
+\nu = \sum_{x \in A}\left( \max_{(\ell, r, a) \in x}r
+    - \min_{(\ell, r, a) \in x}\ell - 1 \right)
+\]
+is the number of available `links' that may be broken. Thus, the rate of
+recombination is determined by the left and right-most extent of the
+ancestral material carried by each lineage. At a recombination
+event we choose one of these links uniformly and break it. Given a lineage
+$x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
+$x_1$ and $x_2$ such that FILL IN DETAILS
+
+When $k = |A|$ lineages are present, common ancestor events
+occur at rate $k(k - 1) / 2$. In a common ancestor event two lineages
+are chosed uniformly at random and their ancestry segments merged.
+If we have overlapping intervals of ancestry from the two lineages,
+say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
+\emph{coalescence} occurs and ancestor represented by the current event
+will be present as a node (at least) in the marginal trees covering
+the interval $[\ell, r)$. The result of this coalescence is a segment
+$(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
+ancesty for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
+we have found the most recent common ancestor of all samples in
+the interval $[\ell, r)$ and so we do not need to simulate its history any further.
+Nonoverlapping intervals of ancestry from the two lineages are included
+in the resulting lineage without changes. Eventually, as the process continues,
+we find resultant lineages in which all segments have fully coalescenced,
+and so the number of extant lineages gradually dwindles down to zero.
+
+The Ancestral Recombination Graph (ARG) was later introduced
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1997ancestral}, and is a
+closely related and complementary treatment of the same process. Where
+Hudson's algorithm is focused on the efficient \emph{simulation} of the
+process, the original ARG literature is focused on mathematical
+results about the stochastic process. Griffiths and colleagues formulated the
+ARG as a branching-coalescing stochastic process
+
+NOTES for continuing:
+
+\begin{itemize}
+\item The ARG process does not track ancestral material. Recombination events
+occur at rate $k \rho / 2$, and we don't complete until there's only one
+lineage left. That means the process continues for an exponentially long time.
+\item Discuss the way in which the re events work.
+\item Discuss the rules for pulling out the trees. This is equivalent to doing
+the interval logic above in Hudson's algorithm.
+\end{itemize}
+
 \section*{Ancestral graphs and stochastic processes}
 
 % See https://github.com/tskit-dev/what-is-an-arg-paper/discussions/13
@@ -407,6 +486,7 @@ impoverished because it reduces the possibilities available
 to something either being an ARG or not, whereas there are many different
 interesting properties of these structures that we should be able to
 discuss and compare.
+\item tskit can represent any ARG.
 \end{itemize}
 
 \bibliographystyle{plainnat}
