@@ -8,6 +8,10 @@
 \usepackage{nameref}
 \usepackage[right]{lineno}
 
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning}
+
 \begin{document}
 
 \linenumbers
@@ -52,25 +56,63 @@ and annotations on those edges define the precise patterns of
 ancestry in intervals along the genome.
 We use this framework to define some classifications and metrics of ARG nodes,
 and discuss the properties of some recently developed inference methods.
+% jk-note: this ends a bit flat - we should say other stuff like we clarify
+% how the ARG relates the pedigree, etc, etc. Let's go through again when
+% we have a reasonable draft.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral Recombination Graphs
 
 \section*{Introduction}
+Inferring the genetic relationships between sampled genomes in the form of an
+evolutionary tree is a necessary prerequisite for many analyses of non (or
+rarely) recombining organisms [refs]. The trees capture what is known and
+knowable about the genetic ancestry of the sample in an elegant and concise
+way, by postulating a set of nodes that are ancestors common to the samples,
+and the ancestral relationships between those nodes. A rich literature exists
+on analysing the mathematical properties of these trees [cite?], and numerous
+methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
+quite different in recombining organisms, where the analysis of genetic data
+depends on summaries ultimately derived from the trees such as allele
+% TODO cite the other papers that preceded ralph2020efficiently here.
+frequencies~\citep{ralph2020efficiently}, site frequency spectra, patterns of linkage
+disequilibrium~\citep{mcvean2002genealogical} and principal
+components~\citep{mcvean2009genealogical}. Genealogical analysis is equally
+fundamental to the study of recombining organisms, but profound technical
+difficulties have made the routine inference of recombinant genealogies
+impossible, and therefore tree-based analysis methods have been largely
+unavailable to the fields of population and statistical genetics.
 
-% HYW: this is a rough first pass, aiming to be concise. We should flash out the "recombination" aspect of ARGs here a bit, I think
+Recent breakthroughs large-scale inference
+methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
+schaefer2021ancestral,wohns2021unified}
+and data representation~\citep{kelleher2016efficient}
+have raised the genuine prospect of genealogical analysis becoming a standard part
+of the population and statistical genetics toolkit.
+Applications using these inferred ancestries as input have
+begun to appear~\citep{osmond2021estimating} and many more are sure to
+follow~\citep{harris2019database}. This vibrant research area, however,
+has a significant difficulty, which, if not addressed, will substantially hamper
+progress. We currently lack a well-defined data-model and shared terminology
+to discuss recombining genealogies,
+leading to basic errors in statements about what different inference methods
+produce as output (see the XXX section below), as well as presenting serious
+difficulties in either comparing the outputs of different methods or
+(from a users perspective) using multiple inference methods in an analysis.
 
-For a long time, the Ancestral Recombination Graph (ARG) has been an object of
-fascination to those interested in theoretical evolutionary genetics, as it
-captures all knowable genetic history of a collection of individual genomes.
-Recently advances in our ability to infer ARGs has led to a resurgence of
-interest in this field. However, these have also given rise to certain
-terminological confusion, which we aim to clear up in this paper.
-
-One major source of confusion is the use of the term ``ARG" to refer to both a
-backwards-in-time generative process (Griffiths) and a structure which can be
-created by that process
-\citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
+In this paper we [turn into proper round up paragraph later]
+\begin{enumerate}
+\item Discuss the classical Ancestral Recombination Graph formulation,
+and show how it derives from (and is limited by) the coalescent with
+recombination.
+\item Suggest a definition of ARGs that is free of these limitations,
+where the formulation is derived from a diploid pedigree rather than
+the coalescent approximations and spatial annotations are attached to
+edges rather than nodes.
+\item Suggest a classification of ARG nodes that helps us to understand
+the properties of the structures inferred by different methods, and illustrate
+with some examples.
+\end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
 
@@ -92,9 +134,11 @@ stochastic process whose realisations are graphs which into which all of the
 marginal ancestral trees are embedded. Coalescences encode common ancestry
 as they do in the coalescent, while branching events encode points at which a
 marginal tree changes from one position along the genome to the next.
-%note-jk: could nitpick this in that diamonds don't generate tree "changes" as such. Maybe tweak this on the next round of revision?
+% jk-note: could nitpick this in that diamonds don't generate tree
+% "changes" as such. Maybe tweak this on the next round of revision?
 
-% jk-note: this isn't quite right I think, as it's muddling the distinction between a graph stochastic process
+% jk-note: this isn't quite right I think, as it's muddling the
+% distinction between a graph stochastic process
 % definition with the graph as the encoding of the marginal trees.
 There are several formulations of the ARG, which vary by
 the amount of extra information they capture beyond a minimal representation
@@ -134,8 +178,43 @@ loci whereupon branching is due to both selection and
 recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
-In the theoretical literature, ancestral graphs such as the ARG refer to the
-ancestral \emph{process} rather than the outcome of a process.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[xscale=0.8, yscale=0.3, node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] {};
+\node (s1) [right=of s0,greynode] {};
+\node (s2) [right=of s1,greynode] {};
+\node [greynode] (s3) at ($(s1) + (0,1)$) {};
+\node [greynode] (s4) at ($0.5*(s1) + 0.5*(s2) + (0,2)$) {};
+\node [greynode] (s5) at ($0.5*(s0) + 0.5*(s1) + (0,3)$) {};
+\node [greynode] (s6) at ($(s1) + (0,5)$) {};
+
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x = 0.3$};
+\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/3, s6/6} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) -- (s3);
+\foreach \child/\parent in {s6/s5, s6/s4, s5/s0, s4/s2}
+	\draw (\child) -| (\parent);
+
+\draw (s5) -| ($0.5*(s3) + 0.5*(s3-|s5)$) |- (s3);
+\draw (s4) -| ($0.5*(s3) + 0.5*(s3-|s4)$) |- (s3);
+
+\end{tikzpicture}
+\caption{\label{fig-arg} \textcolor{red}{A picture of a standard ARG for us
+to work with for now. We should replace it with something better at some
+point.}
+ }
+\end{figure}
+
+
 
 \section*{The ARG as a structure}
 
@@ -311,6 +390,24 @@ ARGs inferred by different methods from a small dataset. Notes about these
 ARGs.
 }
 \end{figure}
+
+\section*{Discussion}
+
+Discussion points (may or may not be used, certainly would be heavily revised)
+
+\begin{itemize}
+\item Terminology based around an inferred ancestry being a ``true''
+ARG is impoverished and misleading. The only reasonable interpretation
+of a ARG being true or not is whether it's a sample from the coalescent.
+Most inference methods (and all that scale well) do not. In any case,
+the coalescent is just one model, and a highly idealised one. It is
+exceedingly unlikely that the actual ARG describing the ancestry
+of any biological population is ``true'' ARG in this sense. The terminology is
+impoverished because it reduces the possibilities available
+to something either being an ARG or not, whereas there are many different
+interesting properties of these structures that we should be able to
+discuss and compare.
+\end{itemize}
 
 \bibliographystyle{plainnat}
 \bibliography{paper}

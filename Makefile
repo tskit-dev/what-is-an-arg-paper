@@ -20,7 +20,7 @@ illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deleti
 	inkscape --export-type="pdf" $<
 	# For inkscape < 1, this works (but is missing some shading)
 	# inkscape $< --export-pdf=$@
-	# This gives a faithful conversion to pdf
+	# This gives a faithful conversion to pdf, but needs some page trimming
 	# chromium --headless --no-margins --print-to-pdf=$@ $<
 
 paper.ps: paper.dvi
