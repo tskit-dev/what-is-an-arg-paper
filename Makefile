@@ -12,11 +12,16 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex paper.tex
 	pdflatex paper.tex
 
-illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deletion.py 
+illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deletion.py
 	python3 $<
 
 %.pdf : %.svg
+	# For inkscape >= 1.0
 	inkscape --export-type="pdf" $<
+	# For inkscape < 1, this works (but is missing some shading)
+	# inkscape $< --export-pdf=$@
+	# This gives a faithful conversion to pdf
+	# chromium --headless --no-margins --print-to-pdf=$@ $<
 
 paper.ps: paper.dvi
 	dvips paper
