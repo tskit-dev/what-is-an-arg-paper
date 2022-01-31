@@ -8,6 +8,10 @@
 \usepackage{nameref}
 \usepackage[right]{lineno}
 
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning}
+
 \begin{document}
 
 \linenumbers
@@ -22,113 +26,300 @@
 % substantial revision.
 \begin{abstract}
 It has recently become possible to infer genetic ancestry in the presence of
-recombination at scale for the first time. This has created exciting
-possibilities, with many downstream applications based on
-these inferred genealogies. The inferred genetic ancestries are usually
-referred to as Ancestral Recombination Graphs, or ARGs. Although initially well
-defined as a graphical representation of the coalescent with recombination
-stochastic process, the interpretation has become unclear as it is now
-also understood to represent a particular realisation of a genetic
-ancestry.
-Inference methods do not all infer the same information:
-although all output marginal trees along the genome, there is a great deal of
-variation in how much information of the relationships between the trees is inferred
-and retained. An important programme of work over the coming years is to
-develop and refine ancestry inference methods, assessing the relative strengths
-and weaknesses of the various approaches. Using the blanket term ARG hides the
-important differences in the approaches, and hampers our ability to compare and
-improve inference methods. In this paper we discuss the different approaches we
-may use to encode genetic ancestry, and of the differing amounts of information
-about the ancestral process that we can represent and hope to observe. We
-classify existing inference methods according to the type of ancestry they
-infer, and discuss the strengths and weaknesses of the inferred structure for
-downstream applications.
+recombination at scale for the first time, enabling many
+downstream applications in population and statistical genetics.
+Such recombinant genetic ancestry is usually
+referred to as an Ancestral Recombination Graph, or ARG.
+% Note: slight repetition here with first sentence.
+There are now multiple methods that can infer ARGs at a practical scale
+and it is therefore vital that these methods can be systematically evaluated
+and compared to determine their strengths and weaknesses.
+Unfortunately, however, there is substantial confusion over
+terminology and little agreement on shared standards for data interchange,
+significantly hampering progress in this important area.
+This confusion and lack of agreement on basic issues such as what does and
+does not constitute an ARG is partly attributable to the historical
+development of the term.
+Originally rigorously defined as
+a representation of the coalescent with recombination
+stochastic process as a graph, an ARG is now understood to refer to any
+concrete realisation of a recombinant genetic ancestry.
+We show that the standard description of an ARG
+in terms of common ancestor and recombination events
+(inherited from the original stochastic process definition) is
+ambiguous, fundamentally limited and an unsuitable basis for data interchange.
+We provide a simple alternative definition of an ARG in which a node
+corresponds to one of an individuals monoploid genomes, an edge
+% jk-note: this is clumsy
+defines a genetic ancestry relationship between two nodes,
+and annotations on those edges define the precise patterns of
+ancestry in intervals along the genome.
+We use this framework to define some classifications and metrics of ARG nodes,
+and discuss the properties of some recently developed inference methods.
+% jk-note: this ends a bit flat - we should say other stuff like we clarify
+% how the ARG relates the pedigree, etc, etc. Let's go through again when
+% we have a reasonable draft.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral Recombination Graphs
 
 \section*{Introduction}
+Inferring the genetic relationships between sampled genomes in the form of an
+evolutionary tree is a necessary prerequisite for many analyses of non (or
+rarely) recombining organisms [refs]. The tree captures what is known and
+knowable about the genetic ancestry of the sample in an elegant and concise
+way, by postulating a set of nodes that are ancestors common to the samples,
+and the ancestral relationships between those nodes. A rich literature exists
+on analysing the mathematical properties of these trees [cite?], and numerous
+methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
+quite different in recombining organisms, where the analysis of genetic data
+depends on summaries ultimately derived from the trees such as allele
+% TODO cite the other papers that preceded ralph2020efficiently here.
+frequencies~\citep{ralph2020efficiently}, site frequency spectra, patterns of linkage
+disequilibrium~\citep{mcvean2002genealogical} and principal
+components~\citep{mcvean2009genealogical}. Genealogical analysis is equally
+fundamental to the study of recombining organisms, but profound technical
+difficulties have made the routine inference of recombinant genealogies
+impossible, and therefore tree-based analysis methods have been largely
+unavailable to the fields of population and statistical genetics.
 
-% HYW: this is a rough first pass, aiming to be concise. We should flash out the "recombination" aspect of ARGs here a bit, I think
+Recent breakthroughs large-scale inference
+methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
+schaefer2021ancestral,wohns2021unified}
+and data representation~\citep{kelleher2016efficient}
+have raised the genuine prospect of genealogical analysis becoming a standard part
+of the population and statistical genetics toolkit.
+Applications using these inferred ancestries as input have
+begun to appear~\citep{osmond2021estimating} and many more are sure to
+follow~\citep{harris2019database}. This vibrant research area, however,
+has a significant difficulty, which, if not addressed, will substantially hamper
+progress. We currently lack a well-defined data-model and shared terminology
+to discuss recombining genealogies,
+leading to basic errors in statements about what different inference methods
+produce as output (see the XXX section below), as well as presenting serious
+difficulties in either comparing the outputs of different methods or
+(from a users perspective) using multiple inference methods in an analysis.
 
-For a long time, the Ancestral Recombination Graph (ARG) has been an object of
-fascination to those interested in theoretical evolutionary genetics, as it
-captures all knowable genetic history of a collection of individual genomes.
-Recently advances in our ability to infer ARGs has led to a resurgence of
-interest in this field. However, these have also given rise to certain
-terminological confusion, which we aim to clear up in this paper.
-
-One major source of confusion is the use of the term ``ARG" to refer to both a
-backwards-in-time generative process (Griffiths) and a structure which can be
-created by that process
-\citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
+In this paper we [turn into proper round up paragraph later]
+\begin{enumerate}
+\item Discuss the classical Ancestral Recombination Graph formulation,
+and show how it derives from (and is limited by) the coalescent with
+recombination.
+\item Suggest a definition of ARGs that is free of these limitations,
+where the formulation is derived from a diploid pedigree rather than
+the coalescent approximations and spatial annotations are attached to
+edges rather than nodes.
+\item Suggest a classification of ARG nodes that helps us to understand
+the properties of the structures inferred by different methods, and illustrate
+with some examples.
+\end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
+The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
+hudson1983testing, tajima1983evolutionary}
+provides the theoretical underpinning for much of contemporary population genetics.
+Hudson extended the coalescent to include
+recombination~\citep{hudson1983properties,hudson1990gene}
+and the model has proved to be an especially powerful basis for
+simulations~\citep{hudson2002generating,baumdicker2021efficient}.
+Hudson's algorithm is concerned with simulating the process of
+the coalescent with recombination as efficiently as possible, and operates by
+tracking segments of ancestral material carried by ancestors as
+we go backwards in time. The details of Hudson's algorithm and how the
+results of the ancestral process are represented are critical to later
+discussions, and so we will explain the process in some detail.
+See~\cite{kelleher2016efficient} for a more detailed
+description of the algorithm, and how it may be implemented efficiently.
 
-% See https://github.com/tskit-dev/what-is-an-arg-paper/discussions/13
-% for discussions on this section
+\begin{figure}
+\caption{\label{fig-sim-statespace} An illustration of the state space
+of Hudson's algorithm (A) and the big ARG (B) at a given instant. The
+state maintained by Hudson's algorithm is considerably more complicated,
+but is guaranteed to only simulate events corresponding to genetic
+ancestors of the sample.
+}
+\end{figure}
 
-The simplest prominent example of genetic ancestry generated by a stochastic process
-is the coalescent process \citep{kingman1982coalescent,kingman1982genealogy,
-hudson1983testing, tajima1983evolutionary}, which describes the random
-ancestral tree at one non-recombining locus obtained by sampling a relatively
-small number of individuals at random from a large population.
 
-In a recombining organism, the genetic ancestry of a longer segment of DNA is 
-no longer described by a single tree. Instead, ancestral relationships in a
-sample can be represented by a sequence of correlated, marginal trees along the
-genome. The Ancestral Recombination Graph (ARG) was introduced by
-Griffiths~\citep{griffiths1991two,griffiths1997ancestral} as a branching-coalescing 
-stochastic process whose realisations are graphs which into which all of the
-marginal ancestral trees are embedded. Coalescences encode common ancestry
-as they do in the coalescent, while branching events encode points at which a
-marginal tree changes from one position along the genome to the next.
-%note-jk: could nitpick this in that diamonds don't generate tree "changes" as such. Maybe tweak this on the next round of revision?
+Hudson's algorithm operates by tracking the state of a set of ancestral
+lineages as we go backwards in time.
+% jk-note unclear here about the best choice of notation. We could have
+% lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
+% of a tuple (I_j, a_j), where I is a vector of intervals. Going to
+% stick with the original tuple notation for now.
+%
+% Each lineage consists of a set of
+% equal-length vectors $\mathbf{l}$, $\mathbf{r}$ and $\mathbf{a}$
+% such that for each $1 \leq j \leq \left| l \right|$,
+% $[\mathbf{l}_j, \mathbf{r}_j)$ is a half-closed genomic interval and
+% $\mathbf{a}_j$ is an integer
+% tracking the number of samples the lineage is ancestral to over the interval.
+% Assume that the intervals are sorted from left-to-right so that $\mathbf{l}_1$
+% and $\mathbf{r}_{|\mathbf{r}|}$ are the left- and right-most positions
+% covered by the lineage, respectively.
+Each lineage consists of a list of
+disjoint ancestry segments $(\ell, r, a)$, where
+$[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
+tracking the number of samples the lineage is ancestral to over the interval.
+(We also usually track the tree node associated with each segment, but
+that is not important for our purposes here so we omit it.)
+If we have $n$ samples and genome of length $m$, the process begins with $n$ lineages
+of the form $[(0, m, 1)]$. The process then works backwards in time from
+the present day as a series of random common ancestor or recombination events.
+Recombination events occur at a rate determined by the amount and spatial
+distribution of ancestral material among lineages.
+Let $L$ be the set of ancestors at a given time $t$. Recombination events
+happen at rate $\rho \nu / (m - 1)$ where
+\[
+\nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
+    - \min_{(\ell, r, a) \in x}\ell - 1 \right)
+\]
+is the number of available `links' that may be broken. Thus, the rate of
+recombination is determined by the left- and right-most extent of the
+ancestral material carried by each lineage. At a recombination
+event we choose one of these links uniformly and break it. Given a lineage
+$x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
+$x_1$ and $x_2$ such that FILL IN DETAILS
 
-% jk-note: this isn't quite right I think, as it's muddling the distinction between a graph stochastic process 
-% definition with the graph as the encoding of the marginal trees. 
-There are several formulations of the ARG, which vary by
-the amount of extra information they capture beyond a minimal representation
-of all marginal trees. Two prominent examples are the ``big''
-ARG~\citep{ethier1990two}, which has a particularly simple specification as a
-stochastic process but is computationally infeasible, and the ``little ARG''
-traversed by Hudson's algorithm~\citep{hudson1983properties}, which
-has a more complex state space and dynamics but can be implemented with 
-a more manageable runtime and memory footprint. An efficient simulation
-implementation has become available only recently \citep{kelleher2016efficient},
-prior to which state-of-the-art simulators were based on the so-called sequentially
-Markovian coalescent (SMC) \citep{mcvean2005approximating}, which delivers
-performance gains by disallowing mergers which would result in trapped
-non-ancestral material. An alternative restricted model is
-\texttt{ClonalFrame}  \citep{didelot2007inference}, which fixes one distinguished
-tree and disallows recombination in any other marginal tree.
+When $k = |L|$ lineages are present, common ancestor events
+occur at rate $\binom{k}{2}$. In a common ancestor event two lineages
+are chosed uniformly at random and their ancestry segments merged.
+If we have overlapping intervals of ancestry from the two lineages,
+say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
+\emph{coalescence} occurs and ancestor represented by the current event
+will be present as a node (at least) in the marginal trees covering
+the interval $[\ell, r)$. The result of this coalescence is a segment
+$(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
+ancestry for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
+we have found the most recent common ancestor of all samples in
+the interval $[\ell, r)$ and so we do not need to simulate its history any further.
+Nonoverlapping intervals of ancestry from the two lineages are included
+in the resulting lineage without changes. Eventually, as the process continues,
+we find resultant lineages in which all segments have fully coalescenced,
+and so the number of extant lineages gradually dwindles down to zero.
+
+% NOTE: it would probably be helpful to have a drawing of the ARG process
+% in-progress here to help us talk about it. What is the full state
+% that is remembered as we go through the process? It does help to think
+% about the process as choosing edges to merge, not nodes.
+The Ancestral Recombination Graph (ARG) was later introduced
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
+griffiths1997ancestral}, and is a
+closely related and complementary treatment of the same process. Where
+Hudson's algorithm is focused on the efficient \emph{simulation} of the
+process, the original ARG literature is focused on mathematical
+results about the stochastic process. Griffiths and colleagues formulated the
+ARG as a branching-coalescing stochastic process. We imagine a graph in which
+each edge corresponds to an extant lineage and nodes are events in the
+process (the initial $n$ leaf nodes are ``sampling'' events). As in Hudson's
+algorithm, common ancestor events occur at rate $\binom{k}{2}$ when there
+are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
+into a common ancestor lineage. Recombination events are different
+to Hudson's algorithm, however. Rather than occuring at a rate which depends on
+the specific distribution of ancestral material among lineages, the
+rate of recombination is simply $k \rho (m - 1)$ in the original ARG
+formulation. At a recombination event we choose a lineage (edge) uniformly, and a
+breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
+node, record the breakpoint and start two new edges from this node. The process
+then continues until there is only one lineage left (the Grand Most Recent
+Common Ancestor, GMCRA), which is guaranteed to
+happen in finite time because of the linear vs quadratic rates of branching
+and coalescing. The graph structure and breakpoints associated with with
+recombination nodes provides sufficient information to later recover the marginal
+trees (see the next section for more details and discussion on this point).
+
+The state-space of the ARG is much simpler than Hudson's algorithm, which
+greatly facilitates mathematical reasoning. This simplicity comes at a
+substantial cost, however, if we wish to use it as a practical means of
+simulating recombinant ancestry. The ARG is vast, and any realisation
+for even moderate levels of recombination is far too large to be of practical
+use. The number of events in the ARG back to the GMRCA
+is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
+of events required to simulate the complete ancestry of a sample
+in Hudson's algorithm is
+$O(\rho^2)$~\citep[Eq.~5.10]{hein2004gene,baumdicker2021efficient}.
+This disparity in the number of events in the two formulations is
+because the vast majority of the events that occur in the ARG do
+not affect the genetic ancestry of the sample in any way. Recombination
+events occur outside of ancestral material do not have any bearing
+on the ancestry of the sample, and so the structure is hugely redundant.
+
+This original formulation which does not keep track of the distribution
+of ancestral material among lineages is the so-called ``Big'' ARG.
+The ``little'' ARG is the subset of the Big ARG traversed by
+Hudson's algorithm (\citet{wiuf1999recombination} refer to this as HUD).
+[Review of other work done on the ARG stochastic process here.
+Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
+clarified the relationship between Hudson's algorithm and the ARG]
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
 conversion~\citep{wiuf2000coalescent} and
 horizontal gene transfer~\citep{baumdicker2014infinitely}.
+[Mention the
+SMC~\citep{mcvean2005approximating,marjoram2006fast}
+and ClonalFrame~\citep{didelot2007inference} approximations somewhere.]
 
-The idea of using branching-coalescing stochastic processes 
+The idea of using branching-coalescing stochastic processes
 to model genetic ancestral trees has also found application in natural selection.
 The Ancestral Selection Graph (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
 uses dynamics identical to the ``big" ARG to simulate an ensemble of correlated
-potential ancestral trees. Weak genic selection is incorporated by sampling a 
+potential ancestral trees. Weak genic selection is incorporated by sampling a
 true ancestry from the ensemble in a non-uniform way.
 There is no ASG analogue of the more computationally tractable ``little" ARG,
-though some gains in tractability can be made by considering typed 
+though some gains in tractability can be made by considering typed
 lineages~\citep{etheridge2009coalescent} or by leveraging perfect simulation
 techniques when recurrent mutation is present\citep{fearnhead2001perfect}.
-Extensions of the ASG have been developed to frequency-dependent 
+Extensions of the ASG have been developed to frequency-dependent
 selection~\citep{neuhauser1999ancestral, gonzalezcasanova2018duality},
 unlinked chromosomes~\citep{fearnhead2003ancestral}, recombining
 loci whereupon branching is due to both selection and
-recombination~\citep{donnelly1999genealogical}, and high fecundity 
+recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
-In the theoretical literature, ancestral graphs such as the ARG refer to the
-ancestral \emph{process} rather than the outcome of a process.
 
-\section*{The ARG as a structure}
+\begin{figure}
+\centering
+\begin{tikzpicture}[xscale=0.8, yscale=0.3, node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] {};
+\node (s1) [right=of s0,greynode] {};
+\node (s2) [right=of s1,greynode] {};
+\node [greynode] (s3) at ($(s1) + (0,1)$) {};
+\node [greynode] (s4) at ($0.5*(s1) + 0.5*(s2) + (0,2)$) {};
+\node [greynode] (s5) at ($0.5*(s0) + 0.5*(s1) + (0,3)$) {};
+\node [greynode] (s6) at ($(s1) + (0,5)$) {};
+
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x = 0.3$};
+\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/3, s6/6} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) -- (s3);
+\foreach \child/\parent in {s6/s5, s6/s4, s5/s0, s4/s2}
+	\draw (\child) -| (\parent);
+
+\draw (s5) -| ($0.5*(s3) + 0.5*(s3-|s5)$) |- (s3);
+\draw (s4) -| ($0.5*(s3) + 0.5*(s3-|s4)$) |- (s3);
+
+\end{tikzpicture}
+\caption{\label{fig-arg} \textcolor{red}{A picture of a standard ARG for us
+to work with for now. We should replace it with something better at some
+point.}
+ }
+\end{figure}
+
+
+\section*{The ARG as a data structure}
+
+The first method to explicitly produce an ARG as output is SHRUB developed
+by \citet{song2005efficient}.
+
+[WIP jk]
 
 \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
 
@@ -260,17 +451,19 @@ ARGs consistent with a given set of
 sequences \citep{hein1990reconstructing, lyngso2005minimum}.
 However, identifying the most parsimonious ARG for a given sequence data set
 is NP-hard \citep{wang2001perfect}, and subsequent methods have resorted to
-various heuristics \citep{fallon2013acg, hein1993heuristic, ignatieva2021kwarg, 
+various heuristics \citep{fallon2013acg, hein1993heuristic, ignatieva2021kwarg,
 kelleher2019inferring, minichiello2006mapping, mirzaei2017rent,
-parida2008estimating, song2005efficient, thao2019hybrid, zhang2021biobank}. 
+parida2008estimating, song2005efficient, thao2019hybrid, zhang2021biobank}.
 The scalability of these methods varies substantially based on the heuristic in use
 and the underlying data structure, but the most efficient methods can be practically
 used on megabase scale data and tens of thousands of samples under human-like
 parameters \citep{kelleher2019inferring, zhang2021biobank}.
 
+\citep{camara2016inference} is another type of parsimony method.
+
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
-by Monte Carlo methods, based either on importance sampling 
-\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference} 
+by Monte Carlo methods, based either on importance sampling
+\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
 or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian}.
 These methods invariably operated on a representation of the ``little ARG", typically
 generated until the grand MRCA. They are extremely computationally expensive,
@@ -287,7 +480,7 @@ medinaaguayo2020speeding} uses the \texttt{ClonalFrame}
 model and data structure, though it is not as scalable as \texttt{ARGWeaver}.
 
 A very recent MCMC method called \texttt{ARGInfer} has resulted in the first
-improvement in the scalability of Monte Carlo methods for the exact ARG model 
+improvement in the scalability of Monte Carlo methods for the exact ARG model
 by making use of the tree sequence representation of marginal trees, suitably enriched
 to facilitate the computations needed for MCMC sampling \citep{mahmoudi2021inference}.
 While not competitive with the scalability of \texttt{ARGWeaver}, \texttt{ARGInfer} extends
@@ -302,6 +495,25 @@ ARGs inferred by different methods from a small dataset. Notes about these
 ARGs.
 }
 \end{figure}
+
+\section*{Discussion}
+
+Discussion points (may or may not be used, certainly would be heavily revised)
+
+\begin{itemize}
+\item Terminology based around an inferred ancestry being a ``true''
+ARG is impoverished and misleading. The only reasonable interpretation
+of a ARG being true or not is whether it's a sample from the coalescent.
+Most inference methods (and all that scale well) do not. In any case,
+the coalescent is just one model, and a highly idealised one. It is
+exceedingly unlikely that the actual ARG describing the ancestry
+of any biological population is ``true'' ARG in this sense. The terminology is
+impoverished because it reduces the possibilities available
+to something either being an ARG or not, whereas there are many different
+interesting properties of these structures that we should be able to
+discuss and compare.
+\item tskit can represent any ARG.
+\end{itemize}
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
