@@ -66,7 +66,7 @@ and discuss the properties of some recently developed inference methods.
 \section*{Introduction}
 Inferring the genetic relationships between sampled genomes in the form of an
 evolutionary tree is a necessary prerequisite for many analyses of non (or
-rarely) recombining organisms [refs]. The trees capture what is known and
+rarely) recombining organisms [refs]. The tree captures what is known and
 knowable about the genetic ancestry of the sample in an elegant and concise
 way, by postulating a set of nodes that are ancestors common to the samples,
 and the ancestral relationships between those nodes. A rich literature exists
@@ -114,15 +114,14 @@ the properties of the structures inferred by different methods, and illustrate
 with some examples.
 \end{enumerate}
 
-\section*{Ancestral recombination graphs}
+\section*{Ancestral graphs and stochastic processes}
 The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
 hudson1983testing, tajima1983evolutionary}
 provides the theoretical underpinning for much of contemporary population genetics.
 Hudson extended the coalescent to include
 recombination~\citep{hudson1983properties,hudson1990gene}
-and the model has proved to be especially powerful basis for
-simulations~\citep{hudson2002generating,kelleher2016efficient,kelleher2020coalescent,
-baumdicker2021efficient}.
+and the model has proved to be an especially powerful basis for
+simulations~\citep{hudson2002generating,baumdicker2021efficient}.
 Hudson's algorithm is concerned with simulating the process of
 the coalescent with recombination as efficiently as possible, and operates by
 tracking segments of ancestral material carried by ancestors as
@@ -132,33 +131,58 @@ discussions, and so we will explain the process in some detail.
 See~\cite{kelleher2016efficient} for a more detailed
 description of the algorithm, and how it may be implemented efficiently.
 
+\begin{figure}
+\caption{\label{fig-sim-statespace} An illustration of the state space
+of Hudson's algorithm (A) and the big ARG (B) at a given instant. The
+state maintained by Hudson's algorithm is considerably more complicated,
+but is guaranteed to only simulate events corresponding to genetic
+ancestors of the sample.
+}
+\end{figure}
+
+
 Hudson's algorithm operates by tracking the state of a set of ancestral
-lineages as we go backwards in time. Each lineage consists of a list of
+lineages as we go backwards in time.
+% jk-note unclear here about the best choice of notation. We could have
+% lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
+% of a tuple (I_j, a_j), where I is a vector of intervals. Going to
+% stick with the original tuple notation for now.
+%
+% Each lineage consists of a set of
+% equal-length vectors $\mathbf{l}$, $\mathbf{r}$ and $\mathbf{a}$
+% such that for each $1 \leq j \leq \left| l \right|$,
+% $[\mathbf{l}_j, \mathbf{r}_j)$ is a half-closed genomic interval and
+% $\mathbf{a}_j$ is an integer
+% tracking the number of samples the lineage is ancestral to over the interval.
+% Assume that the intervals are sorted from left-to-right so that $\mathbf{l}_1$
+% and $\mathbf{r}_{|\mathbf{r}|}$ are the left- and right-most positions
+% covered by the lineage, respectively.
+Each lineage consists of a list of
 disjoint ancestry segments $(\ell, r, a)$, where
 $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
 tracking the number of samples the lineage is ancestral to over the interval.
 (We also usually track the tree node associated with each segment, but
 that is not important for our purposes here so we omit it.)
-If we have $n$ samples and genome of length $L$, the process begins with $n$ lineages
-of the form $[(0, L, 1)]$. The process then works backwards in time from
+If we have $n$ samples and genome of length $m$, the process begins with $n$ lineages
+of the form $[(0, m, 1)]$. The process then works backwards in time from
 the present day as a series of random common ancestor or recombination events.
 Recombination events occur at a rate determined by the amount and spatial
 distribution of ancestral material among lineages.
-Let $A$ be the set of ancestors at a given time $t$. Recombination events
-happen at rate $\rho \nu / (L - 1)$ where
+Let $L$ be the set of ancestors at a given time $t$. Recombination events
+happen at rate $\rho \nu / (m - 1)$ where
 \[
-\nu = \sum_{x \in A}\left( \max_{(\ell, r, a) \in x}r
+\nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
     - \min_{(\ell, r, a) \in x}\ell - 1 \right)
 \]
 is the number of available `links' that may be broken. Thus, the rate of
-recombination is determined by the left and right-most extent of the
+recombination is determined by the left- and right-most extent of the
 ancestral material carried by each lineage. At a recombination
 event we choose one of these links uniformly and break it. Given a lineage
 $x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
 $x_1$ and $x_2$ such that FILL IN DETAILS
 
-When $k = |A|$ lineages are present, common ancestor events
-occur at rate $k(k - 1) / 2$. In a common ancestor event two lineages
+When $k = |L|$ lineages are present, common ancestor events
+occur at rate $\binom{k}{2}$. In a common ancestor event two lineages
 are chosed uniformly at random and their ancestry segments merged.
 If we have overlapping intervals of ancestry from the two lineages,
 say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
@@ -166,7 +190,7 @@ say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
 will be present as a node (at least) in the marginal trees covering
 the interval $[\ell, r)$. The result of this coalescence is a segment
 $(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
-ancesty for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
+ancestry for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
 we have found the most recent common ancestor of all samples in
 the interval $[\ell, r)$ and so we do not need to simulate its history any further.
 Nonoverlapping intervals of ancestry from the two lineages are included
@@ -174,71 +198,67 @@ in the resulting lineage without changes. Eventually, as the process continues,
 we find resultant lineages in which all segments have fully coalescenced,
 and so the number of extant lineages gradually dwindles down to zero.
 
+% NOTE: it would probably be helpful to have a drawing of the ARG process
+% in-progress here to help us talk about it. What is the full state
+% that is remembered as we go through the process? It does help to think
+% about the process as choosing edges to merge, not nodes.
 The Ancestral Recombination Graph (ARG) was later introduced
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1997ancestral}, and is a
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
+griffiths1997ancestral}, and is a
 closely related and complementary treatment of the same process. Where
 Hudson's algorithm is focused on the efficient \emph{simulation} of the
 process, the original ARG literature is focused on mathematical
 results about the stochastic process. Griffiths and colleagues formulated the
-ARG as a branching-coalescing stochastic process
+ARG as a branching-coalescing stochastic process. We imagine a graph in which
+each edge corresponds to an extant lineage and nodes are events in the
+process (the initial $n$ leaf nodes are ``sampling'' events). As in Hudson's
+algorithm, common ancestor events occur at rate $\binom{k}{2}$ when there
+are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
+into a common ancestor lineage. Recombination events are different
+to Hudson's algorithm, however. Rather than occuring at a rate which depends on
+the specific distribution of ancestral material among lineages, the
+rate of recombination is simply $k \rho (m - 1)$ in the original ARG
+formulation. At a recombination event we choose a lineage (edge) uniformly, and a
+breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
+node, record the breakpoint and start two new edges from this node. The process
+then continues until there is only one lineage left (the Grand Most Recent
+Common Ancestor, GMCRA), which is guaranteed to
+happen in finite time because of the linear vs quadratic rates of branching
+and coalescing. The graph structure and breakpoints associated with with
+recombination nodes provides sufficient information to later recover the marginal
+trees (see the next section for more details and discussion on this point).
 
-NOTES for continuing:
+The state-space of the ARG is much simpler than Hudson's algorithm, which
+greatly facilitates mathematical reasoning. This simplicity comes at a
+substantial cost, however, if we wish to use it as a practical means of
+simulating recombinant ancestry. The ARG is vast, and any realisation
+for even moderate levels of recombination is far too large to be of practical
+use. The number of events in the ARG back to the GMRCA
+is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
+of events required to simulate the complete ancestry of a sample
+in Hudson's algorithm is
+$O(\rho^2)$~\citep[Eq.~5.10]{hein2004gene,baumdicker2021efficient}.
+This disparity in the number of events in the two formulations is
+because the vast majority of the events that occur in the ARG do
+not affect the genetic ancestry of the sample in any way. Recombination
+events occur outside of ancestral material do not have any bearing
+on the ancestry of the sample, and so the structure is hugely redundant.
 
-\begin{itemize}
-\item The ARG process does not track ancestral material. Recombination events
-occur at rate $k \rho / 2$, and we don't complete until there's only one
-lineage left. That means the process continues for an exponentially long time.
-\item Discuss the way in which the re events work.
-\item Discuss the rules for pulling out the trees. This is equivalent to doing
-the interval logic above in Hudson's algorithm.
-\end{itemize}
-
-\section*{Ancestral graphs and stochastic processes}
-
-% See https://github.com/tskit-dev/what-is-an-arg-paper/discussions/13
-% for discussions on this section
-
-The simplest prominent example of genetic ancestry generated by a stochastic process
-is the coalescent process \citep{kingman1982coalescent,kingman1982genealogy,
-hudson1983testing, tajima1983evolutionary}, which describes the random
-ancestral tree at one non-recombining locus obtained by sampling a relatively
-small number of individuals at random from a large population.
-
-In a recombining organism, the genetic ancestry of a longer segment of DNA is
-no longer described by a single tree. Instead, ancestral relationships in a
-sample can be represented by a sequence of correlated, marginal trees along the
-genome. The Ancestral Recombination Graph (ARG) was introduced by
-Griffiths~\citep{griffiths1991two,griffiths1997ancestral} as a branching-coalescing
-stochastic process whose realisations are graphs which into which all of the
-marginal ancestral trees are embedded. Coalescences encode common ancestry
-as they do in the coalescent, while branching events encode points at which a
-marginal tree changes from one position along the genome to the next.
-% jk-note: could nitpick this in that diamonds don't generate tree
-% "changes" as such. Maybe tweak this on the next round of revision?
-
-% jk-note: this isn't quite right I think, as it's muddling the
-% distinction between a graph stochastic process
-% definition with the graph as the encoding of the marginal trees.
-There are several formulations of the ARG, which vary by
-the amount of extra information they capture beyond a minimal representation
-of all marginal trees. Two prominent examples are the ``big''
-ARG~\citep{ethier1990two}, which has a particularly simple specification as a
-stochastic process but is computationally infeasible, and the ``little ARG''
-traversed by Hudson's algorithm~\citep{hudson1983properties}, which
-has a more complex state space and dynamics but can be implemented with
-a more manageable runtime and memory footprint. An efficient simulation
-implementation has become available only recently \citep{kelleher2016efficient},
-prior to which state-of-the-art simulators were based on the so-called sequentially
-Markovian coalescent (SMC) \citep{mcvean2005approximating}, which delivers
-performance gains by disallowing mergers which would result in trapped
-non-ancestral material. An alternative restricted model is
-\texttt{ClonalFrame}  \citep{didelot2007inference}, which fixes one distinguished
-tree and disallows recombination in any other marginal tree.
+This original formulation which does not keep track of the distribution
+of ancestral material among lineages is the so-called ``Big'' ARG.
+The ``little'' ARG is the subset of the Big ARG traversed by
+Hudson's algorithm (\citet{wiuf1999recombination} refer to this as HUD).
+[Review of other work done on the ARG stochastic process here.
+Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
+clarified the relationship between Hudson's algorithm and the ARG]
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
 conversion~\citep{wiuf2000coalescent} and
 horizontal gene transfer~\citep{baumdicker2014infinitely}.
+[Mention the
+SMC~\citep{mcvean2005approximating,marjoram2006fast}
+and ClonalFrame~\citep{didelot2007inference} approximations somewhere.]
 
 The idea of using branching-coalescing stochastic processes
 to model genetic ancestral trees has also found application in natural selection.
@@ -294,8 +314,12 @@ point.}
 \end{figure}
 
 
+\section*{The ARG as a data structure}
 
-\section*{The ARG as a structure}
+The first method to explicitly produce an ARG as output is SHRUB developed
+by \citet{song2005efficient}.
+
+[WIP jk]
 
 \citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
 
@@ -434,6 +458,8 @@ The scalability of these methods varies substantially based on the heuristic in 
 and the underlying data structure, but the most efficient methods can be practically
 used on megabase scale data and tens of thousands of samples under human-like
 parameters \citep{kelleher2019inferring, zhang2021biobank}.
+
+\citep{camara2016inference} is another type of parsimony method.
 
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
