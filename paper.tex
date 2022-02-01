@@ -83,7 +83,7 @@ difficulties have made the routine inference of recombinant genealogies
 impossible, and therefore tree-based analysis methods have been largely
 unavailable to the fields of population and statistical genetics.
 
-Recent breakthroughs large-scale inference
+Recent breakthroughs in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
 schaefer2021ancestral,wohns2021unified}
 and data representation~\citep{kelleher2016efficient}
@@ -202,8 +202,7 @@ and so the number of extant lineages gradually dwindles down to zero.
 % in-progress here to help us talk about it. What is the full state
 % that is remembered as we go through the process? It does help to think
 % about the process as choosing edges to merge, not nodes.
-The Ancestral Recombination Graph (ARG) was later introduced
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
+The Ancestral Recombination Graph (ARG) was later introduced by Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
 griffiths1997ancestral}, and is a
 closely related and complementary treatment of the same process. Where
 Hudson's algorithm is focused on the efficient \emph{simulation} of the
@@ -318,6 +317,7 @@ point.}
 
 The first method to explicitly produce an ARG as output is SHRUB developed
 by \citet{song2005efficient}.
+% AI: I think \citep{song2003parsimonious} came before.
 
 [WIP jk]
 
@@ -439,32 +439,77 @@ plotted by ranked time rather than true time on the y-axis.
 }
 \end{figure}
 
+\section*{Relationship with other types of phylogenetic networks}
+
+The term \emph{phylogenetic network} has been broadly accepted to describe the most general 
+type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to 
+represent evolutionary relationships (either abstractly or explicitly) between a set of taxa 
+that labels some of its nodes" (although more narrow and context-dependent definitions can also 
+be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
+with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed 
+as either reticulation nodes (with in-degree $\geq 2$) or tree nodes. 
+
+Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
+reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to 
+model the evolution of viruses, reticulation nodes correspond to exchange of 
+(non-recombining) genomic segments between viral particles inside a co-infected host. 
+In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
+different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes 
+correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations). 
+The ARG is a subtype of a recombination network under this definition (restricting to one crossover 
+recombination per reticulation node).
+% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
+% conversion (seems implied above)?
+
+Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology. 
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree 
+one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
+In \emph{tree-child networks}, every internal node must have at least one child that is a tree node; 
+\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a 
+tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on 
+the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node). 
+A reticulation loop that does not share any node with another reticulation loop is termed a gall 
+\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is 
+called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network 
+by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number 
+of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks, 
+and the tractability afforded by their relatively simple structure results in a number of attractive 
+combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of 
+an ARG, without applying any of these restrictions.
+% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
+% Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
 
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we review methods developed
-to infer ARGs. We focus our attention on some recent methods and discuss the
+to \emph{infer} ARGs from sequencing data. We focus our attention on some recent methods and discuss the
 properties of the ARGs inferred.
 
-The ARG has been used as a model for recombining DNA sequence data essentially
-since it was first formulated. Early methods focused on finding parsimonious
-ARGs consistent with a given set of
-sequences \citep{hein1990reconstructing, lyngso2005minimum}.
-However, identifying the most parsimonious ARG for a given sequence data set
-is NP-hard \citep{wang2001perfect}, and subsequent methods have resorted to
-various heuristics \citep{fallon2013acg, hein1993heuristic, ignatieva2021kwarg,
-kelleher2019inferring, minichiello2006mapping, mirzaei2017rent,
-parida2008estimating, song2005efficient, thao2019hybrid, zhang2021biobank}.
+The problem of reconstructing ARGs for samples of recombining sequences has been of significant interest
+essentially since the ARG was first defined. Early methods focussed on finding the most 
+\emph{parsimonious} ARGs, i.e.\ those minimising the number of 
+posited recombination events in the history of the sample \citep{hein1990reconstructing, song2003parsimonious,
+lyngso2005minimum}. However, reconstructing a most parsimonious ARG for a given data set
+is NP-hard \citep{wang2001perfect}, and in order to allow for larger input datasets,
+subsequent parsimony-based methods have resorted to various relaxations and heuristics \citep{hein1993heuristic, 
+song2005efficient, wu2008association, camara2016inference, thao2019hybrid, ignatieva2021kwarg}.
 The scalability of these methods varies substantially based on the heuristic in use
-and the underlying data structure, but the most efficient methods can be practically
-used on megabase scale data and tens of thousands of samples under human-like
-parameters \citep{kelleher2019inferring, zhang2021biobank}.
-
-\citep{camara2016inference} is another type of parsimony method.
+and the underlying data structure, with the most efficient tools limited to analysing hundreds of sequences.
+A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing
+the most parsimonious ARGs, but rather aim for computational efficiency
+while seeking to achieve good accuracy of the inferred genealogies
+\citep{minichiello2006mapping, parida2008estimating, wu2011new, mirzaei2017rent}; some of these methods \citep{kelleher2019inferring, speidel2019method, zhang2021biobank} can be practically
+used on megabase scale data and tens to hundreds of thousands of samples under human-like
+parameters.
+% AI: just to note, these papers do not all agree in their definition of an ARG. 
+% I guess this is one of the points of the present paper, but should we mention this fact?
+% Should we also mention that most of these infer just the topology, but some also the times?
+% How much more description of the parsimony methods would be good? Maybe a mention of them splitting into 
+% "back in time" and "across local trees" types?
 
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
-or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian}.
+or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg}.
 These methods invariably operated on a representation of the ``little ARG", typically
 generated until the grand MRCA. They are extremely computationally expensive,
 and applicable to at most hundreds of samples consisting of tens of kilobases with
