@@ -2,6 +2,7 @@ __pycache__
 .DS_Store
 notebooks/.ipynb_checkpoints
 illustrations/*.pdf
+references
 *.aux
 *.log
 *.blg
