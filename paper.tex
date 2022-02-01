@@ -458,8 +458,12 @@ different species combining to create a hybrid. In \emph{recombination} networks
 correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations). 
 The ARG is a subtype of a recombination network under this definition (restricting to one crossover 
 recombination per reticulation node).
+% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
+% conversion (seems implied above)?
 
 Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology. 
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree 
+one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
 In \emph{tree-child networks}, every internal node must have at least one child that is a tree node; 
 \emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a 
 tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on 
@@ -472,8 +476,8 @@ of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled tre
 and the tractability afforded by their relatively simple structure results in a number of attractive 
 combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of 
 an ARG, without applying any of these restrictions.
-
-% AI: have not mentioned any un-rooted networks (split, median, haplotype, reticulograms, etc).
+% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
+% Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
 
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we review methods developed
@@ -499,6 +503,8 @@ parameters.
 % AI: just to note, these papers do not all agree in their definition of an ARG. 
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
+% How much more description of the parsimony methods would be good? Maybe a mention of them splitting into 
+% "back in time" and "across local trees" types?
 
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
