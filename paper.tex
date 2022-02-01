@@ -242,6 +242,17 @@ because the vast majority of the events that occur in the ARG do
 not affect the genetic ancestry of the sample in any way. Recombination
 events occur outside of ancestral material do not have any bearing
 on the ancestry of the sample, and so the structure is hugely redundant.
+As~\cite{wiuf1999recombination} note,
+``an `ancestral' sequence in the birth and death process
+need not have any genetic material in common with a
+sequence descended from it.''
+
+% Full quote:
+% This process simplifies mathematics on the account that the notion of an
+% ancestor will have a less restrictive meaning than usual:
+% An ``ancestral'' sequence in the birth and death process
+% need not have any genetic material in common with a
+% sequence descended from it.
 
 This original formulation which does not keep track of the distribution
 of ancestral material among lineages is the so-called ``Big'' ARG.
@@ -326,7 +337,7 @@ the more tractable---but still
 NP-hard~\citep{wang2001perfect}---problem of computing
 the miniumum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
-ARG realisations~\citep{song2005efficient,lyngso2005minimum}.
+ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
 The distinction between the ARG as a stochastic process
 and the ARG as a data structure became less clear at this point,
 with \citet{minichiello2006mapping} explicitly arguing for
@@ -358,9 +369,6 @@ annotations to the edges.
 $O(n T)$ time (or more?)
 \end{enumerate}
 
-The first method to explicitly produce an ARG as output is SHRUB developed
-by \citet{song2005efficient}.
-% AI: I think \citep{song2003parsimonious} came before.
 
 [WIP jk]
 
@@ -372,7 +380,7 @@ right parent. [Illustrate the problem with simulating an ARG
 like this]. ~\cite{ignatieva2021kwarg} resolve this problem by
 associating a label ``P'' (prefix) or ``S'' (suffix) with the
 outbound edges of a recombination event. This is the same approach
-as used in beagle.
+as used in beagle~\citep{lyngso2005minimum}.
 
 \section*{Anchoring the ARG to the pedigree}
 
