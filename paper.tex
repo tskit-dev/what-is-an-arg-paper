@@ -312,8 +312,51 @@ point.}
  }
 \end{figure}
 
-
 \section*{The ARG as a data structure}
+Early work on ARG inference focused on the problem of
+of inferring parameters of the
+stochastic process, where the ancestry is regarded as a
+latent parameter to be averaged out
+\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
+fearnhead2001estimating}. These methods met with limited success
+due to the overwhelmingly large and
+horribly structured [Jere: what's the right way to say this?]
+state space of ARGs. The focus subsequently shifted to
+the more tractable---but still
+NP-hard~\citep{wang2001perfect}---problem of computing
+the miniumum number of recombinations required
+to explain an input dataset [CITATIONS], and inferring the corresponding
+ARG realisations~\citep{song2005efficient,lyngso2005minimum}.
+The distinction between the ARG as a stochastic process
+and the ARG as a data structure became less clear at this point,
+with \citet{minichiello2006mapping} explicitly arguing for
+the data structure interpretation.
+
+The Griffiths ARG encoding is an elegant and mathematically
+economical description of the coalescent with recombination, but
+it has significant drawbacks as the basis for a general purpose
+storage format.
+
+[Not sure how to make a narrative out of this, but here are the
+basic problems:]
+\begin{enumerate}
+\item The encoding is hamstrung by the interpretation of
+nodes as \emph{events} of a particular type. We can either
+have common ancestor or recombination events. This is true
+in the coalescent, but is not in a more general Wright-Fisher
+model.
+\item We can also only have one crossover per recombination event.
+This is unrealistic because things like gene conversion are common,
+and means we can't have back and forth recombination between
+two parents.
+\item The passage of ancestral material along edges requires
+extrinsic rules which must be shared by all implementations.
+These rules can be quite restrictive when generating, and
+in practise some have found it simpler to add explicit
+annotations to the edges.
+\item Generating local trees is inefficient, essentially requiring
+$O(n T)$ time (or more?)
+\end{enumerate}
 
 The first method to explicitly produce an ARG as output is SHRUB developed
 by \citet{song2005efficient}.
@@ -321,7 +364,32 @@ by \citet{song2005efficient}.
 
 [WIP jk]
 
-\citep[e.g.][]{minichiello2006mapping,mathieson2020ancestry}.
+This ambiguity can be dealt with in a number of ways. In the original
+treatments, the direction in which ancestral material travels at
+a breakpoint is handled by a simple rule, sites to the left of the
+breakpoint go to the left parent and sites to right go to the
+right parent. [Illustrate the problem with simulating an ARG
+like this]. ~\cite{ignatieva2021kwarg} resolve this problem by
+associating a label ``P'' (prefix) or ``S'' (suffix) with the
+outbound edges of a recombination event. This is the same approach
+as used in beagle.
+
+\section*{Anchoring the ARG to the pedigree}
+
+The limitations of the Griffiths ARG encoding directly stem from its
+rooting in the coalescent with recombination stochastic process.
+Indeed, these limitations arise because it is such a \emph{good}
+mathematical encoding, providing sufficient information to
+define the realised ancestry under the assumptions of the model,
+and no more.
+
+We describe here an alternative formulation in which the
+concepts are based on the diploid pedigree, which
+is free from the limitations discussed in the previous section.
+\cite{mathieson2020ancestry} and others [CITE] have also
+suggested this approach, although without explicitly defining
+the roles of nodes and the details of how ancestry
+flows along edges.
 
 \begin{figure}
 \vspace{5em}
@@ -334,40 +402,24 @@ that affect our sample, so that, for example, individuals that are ancestral
 to only one sampled genome are not included.}
 \end{figure}
 
+[Here are the basic components of the model]
 
-% HYW: this is a rough first pass. We should take care not to assume that the tree sequence
-% approach is the only encoding
-
-The other use of the the term ARG, and the one for which we suggest the term be
-reserved, is to describe the *structure* resulting from the genetic process of
-inheritance. This structure, like any other graph, consists of *nodes*
-connected by *edges*. In the context of genetics, the nodes represent (haploid)
-genomes, and the edges represent paths of inheritance. Although for theoretical
-purposes a graph like this can be created by backwards-in-time simulations
-using the CwR, in reality it is created forwards-in-time, as a population
-evolves.
-
-Since genetic inheritance is unidirectional, the edges in this graph structure
-are *directed*, with a "parent" and "child" node. Moreover, there is a strict
-temporal order, so that children cannot be their own parents: in other words,
-there are no cycles in the graph, and it is technically a form of "directed
-acyclic graph" (DAG).
-
-% HYW: NB: worded carefully below, as it should also be possible to encode ARGs even if there is not a single fixed coordinate system
-
-There is one key feature which distinguishes an ARG for other graphs. Although
-a genome (graph node) may have more than one parent, the particulate nature of
-genetic inheritance means that each letter in the genome can only come from a
-*single* parent. Hence if we compare the equivalent letters from multiple
-extant genomes, their paths of inheritance must form a *tree* (which,
-incidentally, is why phylogenetics plays such an important role in evolutionary
-theory). As we shall argue, the ability to generate these "local trees" from an
-ARG is of key importance.
-
-When describing an ARG, the primary issue, from a practical point of view, is
-how to annotate the graph with the details of which piece of genome has come
-from which parent. There are two possibilities: the annotations can be
-associated either with the nodes, or with the edges.
+\begin{enumerate}
+\item A node corresponds to one of a diploid individual's two genomes.
+This is linked explicitly to the pedigree, and is fully general.
+Nodes \emph{may} be labelled with certain flags describing their properties,
+but it's not necessary.
+\item An edge between two nodes defines a genetic inheritance relationship
+between two nodes. Edges are annotated with information about the
+passage of ancestral materal. There are different forms these annotations
+can take. For example, we can follow the approach taken in the Griffiths
+ARG and just annotate recombinant edges with the interval $[0, x)$ or $[x, L)$,
+depending on side of the breakpoint the edge is on. In the most
+general case, we annotate each edge with the full set of disjoint
+intervals of ancestral material that flows along that edge.
+\citep{mcgill2013graphml} also proposed full ancestral material being
+associated with each edge.
+\end{enumerate}
 
 \begin{figure}
 \vspace{5em}
@@ -382,40 +434,6 @@ annotate the \emph{edges} with the genomic intervals carrying ancestral
 material. Edge annotations are somewhat more general, and have
 significant computational advantages.}
 \end{figure}
-
-\subsection*{Node annotated recombination}
-
-In the original (Griffiths) formulation, nodes which have multiple parents are
-annotated with a breakpoint, representing a genomic position. The genome
-lying to the left of that position is then taken to come from one parent, while
-the genome lying to the right is taken to come from the other parent. This is
-an elegantly concise encoding of the parental source, and is used, for example
-in the ARGweaver .arg format. However, it suffers from three principal
-drawbacks:
-
-
-1. It assumes only a single breakpoint per node: problematic for representing
-e.g. gene conversion or multiple chromosomes (but this could be circumvented by
-having multiple breakpoints)
-2. Nodes can only have a maximum of 2 parents. At
-first sight, this seems a reasonable limitation, but it turns out that it can
-be helpful to collapse multiple nodes into one, which potentially results in
-more than two parents for any given node (see section XXXX)
-3. Generating local
-trees from such an encoding is time consuming (XXX describe *how* time
-consuming - i,e. scaling properties with number of nodes - and why this is,
-theoretically)
-
-\subsection*{Edge annotated recombination}
-
-An alternative approach to annotating nodes with the parent of origin of each
-section of genome is to annotate each edge with the genomic region which is
-inherited via that route. This approach was first introduced by Kelleher et al
-(cite msprime paper) and now forms the basis of a comprehensive software
-library.
-
-% HYW: should discuss the link to biology & mitosis/meiosis: a "node" is
-% strictly a cell - it is shorthand to associate it with an "individual"
 
 \begin{figure}
 \centering
@@ -441,40 +459,40 @@ plotted by ranked time rather than true time on the y-axis.
 
 \section*{Relationship with other types of phylogenetic networks}
 
-The term \emph{phylogenetic network} has been broadly accepted to describe the most general 
-type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to 
-represent evolutionary relationships (either abstractly or explicitly) between a set of taxa 
-that labels some of its nodes" (although more narrow and context-dependent definitions can also 
+The term \emph{phylogenetic network} has been broadly accepted to describe the most general
+type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
+represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
+that labels some of its nodes" (although more narrow and context-dependent definitions can also
 be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
-with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed 
-as either reticulation nodes (with in-degree $\geq 2$) or tree nodes. 
+with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
+as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
 
 Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
-reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to 
-model the evolution of viruses, reticulation nodes correspond to exchange of 
-(non-recombining) genomic segments between viral particles inside a co-infected host. 
+reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
+model the evolution of viruses, reticulation nodes correspond to exchange of
+(non-recombining) genomic segments between viral particles inside a co-infected host.
 In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
-different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes 
-correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations). 
-The ARG is a subtype of a recombination network under this definition (restricting to one crossover 
+different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
+correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
+The ARG is a subtype of a recombination network under this definition (restricting to one crossover
 recombination per reticulation node).
 % AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
 % conversion (seems implied above)?
 
-Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology. 
-In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree 
+Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
 one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
-In \emph{tree-child networks}, every internal node must have at least one child that is a tree node; 
-\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a 
-tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on 
-the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node). 
-A reticulation loop that does not share any node with another reticulation loop is termed a gall 
-\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is 
-called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network 
-by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number 
-of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks, 
-and the tractability afforded by their relatively simple structure results in a number of attractive 
-combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of 
+In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
+\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
+tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
+the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
+A reticulation loop that does not share any node with another reticulation loop is termed a gall
+\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
+called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
+by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
+of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
+and the tractability afforded by their relatively simple structure results in a number of attractive
+combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
 an ARG, without applying any of these restrictions.
 % AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
 % Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
@@ -485,12 +503,12 @@ to \emph{infer} ARGs from sequencing data. We focus our attention on some recent
 properties of the ARGs inferred.
 
 The problem of reconstructing ARGs for samples of recombining sequences has been of significant interest
-essentially since the ARG was first defined. Early methods focussed on finding the most 
-\emph{parsimonious} ARGs, i.e.\ those minimising the number of 
+essentially since the ARG was first defined. Early methods focussed on finding the most
+\emph{parsimonious} ARGs, i.e.\ those minimising the number of
 posited recombination events in the history of the sample \citep{hein1990reconstructing, song2003parsimonious,
 lyngso2005minimum}. However, reconstructing a most parsimonious ARG for a given data set
 is NP-hard \citep{wang2001perfect}, and in order to allow for larger input datasets,
-subsequent parsimony-based methods have resorted to various relaxations and heuristics \citep{hein1993heuristic, 
+subsequent parsimony-based methods have resorted to various relaxations and heuristics \citep{hein1993heuristic,
 song2005efficient, wu2008association, camara2016inference, thao2019hybrid, ignatieva2021kwarg}.
 The scalability of these methods varies substantially based on the heuristic in use
 and the underlying data structure, with the most efficient tools limited to analysing hundreds of sequences.
@@ -500,10 +518,10 @@ while seeking to achieve good accuracy of the inferred genealogies
 \citep{minichiello2006mapping, parida2008estimating, wu2011new, mirzaei2017rent}; some of these methods \citep{kelleher2019inferring, speidel2019method, zhang2021biobank} can be practically
 used on megabase scale data and tens to hundreds of thousands of samples under human-like
 parameters.
-% AI: just to note, these papers do not all agree in their definition of an ARG. 
+% AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
-% How much more description of the parsimony methods would be good? Maybe a mention of them splitting into 
+% How much more description of the parsimony methods would be good? Maybe a mention of them splitting into
 % "back in time" and "across local trees" types?
 
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
@@ -558,6 +576,23 @@ to something either being an ARG or not, whereas there are many different
 interesting properties of these structures that we should be able to
 discuss and compare.
 \item tskit can represent any ARG.
+\item Interchange is a real problem, and if we're going to realise the
+potential for ARGs in genomics we must solve it. Efforts to standardise
+phylogenetic networks haven't done very well (~\citep{cardona2008extended}
+has 89 citations). The only real effort to standardise an ARG format
+based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
+GraphML~\citep{mcgill2013graphml} has some of the same key ideas
+as tskit though, in particular allowing the annotation of ``live sites''
+to an edge as a set of disjoint intervals that hold ancestral material.
+
+\item We should discuss other types of ancestry network also.
+The crucial distiction between an ARG and a phylogenetic network (I think?) is
+the presence of position information specifying the location of
+recombination events (and by extension, the complete passage
+of ancestral material the graph). Without position information
+we know that a particular node was an ancestor somewhere along the
+sequence, but not exactly where.
+
 \end{itemize}
 
 \bibliographystyle{plainnat}
