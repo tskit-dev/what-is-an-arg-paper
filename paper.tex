@@ -222,9 +222,9 @@ formulation. At a recombination event we choose a lineage (edge) uniformly, and 
 breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
-Common Ancestor, GMCRA), which is guaranteed to
+Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. The graph structure and breakpoints associated with with
+and coalescing. The graph structure and breakpoints associated with
 recombination nodes provides sufficient information to later recover the marginal
 trees (see the next section for more details and discussion on this point).
 
@@ -237,7 +237,7 @@ use. The number of events in the ARG back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
 of events required to simulate the complete ancestry of a sample
 in Hudson's algorithm is
-$O(\rho^2)$~\citep[Eq.~5.10]{hein2004gene,baumdicker2021efficient}.
+$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
 This disparity in the number of events in the two formulations is
 because the vast majority of the events that occur in the ARG do
 not affect the genetic ancestry of the sample in any way. Recombination
@@ -388,8 +388,8 @@ as used in beagle~\citep{lyngso2005minimum}.
 
 \section*{Anchoring the ARG to the pedigree}
 
-The limitations of the Griffiths ARG encoding directly stem from its
-rooting in the coalescent with recombination stochastic process.
+The limitations of the Griffiths ARG encoding are a direct consequence
+of its derivation from the coalescent with recombination stochastic process.
 Indeed, these limitations arise because it is such a \emph{good}
 mathematical encoding, providing sufficient information to
 define the realised ancestry under the assumptions of the model,
@@ -551,7 +551,7 @@ The most prominent examples are \texttt{ARGWeaver} \citep{rasmussen2014genome}
 and \texttt{Arbores} \citep{heine2018bridging}. The former also utilises a time
 discretisation approximation, but scales to dozens of mammal-like genomes.
 The \texttt{ClonalOrigin} method \citep{didelot2010inference,
-medinaaguayo2020speeding} uses the \texttt{ClonalFrame}
+medina2020speeding} uses the \texttt{ClonalFrame}
 model and data structure, though it is not as scalable as \texttt{ARGWeaver}.
 
 A very recent MCMC method called \texttt{ARGInfer} has resulted in the first
