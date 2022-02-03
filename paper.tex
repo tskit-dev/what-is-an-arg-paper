@@ -41,15 +41,15 @@ This confusion and lack of agreement on basic issues such as what does and
 does not constitute an ARG is partly attributable to the historical
 development of the term.
 Originally rigorously defined as
-a representation of the coalescent with recombination
-stochastic process as a graph, an ARG is now understood to refer to any
+a stochastic process (the coalescent with recombination) together with its
+representation, an ARG is now understood to refer to any
 concrete realisation of a recombinant genetic ancestry.
 We show that the standard description of an ARG
 in terms of common ancestor and recombination events
 (inherited from the original stochastic process definition) is
 ambiguous, fundamentally limited and an unsuitable basis for data interchange.
 We provide a simple alternative definition of an ARG in which a node
-corresponds to one of an individuals monoploid genomes, an edge
+corresponds to one of an individual's monoploid genomes, an edge
 % jk-note: this is clumsy
 defines a genetic ancestry relationship between two nodes,
 and annotations on those edges define the precise patterns of
@@ -73,10 +73,11 @@ and the ancestral relationships between those nodes. A rich literature exists
 on analysing the mathematical properties of these trees [cite?], and numerous
 methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
 quite different in recombining organisms, where the analysis of genetic data
-depends on summaries ultimately derived from the trees such as allele
-% TODO cite the other papers that preceded ralph2020efficiently here.
-frequencies~\citep{ralph2020efficiently}, site frequency spectra, patterns of linkage
-disequilibrium~\citep{mcvean2002genealogical} and principal
+depends on summaries ultimately derived from the
+trees~\citep{tajima1983evolutionary,tavare1984line,fu1995statistical}
+such as allele frequencies and site frequency
+spectra~\citep{achaz2009frequency,ralph2020efficiently},
+patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and principal
 components~\citep{mcvean2009genealogical}. Genealogical analysis is equally
 fundamental to the study of recombining organisms, but profound technical
 difficulties have made the routine inference of recombinant genealogies
@@ -106,8 +107,9 @@ In this paper we [turn into proper round up paragraph later]
 and show how it derives from (and is limited by) the coalescent with
 recombination.
 \item Suggest a definition of ARGs that is free of these limitations,
-where the formulation is derived from a diploid pedigree rather than
-the coalescent approximations and spatial annotations are attached to
+where the formulation is derived from a (normally diploid) pedigree rather than from
+coalescent approximations, and where the genetic
+material which is transmitted is described by annotations attached to
 edges rather than nodes.
 \item Suggest a classification of ARG nodes that helps us to understand
 the properties of the structures inferred by different methods, and illustrate
@@ -160,14 +162,14 @@ lineages as we go backwards in time.
 Each lineage consists of a list of
 disjoint ancestry segments $(\ell, r, a)$, where
 $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
-tracking the number of samples the lineage is ancestral to over the interval.
+tracking the number of samples to which the lineage is ancestral over that interval.
 (We also usually track the tree node associated with each segment, but
 that is not important for our purposes here so we omit it.)
 If we have $n$ samples and genome of length $m$, the process begins with $n$ lineages
 of the form $[(0, m, 1)]$. The process then works backwards in time from
 the present day as a series of random common ancestor or recombination events.
-Recombination events occur at a rate determined by the amount and spatial
-distribution of ancestral material among lineages.
+Recombination events occur at a rate determined by the amount of ancestral material and
+the way in which it is distributed along a chromosome.
 Let $L$ be the set of ancestors at a given time $t$. Recombination events
 happen at rate $\rho \nu / (m - 1)$ where
 \[
@@ -182,8 +184,8 @@ $x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
 $x_1$ and $x_2$ such that FILL IN DETAILS
 
 When $k = |L|$ lineages are present, common ancestor events
-occur at rate $\binom{k}{2}$. In a common ancestor event two lineages
-are chosed uniformly at random and their ancestry segments merged.
+occur at rate $\binom{k}{2}$. In a common ancestor event, two lineages
+are chosen uniformly at random and their ancestry segments merged.
 If we have overlapping intervals of ancestry from the two lineages,
 say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
 \emph{coalescence} occurs and ancestor represented by the current event
@@ -221,13 +223,13 @@ formulation. At a recombination event we choose a lineage (edge) uniformly, and 
 breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
-Common Ancestor, GMCRA), which is guaranteed to
+Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. The graph structure and breakpoints associated with with
+and coalescing. The graph structure and breakpoints associated with
 recombination nodes provides sufficient information to later recover the marginal
 trees (see the next section for more details and discussion on this point).
 
-The state-space of the ARG is much simpler than Hudson's algorithm, which
+The state-space of this process is much simpler than Hudson's algorithm, which
 greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
 simulating recombinant ancestry. The ARG is vast, and any realisation
@@ -236,7 +238,7 @@ use. The number of events in the ARG back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
 of events required to simulate the complete ancestry of a sample
 in Hudson's algorithm is
-$O(\rho^2)$~\citep[Eq.~5.10]{hein2004gene,baumdicker2021efficient}.
+$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
 This disparity in the number of events in the two formulations is
 because the vast majority of the events that occur in the ARG do
 not affect the genetic ancestry of the sample in any way. Recombination
@@ -335,7 +337,7 @@ horribly structured [Jere: what's the right way to say this?]
 state space of ARGs. The focus subsequently shifted to
 the more tractable---but still
 NP-hard~\citep{wang2001perfect}---problem of computing
-the miniumum number of recombinations required
+the minimum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
 The distinction between the ARG as a stochastic process
@@ -344,8 +346,8 @@ with \citet{minichiello2006mapping} explicitly arguing for
 the data structure interpretation.
 
 The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination, but
-it has significant drawbacks as the basis for a general purpose
+economical description of the coalescent with recombination on a single
+chromosome, but it has significant drawbacks as the basis for a general purpose
 storage format.
 
 [Not sure how to make a narrative out of this, but here are the
@@ -356,10 +358,13 @@ nodes as \emph{events} of a particular type. We can either
 have common ancestor or recombination events. This is true
 in the coalescent, but is not in a more general Wright-Fisher
 model.
+%% Note - I'm not sure this is true, if the nodes are *events* rather than
+%% genomes, unless you want events (rather than genomes) to occur at
+%% integer generations.
 \item We can also only have one crossover per recombination event.
-This is unrealistic because things like gene conversion are common,
-and means we can't have back and forth recombination between
-two parents.
+This is unrealistic because things like gene conversion are common. It also
+means we can't have back and forth recombination between
+two parents, or represent the transmission of multiple chromosomes.
 \item The passage of ancestral material along edges requires
 extrinsic rules which must be shared by all implementations.
 These rules can be quite restrictive when generating, and
@@ -384,8 +389,8 @@ as used in beagle~\citep{lyngso2005minimum}.
 
 \section*{Anchoring the ARG to the pedigree}
 
-The limitations of the Griffiths ARG encoding directly stem from its
-rooting in the coalescent with recombination stochastic process.
+The limitations of the Griffiths ARG encoding are a direct consequence
+of its derivation from the coalescent with recombination stochastic process.
 Indeed, these limitations arise because it is such a \emph{good}
 mathematical encoding, providing sufficient information to
 define the realised ancestry under the assumptions of the model,
@@ -447,7 +452,7 @@ significant computational advantages.}
 \centering
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
-\caption{\label{fig-recombinati on-nodes}
+\caption{\label{fig-recombination-nodes}
 Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
 ARG including all recombination nodes (red). (b) The same ARG having removed both
 recombination nodes and nodes of common ancestors in which no genetic
@@ -547,7 +552,7 @@ The most prominent examples are \texttt{ARGWeaver} \citep{rasmussen2014genome}
 and \texttt{Arbores} \citep{heine2018bridging}. The former also utilises a time
 discretisation approximation, but scales to dozens of mammal-like genomes.
 The \texttt{ClonalOrigin} method \citep{didelot2010inference,
-medinaaguayo2020speeding} uses the \texttt{ClonalFrame}
+medina2020speeding} uses the \texttt{ClonalFrame}
 model and data structure, though it is not as scalable as \texttt{ARGWeaver}.
 
 A very recent MCMC method called \texttt{ARGInfer} has resulted in the first
