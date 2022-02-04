@@ -9,7 +9,6 @@ from typing import List
 from typing import Any
 
 import tskit
-import numpy as np
 
 NODE_IS_RECOMB = 1 << 1
 NODE_IS_NONCOAL_CA = 1 << 2  # TODO better name
@@ -193,6 +192,7 @@ def merge_ancestry(lineages):
         interval = AncestryInterval(left, right, ancestral_to)
         yield interval, [u.value[0] for u in U]
 
+
 @dataclasses.dataclass
 class Node:
     time: float
@@ -200,7 +200,7 @@ class Node:
     metadata: dict = dataclasses.field(default_factory=dict)
 
 
-def arg_sim(n, rho, L, seed=None):
+def sim_coalescent(n, rho, L, seed=None, resolved=True):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
     and return the tskit TreeSequence object.
@@ -237,6 +237,7 @@ def arg_sim(n, rho, L, seed=None):
             breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
             assert left_lineage.left < breakpoint < left_lineage.right
             right_lineage = left_lineage.split(breakpoint)
+            lineages.append(right_lineage)
             child = left_lineage.node
             assert nodes[child].flags & NODE_IS_RECOMB == 0
             nodes[child].flags |= NODE_IS_RECOMB
@@ -245,11 +246,14 @@ def arg_sim(n, rho, L, seed=None):
             for lineage in left_lineage, right_lineage:
                 lineage.node = len(nodes)
                 nodes.append(Node(time=t))
-                for interval in lineage.ancestry:
-                    tables.edges.add_row(
-                        interval.left, interval.right, lineage.node, child
-                    )
-            lineages.append(right_lineage)
+                if resolved:
+                    for interval in lineage.ancestry:
+                        tables.edges.add_row(
+                            interval.left, interval.right, lineage.node, child
+                        )
+            if not resolved:
+                tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
+                tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
@@ -257,96 +261,26 @@ def arg_sim(n, rho, L, seed=None):
             for interval, intersecting_lineages in merge_ancestry([a, b]):
                 if interval.ancestral_to < n:
                     c.ancestry.append(interval)
-                for lineage in intersecting_lineages:
-                    tables.edges.add_row(
-                        interval.left, interval.right, c.node, lineage.node
-                    )
+                if resolved:
+                    for lineage in intersecting_lineages:
+                        tables.edges.add_row(
+                            interval.left, interval.right, c.node, lineage.node
+                        )
+            if not resolved:
+                tables.edges.add_row(-math.inf, math.inf, c.node, a.node)
+                tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
+
             nodes.append(Node(time=t))
             if len(c.ancestry) > 0:
                 lineages.append(c)
 
     for node in nodes:
         tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
-    tables.sort()
-    return tables.tree_sequence()
-
-
-def unresolved_arg_sim(n, rho, L, seed=None):
-    """
-    Simulate an non-ancestry-resolved ARG under the coalescent with recombination
-    and return the tskit TableCollection object. In this only the existance
-    of an edge between two different nodes is encoded, and the specific intervals
-    of ancestral material not recorded.
-
-    For common ancestor events we have two child nodes a and b, and a parent
-    c. We record edges (-inf, inf, a, c) and (-inf, inf, b, c).
-
-    For recombination events we have one child u and two parent nodes v an w,
-    and a breakpoint x. We record edges (-inf, x, u, v) and (x, inf, u, w).
-    We also record the breakpoint x with the parent nodes v and w, although
-    it is strictly redundant.
-
-    The resulting ARG is identical to that simulated using the arg_sim function
-    above, and can be converted into an ancestry-resolved ARG for use in
-    tskit using the convert_arg function.
-
-    NOTE! This hasn't been statistically tested and is probably not correct.
-    """
-    rng = random.Random(seed)
-    tables = tskit.TableCollection(L)
-    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
-
-    lineages = []
-    for _ in range(n):
-        node = tables.nodes.add_row(time=0, flags=tskit.NODE_IS_SAMPLE)
-        lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
-    t = 0
-    while len(lineages) > 0:
-        # print(f"t = {t:.2f} k = {len(lineages)}")
-        # for lineage in lineages:
-        #     print(f"\t{lineage}")
-        lineage_links = [lineage.num_recombination_links for lineage in lineages]
-        total_links = sum(lineage_links)
-        re_rate = total_links * rho
-        t_re = math.inf if re_rate == 0 else rng.expovariate(re_rate)
-        k = len(lineages)
-        ca_rate = k * (k - 1) / 2
-        t_ca = rng.expovariate(ca_rate)
-        t_inc = min(t_re, t_ca)
-        t += t_inc
-
-        if t_inc == t_re:
-            left_lineage = rng.choices(lineages, weights=lineage_links)[0]
-            child = left_lineage.node
-            breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
-            assert left_lineage.left < breakpoint < left_lineage.right
-            left_lineage.node = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
-            tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
-            right_lineage = left_lineage.split(breakpoint)
-            right_lineage.node = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
-            tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
-            lineages.append(right_lineage)
-        else:
-            a = lineages.pop(rng.randrange(len(lineages)))
-            b = lineages.pop(rng.randrange(len(lineages)))
-            c = Lineage(len(tables.nodes), [])
-            flags = NODE_IS_NONCOAL_CA
-            for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if len(intersecting_lineages) > 1:
-                    flags = 0  # This is a coalescence, treat this as ordinary tree node
-                if interval.ancestral_to < n:
-                    c.ancestry.append(interval)
-            tables.nodes.add_row(flags=flags, time=t, metadata={})
-            tables.edges.add_row(-math.inf, math.inf, c.node, a.node)
-            tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
-            # print(f"\tc = {c}")
-            if len(c.ancestry) > 0:
-                lineages.append(c)
-    return tables
+    if resolved:
+        tables.sort()
+        return tables.tree_sequence()
+    else:
+        return tables
 
 
 @dataclasses.dataclass
@@ -358,7 +292,7 @@ class Individual:
     )
 
 
-def resolved_wf_arg_sim(n, N, L, seed=None):
+def sim_wright_fisher(n, N, L, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
 
@@ -468,7 +402,7 @@ def resolved_wf_arg_sim(n, N, L, seed=None):
     return tables.tree_sequence()
 
 
-def convert_arg(tables):
+def resolve(tables):
     """
     Converts the specified non-ancestry tracking ARG to a tskit ARG.
 
@@ -567,46 +501,3 @@ def convert_arg(tables):
     # print(out)
     out.sort()
     return out.tree_sequence()
-
-
-def simplest_example():
-
-    n = 2
-    rho = 0.01
-    L = 10
-    seed = 14
-    print(seed)
-    ts = arg_sim(n, rho, L, seed=seed)
-    tables = unresolved_arg_sim(n, rho, L, seed=seed)
-    # print(ts.tables)
-    ts2 = convert_arg(tables)
-
-    draw_arg(ts)
-    # draw_arg(ts2)
-
-    ts.tables.assert_equals(ts2.tables)
-
-
-# simplest_example()
-
-# ts = resolved_wf_arg_sim(2, 2, 4, 46)
-ts = arg_sim(6, 0.1, 5, 47)
-# print(ts.tables)
-
-draw_arg(ts)
-
-
-# n = 2
-# rho = 0.01
-# L = 10
-# for seed in range(1, 100):
-#     print(seed)
-#     ts = arg_sim(n, rho, L, seed=seed)
-#     tables = unresolved_arg_sim(n, rho, L, seed=seed)
-#     # print(ts.tables)
-#     ts2 = convert_arg(tables)
-
-#     draw_arg(ts)
-#     # draw_arg(ts2)
-
-#     ts.tables.assert_equals(ts2.tables)
