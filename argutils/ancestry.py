@@ -200,6 +200,18 @@ class Node:
     metadata: dict = dataclasses.field(default_factory=dict)
 
 
+def fully_coalesced(lineages, n):
+    """
+    Returns True if all segments are ancestral to n samples in all
+    lineages.
+    """
+    for lineage in lineages:
+        for segment in lineage.ancestry:
+            if segment.ancestral_to < n:
+                return False
+    return True
+
+
 def sim_coalescent(n, rho, L, seed=None, resolved=True):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
@@ -218,8 +230,13 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
 
     t = 0
 
+    # NOTE: the stopping condition here is more complicated because
+    # we have to still keep track of segments after the MRCA has been
+    # reached. We don't simulate back to the GMRCA as this may take a
+    # very long time.
+
     # while len(lineages) > 0:
-    while len(lineages) > 1:
+    while not fully_coalesced(lineages, n):
         # print(f"t = {t:.2f} k = {len(lineages)}")
         # for lineage in lineages:
         #     print(f"\t{lineage}")
@@ -304,6 +321,9 @@ def sim_wright_fisher(n, N, L, seed=None):
     with the practise of dropping "pass through" nodes in which
     nothing happens.
     """
+
+    # NOTE this version isn't strictly simualting an ARG because it
+    # is snipping out ancestry once MRCAs have been reached.
     rng = random.Random(seed)
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
