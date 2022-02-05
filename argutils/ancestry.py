@@ -218,7 +218,8 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
 
     t = 0
 
-    while len(lineages) > 0:
+    # while len(lineages) > 0:
+    while len(lineages) > 1:
         # print(f"t = {t:.2f} k = {len(lineages)}")
         # for lineage in lineages:
         #     print(f"\t{lineage}")
@@ -259,8 +260,8 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
             b = lineages.pop(rng.randrange(len(lineages)))
             c = Lineage(len(nodes), [])
             for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if interval.ancestral_to < n:
-                    c.ancestry.append(interval)
+                # if interval.ancestral_to < n:
+                c.ancestry.append(interval)
                 if resolved:
                     for lineage in intersecting_lineages:
                         tables.edges.add_row(
@@ -271,14 +272,16 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
                 tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
 
             nodes.append(Node(time=t))
-            if len(c.ancestry) > 0:
-                lineages.append(c)
+            # if len(c.ancestry) > 0:
+            lineages.append(c)
 
     for node in nodes:
         tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
     if resolved:
         tables.sort()
-        # tables.edges.squash()
+        # TODO not sure if this is the right thing to do, but it makes it easier
+        # to compare with examples.
+        tables.edges.squash()
         return tables.tree_sequence()
     else:
         return tables
