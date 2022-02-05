@@ -7,6 +7,7 @@ pandas
 pygraphviz  
 tsinfer>=0.2.1
 tskit>=0.3.4
+click
 # Extra non-python requirements: graphviz, inkscape
 # On Debian, use `sudo apt-get install graphviz graphviz-dev inkscape` for these deps
 

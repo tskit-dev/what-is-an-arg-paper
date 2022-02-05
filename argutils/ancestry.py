@@ -9,7 +9,6 @@ from typing import List
 from typing import Any
 
 import tskit
-import numpy as np
 
 NODE_IS_RECOMB = 1 << 1
 NODE_IS_NONCOAL_CA = 1 << 2  # TODO better name
@@ -193,6 +192,7 @@ def merge_ancestry(lineages):
         interval = AncestryInterval(left, right, ancestral_to)
         yield interval, [u.value[0] for u in U]
 
+
 @dataclasses.dataclass
 class Node:
     time: float
@@ -200,7 +200,19 @@ class Node:
     metadata: dict = dataclasses.field(default_factory=dict)
 
 
-def arg_sim(n, rho, L, seed=None):
+def fully_coalesced(lineages, n):
+    """
+    Returns True if all segments are ancestral to n samples in all
+    lineages.
+    """
+    for lineage in lineages:
+        for segment in lineage.ancestry:
+            if segment.ancestral_to < n:
+                return False
+    return True
+
+
+def sim_coalescent(n, rho, L, seed=None, resolved=True):
     """
     Simulate an ancestry-resolved ARG under the coalescent with recombination
     and return the tskit TreeSequence object.
@@ -218,7 +230,13 @@ def arg_sim(n, rho, L, seed=None):
 
     t = 0
 
-    while len(lineages) > 0:
+    # NOTE: the stopping condition here is more complicated because
+    # we have to still keep track of segments after the MRCA has been
+    # reached. We don't simulate back to the GMRCA as this may take a
+    # very long time.
+
+    # while len(lineages) > 0:
+    while not fully_coalesced(lineages, n):
         # print(f"t = {t:.2f} k = {len(lineages)}")
         # for lineage in lineages:
         #     print(f"\t{lineage}")
@@ -237,6 +255,7 @@ def arg_sim(n, rho, L, seed=None):
             breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
             assert left_lineage.left < breakpoint < left_lineage.right
             right_lineage = left_lineage.split(breakpoint)
+            lineages.append(right_lineage)
             child = left_lineage.node
             assert nodes[child].flags & NODE_IS_RECOMB == 0
             nodes[child].flags |= NODE_IS_RECOMB
@@ -245,108 +264,44 @@ def arg_sim(n, rho, L, seed=None):
             for lineage in left_lineage, right_lineage:
                 lineage.node = len(nodes)
                 nodes.append(Node(time=t))
-                for interval in lineage.ancestry:
-                    tables.edges.add_row(
-                        interval.left, interval.right, lineage.node, child
-                    )
-            lineages.append(right_lineage)
+                if resolved:
+                    for interval in lineage.ancestry:
+                        tables.edges.add_row(
+                            interval.left, interval.right, lineage.node, child
+                        )
+            if not resolved:
+                tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
+                tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
             c = Lineage(len(nodes), [])
             for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if interval.ancestral_to < n:
-                    c.ancestry.append(interval)
-                for lineage in intersecting_lineages:
-                    tables.edges.add_row(
-                        interval.left, interval.right, c.node, lineage.node
-                    )
+                # if interval.ancestral_to < n:
+                c.ancestry.append(interval)
+                if resolved:
+                    for lineage in intersecting_lineages:
+                        tables.edges.add_row(
+                            interval.left, interval.right, c.node, lineage.node
+                        )
+            if not resolved:
+                tables.edges.add_row(-math.inf, math.inf, c.node, a.node)
+                tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
+
             nodes.append(Node(time=t))
-            if len(c.ancestry) > 0:
-                lineages.append(c)
+            # if len(c.ancestry) > 0:
+            lineages.append(c)
 
     for node in nodes:
         tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
-    tables.sort()
-    return tables.tree_sequence()
-
-
-def unresolved_arg_sim(n, rho, L, seed=None):
-    """
-    Simulate an non-ancestry-resolved ARG under the coalescent with recombination
-    and return the tskit TableCollection object. In this only the existance
-    of an edge between two different nodes is encoded, and the specific intervals
-    of ancestral material not recorded.
-
-    For common ancestor events we have two child nodes a and b, and a parent
-    c. We record edges (-inf, inf, a, c) and (-inf, inf, b, c).
-
-    For recombination events we have one child u and two parent nodes v an w,
-    and a breakpoint x. We record edges (-inf, x, u, v) and (x, inf, u, w).
-    We also record the breakpoint x with the parent nodes v and w, although
-    it is strictly redundant.
-
-    The resulting ARG is identical to that simulated using the arg_sim function
-    above, and can be converted into an ancestry-resolved ARG for use in
-    tskit using the convert_arg function.
-
-    NOTE! This hasn't been statistically tested and is probably not correct.
-    """
-    rng = random.Random(seed)
-    tables = tskit.TableCollection(L)
-    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
-
-    lineages = []
-    for _ in range(n):
-        node = tables.nodes.add_row(time=0, flags=tskit.NODE_IS_SAMPLE)
-        lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
-    t = 0
-    while len(lineages) > 0:
-        # print(f"t = {t:.2f} k = {len(lineages)}")
-        # for lineage in lineages:
-        #     print(f"\t{lineage}")
-        lineage_links = [lineage.num_recombination_links for lineage in lineages]
-        total_links = sum(lineage_links)
-        re_rate = total_links * rho
-        t_re = math.inf if re_rate == 0 else rng.expovariate(re_rate)
-        k = len(lineages)
-        ca_rate = k * (k - 1) / 2
-        t_ca = rng.expovariate(ca_rate)
-        t_inc = min(t_re, t_ca)
-        t += t_inc
-
-        if t_inc == t_re:
-            left_lineage = rng.choices(lineages, weights=lineage_links)[0]
-            child = left_lineage.node
-            breakpoint = rng.randrange(left_lineage.left + 1, left_lineage.right)
-            assert left_lineage.left < breakpoint < left_lineage.right
-            left_lineage.node = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
-            tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
-            right_lineage = left_lineage.split(breakpoint)
-            right_lineage.node = tables.nodes.add_row(
-                flags=NODE_IS_RECOMB, time=t, metadata={"breakpoint": breakpoint}
-            )
-            tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
-            lineages.append(right_lineage)
-        else:
-            a = lineages.pop(rng.randrange(len(lineages)))
-            b = lineages.pop(rng.randrange(len(lineages)))
-            c = Lineage(len(tables.nodes), [])
-            flags = NODE_IS_NONCOAL_CA
-            for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if len(intersecting_lineages) > 1:
-                    flags = 0  # This is a coalescence, treat this as ordinary tree node
-                if interval.ancestral_to < n:
-                    c.ancestry.append(interval)
-            tables.nodes.add_row(flags=flags, time=t, metadata={})
-            tables.edges.add_row(-math.inf, math.inf, c.node, a.node)
-            tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
-            # print(f"\tc = {c}")
-            if len(c.ancestry) > 0:
-                lineages.append(c)
-    return tables
+    if resolved:
+        tables.sort()
+        # TODO not sure if this is the right thing to do, but it makes it easier
+        # to compare with examples.
+        tables.edges.squash()
+        return tables.tree_sequence()
+    else:
+        return tables
 
 
 @dataclasses.dataclass
@@ -358,7 +313,7 @@ class Individual:
     )
 
 
-def resolved_wf_arg_sim(n, N, L, seed=None):
+def sim_wright_fisher(n, N, L, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
 
@@ -366,6 +321,9 @@ def resolved_wf_arg_sim(n, N, L, seed=None):
     with the practise of dropping "pass through" nodes in which
     nothing happens.
     """
+
+    # NOTE this version isn't strictly simualting an ARG because it
+    # is snipping out ancestry once MRCAs have been reached.
     rng = random.Random(seed)
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
@@ -468,145 +426,118 @@ def resolved_wf_arg_sim(n, N, L, seed=None):
     return tables.tree_sequence()
 
 
-def convert_arg(tables):
-    """
-    Converts the specified non-ancestry tracking ARG to a tskit ARG.
+@dataclasses.dataclass
+class Recombination:
+    time: float
+    child: int
+    breakpoint: float
+    left_parent: int
+    right_parent: int
 
-    Note: the implementation is currently quite ropey, and has a
-    few assumptions about the form of the input that aren't necessary.
-    Ideally we'd work just from the edge table and node times, as
-    we can work out the existance of recombinations and the breakpoints
-    from it.
+
+@dataclasses.dataclass
+class CommonAncestor:
+    time: float
+    parent: int
+    children: List[int]
+
+
+def resolve(tables):
+    """
+    Converts the specified implicit-ancestry ARG to a fully resolved
+    tskit ARG.
+
+    Each node can have at most two outbound edges. If there is one
+    outbound edge, this must have left and right coordinates
+    (-inf, inf). When we have two outbound edges, we must have
+    coordinates (-inf, x) on one and (x, inf) on the other.
+    This tells us that the child node is a recombinant, with the
+    specified parent nodes.
+
     """
     out = tables.copy()
     out.edges.clear()
-    nodes = sorted(tables.nodes, key=lambda x: x.time)
+    time = tables.nodes.time
 
-    children = collections.defaultdict(list)
+    parent_edges = [[] for _ in tables.nodes]
+    child_edges = [[] for _ in tables.nodes]
     for edge in tables.edges:
-        children[edge.parent].append(edge.child)
+        parent_edges[edge.child].append(edge)
+        child_edges[edge.parent].append(edge)
 
-    lineages = []
-    node_id = 0
-    n = 0
-    while node_id < len(nodes) and (nodes[node_id].flags & tskit.NODE_IS_SAMPLE != 0):
-        node = nodes[node_id]
-        # print("sample:", node)
-        assert nodes[node_id].time == 0
-        lineages.append(
-            Lineage(node_id, [AncestryInterval(0, tables.sequence_length, 1)])
-        )
-        node_id += 1
-        n += 1
-    while node_id < len(nodes):
-        node = nodes[node_id]
-        # print("VISIT", node_id, node.time)
-        # for lineage in lineages:
-        #     print(f"\t{lineage}")
-        if (node.flags & NODE_IS_RECOMB) != 0:
-            left_parent = node_id
-            node_id += 1
-            right_parent = node_id
+    events = []
+    for node, edges in enumerate(parent_edges):
+        if len(edges) > 2:
+            raise ValueError("Only single breakpoints per recombination supported")
+        if len(edges) == 2:
+            edges = sorted(edges, key=lambda x: x.left)
+            if edges[0].left != -math.inf or edges[1].right != math.inf:
+                raise ValueError("Non-breakpoint edge coordinates must be +/- inf")
+            if edges[0].right != edges[1].left:
+                raise ValueError("Recombination edges must have equal breakpoint")
+            if time[edges[0].parent] != time[edges[1].parent]:
+                raise ValueError("Time of parents must be equal in recombination")
+            event = Recombination(
+                time[edges[0].parent],
+                node,
+                edges[0].right,
+                edges[0].parent,
+                edges[1].parent,
+            )
+            events.append(event)
 
-            # print("RE EVENT", left_parent, right_parent)
-            child = children[left_parent][0]
-            assert len(children[left_parent]) == 1
-            assert len(children[right_parent]) == 1
-            assert children[right_parent][0] == child
+    for node, edges in enumerate(child_edges):
+        if len(edges) > 1:
+            children = []
+            for edge in edges:
+                children.append(edge.child)
+                if edge.left != -math.inf or edge.right != math.inf:
+                    raise ValueError("Non-breakpoint edge coordinates must be +/- inf")
+            event = CommonAncestor(time[node], node, children)
+            events.append(event)
 
-            # print(f"parent = {parent} child = {child}")
-            breakpoint = node.metadata["breakpoint"]
-            for left_lineage in lineages:
-                if left_lineage.node == child:
-                    break
-            right_lineage = left_lineage.split(breakpoint)
-            left_lineage.node = left_parent
-            right_lineage.node = right_parent
-            lineages.append(right_lineage)
+    lineages = {}
+    for node_id, node in enumerate(tables.nodes):
+        if node.flags & tskit.NODE_IS_SAMPLE != 0:
+            if node.time != 0:
+                raise ValueError("Only time zero sample supported")
+            lineages[node_id] = Lineage(
+                node_id, [AncestryInterval(0, tables.sequence_length, 1)]
+            )
+    n = len(lineages)
+
+    # print()
+    events.sort(key=lambda e: e.time)
+    for event in events:
+        # print(event)
+        # print(lineages)
+        if isinstance(event, Recombination):
+            left_lineage = lineages.pop(event.child)
+            right_lineage = left_lineage.split(event.breakpoint)
+            left_lineage.node = event.left_parent
+            right_lineage.node = event.right_parent
             for lineage in [left_lineage, right_lineage]:
+                lineages[lineage.node] = lineage
                 for interval in lineage.ancestry:
                     out.edges.add_row(
                         interval.left,
                         interval.right,
                         lineage.node,
-                        child,
+                        event.child,
                     )
         else:
-            parent = node_id
-            # print("COAL", parent)
-            # print(children[parent])
-            assert len(children[parent]) == 2
-            children_lineages = []
-            for child in children[parent]:
-                for j in range(len(lineages)):
-                    if lineages[j].node == child:
-                        children_lineages.append(lineages.pop(j))
-                        break
-            a, b = children_lineages
-            c = Lineage(parent, [])
-            flags = NODE_IS_NONCOAL_CA
-            for interval, intersecting_lineages in merge_ancestry([a, b]):
-                if len(intersecting_lineages) > 1:
-                    flags = 0  # This is a coalescence, treat this as ordinary tree node
-                if interval.ancestral_to < n:
-                    c.ancestry.append(interval)
+            child_lineages = [lineages.pop(child) for child in event.children]
+            c = Lineage(event.parent, [])
+            for interval, intersecting_lineages in merge_ancestry(child_lineages):
+                # if interval.ancestral_to < n:
+                c.ancestry.append(interval)
                 for lineage in intersecting_lineages:
                     out.edges.add_row(
                         interval.left, interval.right, c.node, lineage.node
                     )
-            assert node.flags == flags
-            # print(f"\ta = {a}")
-            # print(f"\tb = {b}")
-            # print(f"\tc = {c}")
-            if len(c.ancestry) > 0:
-                lineages.append(c)
-        # print(f"t = {node.time:.2f}")
-        # for lineage in lineages:
-        #     print(f"\t{lineage}")
-        node_id += 1
-    # print(out)
+            # if len(c.ancestry) > 0:
+            lineages[c.node] = c
+    # assert len(lineages) == 0
     out.sort()
+    out.edges.squash()
     return out.tree_sequence()
-
-
-def simplest_example():
-
-    n = 2
-    rho = 0.01
-    L = 10
-    seed = 14
-    print(seed)
-    ts = arg_sim(n, rho, L, seed=seed)
-    tables = unresolved_arg_sim(n, rho, L, seed=seed)
-    # print(ts.tables)
-    ts2 = convert_arg(tables)
-
-    draw_arg(ts)
-    # draw_arg(ts2)
-
-    ts.tables.assert_equals(ts2.tables)
-
-
-# simplest_example()
-
-# ts = resolved_wf_arg_sim(2, 2, 4, 46)
-ts = arg_sim(6, 0.1, 5, 47)
-# print(ts.tables)
-
-draw_arg(ts)
-
-
-# n = 2
-# rho = 0.01
-# L = 10
-# for seed in range(1, 100):
-#     print(seed)
-#     ts = arg_sim(n, rho, L, seed=seed)
-#     tables = unresolved_arg_sim(n, rho, L, seed=seed)
-#     # print(ts.tables)
-#     ts2 = convert_arg(tables)
-
-#     draw_arg(ts)
-#     # draw_arg(ts2)
-
-#     ts.tables.assert_equals(ts2.tables)
