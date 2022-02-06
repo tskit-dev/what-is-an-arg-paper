@@ -1,5 +1,7 @@
 import click
 import argutils
+import tskit
+import matplotlib.pyplot as plt
 
 
 @click.group()
@@ -18,13 +20,19 @@ def simulate(num_samples, sequence_length, rho, seed, output):
     Simulate an ARG under the coalescent with recombination and write
     out the explicitly resolved ancestry result to file.
     """
-    ts = argutils.sim_arg(num_samples, rho, sequence_length, seed=seed)
+    ts = argutils.sim_coalescent(num_samples, rho, sequence_length, seed=seed)
+    print(ts)
     ts.dump(output)
 
 
 @click.command()
-def draw():
-    click.echo("IMPLEMENT ME")
+@click.argument("input", type=click.File("rb"))
+@click.argument("output", type=click.Path())
+def draw(input, output):
+    ts = tskit.load(input)
+    fig, ax1 = plt.subplots(1, 1, figsize=(5, 6))
+    argutils.draw(ts, ax1)
+    plt.savefig(output)
 
 
 cli.add_command(simulate)
