@@ -120,6 +120,28 @@ class TestResolve:
         # print(resolved.draw_text())
         assert resolved.equals(resolved2)
 
+    def test_resolve_equal_to_simplify_wh99(self):
+        tables = argutils.wh99_example()
+        ts1 = argutils.resolve(tables)
+        left = tables.edges.left
+        left[left == -np.inf] = 0
+        right = tables.edges.right
+        right[right == np.inf] = tables.sequence_length
+        tables.edges.left = left
+        tables.edges.right = right
+        tables.sort()
+        tables.simplify(keep_unary=True)
+        ts2 = tables.tree_sequence()
+        # This is *really* nasty, but there's a fundamental issue with the wh99
+        # ARG. Node 9 has no ancestral material going through it, which simplify
+        # really doesn't want to include. So the topologies we get back are equal
+        # but the local version still has node 9 included. Until we figure out
+        # what the semantics should be here (probably simplify is doing the
+        # right thing) this is the easiest thing to do.
+        s1 = ts1.draw_text(node_labels={})
+        s2 = ts2.draw_text(node_labels={})
+        assert s1 == s2
+
     @pytest.mark.parametrize("seed", range(90, 100))
     @pytest.mark.parametrize(
         ["n", "L"],

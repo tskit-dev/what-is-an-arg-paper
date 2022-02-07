@@ -518,3 +518,53 @@ def resolve(tables):
     out.sort()
     out.edges.squash()
     return out.tree_sequence()
+
+
+
+def wh99_example():
+    """
+    The example ARG from figure 1 of Wiuf and Hein 99, Recombination as a Point Process
+    along Sequences. Each event is given a time increment of 1.
+    """
+    L = 7
+    # FIXME using this as a way to experiement with encoding. Remove once decided.
+    left = -math.inf
+    right = math.inf
+    tables = tskit.TableCollection(L)
+    t = 0
+    for _ in range(3):
+        tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=t)
+
+    def re(child, x):
+        nonlocal t
+        t += 1
+        left_parent = tables.nodes.add_row(time=t)
+        right_parent = tables.nodes.add_row(time=t)
+        tables.edges.add_row(left, x, left_parent, child)
+        tables.edges.add_row(x, right, right_parent, child)
+
+    def ca(*args):
+        nonlocal t
+        t += 1
+        parent = tables.nodes.add_row(time=t)
+        for child in args:
+            tables.edges.add_row(left, right, parent, child)
+
+    re(1, x=4)
+    re(2, x=2)
+    ca(0, 3)
+    re(5, x=5)
+    ca(4, 8)
+    re(10, x=3)
+    ca(12, 9)
+    ca(7, 11)
+    re(13, x=6)
+    ca(16, 6)
+    ca(14, 15)
+    re(18, x=1)
+    ca(20, 17)
+    ca(19, 21)
+
+    return tables
+
+
