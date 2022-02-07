@@ -251,8 +251,8 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
                             interval.left, interval.right, lineage.node, child
                         )
             if not resolved:
-                tables.edges.add_row(-math.inf, breakpoint, left_lineage.node, child)
-                tables.edges.add_row(breakpoint, math.inf, right_lineage.node, child)
+                tables.edges.add_row(0, breakpoint, left_lineage.node, child)
+                tables.edges.add_row(breakpoint, L, right_lineage.node, child)
         else:
             a = lineages.pop(rng.randrange(len(lineages)))
             b = lineages.pop(rng.randrange(len(lineages)))
@@ -266,8 +266,8 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
                             interval.left, interval.right, c.node, lineage.node
                         )
             if not resolved:
-                tables.edges.add_row(-math.inf, math.inf, c.node, a.node)
-                tables.edges.add_row(-math.inf, math.inf, c.node, b.node)
+                tables.edges.add_row(0, L, c.node, a.node)
+                tables.edges.add_row(0, L, c.node, b.node)
 
             nodes.append(Node(time=t))
             # if len(c.ancestry) > 0:
@@ -448,8 +448,8 @@ def resolve(tables):
             raise ValueError("Only single breakpoints per recombination supported")
         if len(edges) == 2:
             edges = sorted(edges, key=lambda x: x.left)
-            if edges[0].left != -math.inf or edges[1].right != math.inf:
-                raise ValueError("Non-breakpoint edge coordinates must be +/- inf")
+            if edges[0].left != 0 or edges[1].right != tables.sequence_length:
+                raise ValueError("Non-breakpoint edge coordinates must be 0/L")
             if edges[0].right != edges[1].left:
                 raise ValueError("Recombination edges must have equal breakpoint")
             if time[edges[0].parent] != time[edges[1].parent]:
@@ -468,8 +468,8 @@ def resolve(tables):
             children = []
             for edge in edges:
                 children.append(edge.child)
-                if edge.left != -math.inf or edge.right != math.inf:
-                    raise ValueError("Non-breakpoint edge coordinates must be +/- inf")
+                if edge.left != 0 or edge.right != tables.sequence_length:
+                    raise ValueError("Non-breakpoint edge coordinates must be 0/L")
             event = CommonAncestor(time[node], node, children)
             events.append(event)
 
@@ -520,16 +520,12 @@ def resolve(tables):
     return out.tree_sequence()
 
 
-
 def wh99_example():
     """
     The example ARG from figure 1 of Wiuf and Hein 99, Recombination as a Point Process
     along Sequences. Each event is given a time increment of 1.
     """
     L = 7
-    # FIXME using this as a way to experiement with encoding. Remove once decided.
-    left = -math.inf
-    right = math.inf
     tables = tskit.TableCollection(L)
     t = 0
     for _ in range(3):
@@ -540,15 +536,15 @@ def wh99_example():
         t += 1
         left_parent = tables.nodes.add_row(time=t)
         right_parent = tables.nodes.add_row(time=t)
-        tables.edges.add_row(left, x, left_parent, child)
-        tables.edges.add_row(x, right, right_parent, child)
+        tables.edges.add_row(0, x, left_parent, child)
+        tables.edges.add_row(x, L, right_parent, child)
 
     def ca(*args):
         nonlocal t
         t += 1
         parent = tables.nodes.add_row(time=t)
         for child in args:
-            tables.edges.add_row(left, right, parent, child)
+            tables.edges.add_row(0, L, parent, child)
 
     re(1, x=4)
     re(2, x=2)
@@ -566,5 +562,3 @@ def wh99_example():
     ca(19, 21)
 
     return tables
-
-
