@@ -3,6 +3,7 @@ import math
 
 import tskit
 import pytest
+import numpy as np
 
 import argutils
 
@@ -13,6 +14,7 @@ class TestSimulate:
         assert ts.num_samples == 4
         assert ts.sequence_length == 5
         assert ts.num_trees > 1
+        print(ts.draw_text())
         assert all(tree.num_roots == 1 for tree in ts.trees())
 
     def test_basic_wright_fisher(self):
@@ -44,7 +46,6 @@ class TestSimulate:
     )
     def test_coalescent_resolved_equal(self, n, L, seed):
         rho = 0.1
-        seed = 1
         tables = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
         ts1 = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=True)
         ts2 = argutils.resolve(tables)
@@ -118,3 +119,31 @@ class TestResolve:
         # print(resolved.draw_text())
         # print(resolved.draw_text())
         assert resolved.equals(resolved2)
+
+    @pytest.mark.parametrize("seed", range(90, 100))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [4, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [100, 4],
+            [10, 100],
+        ],
+    )
+    def test_resolve_equal_to_simplify_coalescent(self, n, L, seed):
+        rho = 0.1
+        tables = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        ts1 = argutils.resolve(tables)
+        left = tables.edges.left
+        left[left == -np.inf] = 0
+        right = tables.edges.right
+        right[right == np.inf] = tables.sequence_length
+        tables.edges.left = left
+        tables.edges.right = right
+        tables.sort()
+        tables.simplify(keep_unary=True)
+        tables.assert_equals(ts1.tables, ignore_provenance=True)

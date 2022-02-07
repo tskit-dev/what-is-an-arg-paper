@@ -1,6 +1,7 @@
 """
 Utilities for generating and converting ARGs in various formats.
 """
+import itertools
 import random
 import math
 import collections
@@ -11,26 +12,6 @@ from typing import Any
 import tskit
 
 NODE_IS_RECOMB = 1 << 1
-NODE_IS_NONCOAL_CA = 1 << 2  # TODO better name
-
-
-def draw_arg(ts):
-
-    node_labels = {}
-    for node in ts.nodes():
-        label = str(node.id)
-        if node.flags & NODE_IS_RECOMB > 0:
-            label = f"R{node.id}"
-        elif node.flags == NODE_IS_NONCOAL_CA:
-            label = f"N{node.id}"
-        if "total_span" in node.metadata:
-            total_span = node.metadata["total_span"]
-            coal_span = node.metadata["coal_span"]
-            # Putting in an extra space at the end as a quick hack
-            # to workaround spacing problems.
-            label += f":{coal_span}/{total_span} "
-        node_labels[node.id] = label
-    print(ts.draw_text(node_labels=node_labels))
 
 
 # AncestryInterval is the equivalent of msprime's Segment class. The
@@ -313,6 +294,12 @@ class Individual:
     )
 
 
+def iter_lineages(individuals):
+    for individual in individuals:
+        for lineage in individual.lineages:
+            yield lineage
+
+
 def sim_wright_fisher(n, N, L, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
@@ -321,9 +308,11 @@ def sim_wright_fisher(n, N, L, seed=None):
     with the practise of dropping "pass through" nodes in which
     nothing happens.
     """
-
-    # NOTE this version isn't strictly simualting an ARG because it
-    # is snipping out ancestry once MRCAs have been reached.
+    # We don't offer a "resolved" option here, but it should be
+    # easy enough to implement the resolved=False version. It should be
+    # a case of skipping the second loop in which we go through the
+    # collected ancestry, and instead writing out the edges directly when
+    # parents are chosen
     rng = random.Random(seed)
     tables = tskit.TableCollection(L)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
@@ -333,16 +322,13 @@ def sim_wright_fisher(n, N, L, seed=None):
     for _ in range(n):
         ind = Individual(tables.individuals.add_row(), [])
         for _ in range(2):
-            # Arbitrarily setting coal span to L
-            node = tables.nodes.add_row(
-                time=0, individual=ind.id, metadata={"coal_span": L, "total_span": L}
-            )
+            node = tables.nodes.add_row(time=0, individual=ind.id)
             ind.lineages.append(Lineage(node, [AncestryInterval(0, L, 1)]))
             node_flags.append(tskit.NODE_IS_SAMPLE)
         ancestors.append(ind)
 
     t = 0
-    while len(ancestors) > 0:
+    while not fully_coalesced(iter_lineages(ancestors), 2 * n):
         t += 1
         # print("===")
         # print("T = ", t, "|A|=", len(ancestors))
@@ -387,6 +373,7 @@ def sim_wright_fisher(n, N, L, seed=None):
                 # for lin in lineages:
                 #     print("\t\t", lin)
 
+                merged_lineage = None
                 if len(lineages) == 1 and node_flags[lineage.node] == 0:
                     merged_lineage = lineages[0]
                 elif len(lineages) > 0:
@@ -395,25 +382,15 @@ def sim_wright_fisher(n, N, L, seed=None):
                     node = len(tables.nodes)
                     merged_lineage = Lineage(node, [])
                     node_flags.append(0)
-                    total_span = 0
-                    coal_span = 0
                     for interval, intersecting_lineages in merge_ancestry(lineages):
-                        total_span += interval.span
-                        coal_span += interval.span * (len(intersecting_lineages) > 1)
-                        if interval.ancestral_to < 2 * n:  # n is *diploid* sample size
-                            merged_lineage.ancestry.append(interval)
+                        # if interval.ancestral_to < 2 * n:  # n is *diploid* sample size
+                        merged_lineage.ancestry.append(interval)
                         for child_lineage in intersecting_lineages:
                             tables.edges.add_row(
                                 interval.left, interval.right, node, child_lineage.node
                             )
-                    tables.nodes.add_row(
-                        time=t,
-                        individual=parent.id,
-                        metadata={"total_span": total_span, "coal_span": coal_span},
-                    )
-                else:
-                    merged_lineage = Lineage(-1, [])
-                if len(merged_lineage.ancestry) > 0:
+                    tables.nodes.add_row(time=t, individual=parent.id, metadata={})
+                if merged_lineage is not None:
                     parent.lineages.append(merged_lineage)
             if len(parent.lineages) > 0:
                 ancestors.append(parent)
