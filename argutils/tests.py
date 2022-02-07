@@ -1,5 +1,4 @@
 # Run using python3 -m pytest argutils/tests.py
-import math
 
 import tskit
 import pytest
@@ -55,8 +54,8 @@ class TestSimulate:
 
 
 def gmrca_example_resolved():
-    # 3.00┊     ┊  5  ┊
-    #     ┊     ┊ ┏┻┓ ┊
+    # 3.00┊  5  ┊  5  ┊
+    #     ┊  ┃  ┊ ┏┻┓ ┊
     # 2.00┊  4  ┊ 4 ┃ ┊
     #     ┊ ┏┻┓ ┊ ┃ ┃ ┊
     # 1.00┊ ┃ 2 ┊ ┃ 3 ┊
@@ -99,12 +98,12 @@ def gmrca_example_unresolved():
     tables.nodes.add_row(time=2)
     tables.nodes.add_row(time=3)
 
-    tables.edges.add_row(-math.inf, 1, 2, 1)
-    tables.edges.add_row(1, math.inf, 3, 1)
-    tables.edges.add_row(-math.inf, math.inf, 4, 0)
-    tables.edges.add_row(-math.inf, math.inf, 5, 4)
-    tables.edges.add_row(-math.inf, math.inf, 4, 2)
-    tables.edges.add_row(-math.inf, math.inf, 5, 3)
+    tables.edges.add_row(0, 1, 2, 1)
+    tables.edges.add_row(1, 2, 3, 1)
+    tables.edges.add_row(0, 2, 4, 0)
+    tables.edges.add_row(0, 2, 5, 4)
+    tables.edges.add_row(0, 2, 4, 2)
+    tables.edges.add_row(0, 2, 5, 3)
     return tables
 
 
@@ -115,20 +114,13 @@ class TestResolve:
     )
     def test_examples(self, unresolved, resolved):
         resolved2 = argutils.resolve(unresolved)
-        # printt ()
-        # print(resolved.draw_text())
+        # print()
         # print(resolved.draw_text())
         assert resolved.equals(resolved2)
 
     def test_resolve_equal_to_simplify_wh99(self):
         tables = argutils.wh99_example()
         ts1 = argutils.resolve(tables)
-        left = tables.edges.left
-        left[left == -np.inf] = 0
-        right = tables.edges.right
-        right[right == np.inf] = tables.sequence_length
-        tables.edges.left = left
-        tables.edges.right = right
         tables.sort()
         tables.simplify(keep_unary=True)
         ts2 = tables.tree_sequence()
@@ -160,12 +152,6 @@ class TestResolve:
         rho = 0.1
         tables = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
         ts1 = argutils.resolve(tables)
-        left = tables.edges.left
-        left[left == -np.inf] = 0
-        right = tables.edges.right
-        right[right == np.inf] = tables.sequence_length
-        tables.edges.left = left
-        tables.edges.right = right
         tables.sort()
         tables.simplify(keep_unary=True)
         tables.assert_equals(ts1.tables, ignore_provenance=True)
