@@ -512,32 +512,53 @@ an ARG, without applying any of these restrictions.
 % Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
 
 \section*{ARG inference methods}
-Using the terminology developed here to classify ARGs, we review methods developed
-to \emph{infer} ARGs from sequencing data. We focus our attention on some recent methods and discuss the
-properties of the ARGs inferred.
+Using the terminology developed here to classify ARGs, we now review methods developed
+to explicitly \emph{infer} ARGs from sequencing data. 
 
-The problem of reconstructing ARGs for samples of recombining sequences has been of significant interest
-essentially since the ARG was first defined. Early methods focussed on finding the most
-\emph{parsimonious} ARGs, i.e.\ those minimising the number of
-posited recombination events in the history of the sample \citep{hein1990reconstructing, song2003parsimonious,
-lyngso2005minimum}. However, reconstructing a most parsimonious ARG for a given data set
-is NP-hard \citep{wang2001perfect}, and in order to allow for larger input datasets,
-subsequent parsimony-based methods have resorted to various relaxations and heuristics \citep{hein1993heuristic,
-song2005efficient, wu2008association, camara2016inference, thao2019hybrid, ignatieva2021kwarg}.
-The scalability of these methods varies substantially based on the heuristic in use
-and the underlying data structure, with the most efficient tools limited to analysing hundreds of sequences.
-A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing
-the most parsimonious ARGs, but rather aim for computational efficiency
-while seeking to achieve good accuracy of the inferred genealogies
-\citep{minichiello2006mapping, parida2008estimating, wu2011new, mirzaei2017rent}; some of these methods \citep{kelleher2019inferring, speidel2019method, zhang2021biobank} can be practically
-used on megabase scale data and tens to hundreds of thousands of samples under human-like
-parameters.
+\subsection*{Parsimony and heuristics}
+The problem of reconstructing ARGs for samples of recombining sequences has been of significant
+ interest essentially since the ARG was first defined. Early methods focussed on finding the most 
+ \emph{parsimonious} ARGs, i.e.\ those minimising the number of posited recombination events in 
+ the history of the sample \citep{hein1990reconstructing}. Two main approaches to explicitly reconstructing 
+ parsimonious ARGs then emerged: building the ARG either \emph{backwards-in-time} or \emph{along-the-genome}. 
+ The former approach, introduced by \citet{lyngso2005minimum} and implemented in the program 
+ \texttt{Beagle}, starts with the input data matrix and reduces it through row and column operations 
+ corresponding to coalescence, mutation and recombination events, until the empty matrix is reached; 
+ the corresponding sequence of events can then be used to construct an ARG from the bottom up. The 
+ latter approach, introduced by \citet{song2003parsimonious} and first implemented in the program 
+ \texttt{RecMinPath} \citep{song2005constructing}, starts with an initial local tree at some starting 
+ position, and refines the tree moving left and right along the genome, changing the topology of the 
+ tree when necessary through \emph{subtree prune and regraft} (SPR) operations (corresponding to 
+ recombination events). 
+
+Reconstructing a most parsimonious ARG for a given data set is NP-hard \citep{wang2001perfect}, 
+and in order to allow for larger input datasets, subsequent parsimony-based methods have resorted 
+to various relaxations and heuristics. Those utilising variants of the backwards-in-time approach 
+include the programs \texttt{SHRUB} \citep{song2005efficient}, \texttt{GAMARG} \citep{thao2019hybrid}, 
+and \texttt{KwARG} \citep{ignatieva2021kwarg}, and the method described by \citet{wu2008association}. 
+Tools constructing genealogies along-the-genome include \texttt{RecPars} \citep{hein1993heuristic}, 
+\texttt{RENT} \citep{wu2011new} and its sequel \texttt{RENT+} \citep{mirzaei2017rent}. Other approaches 
+include \texttt{TARGet} \citep{camara2016inference}, which implements a method based on topological 
+data analysis. The scalability of these methods varies substantially based on the heuristics in use 
+and the underlying data structure, with the most efficient tools limited to analysing hundreds of 
+sequences. 
+
+A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing 
+the most parsimonious ARGs, but rather aim for computational efficiency while seeking to achieve good 
+accuracy of the inferred genealogies. Such methods include \texttt{Margarita} \citep{minichiello2006mapping} 
+and the approach of \citet{parida2008estimating}; the more recently developed \texttt{Relate} 
+\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} use a combination of both 
+backwards-in-time and along-the-genome approaches, and can be practically used on megabase scale data 
+and tens to hundreds of thousands of samples under human-like parameters.
+Another class of methods has recently emerged that use a \emph{threading} approach, constructing ARGs 
+by adding sequences to the graph one-by-one. Originally introduced by \citet{rasmussen2014genome} as a 
+way of generating MCMC proposals for ARGs, a similar idea was leveraged in \texttt{ARGneedle} 
+\citep{zhang2021biobank} to reconstruct ARGs for biobank-scale data.
 % AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
-% How much more description of the parsimony methods would be good? Maybe a mention of them splitting into
-% "back in time" and "across local trees" types?
 
+\subsection*{Model-based methods}
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
