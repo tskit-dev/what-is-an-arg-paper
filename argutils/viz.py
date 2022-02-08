@@ -8,10 +8,34 @@ import networkx as nx
 import numpy as np
 
 
-def draw(ts, ax):
+def draw(ts, ax, use_ranked_times=None, tweak_x=None):
+    """
+    If use_ranked times is True, the y axis uses the time ranks, with the
+    same times sharing a rank. If False, it uses the true (tree sequence)
+    times. If None, times from the tree sequence are not used and the
+    standard dot layout is used.
+    
+    tweak_x is a dict of {u: x_adjustment_percent} which allows
+    the x position of node u to be hand-adjusted by adding or
+    subtracting a percentage of the total x width of the plot 
+    """
     G = convert_nx(ts)
     labels = {j: f"{j}" for j in range(ts.num_nodes)}
     pos = nx_get_dot_pos(G)
+    if use_ranked_times is not None:
+        if use_ranked_times:
+            _, inv = np.unique(ts.tables.nodes.time, return_inverse=True)
+            ranked_times = (np.cumsum(np.bincount(inv)) - 1)[inv]
+            for i, p in pos.items():
+                p[1] = ranked_times[i]
+        else:
+            times = ts.tables.nodes.time
+            for i, p in pos.items():
+                p[1] = times[i]
+    if tweak_x:
+        plot_width = np.ptp([x for x, _ in pos.values()])
+        for node, tweak_val in tweak_x.items():
+            pos[node] = pos[node] + np.array([(tweak_val/100*plot_width), 0])
     nx.draw(
         G,
         pos,
