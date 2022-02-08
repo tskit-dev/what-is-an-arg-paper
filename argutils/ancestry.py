@@ -1,10 +1,8 @@
 """
 Utilities for generating and converting ARGs in various formats.
 """
-import itertools
 import random
 import math
-import collections
 import dataclasses
 from typing import List
 from typing import Any
@@ -275,14 +273,11 @@ def sim_coalescent(n, rho, L, seed=None, resolved=True):
 
     for node in nodes:
         tables.nodes.add_row(flags=node.flags, time=node.time, metadata=node.metadata)
-    if resolved:
-        tables.sort()
-        # TODO not sure if this is the right thing to do, but it makes it easier
-        # to compare with examples.
-        tables.edges.squash()
-        return tables.tree_sequence()
-    else:
-        return tables
+    tables.sort()
+    # TODO not sure if this is the right thing to do, but it makes it easier
+    # to compare with examples.
+    tables.edges.squash()
+    return tables.tree_sequence()
 
 
 @dataclasses.dataclass
@@ -403,123 +398,6 @@ def sim_wright_fisher(n, N, L, seed=None):
     return tables.tree_sequence()
 
 
-@dataclasses.dataclass
-class Recombination:
-    time: float
-    child: int
-    breakpoint: float
-    left_parent: int
-    right_parent: int
-
-
-@dataclasses.dataclass
-class CommonAncestor:
-    time: float
-    parent: int
-    children: List[int]
-
-
-def resolve(tables):
-    """
-    Converts the specified implicit-ancestry ARG to a fully resolved
-    tskit ARG.
-
-    Each node can have at most two outbound edges. If there is one
-    outbound edge, this must have left and right coordinates
-    (-inf, inf). When we have two outbound edges, we must have
-    coordinates (-inf, x) on one and (x, inf) on the other.
-    This tells us that the child node is a recombinant, with the
-    specified parent nodes.
-
-    """
-    out = tables.copy()
-    out.edges.clear()
-    time = tables.nodes.time
-
-    parent_edges = [[] for _ in tables.nodes]
-    child_edges = [[] for _ in tables.nodes]
-    for edge in tables.edges:
-        parent_edges[edge.child].append(edge)
-        child_edges[edge.parent].append(edge)
-
-    events = []
-    for node, edges in enumerate(parent_edges):
-        if len(edges) > 2:
-            raise ValueError("Only single breakpoints per recombination supported")
-        if len(edges) == 2:
-            edges = sorted(edges, key=lambda x: x.left)
-            if edges[0].left != 0 or edges[1].right != tables.sequence_length:
-                raise ValueError("Non-breakpoint edge coordinates must be 0/L")
-            if edges[0].right != edges[1].left:
-                raise ValueError("Recombination edges must have equal breakpoint")
-            if time[edges[0].parent] != time[edges[1].parent]:
-                raise ValueError("Time of parents must be equal in recombination")
-            event = Recombination(
-                time[edges[0].parent],
-                node,
-                edges[0].right,
-                edges[0].parent,
-                edges[1].parent,
-            )
-            events.append(event)
-
-    for node, edges in enumerate(child_edges):
-        if len(edges) > 1:
-            children = []
-            for edge in edges:
-                children.append(edge.child)
-                if edge.left != 0 or edge.right != tables.sequence_length:
-                    raise ValueError("Non-breakpoint edge coordinates must be 0/L")
-            event = CommonAncestor(time[node], node, children)
-            events.append(event)
-
-    lineages = {}
-    for node_id, node in enumerate(tables.nodes):
-        if node.flags & tskit.NODE_IS_SAMPLE != 0:
-            if node.time != 0:
-                raise ValueError("Only time zero sample supported")
-            lineages[node_id] = Lineage(
-                node_id, [AncestryInterval(0, tables.sequence_length, 1)]
-            )
-    n = len(lineages)
-
-    # print()
-    events.sort(key=lambda e: e.time)
-    for event in events:
-        # print(event)
-        # print(lineages)
-        if isinstance(event, Recombination):
-            left_lineage = lineages.pop(event.child)
-            right_lineage = left_lineage.split(event.breakpoint)
-            left_lineage.node = event.left_parent
-            right_lineage.node = event.right_parent
-            for lineage in [left_lineage, right_lineage]:
-                lineages[lineage.node] = lineage
-                for interval in lineage.ancestry:
-                    out.edges.add_row(
-                        interval.left,
-                        interval.right,
-                        lineage.node,
-                        event.child,
-                    )
-        else:
-            child_lineages = [lineages.pop(child) for child in event.children]
-            c = Lineage(event.parent, [])
-            for interval, intersecting_lineages in merge_ancestry(child_lineages):
-                # if interval.ancestral_to < n:
-                c.ancestry.append(interval)
-                for lineage in intersecting_lineages:
-                    out.edges.add_row(
-                        interval.left, interval.right, c.node, lineage.node
-                    )
-            # if len(c.ancestry) > 0:
-            lineages[c.node] = c
-    # assert len(lineages) == 0
-    out.sort()
-    out.edges.squash()
-    return out.tree_sequence()
-
-
 def wh99_example():
     """
     The example ARG from figure 1 of Wiuf and Hein 99, Recombination as a Point Process
@@ -561,4 +439,5 @@ def wh99_example():
     ca(20, 17)
     ca(19, 21)
 
-    return tables
+    tables.sort()
+    return tables.tree_sequence()
