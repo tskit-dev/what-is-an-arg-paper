@@ -6,7 +6,7 @@ import collections
 import tskit
 import networkx as nx
 import numpy as np
-
+import string
 
 def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
     """
@@ -17,10 +17,19 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
     
     tweak_x is a dict of {u: x_adjustment_percent} which allows
     the x position of node u to be hand-adjusted by adding or
-    subtracting a percentage of the total x width of the plot 
+    subtracting a percentage of the total x width of the plot
+    
+    If a metadata key called "name" exists for the node, it is taken as
+    a node label, otherwise the node ID will be used as a label instead.
     """
     G = convert_nx(ts)
-    labels = {j: f"{j}" for j in range(ts.num_nodes)}
+    labels = {}
+    for nd in ts.nodes():
+        try:
+            labels[nd.id] = str(nd.metadata["name"])
+        except (TypeError, KeyError):
+            labels[nd.id] = str(nd.id)
+
     pos = nx_get_dot_pos(G)
     if use_ranked_times is not None:
         if use_ranked_times:
@@ -56,6 +65,29 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
         arrowstyle="-|>" if arrows else "-",
         ax=ax,
     )
+
+
+def label_nodes(ts, labels=None):
+    """
+    Adds a metadata item called "name" to each node, whose value
+    is given by the labels dictionary passed in. If labels is None (default),
+    use the dictionary {0: 'A', 1: 'B', 2: 'C', ... 26: 'Z'}.
+    Any nodes without a corresponding key in the labels dictionary will
+    simply have their metadata value set to their node id.
+    
+    Note that this means that if no labels are given, nodes 26 onwards
+    will be labelled with numbers rather than ascii uppercase letters.
+    """
+    if labels is None:
+        labels = {i: lab for i, lab in enumerate(string.ascii_uppercase)}
+    tables = ts.dump_tables()
+
+    tables.nodes.clear()
+    for i, nd in enumerate(ts.tables.nodes):
+        m = nd.metadata or {}
+        # assume we can set metadata to a dict: e.g. that node.metadata_schema is json
+        tables.nodes.append(nd.replace(metadata={**m, "name": labels.get(i, i)}))
+    return tables.tree_sequence()
 
 
 def convert_nx(ts):
