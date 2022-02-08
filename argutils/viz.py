@@ -8,8 +8,12 @@ import networkx as nx
 import numpy as np
 import string
 
-def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
+def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False, pos=None):
     """
+    Draw a graphical representation of a tree sequence. If a metadata key
+    called "name" exists for the node, it is taken as
+    a node label, otherwise the node ID will be used as a label instead.
+
     If use_ranked times is True, the y axis uses the time ranks, with the
     same times sharing a rank. If False, it uses the true (tree sequence)
     times. If None, times from the tree sequence are not used and the
@@ -19,8 +23,8 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
     the x position of node u to be hand-adjusted by adding or
     subtracting a percentage of the total x width of the plot
     
-    If a metadata key called "name" exists for the node, it is taken as
-    a node label, otherwise the node ID will be used as a label instead.
+    If pos is passed in, it should be a dictionary mapping nodes to
+    positions.
     """
     G = convert_nx(ts)
     labels = {}
@@ -30,7 +34,9 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
         except (TypeError, KeyError):
             labels[nd.id] = str(nd.id)
 
-    pos = nx_get_dot_pos(G)
+    if pos is None:
+        pos = nx_get_dot_pos(G)
+
     if use_ranked_times is not None:
         if use_ranked_times:
             _, inv = np.unique(ts.tables.nodes.time, return_inverse=True)
@@ -66,6 +72,7 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
         ax=ax,
     )
 
+    return pos
 
 def label_nodes(ts, labels=None):
     """
