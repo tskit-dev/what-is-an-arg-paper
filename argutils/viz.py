@@ -5,6 +5,7 @@ import collections
 
 import tskit
 import networkx as nx
+import numpy as np
 
 
 def draw(ts, ax):
@@ -62,8 +63,9 @@ def nx_get_dot_pos(G, add_invisibles=False):
             prev_node = nodes[0]
         # We could also cluster nodes from a single individual together here
     A.layout(prog="dot")
-    # Using negative values here as a simple way to get y coordinates going
-    # in the direction we want.
+    # multiply the y coord by -1 to get y axis going in the direction we want.
+    xy_dir = np.array([1, -1])
     return {
-        n: [-float(x) for x in A.get_node(n).attr["pos"].split(",")] for n in G.nodes()
+        n: np.fromstring(A.get_node(n).attr["pos"], sep=",") * xy_dir for n in G.nodes()
     }
+
