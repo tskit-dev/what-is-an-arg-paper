@@ -8,7 +8,7 @@ import networkx as nx
 import numpy as np
 
 
-def draw(ts, ax, use_ranked_times=None, tweak_x=None):
+def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False):
     """
     If use_ranked times is True, the y axis uses the time ranks, with the
     same times sharing a rank. If False, it uses the true (tree sequence)
@@ -36,6 +36,7 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None):
         plot_width = np.ptp([x for x, _ in pos.values()])
         for node, tweak_val in tweak_x.items():
             pos[node] = pos[node] + np.array([(tweak_val/100*plot_width), 0])
+    # Draw just the nodes
     nx.draw(
         G,
         pos,
@@ -45,14 +46,23 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None):
         font_size=9,
         labels=labels,
         ax=ax,
+        edgelist=[],
+    )
+    # Now add the edges
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        edgelist=G.edges(),
+        arrowstyle="-|>" if arrows else "-",
+        ax=ax,
     )
 
 
 def convert_nx(ts):
     """
-    Returns the specified tree sequence as an networkx graph.
+    Returns the specified tree sequence as an networkx directed graph.
     """
-    G = nx.Graph()
+    G = nx.DiGraph()
     edges = collections.defaultdict(list)
     for edge in ts.edges():
         edges[(edge.child, edge.parent)].append((edge.left, edge.right))
