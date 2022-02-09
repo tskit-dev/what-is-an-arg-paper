@@ -2,11 +2,13 @@
 Viz routines for args.
 """
 import collections
+import itertools
+import string
 
 import tskit
 import networkx as nx
 import numpy as np
-import string
+import pydot
 
 def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False, pos=None):
     """
@@ -112,33 +114,33 @@ def convert_nx(ts):
     return G
 
 
-def nx_get_dot_pos(G, add_invisibles=False):
+def nx_get_dot_pos(G):
     """
     Layout using graphviz's "dot" algorithm and return a dict of positions in the
     format required by networkx. We assume that the nodes have a "time" attribute
     """
+    P=nx.drawing.nx_pydot.to_pydot(G) # switch to a Pydot representation
     nodes_at_time = collections.defaultdict(list)
-    for nd in G.nodes(data=True):
-        nodes_at_time[nd[1]["time"]].append(nd[0])
-
-    A = nx.nx_agraph.to_agraph(G)
+    for nd in P.get_nodes():
+        nodes_at_time[float(nd.get("time"))].append(nd)
+    
     # First cluster all nodes at the same times (probably mostly samples)
     for t, nodes in nodes_at_time.items():
         if len(nodes) > 1:
-            A.add_subgraph(nodes, level="same", name=f"cluster_t{t}")
-    if add_invisibles:
-        # Must add in "invisible" edges between different levels, to stop them clustering
-        # on the same level
-        prev_node = None
-        for t, nodes in nodes_at_time.items():
-            if prev_node is not None:
-                A.add_edge(prev_node, nodes[0], style="invis")
-            prev_node = nodes[0]
-        # We could also cluster nodes from a single individual together here
-    A.layout(prog="dot")
-    # multiply the y coord by -1 to get y axis going in the direction we want.
-    xy_dir = np.array([1, -1])
+            S=pydot.Cluster(f"cluster_t{t}")
+            for nd in nodes:
+                S.add_node(nd)
+            P.add_subgraph(S)
+    graphviz_bytes = P.create_dot()
+    graphs = pydot.graph_from_dot_data(graphviz_bytes.decode())
+    assert len(graphs) == 1
+    graph = graphs[0]
+    # negate the coords to get the y axis going in the direction we want.
     return {
-        n: np.fromstring(A.get_node(n).attr["pos"], sep=",") * xy_dir for n in G.nodes()
+        # [1:-1] snips off enclosing quotes, negation corrects the y axis direction
+        int(n.get_name()): -np.fromstring(n.get_pos()[1:-1], sep=",")
+        # need to iterate over this graph and also all the subgraphs to get all the nodes
+        for g in itertools.chain([graph], graph.get_subgraphs()) for n in g.get_nodes()
+        if n.get_pos() and n.get_name().isdigit()
     }
 
