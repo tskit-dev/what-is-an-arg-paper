@@ -8,6 +8,7 @@ from typing import List
 from typing import Any
 
 import tskit
+import numpy as np
 
 NODE_IS_RECOMB = 1 << 1
 
