@@ -134,15 +134,283 @@ discussions, and so we will explain the process in some detail.
 See~\cite{kelleher2016efficient} for a more detailed
 description of the algorithm, and how it may be implemented efficiently.
 
-\begin{figure}
-\caption{\label{fig-sim-statespace} An illustration of the state space
-of Hudson's algorithm (A) and the big ARG (B) at a given instant. The
-state maintained by Hudson's algorithm is considerably more complicated,
-but is guaranteed to only simulate events corresponding to genetic
-ancestors of the sample.
-}
-\end{figure}
 
+\begin{figure}[ht]
+\centering
+% FIXME this is a quick nasty hack to make the figure a bit smaller and
+% prevent flushing all the other figures to the end of the document.
+\scalebox{0.5}{
+\begin{tabular}{cc}
+\begin{tikzpicture}
+	% Samples at x = 0, 4, and 6
+	\node [circle, fill, scale=0.2,label=above right:{\small A}] at (0,0) {A};
+	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
+	\draw (-0.1, -0.1) -- (-0.1, -0.4);
+	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
+	\node [circle, fill, scale=0.2,label=above right:{\small B}] at (4,0) {B};
+	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
+	\node [circle, fill, scale=0.2,label=above left:{\small C}] at (6,0) {C};
+	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
+
+	% B and C merge into D
+	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
+	\node [circle, fill, scale=0.2,label=above right:{\small D}] at (5,1.2) {D};
+	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
+	\draw (5.1, 1.1) -- (5.1, 0.8);
+	\node [label=below:{\small $w$}] at (5.1, 1) {};
+
+	% A splits into E and F
+	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
+	\node [circle, fill, scale=0.2,label=above left:{\small E}] at (-1,1.5) {E};
+	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
+	\draw (-1.1, 1.25) -- (-0.6, 1.25);
+	\node [circle, fill, scale=0.2,label=above left:{\small F}] at (1,1.5) {F};
+	\draw (0.6, 1.25) -- (0.9, 1.25);
+	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
+	\draw (1.2, 1.4) -- (1.2, 1.1);
+	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+
+	% D splits into G and H
+	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
+	\node [circle, fill, scale=0.2,label=above left:{\small G}] at (4,2.4) {G};
+	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
+	\draw (4.1, 2.15) -- (4.4, 2.15);
+	\node [circle, fill, scale=0.2,label=above left:{\small H}] at (6,2.4) {H};
+	\draw (5.6, 2.15) -- (6.1, 2.15);
+	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
+
+	% F splits into I and J
+	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small I}] at (0,3.1) {I};
+	\draw (-0.4, 2.85) -- (0.2, 2.85);
+	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
+	\node [circle, fill, scale=0.2,label=above left:{\small J}] at (2,3.1) {J};
+	\draw (1.6, 2.85) -- (1.9, 2.85);
+	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
+	\draw (2.2, 2.85) -- (2.4, 2.85);
+
+	% E and I merge into K
+	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small K}] at (-0.5,4.5) {K};
+	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
+	\draw (-0.6, 4.25) -- (-0.3, 4.25);
+	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
+	\draw (-0.5, 4.4) -- (-0.5, 4.1);
+	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
+
+	% G and J merge into L
+	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small L}] at (3,5.4) {L};
+	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
+	\draw (2.9, 5.15) -- (3.4, 5.15);
+
+	% K splits into M and N
+	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
+	\node [circle, fill, scale=0.2,label=above left:{\small M}] at (-1.5,6) {M};
+	\draw (-1.9, 5.75) -- (-1.3, 5.75);
+	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
+	\node [circle, fill, scale=0.2,label=above left:{\small N}] at (0.5,6) {N};
+	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
+	\draw (0.4, 5.75) -- (0.9, 5.75);
+
+	% L and N merge into O
+	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
+	\node [circle, fill, scale=0.2,label=above left:{\small O}] at (1.75,7.2) {O};
+	\draw (1.35, 6.95) -- (2.15, 6.95);
+
+	% M and H continue to the end
+	\draw (-1.5, 6) -- (-1.5, 8);
+	\draw (6, 2.4) -- (6, 8);
+
+	% Edge annotations above each node
+	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {}; % A
+	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {}; % B
+	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {}; % C
+	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {}; % D
+	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {}; % E
+	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {}; % F
+	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {}; % G
+	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {}; % H
+	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {}; % I
+	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {}; % J
+	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {}; % K
+	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {}; % L
+	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {}; % M
+	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {}; % N
+
+	% Dashed lines for start and end times
+	\draw[dashed] (-2, 0) -- (11.1, 0);
+	\node [label=left:{$t = 0$}] at (-2,0) {};
+	\draw[dashed] (-2, 8) -- (11.1, 8);
+	\node [label=left:{$t = T$}] at (-2,8) {};
+
+	% Numbers of extant ancestors and links, from top to bottom
+	\node[label=right:{Extant material}] at (7.5, 8.2) {};
+	\node[label=right:{2 \; $2 L - x - w$}] at (7.5, 7.6) {};
+	\node[label=right:{4 \; $2 L + 2 v - x - w$}] at (7.5, 6.6) {};
+	\node[label=right:{3 \; $2 L + v - w$}] at (7.5, 5.7) {};
+	\node[label=right:{4 \; $2 L + x - v$}] at (7.5, 4.95) {};
+	\node[label=right:{5 \; $2 L$}] at (7.5, 3.8) {};
+	\node[label=right:{4 \; $2 L$}] at (7.5, 2.75) {};
+	\node[label=right:{3 \; $2 L$}] at (7.5, 1.95) {};
+	\node[label=right:{2 \; $2 L$}] at (7.5, 1.35) {};
+	\node[label=right:{3 \; $3 L$}] at (7.5, 0.6) {};
+
+	% Gray dashed lines to visually separate holding times
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2); % D
+	\draw[color=gray, dashed] (7.5, 1.5) -- (11.1, 1.5); % E and F
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4); % G and H
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1); % I and J
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5); % K
+	\draw[color=gray, dashed] (7.5, 5.4) -- (11.1, 5.4); % L
+	\draw[color=gray, dashed] (7.5, 6) -- (11.1, 6); % M and N
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11.1, 7.2); % O
+\end{tikzpicture}
+&
+\begin{tikzpicture}
+	% Samples at x = 0, 4, and 6
+	\node [circle, fill, scale=0.2,label=above right:{\small A}] at (0,0) {A};
+	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
+	\draw (-0.1, -0.1) -- (-0.1, -0.4);
+	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
+	\node [circle, fill, scale=0.2,label=above right:{\small B}] at (4,0) {B};
+	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
+	\node [circle, fill, scale=0.2,label=above left:{\small C}] at (6,0) {C};
+	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
+
+	% B and C merge into D
+	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
+	\node [circle, fill, scale=0.2,label=above right:{\small D}] at (5,1.2) {D};
+	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
+	\draw (5.1, 1.1) -- (5.1, 0.8);
+	\node [label=below:{\small $w$}] at (5.1, 1) {};
+
+	% A splits into E and F
+	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
+	\node [circle, fill, scale=0.2,label=above left:{\small E}] at (-1,1.5) {E};
+	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
+	\draw (-1.1, 1.25) -- (-0.6, 1.25);
+	\node [circle, fill, scale=0.2,label=above left:{\small F}] at (1,1.5) {F};
+	\draw (0.6, 1.25) -- (0.9, 1.25);
+	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
+	\draw (1.2, 1.4) -- (1.2, 1.1);
+	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+
+	% D splits into G and H
+	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
+	\node [circle, fill, scale=0.2,label=above left:{\small G}] at (4,2.4) {G};
+	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
+	\draw (4.1, 2.15) -- (4.4, 2.15);
+	\node [circle, fill, scale=0.2,label=above left:{\small H}] at (6,2.4) {H};
+	\draw (5.6, 2.15) -- (6.1, 2.15);
+	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
+	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
+	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
+
+	% F splits into I and J
+	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small I}] at (0,3.1) {I};
+	\draw (-0.4, 2.85) -- (0.2, 2.85);
+	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
+	\node [circle, fill, scale=0.2,label=above left:{\small J}] at (2,3.1) {J};
+	\draw (1.6, 2.85) -- (1.9, 2.85);
+	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
+	\draw (2.2, 2.85) -- (2.4, 2.85);
+
+	% E and I merge into K
+	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small K}] at (-0.5,4.5) {K};
+	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
+	\draw (-0.6, 4.25) -- (-0.3, 4.25);
+	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
+	\draw (-0.5, 4.4) -- (-0.5, 4.1);
+	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
+
+	% H splits into P and Q. Red Q node drawn further down so that it overlays the black line underneath
+	\draw (6, 2.4) -- (6, 3.8) -- (7, 3.8);
+	\draw [color=red](6, 3.8) -- (5, 3.8);
+	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small P}}] at (5,3.8) {P};
+	\draw (4.6, 3.55) -- (5.4, 3.55);
+	\draw (6.6, 3.55) -- (7.1, 3.55);
+	\draw (7.1, 3.6) -- (7.4, 3.6) -- (7.4, 3.5) -- (7.1, 3.5) -- (7.1, 3.6);
+
+	% G and J merge into L
+	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
+	\node [circle, fill, scale=0.2,label=above left:{\small L}] at (3,5.4) {L};
+	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
+	\draw (2.9, 5.15) -- (3.4, 5.15);
+
+	% K splits into M and N
+	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
+	\node [circle, fill, scale=0.2,label=above left:{\small M}] at (-1.5,6) {M};
+	\draw (-1.9, 5.75) -- (-1.3, 5.75);
+	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
+	\node [circle, fill, scale=0.2,label=above left:{\small N}] at (0.5,6) {N};
+	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
+	\draw (0.4, 5.75) -- (0.9, 5.75);
+
+	% P and L merge into R. R node drawn further down so that it overlays the black lines underneath
+	\draw [color=red](5, 3.8) -- (5, 6.6) -- (4, 6.6);
+	\draw (4,6.6) -- (3,6.6) -- (3, 5.4);
+	\draw (3.6, 6.4) -- (3.9, 6.4) -- (3.9, 6.3) -- (3.6, 6.3) -- (3.6, 6.4);
+	\draw (3.9, 6.35) -- (4.4, 6.35);
+
+	% R and N merge into O. O node drawn further down so that it overlays the red line underneath
+	\draw (0.5, 6) -- (0.5, 7.2) -- (4,7.2) -- (4,6.6);
+	\draw (1.85, 6.95) -- (2.65, 6.95);
+	% R node can now be added
+	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small R}}] at (4,6.6) {R};
+
+	% M, O, and Q continue to the end
+	\draw (-1.5, 6) -- (-1.5, 8);
+	\draw [color=red](2.25, 7.2) -- (2.25, 8);
+	\draw (7, 3.8) -- (7, 8);
+	% O and Q nodes can now be added
+	\node [circle, fill, scale=0.2,label=above left:{\small O}] at (2.25,7.2) {O};
+	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small Q}}] at (7,3.8) {Q};
+
+	% Dashed lines for start and end times
+	\draw[dashed] (-2, 0) -- (11, 0);
+	\node [label=left:{$t = 0$}] at (-2,0) {};
+	\draw[dashed] (-2, 8) -- (11, 8);
+	\node [label=left:{$t = T$}] at (-2,8) {};
+
+	% Numbers of extant ancestors and links, from top to bottom
+	\node[label=right:{Extant material}] at (7.5, 8.2) {};
+	\node[label=right:{3 \; $3 L$}] at (7.5, 7.6) {};
+	\node[label=right:{4 \; $4 L$}] at (7.5, 6.9) {};
+	\node[label=right:{5 \; $5 L$}] at (7.5, 6.3) {};
+	\node[label=right:{4 \; $4 L$}] at (7.5, 5.7) {};
+	\node[label=right:{5 \; $5 L$}] at (7.5, 4.95) {};
+	\node[label=right:{6 \; $6 L$}] at (7.5, 4.15) {};
+	\node[label=right:{5 \; $5 L$}] at (7.5, 3.45) {};
+	\node[label=right:{4 \; $4 L$}] at (7.5, 2.75) {};
+	\node[label=right:{3 \; $3 L$}] at (7.5, 1.95) {};
+	\node[label=right:{2 \; $2 L$}] at (7.5, 1.35) {};
+	\node[label=right:{3 \; $3 L$}] at (7.5, 0.6) {};
+
+	% Gray dashed lines to visually separate holding times
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2); % D
+	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5); % E and F
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4); % G and H
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1); % I and J
+	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);	% P and Q
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5); % K
+	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4); % L
+	\draw[color=gray, dashed] (7.5, 6) -- (11, 6); % M and N
+	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);	% R
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2); % O
+\end{tikzpicture}
+\end{tabular}
+}
+\caption{(Top) A realisation of the graph traversed by Hudson's algorithm started from a sample of three continuous chromosomes of length $L$ at time $t = 0$, and propagated until time $T$.
+The MRCA on the genetic interval $[x, z)$ is reached at node L, while that on $[0, x)$ is reached at node O, which is a root as it carries only fully coalesced ancestral segments.
+The non-ancestral segment $[x, y)$ above node K contributes to the rate of effective recombinations because it is trapped between ancestral segments.
+The two columns titled ``Extant material" are the number of extant lineages and the total length of genetic material on which an effective recombination can take place during each time interval.
+(Bottom) A corresponding realisation of a big ARG, which augments Hudson's algorithm by tracking nonancestral lineages.
+The result is a simpler state space and dynamics, at the cost of extra nodes and edges, highlighted in red, which do not affect the local tree at any site.}
+\label{hudson_vs_bigARG}
+\end{figure}
 
 Hudson's algorithm operates by tracking the state of a set of ancestral
 lineages as we go backwards in time.
@@ -400,283 +668,11 @@ and no more.
 We describe here an alternative formulation in which the
 concepts are based on the diploid pedigree, which
 is free from the limitations discussed in the previous section.
-\cite{mathieson2020ancestry} and others 
+\cite{mathieson2020ancestry} and others
 \citep{wakeley2012genetics,gusfield2014recombinatorics,speed2015naturereviewsgenetics}
 have also suggested this approach, although without explicitly defining
 the roles of nodes and the details of how ancestry
 flows along edges.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}
-	% Samples at x = 0, 4, and 6
-	\node [circle, fill, scale=0.2,label=above right:{\small A}] at (0,0) {A};
-	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
-	\draw (-0.1, -0.1) -- (-0.1, -0.4);
-	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
-	\node [circle, fill, scale=0.2,label=above right:{\small B}] at (4,0) {B};
-	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
-	\node [circle, fill, scale=0.2,label=above left:{\small C}] at (6,0) {C};
-	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
-
-	% B and C merge into D
-	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
-	\node [circle, fill, scale=0.2,label=above right:{\small D}] at (5,1.2) {D};
-	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
-	\draw (5.1, 1.1) -- (5.1, 0.8);
-	\node [label=below:{\small $w$}] at (5.1, 1) {};
-
-	% A splits into E and F
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\node [circle, fill, scale=0.2,label=above left:{\small E}] at (-1,1.5) {E};
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\node [circle, fill, scale=0.2,label=above left:{\small F}] at (1,1.5) {F};
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
-	
-	% D splits into G and H
-	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
-	\node [circle, fill, scale=0.2,label=above left:{\small G}] at (4,2.4) {G};
-	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
-	\draw (4.1, 2.15) -- (4.4, 2.15);
-	\node [circle, fill, scale=0.2,label=above left:{\small H}] at (6,2.4) {H};
-	\draw (5.6, 2.15) -- (6.1, 2.15);
-	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
-	
-	% F splits into I and J
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small I}] at (0,3.1) {I};
-	\draw (-0.4, 2.85) -- (0.2, 2.85);
-	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
-	\node [circle, fill, scale=0.2,label=above left:{\small J}] at (2,3.1) {J};
-	\draw (1.6, 2.85) -- (1.9, 2.85);
-	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
-	\draw (2.2, 2.85) -- (2.4, 2.85);
-	
-	% E and I merge into K
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small K}] at (-0.5,4.5) {K};
-	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
-	\draw (-0.6, 4.25) -- (-0.3, 4.25);
-	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
-	\draw (-0.5, 4.4) -- (-0.5, 4.1);
-	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
-	
-	% G and J merge into L
-	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small L}] at (3,5.4) {L};
-	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
-	\draw (2.9, 5.15) -- (3.4, 5.15);
-	
-	% K splits into M and N
-	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
-	\node [circle, fill, scale=0.2,label=above left:{\small M}] at (-1.5,6) {M};
-	\draw (-1.9, 5.75) -- (-1.3, 5.75);
-	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
-	\node [circle, fill, scale=0.2,label=above left:{\small N}] at (0.5,6) {N};
-	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
-	\draw (0.4, 5.75) -- (0.9, 5.75);
-	
-	% L and N merge into O
-	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
-	\node [circle, fill, scale=0.2,label=above left:{\small O}] at (1.75,7.2) {O};
-	\draw (1.35, 6.95) -- (2.15, 6.95);
-
-	% M and H continue to the end
-	\draw (-1.5, 6) -- (-1.5, 8);
-	\draw (6, 2.4) -- (6, 8);
-
-	% Edge annotations above each node
-	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {}; % A
-	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {}; % B
-	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {}; % C
-	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {}; % D
-	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {}; % E
-	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {}; % F
-	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {}; % G
-	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {}; % H
-	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {}; % I
-	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {}; % J
-	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {}; % K
-	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {}; % L
-	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {}; % M
-	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {}; % N
-
-	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11.1, 0);
-	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11.1, 8);
-	\node [label=left:{$t = T$}] at (-2,8) {};
-	
-	% Numbers of extant ancestors and links, from top to bottom
-	\node[label=right:{Extant material}] at (7.5, 8.2) {};
-	\node[label=right:{2 \; $2 L - x - w$}] at (7.5, 7.6) {};
-	\node[label=right:{4 \; $2 L + 2 v - x - w$}] at (7.5, 6.6) {};
-	\node[label=right:{3 \; $2 L + v - w$}] at (7.5, 5.7) {};
-	\node[label=right:{4 \; $2 L + x - v$}] at (7.5, 4.95) {};
-	\node[label=right:{5 \; $2 L$}] at (7.5, 3.8) {};
-	\node[label=right:{4 \; $2 L$}] at (7.5, 2.75) {};
-	\node[label=right:{3 \; $2 L$}] at (7.5, 1.95) {};
-	\node[label=right:{2 \; $2 L$}] at (7.5, 1.35) {};
-	\node[label=right:{3 \; $3 L$}] at (7.5, 0.6) {};
-	
-	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2); % D
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11.1, 1.5); % E and F
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4); % G and H
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1); % I and J
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5); % K
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11.1, 5.4); % L
-	\draw[color=gray, dashed] (7.5, 6) -- (11.1, 6); % M and N
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11.1, 7.2); % O
-\end{tikzpicture}
-\begin{tikzpicture}
-	% Samples at x = 0, 4, and 6
-	\node [circle, fill, scale=0.2,label=above right:{\small A}] at (0,0) {A};
-	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
-	\draw (-0.1, -0.1) -- (-0.1, -0.4);
-	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
-	\node [circle, fill, scale=0.2,label=above right:{\small B}] at (4,0) {B};
-	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
-	\node [circle, fill, scale=0.2,label=above left:{\small C}] at (6,0) {C};
-	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
-
-	% B and C merge into D
-	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
-	\node [circle, fill, scale=0.2,label=above right:{\small D}] at (5,1.2) {D};
-	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
-	\draw (5.1, 1.1) -- (5.1, 0.8);
-	\node [label=below:{\small $w$}] at (5.1, 1) {};
-
-	% A splits into E and F
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\node [circle, fill, scale=0.2,label=above left:{\small E}] at (-1,1.5) {E};
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\node [circle, fill, scale=0.2,label=above left:{\small F}] at (1,1.5) {F};
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
-	
-	% D splits into G and H
-	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
-	\node [circle, fill, scale=0.2,label=above left:{\small G}] at (4,2.4) {G};
-	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
-	\draw (4.1, 2.15) -- (4.4, 2.15);
-	\node [circle, fill, scale=0.2,label=above left:{\small H}] at (6,2.4) {H};
-	\draw (5.6, 2.15) -- (6.1, 2.15);
-	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
-	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
-	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
-	
-	% F splits into I and J
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small I}] at (0,3.1) {I};
-	\draw (-0.4, 2.85) -- (0.2, 2.85);
-	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
-	\node [circle, fill, scale=0.2,label=above left:{\small J}] at (2,3.1) {J};
-	\draw (1.6, 2.85) -- (1.9, 2.85);
-	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
-	\draw (2.2, 2.85) -- (2.4, 2.85);
-	
-	% E and I merge into K
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small K}] at (-0.5,4.5) {K};
-	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
-	\draw (-0.6, 4.25) -- (-0.3, 4.25);
-	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
-	\draw (-0.5, 4.4) -- (-0.5, 4.1);
-	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
-	
-	% H splits into P and Q. Red Q node drawn further down so that it overlays the black line underneath
-	\draw (6, 2.4) -- (6, 3.8) -- (7, 3.8);
-	\draw [color=red](6, 3.8) -- (5, 3.8);
-	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small P}}] at (5,3.8) {P};
-	\draw (4.6, 3.55) -- (5.4, 3.55);
-	\draw (6.6, 3.55) -- (7.1, 3.55);
-	\draw (7.1, 3.6) -- (7.4, 3.6) -- (7.4, 3.5) -- (7.1, 3.5) -- (7.1, 3.6);
-	
-	% G and J merge into L
-	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\node [circle, fill, scale=0.2,label=above left:{\small L}] at (3,5.4) {L};
-	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
-	\draw (2.9, 5.15) -- (3.4, 5.15);
-	
-	% K splits into M and N
-	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
-	\node [circle, fill, scale=0.2,label=above left:{\small M}] at (-1.5,6) {M};
-	\draw (-1.9, 5.75) -- (-1.3, 5.75);
-	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
-	\node [circle, fill, scale=0.2,label=above left:{\small N}] at (0.5,6) {N};
-	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
-	\draw (0.4, 5.75) -- (0.9, 5.75);
-	
-	% P and L merge into R. R node drawn further down so that it overlays the black lines underneath
-	\draw [color=red](5, 3.8) -- (5, 6.6) -- (4, 6.6);
-	\draw (4,6.6) -- (3,6.6) -- (3, 5.4);
-	\draw (3.6, 6.4) -- (3.9, 6.4) -- (3.9, 6.3) -- (3.6, 6.3) -- (3.6, 6.4);
-	\draw (3.9, 6.35) -- (4.4, 6.35);
-	
-	% R and N merge into O. O node drawn further down so that it overlays the red line underneath
-	\draw (0.5, 6) -- (0.5, 7.2) -- (4,7.2) -- (4,6.6);
-	\draw (1.85, 6.95) -- (2.65, 6.95);
-	% R node can now be added
-	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small R}}] at (4,6.6) {R};
-
-	% M, O, and Q continue to the end
-	\draw (-1.5, 6) -- (-1.5, 8);
-	\draw [color=red](2.25, 7.2) -- (2.25, 8);
-	\draw (7, 3.8) -- (7, 8);
-	% O and Q nodes can now be added
-	\node [circle, fill, scale=0.2,label=above left:{\small O}] at (2.25,7.2) {O};
-	\node [color=red, circle, fill, scale=0.2,label={[red]above left:{\small Q}}] at (7,3.8) {Q};
-
-	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11, 0);
-	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11, 8);
-	\node [label=left:{$t = T$}] at (-2,8) {};
-	
-	% Numbers of extant ancestors and links, from top to bottom
-	\node[label=right:{Extant material}] at (7.5, 8.2) {};
-	\node[label=right:{3 \; $3 L$}] at (7.5, 7.6) {};
-	\node[label=right:{4 \; $4 L$}] at (7.5, 6.9) {};
-	\node[label=right:{5 \; $5 L$}] at (7.5, 6.3) {};
-	\node[label=right:{4 \; $4 L$}] at (7.5, 5.7) {};
-	\node[label=right:{5 \; $5 L$}] at (7.5, 4.95) {};
-	\node[label=right:{6 \; $6 L$}] at (7.5, 4.15) {};
-	\node[label=right:{5 \; $5 L$}] at (7.5, 3.45) {};
-	\node[label=right:{4 \; $4 L$}] at (7.5, 2.75) {};
-	\node[label=right:{3 \; $3 L$}] at (7.5, 1.95) {};
-	\node[label=right:{2 \; $2 L$}] at (7.5, 1.35) {};
-	\node[label=right:{3 \; $3 L$}] at (7.5, 0.6) {};
-	
-	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2); % D
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5); % E and F
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4); % G and H
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1); % I and J
-	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);	% P and Q
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5); % K
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4); % L
-	\draw[color=gray, dashed] (7.5, 6) -- (11, 6); % M and N
-	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);	% R
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2); % O
-\end{tikzpicture}
-\caption{(Top) A realisation of the graph traversed by Hudson's algorithm started from a sample of three continuous chromosomes of length $L$ at time $t = 0$, and propagated until time $T$.
-The MRCA on the genetic interval $[x, z)$ is reached at node L, while that on $[0, x)$ is reached at node O, which is a root as it carries only fully coalesced ancestral segments.
-The non-ancestral segment $[x, y)$ above node K contributes to the rate of effective recombinations because it is trapped between ancestral segments.
-The two columns titled ``Extant material" are the number of extant lineages and the total length of genetic material on which an effective recombination can take place during each time interval.
-(Bottom) A corresponding realisation of a big ARG, which augments Hudson's algorithm by tracking nonancestral lineages.
-The result is a simpler state space and dynamics, at the cost of extra nodes and edges, highlighted in red, which do not affect the local tree at any site.}
-\label{hudson_vs_bigARG}
-\end{figure}
-
-
 \begin{figure}
 \vspace{5em}
 \caption{\label{fig-pedigree-and-arg}
@@ -785,46 +781,46 @@ an ARG, without applying any of these restrictions.
 
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
-to explicitly \emph{infer} ARGs from sequencing data. 
+to explicitly \emph{infer} ARGs from sequencing data.
 
 \subsection*{Parsimony and heuristics}
 The problem of reconstructing ARGs for samples of recombining sequences has been of significant
- interest essentially since the ARG was first defined. Early methods focussed on finding the most 
- \emph{parsimonious} ARGs, i.e.\ those minimising the number of posited recombination events in 
- the history of the sample \citep{hein1990reconstructing}. Two main approaches to explicitly reconstructing 
- parsimonious ARGs then emerged: building the ARG either \emph{backwards-in-time} or \emph{along-the-genome}. 
- The former approach, introduced by \citet{lyngso2005minimum} and implemented in the program 
- \texttt{Beagle}, starts with the input data matrix and reduces it through row and column operations 
- corresponding to coalescence, mutation and recombination events, until the empty matrix is reached; 
- the corresponding sequence of events can then be used to construct an ARG from the bottom up. The 
- latter approach, introduced by \citet{song2003parsimonious} and first implemented in the program 
- \texttt{RecMinPath} \citep{song2005constructing}, starts with an initial local tree at some starting 
- position, and refines the tree moving left and right along the genome, changing the topology of the 
- tree when necessary through \emph{subtree prune and regraft} (SPR) operations (corresponding to 
- recombination events). 
+ interest essentially since the ARG was first defined. Early methods focussed on finding the most
+ \emph{parsimonious} ARGs, i.e.\ those minimising the number of posited recombination events in
+ the history of the sample \citep{hein1990reconstructing}. Two main approaches to explicitly reconstructing
+ parsimonious ARGs then emerged: building the ARG either \emph{backwards-in-time} or \emph{along-the-genome}.
+ The former approach, introduced by \citet{lyngso2005minimum} and implemented in the program
+ \texttt{Beagle}, starts with the input data matrix and reduces it through row and column operations
+ corresponding to coalescence, mutation and recombination events, until the empty matrix is reached;
+ the corresponding sequence of events can then be used to construct an ARG from the bottom up. The
+ latter approach, introduced by \citet{song2003parsimonious} and first implemented in the program
+ \texttt{RecMinPath} \citep{song2005constructing}, starts with an initial local tree at some starting
+ position, and refines the tree moving left and right along the genome, changing the topology of the
+ tree when necessary through \emph{subtree prune and regraft} (SPR) operations (corresponding to
+ recombination events).
 
-Reconstructing a most parsimonious ARG for a given data set is NP-hard \citep{wang2001perfect}, 
-and in order to allow for larger input datasets, subsequent parsimony-based methods have resorted 
-to various relaxations and heuristics. Those utilising variants of the backwards-in-time approach 
-include the programs \texttt{SHRUB} \citep{song2005efficient}, \texttt{GAMARG} \citep{thao2019hybrid}, 
-and \texttt{KwARG} \citep{ignatieva2021kwarg}, and the method described by \citet{wu2008association}. 
-Tools constructing genealogies along-the-genome include \texttt{RecPars} \citep{hein1993heuristic}, 
-\texttt{RENT} \citep{wu2011new} and its sequel \texttt{RENT+} \citep{mirzaei2017rent}. Other approaches 
-include \texttt{TARGet} \citep{camara2016inference}, which implements a method based on topological 
-data analysis. The scalability of these methods varies substantially based on the heuristics in use 
-and the underlying data structure, with the most efficient tools limited to analysing hundreds of 
-sequences. 
+Reconstructing a most parsimonious ARG for a given data set is NP-hard \citep{wang2001perfect},
+and in order to allow for larger input datasets, subsequent parsimony-based methods have resorted
+to various relaxations and heuristics. Those utilising variants of the backwards-in-time approach
+include the programs \texttt{SHRUB} \citep{song2005efficient}, \texttt{GAMARG} \citep{thao2019hybrid},
+and \texttt{KwARG} \citep{ignatieva2021kwarg}, and the method described by \citet{wu2008association}.
+Tools constructing genealogies along-the-genome include \texttt{RecPars} \citep{hein1993heuristic},
+\texttt{RENT} \citep{wu2011new} and its sequel \texttt{RENT+} \citep{mirzaei2017rent}. Other approaches
+include \texttt{TARGet} \citep{camara2016inference}, which implements a method based on topological
+data analysis. The scalability of these methods varies substantially based on the heuristics in use
+and the underlying data structure, with the most efficient tools limited to analysing hundreds of
+sequences.
 
-A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing 
-the most parsimonious ARGs, but rather aim for computational efficiency while seeking to achieve good 
-accuracy of the inferred genealogies. Such methods include \texttt{Margarita} \citep{minichiello2006mapping} 
-and the approach of \citet{parida2008estimating}; the more recently developed \texttt{Relate} 
-\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} use a combination of both 
-backwards-in-time and along-the-genome approaches, and can be practically used on megabase scale data 
+A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing
+the most parsimonious ARGs, but rather aim for computational efficiency while seeking to achieve good
+accuracy of the inferred genealogies. Such methods include \texttt{Margarita} \citep{minichiello2006mapping}
+and the approach of \citet{parida2008estimating}; the more recently developed \texttt{Relate}
+\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} use a combination of both
+backwards-in-time and along-the-genome approaches, and can be practically used on megabase scale data
 and tens to hundreds of thousands of samples under human-like parameters.
-Another class of methods has recently emerged that use a \emph{threading} approach, constructing ARGs 
-by adding sequences to the graph one-by-one. Originally introduced by \citet{rasmussen2014genome} as a 
-way of generating MCMC proposals for ARGs, a similar idea was leveraged in \texttt{ARGneedle} 
+Another class of methods has recently emerged that use a \emph{threading} approach, constructing ARGs
+by adding sequences to the graph one-by-one. Originally introduced by \citet{rasmussen2014genome} as a
+way of generating MCMC proposals for ARGs, a similar idea was leveraged in \texttt{ARGneedle}
 \citep{zhang2021biobank} to reconstruct ARGs for biobank-scale data.
 % AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
