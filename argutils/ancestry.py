@@ -320,9 +320,17 @@ def simplify_keeping_unary_in_coal(ts, map_nodes=False):
         return tables.tree_sequence()
 
 
-def sim_wright_fisher(n, N, L, seed=None):
+def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
     """
     NOTE! This hasn't been statistically tested and is probably not correct.
+
+    The ``recomb_proba`` is the probability of recombination occuring
+    when a genome chooses its parents. With probability ``recomb_proba``
+    a breakpoint will be chosen and the ancestry split among two parents
+    (if present); otherwise, one parent genome will be chosen randomly.
+    (This almost certainly not a good way to set things up model-wise,
+    and just a quick hack to give us a lever to control the amount of
+    recombination happening.)
 
     We don't keep track of the pedigree because this is inconsistent
     with the practise of dropping "pass through" nodes in which
@@ -368,14 +376,15 @@ def sim_wright_fisher(n, N, L, seed=None):
                 # Randomise the order we add the lineages
                 rng.shuffle(parent.collected_lineages)
                 j = 0
-                breakpoint = rng.randrange(1, L)
-                # print("breakpoint", breakpoint)
-                if lineage.left < breakpoint < lineage.right:
-                    # print("effective recombination!", lineage.node)
-                    right_lineage = lineage.split(breakpoint)
-                    parent.collected_lineages[j].append(right_lineage)
-                    j += 1
-                    node_flags[lineage.node] |= NODE_IS_RECOMB
+                if rng.random() < recomb_proba:
+                    breakpoint = rng.randrange(1, L)
+                    # print("breakpoint", breakpoint)
+                    if lineage.left < breakpoint < lineage.right:
+                        # print("effective recombination!", lineage.node)
+                        right_lineage = lineage.split(breakpoint)
+                        parent.collected_lineages[j].append(right_lineage)
+                        j += 1
+                        node_flags[lineage.node] |= NODE_IS_RECOMB
                 parent.collected_lineages[j].append(lineage)
 
         # All the ancestral material has been distributed to the parental

@@ -22,6 +22,20 @@ class TestSimulate:
         assert ts.num_trees > 1
         assert all(tree.num_roots == 1 for tree in ts.trees())
 
+    def test_wright_fisher_no_recomb(self):
+        ts = argutils.sim_wright_fisher(4, N=10, L=5, recomb_proba=0, seed=1)
+        assert ts.num_samples == 8
+        assert ts.sequence_length == 5
+        assert ts.num_trees == 1
+        assert all(tree.num_roots == 1 for tree in ts.trees())
+
+    def test_wright_fisher_high_recomb(self):
+        ts = argutils.sim_wright_fisher(4, N=10, L=5, recomb_proba=0.9, seed=1)
+        assert ts.num_samples == 8
+        assert ts.sequence_length == 5
+        assert ts.num_trees > 1
+        assert all(tree.num_roots == 1 for tree in ts.trees())
+
     def test_basic_coalescent_unresolved(self):
         ts = argutils.sim_coalescent(4, L=5, rho=0.1, seed=1, resolved=False)
         # Very basic - real test is the resolution process.
