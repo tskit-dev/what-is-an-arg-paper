@@ -7,8 +7,6 @@
 \usepackage{authblk}
 \usepackage{nameref}
 \usepackage[right]{lineno}
-\usepackage{tikz}
-
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
@@ -67,7 +65,8 @@ and discuss the properties of some recently developed inference methods.
 \section*{Introduction}
 Inferring the genetic relationships between sampled genomes in the form of an
 evolutionary tree is a necessary prerequisite for many analyses of species \citep{rannala2003genetics}, non (or
-rarely) recombining sections of DNA \citep{cann1987mitochondrial,underhill2001annalsofhumangenetics} and viruses \citep{grenfell2004science}. The tree captures what is known and
+rarely) recombining sections of DNA \citep{cann1987mitochondrial,underhill2001annalsofhumangenetics} and viruses \citep{grenfell2004science}.
+A genealogical tree captures what is known and
 knowable about the genetic ancestry of the sample in an elegant and concise
 way, by postulating a set of nodes that are ancestors common to the samples,
 and the ancestral relationships between those nodes. A rich literature exists
@@ -83,14 +82,15 @@ components~\citep{mcvean2009genealogical}. Genealogical analysis is equally
 fundamental to the study of recombining organisms, but profound technical
 difficulties have made the routine inference of recombinant genealogies
 impossible, and therefore tree-based analysis methods have been largely
-unavailable to the fields of population and statistical genetics.
+unavailable to the fields of population and statistical
+genetics.
 
 Recent breakthroughs in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
 schaefer2021ancestral,wohns2021unified}
 and data representation~\citep{kelleher2016efficient}
 have raised the genuine prospect of genealogical analysis becoming a standard part
-of the population and statistical genetics toolkit.
+of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using these inferred ancestries as input have
 begun to appear~\citep{osmond2021estimating} and many more are sure to
 follow~\citep{harris2019database}. This vibrant research area, however,
@@ -403,12 +403,21 @@ description of the algorithm, and how it may be implemented efficiently.
 \end{tikzpicture}
 \end{tabular}
 }
-\caption{(Top) A realisation of the graph traversed by Hudson's algorithm started from a sample of three continuous chromosomes of length $L$ at time $t = 0$, and propagated until time $T$.
-The MRCA on the genetic interval $[x, z)$ is reached at node L, while that on $[0, x)$ is reached at node O, which is a root as it carries only fully coalesced ancestral segments.
-The non-ancestral segment $[x, y)$ above node K contributes to the rate of effective recombinations because it is trapped between ancestral segments.
-The two columns titled ``Extant material" are the number of extant lineages and the total length of genetic material on which an effective recombination can take place during each time interval.
-(Bottom) A corresponding realisation of a big ARG, which augments Hudson's algorithm by tracking nonancestral lineages.
-The result is a simpler state space and dynamics, at the cost of extra nodes and edges, highlighted in red, which do not affect the local tree at any site.}
+\caption{(A)
+A realisation of the graph traversed by Hudson's algorithm started from a
+sample of three continuous chromosomes of length $L$ at time $t = 0$, and
+propagated until time $T$. The MRCA on the genetic interval $[x, z)$ is reached
+at node L, while that on $[0, x)$ is reached at node O.
+The non-ancestral segment $[x, y)$ above
+node K contributes to the rate of effective recombinations because it
+is trapped between ancestral segments. The two columns titled ``Extant
+material" are the number of extant lineages and the total length of genetic
+material on which an effective recombination can take place during each time
+interval.
+(B) A corresponding realisation of a big ARG, which augments Hudson's algorithm
+by tracking nonancestral lineages. The result is a simpler state space and
+dynamics, at the cost of extra nodes and edges, highlighted in red, which do
+not affect the local tree at any site.}
 \label{hudson_vs_bigARG}
 \end{figure}
 
@@ -434,8 +443,8 @@ $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
 tracking the number of samples to which the lineage is ancestral over that interval.
 (We also usually track the tree node associated with each segment, but
 that is not important for our purposes here so we omit it.)
-If we have $n$ samples and genome of length $m$, the process begins with $n$ lineages
-of the form $[(0, m, 1)]$. The process then works backwards in time from
+If we have $n$ samples and a genome of length $m$, the process begins with $n$ lineages
+of the form $\{(0, m, 1)\}$. The process then works backwards in time from
 the present day as a series of random common ancestor or recombination events.
 Recombination events occur at a rate determined by the amount of ancestral material and
 the way in which it is distributed along a chromosome.
@@ -473,7 +482,8 @@ and so the number of extant lineages gradually dwindles down to zero.
 % in-progress here to help us talk about it. What is the full state
 % that is remembered as we go through the process? It does help to think
 % about the process as choosing edges to merge, not nodes.
-The Ancestral Recombination Graph (ARG) was later introduced by Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
+The Ancestral Recombination Graph (ARG) was later introduced by
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
 griffiths1997ancestral}, and is a
 closely related and complementary treatment of the same process. Where
 Hudson's algorithm is focused on the efficient \emph{simulation} of the
@@ -509,9 +519,9 @@ of events required to simulate the complete ancestry of a sample
 in Hudson's algorithm is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
 This disparity in the number of events in the two formulations is
-because the vast majority of the events that occur in the ARG do
+because the majority of the events that occur in the ARG do
 not affect the genetic ancestry of the sample in any way. Recombination
-events occur outside of ancestral material do not have any bearing
+events that occur outside of ancestral material do not have any bearing
 on the ancestry of the sample, and so the structure is hugely redundant.
 As~\cite{wiuf1999recombination} note,
 ``an `ancestral' sequence in the birth and death process
@@ -531,7 +541,12 @@ The ``little'' ARG is the subset of the Big ARG traversed by
 Hudson's algorithm (\citet{wiuf1999recombination} refer to this as HUD).
 [Review of other work done on the ARG stochastic process here.
 Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
-clarified the relationship between Hudson's algorithm and the ARG]
+clarified the relationship between Hudson's algorithm and the ARG.
+Explain that ARG simulation is inherently less efficient than Hudson's
+algorithm because we must track all lineages, even those that correspond
+to sections that have coalesced, or we won't have a complete ARG.
+This might be tricky to communicated without a figure, but is an
+esoteric point perhaps not worth spending a figure on.]
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
@@ -561,19 +576,20 @@ reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
 \begin{figure}
 \centering
-\begin{tikzpicture}[xscale=0.8, yscale=0.3, node distance=2mm and 20mm]
+\begin{tabular}{cc}
+\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] {};
-\node (s1) [right=of s0,greynode] {};
-\node (s2) [right=of s1,greynode] {};
-\node [greynode] (s3) at ($(s1) + (0,1)$) {};
-\node [greynode] (s4) at ($0.5*(s1) + 0.5*(s2) + (0,2)$) {};
-\node [greynode] (s5) at ($0.5*(s0) + 0.5*(s1) + (0,3)$) {};
-\node [greynode] (s6) at ($(s1) + (0,5)$) {};
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (3, 1) {};
+\node (s4) [greynode] at (1, 2) {};
+\node (s5) [greynode] at (5, 3) {};
+\node (s6) [greynode] at (3, 4) {};
 
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x = 0.3$};
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
 \foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
 \foreach \u/\lab in {s4/4} \node[nodelabel,anchor=south west] at (\u) {\lab};
 \foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south east] at (\u) {\lab};
@@ -581,17 +597,99 @@ nodelabel/.style={font=\footnotesize}}
 
 %% Edges
 \draw (s1) -- (s3);
-\foreach \child/\parent in {s6/s5, s6/s4, s5/s0, s4/s2}
-	\draw (\child) -| (\parent);
+\draw (s0) |- (s4);
+\draw (s4) -- (2,2) |- (s3);
+\draw (s4) |- (s6);
+\draw (s3) -- (4,1) |- (s5);
+\draw (s2) |- (s5);
+\draw (s5) |- (s6);
 
-\draw (s5) -| ($0.5*(s3) + 0.5*(s3-|s5)$) |- (s3);
-\draw (s4) -| ($0.5*(s3) + 0.5*(s3-|s4)$) |- (s3);
+\node [nodelabel,anchor=north west] at ($(-6.5,5)$) {
+\begin{tabular}{c|c}
+\multicolumn{2}{c}{Breakpoint}\\
+\hline
+0 & $\infty$ \\
+1 & $\infty$ \\
+2 & $\infty$ \\
+3 & $x$ \\
+4 & $\infty$ \\
+5 & $\infty$ \\
+6 & $\infty$ \\
+\end{tabular}};
+
+\node [nodelabel,anchor=north west] at ($(-2.5,5)$) {
+\begin{tabular}{l}
+Edges\\
+\hline
+$(0, 4)$ \\
+$(1, 3)$ \\
+$(2, 5)$ \\
+$(3, 4)$ \\
+$(3, 5)$ \\
+$(4, 6)$ \\
+$(5, 6)$ \\
+\end{tabular}};
 
 \end{tikzpicture}
-\caption{\label{fig-arg} \textcolor{red}{A picture of a standard ARG for us
-to work with for now. We should replace it with something better at some
-point.}
- }
+&
+\begin{tikzpicture}[x=5mm,y=5mm,node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (2, 1) {};
+\node (s4) [greynode] at (4, 1) {};
+\node (s5) [greynode] at (1, 2) {};
+\node (s6) [greynode] at (5, 3) {};
+\node (s7) [greynode] at (3, 4) {};
+
+\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s3/3} \node[nodelabel,anchor=east] at (\u) {\lab};
+\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=west] at (\u) {\lab};
+\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s6/6} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s7/7} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) |- (s3);
+\draw (s1) |- (s4) |- (s6);
+\draw (s3) |- (s5);
+\draw (s0) |- (s5);
+\draw (s2) |- (s6);
+\draw (s5) |- (s7);
+\draw (s6) |- (s7);
+
+\node [nodelabel,anchor=north west] at ($(-5,5)$) {
+\begin{tabular}{ll}
+Edges\\
+\hline
+$(0, 5)$ & $(0, L]$ \\
+$(1, 3)$ & $(0, x]$ \\
+$(1, 4)$ & $(x, L]$ \\
+$(2, 6)$ & $(0, L]$ \\
+$(3, 5)$ & $(0, L]$ \\
+$(4, 6)$ & $(0, L]$ \\
+$(5, 7)$ & $(0, L]$ \\
+$(6, 7)$ & $(0, L]$ \\
+\end{tabular}};
+
+\end{tikzpicture}
+\\
+(A) & (B) \\
+\end{tabular}
+\caption{\label{fig-arg-data-structure}
+Encoding an ARG. (A) The classical approach described by Griffiths
+equates graph nodes with events in the stochastic process
+associates recombination breakpoints with nodes. This encoding
+is limited in the ancestral patterns that can be described and ambiguous.
+(B) Equating graph nodes with \emph{genomes} and attaching the
+interval of genome inherited by the child node with edges removes
+this ambiguity and can describe any pattern of genetic inheritance.
+\textcolor{red}{This is very much a draft; let's see how it works with
+ the text and other figures and tidy it up in a later revision}
+}
 \end{figure}
 
 \section*{The ARG as a data structure}
@@ -617,7 +715,24 @@ the data structure interpretation.
 The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination on a single
 chromosome, but it has significant drawbacks as the basis for a general purpose
-storage format.
+storage and interchange format.
+The concrete details of how an ARG should be stored and processed
+are not discussed in the literature, % weak, fix.
+but the following is a reasonable approach that mirrors the implementations
+in methods such as [x, y z].
+An ARG is composed of a set of $N$ nodes, where each node is an
+integer $0 \leq u < N$, and edges $(u, v)$ define the relatships between
+those nodes.
+Each node corresponds to an \emph{event}, and is either a common ancestor
+event (in which case it has two children and one parent)
+or a recombination event (when it has one child and two parents).
+Each recombination event is associated with a breakpoint $0 < x < L$,
+which we might encode as a mapping $f: N \rightarrow \{0, ..., L - 1\}$
+such that $f(u)$ is the recombination breakpoint if $u$ is a recombination
+node and $f(u) = 0$ otherwise.
+
+
+
 
 [Not sure how to make a narrative out of this, but here are the
 basic problems:]
@@ -887,6 +1002,14 @@ based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
 GraphML~\citep{mcgill2013graphml} has some of the same key ideas
 as tskit though, in particular allowing the annotation of ``live sites''
 to an edge as a set of disjoint intervals that hold ancestral material.
+
+\item Comparison metrics are a problem. All evaluations has essentially
+looked at either some form of pairwise comparison of trees along the genome
+using tree metrics, or looked at the distributions of TMRCAs. No
+one has succeeded in performing any comparisons of ARGs beyond
+regarding them as a sequence of independent trees. If we genuinely believe
+that ARGs are more than this, then we need to devise some metrics that
+consider more than the local tree structure.
 
 \item We should discuss other types of ancestry network also.
 The crucial distiction between an ARG and a phylogenetic network (I think?) is
