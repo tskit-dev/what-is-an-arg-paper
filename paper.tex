@@ -573,6 +573,48 @@ loci whereupon branching is due to both selection and
 recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
+\section*{The ARG as a data structure}
+Early work on ARG inference focused on the problem of
+of inferring parameters of the
+stochastic process, where the ancestry is regarded as a
+latent parameter to be averaged out
+\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
+fearnhead2001estimating}. These methods met with limited success
+due to the overwhelmingly large and
+horribly structured [Jere: what's the right way to say this?]
+state space of ARGs. The focus subsequently shifted to
+the more tractable---but still
+NP-hard~\citep{wang2001perfect}---problem of computing
+the minimum number of recombinations required
+to explain an input dataset [CITATIONS], and inferring the corresponding
+ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
+The distinction between the ARG as a stochastic process
+and the ARG as a data structure became less clear at this point,
+with \citet{minichiello2006mapping} explicitly arguing for
+the data structure interpretation.
+
+The Griffiths ARG encoding is an elegant and mathematically
+economical description of the coalescent with recombination on a single
+chromosome, but it has significant drawbacks as the basis for a general purpose
+storage and interchange format.
+The concrete details of how an ARG should be stored and processed
+are not discussed in the literature, % weak, fix.
+but the following is a reasonable approach that mirrors the implementations
+in methods such as [x, y z].
+A Griffiths ARG is composed of a set of $N$ nodes, where each node is an
+integer $0 \leq u < N$, and edges $(u, v)$ define the relationships between
+those nodes (Fig.~\ref{fig-arg-data-structure}A).
+Each node corresponds to an \emph{event}, and is either a common ancestor
+event (in which case it has two children and one parent)
+or a recombination event (when it has one child and two parents).
+Each recombination event is associated with a breakpoint $0 < x < L$,
+which we might encode as a mapping $f: N \rightarrow \{0, ..., L - 1\}$
+such that $f(u)$ is the recombination breakpoint if $u$ is a recombination
+node and $f(u) = \infty$ otherwise. This encoding captures the information
+of a realisation of the ARG stochastic process, but it is important to
+note that it does not uniquely describe the underlying ancestral history
+without stipulating some additional ordering requirements.
+
 
 \begin{figure}
 \centering
@@ -687,89 +729,125 @@ is limited in the ancestral patterns that can be described and ambiguous.
 (B) Equating graph nodes with \emph{genomes} and attaching the
 interval of genome inherited by the child node with edges removes
 this ambiguity and can describe any pattern of genetic inheritance.
+The most important change between the two encodings is to represent
+a recombination event (node 3 in A) by two parent genomes
+(nodes 3 and 4 in B) and explicitly storing the interval
+that the child inherits from each parent along the two corresponding
+edges. Thus, child $1$ in inherits $(0, x]$ from $3$
+and $(x, L)$ from $4$
+(for recombination breakpoint $x$ and a sequence of length $L$).
 \textcolor{red}{This is very much a draft; let's see how it works with
  the text and other figures and tidy it up in a later revision}
 }
 \end{figure}
 
-\section*{The ARG as a data structure}
-Early work on ARG inference focused on the problem of
-of inferring parameters of the
-stochastic process, where the ancestry is regarded as a
-latent parameter to be averaged out
-\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
-fearnhead2001estimating}. These methods met with limited success
-due to the overwhelmingly large and
-horribly structured [Jere: what's the right way to say this?]
-state space of ARGs. The focus subsequently shifted to
-the more tractable---but still
-NP-hard~\citep{wang2001perfect}---problem of computing
-the minimum number of recombinations required
-to explain an input dataset [CITATIONS], and inferring the corresponding
-ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
-The distinction between the ARG as a stochastic process
-and the ARG as a data structure became less clear at this point,
-with \citet{minichiello2006mapping} explicitly arguing for
-the data structure interpretation.
-
-The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination on a single
-chromosome, but it has significant drawbacks as the basis for a general purpose
-storage and interchange format.
-The concrete details of how an ARG should be stored and processed
-are not discussed in the literature, % weak, fix.
-but the following is a reasonable approach that mirrors the implementations
-in methods such as [x, y z].
-An ARG is composed of a set of $N$ nodes, where each node is an
-integer $0 \leq u < N$, and edges $(u, v)$ define the relatships between
-those nodes.
-Each node corresponds to an \emph{event}, and is either a common ancestor
-event (in which case it has two children and one parent)
-or a recombination event (when it has one child and two parents).
-Each recombination event is associated with a breakpoint $0 < x < L$,
-which we might encode as a mapping $f: N \rightarrow \{0, ..., L - 1\}$
-such that $f(u)$ is the recombination breakpoint if $u$ is a recombination
-node and $f(u) = 0$ otherwise.
-
-
-
-
-[Not sure how to make a narrative out of this, but here are the
-basic problems:]
-\begin{enumerate}
-\item The encoding is hamstrung by the interpretation of
-nodes as \emph{events} of a particular type. We can either
-have common ancestor or recombination events. This is true
-in the coalescent, but is not in a more general Wright-Fisher
-model.
-%% Note - I'm not sure this is true, if the nodes are *events* rather than
-%% genomes, unless you want events (rather than genomes) to occur at
-%% integer generations.
-\item We can also only have one crossover per recombination event.
-This is unrealistic because things like gene conversion are common. It also
-means we can't have back and forth recombination between
-two parents, or represent the transmission of multiple chromosomes.
-\item The passage of ancestral material along edges requires
-extrinsic rules which must be shared by all implementations.
-These rules can be quite restrictive when generating, and
-in practise some have found it simpler to add explicit
-annotations to the edges.
-\item Generating local trees is inefficient, essentially requiring
-$O(n T)$ time (or more?)
-\end{enumerate}
-
-
-[WIP jk]
-
-This ambiguity can be dealt with in a number of ways. In the original
-treatments, the direction in which ancestral material travels at
-a breakpoint is handled by a simple rule, sites to the left of the
-breakpoint go to the left parent and sites to right go to the
-right parent. [Illustrate the problem with simulating an ARG
-like this]. ~\cite{ignatieva2021kwarg} resolve this problem by
+The Griffiths ARG encoding is ambiguous because it does not explicitly
+define which of the parent lineages resulting from a recombination
+event carries ancestral material to the left or right of the
+breakpoint. The ambiguity is resolved by adopting a simple rule when
+traversing the graph in order to generate the marginal trees for a
+given position $z$: at a recombination node $u$, we follow the
+first edge in which $u$ is a child if $f(u) \leq z$, and the
+second edge otherwise. This ordering requirement, which straightforward
+% Saying "awkward" too many times here, rephrase.
+to describe can be awkward in practise. For example,
+simulating an ARG in this representation is considerably
+complicated by the fact that the
+first event to occur may hit the right-hand lineage rather
+than the left.
+Such awkwardnesses can be worked around, of course,
+but in practise methods such has
+\texttt{beagle}~\citep{lyngso2005minimum} and
+\texttt{KwARG}~\citep{ignatieva2021kwarg}
+resolve this problem by
 associating a label ``P'' (prefix) or ``S'' (suffix) with the
-outbound edges of a recombination event. This is the same approach
-as used in beagle~\citep{lyngso2005minimum}.
+outbound edges of a recombination event.
+
+% it's not reasonable to assume that one type of event happens
+% at a time any more.
+The Griffiths ARG encoding is also limited in the types of ancestral
+history that can be described. This ARG encoding is derived from the coalescent
+with recombination, which explicitly assumes that only one type
+of event can occur (i.e., common ancestry or recombination) at a
+time. This model is derived as an approximation to a Wright-Fisher
+model, assuming that the sample size $n$ is much less than the
+population size $N$ and [some assumptions about genome length]
+\textcolor{red}{what is this Jere?}. While these approximations are
+reasonable
+to make when studying the Kreitman \emph{Drosphila Melanogaster}
+dataset~\citep{kreitman1983nucleotide} ($n=11$, $N\approx 10^6$,
+at 43 variant sites over x Kb \textcolor{red}{details and citation
+for Ne estimate}) that is classically used for benchmarking
+ARG inference methods [cites],
+they are highly questionable in modern datasets. % absurd really
+For example, there are now many
+human datasets consisting of hundreds of thousands of
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+and thus our sample size is often much \emph{larger} than $N_e$
+(often assumed to be $10^4$ in humans).
+% TODO make this better. Ask Gregor for some refs?
+% Basically, Ag datasets make the assumption of isolated
+% rare recombinations absurd.
+Agricultural datasets such as the 1000 bull genomes~\citep{hayes20191000}
+combine genome sequence data with detailed pedigrees, with
+sample data from multiple generations.
+Complete chromosome-level assemblies are now possible
+in humans~\citep{miga2020telomere},
+and projects are under way to obtain high-quality assemblies
+for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
+and ultimately worldwide~\citep{lewin2022earth}.
+While the coalescent model can be suprisingly robust to such
+basic violations to the underlying assumptions~\citep{
+wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
+it is not acceptable that our ability to \emph{represent}
+ancestral relationships should be limited by these assumptions.
+In a Wright-Fisher model, coalescence and recombination can
+occur at the same time in the same genomes, and we can be
+certain that this is also true in the incredibly rich
+datasets that are available today.
+
+Another limitation of the Griffiths ARG encoding illustated in
+Fig.~\ref{fig-arg-data-structure}A is the inability to represent
+multiple recombinations along a chromosome, gene conversion,
+or transmission of multiple chromosomes.
+[Sentence saying ``gene conversion is important, actually, cite, cite,
+so we should be hoping to infer it some day''. Presumably people
+already are in bacterial contexts?]
+To allow us to encode data from these important processes we
+must either devise workarounds to the event based encoding
+(i.e., model gene conversion as two recombination events) or
+generalise the model to more appropriately reflect the realities
+of modern datasets.
+
+Fortunately, it is straightforward to generalise the classical Griffiths
+encoding to both simplify implementations and to encompass any
+possible pattern of genetic inheritance.
+We require only two changes. Firstly, we let nodes in the
+graph model \emph{genomes} rather than \emph{events}. As we
+see in the next section, this allows us to model complex
+patterns of inheritance without classifying different types of node.
+The second change we must make is to encode
+intervals of ancestry inheritance \emph{explicitly} on graph edges,
+rather than \emph{implicitly} as breakpoints associated with
+recombination events and edge ordering rules.
+That is, given two genomes $p$
+and $c$ where $p$ is the parent genome and $c$ is the child
+(although many generations may have elapsed between the two),
+we associate a set $I$ of intervals of genome which $c$ has
+inherited from $p$.
+These simple changes required to translate from the
+classical Griffiths approach to the proposed encoding
+are shown in Fig.\ref{fig-arg-data-structure}.
+
+\textcolor{red}{
+This falls a bit flat here,  but it's not clear how we're dividing
+the responsibility for explaining the model between the
+different sections.
+Basically, we can't explain everything at
+the end of this section, but we want to give the reader the
+basic idea (which is genuinely simple). Can see how things are
+shaping up after we've got a draft of the rest of the
+sections, I guess.}
 
 \section*{Anchoring the ARG to the pedigree}
 
