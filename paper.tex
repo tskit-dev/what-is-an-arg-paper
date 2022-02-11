@@ -7,8 +7,6 @@
 \usepackage{authblk}
 \usepackage{nameref}
 \usepackage[right]{lineno}
-\usepackage{tikz}
-
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
@@ -543,7 +541,12 @@ The ``little'' ARG is the subset of the Big ARG traversed by
 Hudson's algorithm (\citet{wiuf1999recombination} refer to this as HUD).
 [Review of other work done on the ARG stochastic process here.
 Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
-clarified the relationship between Hudson's algorithm and the ARG]
+clarified the relationship between Hudson's algorithm and the ARG.
+Explain that ARG simulation is inherently less efficient than Hudson's
+algorithm because we must track all lineages, even those that correspond
+to sections that have coalesced, or we won't have a complete ARG.
+This might be tricky to communicated without a figure, but is an
+esoteric point perhaps not worth spending a figure on.]
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
@@ -573,19 +576,20 @@ reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
 \begin{figure}
 \centering
-\begin{tikzpicture}[xscale=0.8, yscale=0.3, node distance=2mm and 20mm]
+\begin{tabular}{cc}
+\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] {};
-\node (s1) [right=of s0,greynode] {};
-\node (s2) [right=of s1,greynode] {};
-\node [greynode] (s3) at ($(s1) + (0,1)$) {};
-\node [greynode] (s4) at ($0.5*(s1) + 0.5*(s2) + (0,2)$) {};
-\node [greynode] (s5) at ($0.5*(s0) + 0.5*(s1) + (0,3)$) {};
-\node [greynode] (s6) at ($(s1) + (0,5)$) {};
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (3, 1) {};
+\node (s4) [greynode] at (1, 2) {};
+\node (s5) [greynode] at (5, 3) {};
+\node (s6) [greynode] at (3, 4) {};
 
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x = 0.3$};
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
 \foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
 \foreach \u/\lab in {s4/4} \node[nodelabel,anchor=south west] at (\u) {\lab};
 \foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south east] at (\u) {\lab};
@@ -593,17 +597,99 @@ nodelabel/.style={font=\footnotesize}}
 
 %% Edges
 \draw (s1) -- (s3);
-\foreach \child/\parent in {s6/s5, s6/s4, s5/s0, s4/s2}
-	\draw (\child) -| (\parent);
+\draw (s0) |- (s4);
+\draw (s4) -- (2,2) |- (s3);
+\draw (s4) |- (s6);
+\draw (s3) -- (4,1) |- (s5);
+\draw (s2) |- (s5);
+\draw (s5) |- (s6);
 
-\draw (s5) -| ($0.5*(s3) + 0.5*(s3-|s5)$) |- (s3);
-\draw (s4) -| ($0.5*(s3) + 0.5*(s3-|s4)$) |- (s3);
+\node [nodelabel,anchor=north west] at ($(-6.5,5)$) {
+\begin{tabular}{c|c}
+\multicolumn{2}{c}{Breakpoint}\\
+\hline
+0 & $\infty$ \\
+1 & $\infty$ \\
+2 & $\infty$ \\
+3 & $x$ \\
+4 & $\infty$ \\
+5 & $\infty$ \\
+6 & $\infty$ \\
+\end{tabular}};
+
+\node [nodelabel,anchor=north west] at ($(-2.5,5)$) {
+\begin{tabular}{l}
+Edges\\
+\hline
+$(0, 4)$ \\
+$(1, 3)$ \\
+$(2, 5)$ \\
+$(3, 4)$ \\
+$(3, 5)$ \\
+$(4, 6)$ \\
+$(5, 6)$ \\
+\end{tabular}};
 
 \end{tikzpicture}
-\caption{\label{fig-arg} \textcolor{red}{A picture of a standard ARG for us
-to work with for now. We should replace it with something better at some
-point.}
- }
+&
+\begin{tikzpicture}[x=5mm,y=5mm,node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (2, 1) {};
+\node (s4) [greynode] at (4, 1) {};
+\node (s5) [greynode] at (1, 2) {};
+\node (s6) [greynode] at (5, 3) {};
+\node (s7) [greynode] at (3, 4) {};
+
+\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s3/3} \node[nodelabel,anchor=east] at (\u) {\lab};
+\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=west] at (\u) {\lab};
+\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s6/6} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s7/7} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) |- (s3);
+\draw (s1) |- (s4) |- (s6);
+\draw (s3) |- (s5);
+\draw (s0) |- (s5);
+\draw (s2) |- (s6);
+\draw (s5) |- (s7);
+\draw (s6) |- (s7);
+
+\node [nodelabel,anchor=north west] at ($(-5,5)$) {
+\begin{tabular}{ll}
+Edges\\
+\hline
+$(0, 5)$ & $(0, L]$ \\
+$(1, 3)$ & $(0, x]$ \\
+$(1, 4)$ & $(x, L]$ \\
+$(2, 6)$ & $(0, L]$ \\
+$(3, 5)$ & $(0, L]$ \\
+$(4, 6)$ & $(0, L]$ \\
+$(5, 7)$ & $(0, L]$ \\
+$(6, 7)$ & $(0, L]$ \\
+\end{tabular}};
+
+\end{tikzpicture}
+\\
+(A) & (B) \\
+\end{tabular}
+\caption{\label{fig-arg-data-structure}
+Encoding an ARG. (A) The classical approach described by Griffiths
+equates graph nodes with events in the stochastic process
+associates recombination breakpoints with nodes. This encoding
+is limited in the ancestral patterns that can be described and ambiguous.
+(B) Equating graph nodes with \emph{genomes} and attaching the
+interval of genome inherited by the child node with edges removes
+this ambiguity and can describe any pattern of genetic inheritance.
+\textcolor{red}{This is very much a draft; let's see how it works with
+ the text and other figures and tidy it up in a later revision}
+}
 \end{figure}
 
 \section*{The ARG as a data structure}
@@ -629,7 +715,24 @@ the data structure interpretation.
 The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination on a single
 chromosome, but it has significant drawbacks as the basis for a general purpose
-storage format.
+storage and interchange format.
+The concrete details of how an ARG should be stored and processed
+are not discussed in the literature, % weak, fix.
+but the following is a reasonable approach that mirrors the implementations
+in methods such as [x, y z].
+An ARG is composed of a set of $N$ nodes, where each node is an
+integer $0 \leq u < N$, and edges $(u, v)$ define the relatships between
+those nodes.
+Each node corresponds to an \emph{event}, and is either a common ancestor
+event (in which case it has two children and one parent)
+or a recombination event (when it has one child and two parents).
+Each recombination event is associated with a breakpoint $0 < x < L$,
+which we might encode as a mapping $f: N \rightarrow \{0, ..., L - 1\}$
+such that $f(u)$ is the recombination breakpoint if $u$ is a recombination
+node and $f(u) = 0$ otherwise.
+
+
+
 
 [Not sure how to make a narrative out of this, but here are the
 basic problems:]
@@ -899,6 +1002,14 @@ based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
 GraphML~\citep{mcgill2013graphml} has some of the same key ideas
 as tskit though, in particular allowing the annotation of ``live sites''
 to an edge as a set of disjoint intervals that hold ancestral material.
+
+\item Comparison metrics are a problem. All evaluations has essentially
+looked at either some form of pairwise comparison of trees along the genome
+using tree metrics, or looked at the distributions of TMRCAs. No
+one has succeeded in performing any comparisons of ARGs beyond
+regarding them as a sequence of independent trees. If we genuinely believe
+that ARGs are more than this, then we need to devise some metrics that
+consider more than the local tree structure.
 
 \item We should discuss other types of ancestry network also.
 The crucial distiction between an ARG and a phylogenetic network (I think?) is
