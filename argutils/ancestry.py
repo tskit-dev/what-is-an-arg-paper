@@ -391,7 +391,6 @@ def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
         # lineages.
         ancestors.clear()
 
-        # print("|P| = ", len(parents), "RE_children = ", recombinant_nodes)
         for parent in parents.values():
             for lineages in parent.collected_lineages:
                 # These are all the lineages that have been collected
@@ -403,7 +402,8 @@ def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
                 #     print("\t\t", lin)
 
                 merged_lineage = None
-                if len(lineages) == 1 and node_flags[lineage.node] == 0:
+                is_recombinant = (node_flags[lineage.node] & NODE_IS_RECOMB) != 0
+                if len(lineages) == 1 and not is_recombinant:
                     merged_lineage = lineages[0]
                 elif len(lineages) > 0:
                     if parent.id == -1:

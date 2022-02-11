@@ -27,6 +27,7 @@ class TestSimulate:
         assert ts.num_samples == 8
         assert ts.sequence_length == 5
         assert ts.num_trees == 1
+        assert ts.num_nodes == 15
         assert all(tree.num_roots == 1 for tree in ts.trees())
 
     def test_wright_fisher_high_recomb(self):
