@@ -439,6 +439,7 @@ def wh99_example():
     """
     L = 7
     tables = tskit.TableCollection(L)
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     t = 0
     for _ in range(3):
         tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=t)
