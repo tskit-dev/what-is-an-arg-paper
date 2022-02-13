@@ -204,17 +204,17 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (6, 2.4) -- (6, 8);
 
 	% Edge annotations above each event
-	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {}; 
-	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {}; 
-	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {}; 
-	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {}; 
-	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {}; 
-	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {}; 
-	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {}; 
-	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {}; 
-	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {}; 
-	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {}; 
-	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {}; 
+	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {};
+	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {};
+	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {};
+	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {};
+	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {};
+	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {};
+	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {};
+	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {};
+	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {};
+	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {};
+	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {};
 	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {};
 	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {};
 	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {};
@@ -339,16 +339,16 @@ description of the algorithm, and how it may be implemented efficiently.
 	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2); 
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5); 
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4); 
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1); 
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
 	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5); 
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
 	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11, 6); 
+	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
 	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2); 
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
 \end{tikzpicture}
 \end{tabular}
 }
@@ -812,7 +812,7 @@ correspond to particular genomes in the pedigree.
 As discussed in the previous section, the definition of the ARG
 as a \emph{data structure} in terms of these two events is problematic,
 fundamentally limiting the expressivity of the structure.
-Following \citep{mathieson2020ancestry} we instead define the
+Following \cite{mathieson2020ancestry} we instead define the
 ARG data structure \emph{in terms of} an underlying pedigree, so that
 any form of inheritance structure can be modelled.
 % Bit of duplication here, but good to make the point about being
@@ -826,58 +826,37 @@ present in modern datasets.
 \begin{figure}
     \includegraphics[width=\textwidth]{illustrations/pedigree_figure}
 \caption{\label{fig-pedigree-and-arg}
-The (unannotated) ARG is closely related to the pedigree
-graph, where each ``individual'' node is replaced by two ``genome''
-nodes, and edges between parents and children are only included if there is
-transfer of ancestral material. We usually only include nodes in an ARG
-that affect our sample, so that, for example, individuals that are ancestral
-to only one sampled genome are not included.}
+% TODO caption needs another pass. One the full section has been written
+% it'll be clearer what we need to say in the caption vs the text.
+The Ancestral Recombination Graph defined as arbitrary inheritance
+of genomes between diploid (or any ploidy; see text) individuals.
+(A) Each individual consists of two genomes, and each genome is
+inherited as a recombinant mixture of the individual's parent's
+genomes. (B) Genomes are modelled as nodes in a graph, and the edges
+denote inheritance. Each edge is annotated with genome coordinates
+defining the specific region(s) inherited. An ARG is a retrospecitive
+structure defined with
+respect to some set of sample genomes (A--D here), and so only
+genomes directly ancestral to those samples are included.
+(C) This description of inheritance fully defines the
+local relationships along the genome, as shown in the local
+or ``marginal'' trees.
+}
 \end{figure}
 
 Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of the model.
 The pedigree is composed of a set of individuals who each carry
-two \emph{genomes} (we assume a diploidy here for concreteness, but there
+two \emph{genomes} (we assume diploidy here for concreteness, but there
 is no inherent limitation on ploidy in the model).
 Each genome is inherited from one of the individual's parents, and may
 be the recombined product of that parent's two genomes.
 For example, individual $I_1$ has two genomes $A$ and $B$,
 inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
 recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
-whereas $B$ was inheritied directly from $I_4$'s genome $G$ without
+whereas $B$ was inherited directly from $I_4$'s genome $G$ without
 recombination.
 
-[Here are the basic components of the model]
 
-\begin{enumerate}
-\item A node corresponds to one of a diploid individual's two genomes.
-This is linked explicitly to the pedigree, and is fully general.
-Nodes \emph{may} be labelled with certain flags describing their properties,
-but it's not necessary.
-\item An edge between two nodes defines a genetic inheritance relationship
-between two nodes. Edges are annotated with information about the
-passage of ancestral materal. There are different forms these annotations
-can take. For example, we can follow the approach taken in the Griffiths
-ARG and just annotate recombinant edges with the interval $[0, x)$ or $[x, L)$,
-depending on side of the breakpoint the edge is on. In the most
-general case, we annotate each edge with the full set of disjoint
-intervals of ancestral material that flows along that edge.
-\citep{mcgill2013graphml} also proposed full ancestral material being
-associated with each edge.
-\end{enumerate}
-
-\begin{figure}
-\vspace{5em}
-% NB: not clear if this figure is better off on its own or should be
-% merged with the pedigree one.
-\caption{\label{fig-arg-annotations}
-The specific path through the ARG for a given genome position (and therefore
-the local genealogical tree) cannot be determined without annotations
-to the graph. (A) The classical Griffiths approach annotates recombination
-nodes with the corresponding breakpoint. (B) We can equivalently
-annotate the \emph{edges} with the genomic intervals carrying ancestral
-material. Edge annotations are somewhat more general, and have
-significant computational advantages.}
-\end{figure}
 
 \begin{figure}
 \centering
@@ -901,7 +880,14 @@ plotted by ranked time rather than true time on the y-axis.
 }
 \end{figure}
 
-\section*{Relationship with other types of phylogenetic networks}
+
+\textcolor{red}{TODO: reduce this down to one paragraph, which
+defines the relationship between what we define as an ARG and
+what people mean by phylogenetic networks from the literature.
+We probably don't need to get into quite so much detail on
+the different types that people have studies. Essentially,
+we're ending the section with a brief review which situates
+our definition in the literature.}
 
 The term \emph{phylogenetic network} has been broadly accepted to describe the most general
 type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
