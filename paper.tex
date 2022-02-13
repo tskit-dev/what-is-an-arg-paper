@@ -115,6 +115,9 @@ edges rather than nodes.
 \item Suggest a classification of ARG nodes that helps us to understand
 the properties of the structures inferred by different methods, and illustrate
 with some examples.
+% Perhaps we should also mention something about simplification and unknowable
+% nodes, e.g. "show how some of the nodes are not required for useful interpretation
+% of ancestry".
 \end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
@@ -433,17 +436,24 @@ griffiths1997ancestral}, and is a
 closely related and complementary treatment of the same process. Where
 Hudson's algorithm is focused on the efficient \emph{simulation} of the
 process, the original ARG literature is focused on mathematical
-results about the stochastic process. Griffiths and colleagues formulated the
-ARG as a branching-coalescing stochastic process. We imagine a graph in which
-each edge corresponds to an extant lineage and nodes are events in the
-process (the initial $n$ leaf nodes are ``sampling'' events). As in Hudson's
+results about the stochastic process. Griffiths and colleagues used the word
+``ARG'' to refer to both a specific branching-coalescing stochastic process and
+the graph structure derived from this process. For clarity, we will refer to the
+process as the Griffiths process, or the coalescent with recombination (CwR),
+and following XX-Who?-XX, we refer to the the structure as the ``big ARG'', as
+opposed to the ``little ARG'' traversed by Hudson's algorithm
+(\citet{wiuf1999recombination} refer to these structures as ARG and HUD respectively).
+
+In the Griffiths formulation, each edge in the graph corresponds to an extant
+lineage and nodes are events in the process (the initial $n$ leaf nodes are
+``sampling'' events). As in Hudson's
 algorithm, common ancestor events occur at rate $\binom{k}{2}$ when there
 are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
 into a common ancestor lineage. Recombination events are different
 to Hudson's algorithm, however. Rather than occuring at a rate which depends on
 the specific distribution of ancestral material among lineages, the
-rate of recombination is simply $k \rho (m - 1)$ in the original ARG
-formulation. At a recombination event we choose a lineage (edge) uniformly, and a
+rate of recombination is now simply $k \rho (m - 1)$. At a recombination event
+we choose a lineage (edge) uniformly, and a
 breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
@@ -453,18 +463,17 @@ and coalescing. The graph structure and breakpoints associated with
 recombination nodes provides sufficient information to later recover the marginal
 trees (see the next section for more details and discussion on this point).
 
-The state-space of this process is much simpler than Hudson's algorithm, which
-greatly facilitates mathematical reasoning. This simplicity comes at a
+The state-space of the Griffiths process is much simpler than Hudson's algorithm,
+which greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
-simulating recombinant ancestry. The ARG is vast, and any realisation
+simulating recombinant ancestry. The big ARG is vast, and any realisation
 for even moderate levels of recombination is far too large to be of practical
-use. The number of events in the ARG back to the GMRCA
+use. The number of events in the big ARG, all the way back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
-of events required to simulate the complete ancestry of a sample
-in Hudson's algorithm is
+of events required to simulate the little ARG is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
 This disparity in the number of events in the two formulations is
-because the majority of the events that occur in the ARG do
+because the majority of the events that occur in the big ARG do
 not affect the genetic ancestry of the sample in any way. Recombination
 events that occur outside of ancestral material do not have any bearing
 on the ancestry of the sample, and so the structure is hugely redundant.
@@ -480,10 +489,6 @@ sequence descended from it.''
 % need not have any genetic material in common with a
 % sequence descended from it.
 
-This original formulation which does not keep track of the distribution
-of ancestral material among lineages is the so-called ``Big'' ARG.
-The ``little'' ARG is the subset of the Big ARG traversed by
-Hudson's algorithm (\citet{wiuf1999recombination} refer to this as HUD).
 [Review of other work done on the ARG stochastic process here.
 Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
 clarified the relationship between Hudson's algorithm and the ARG.
@@ -504,10 +509,10 @@ and ClonalFrame~\citep{didelot2007inference} approximations somewhere.]
 The idea of using branching-coalescing stochastic processes
 to model genetic ancestral trees has also found application in natural selection.
 The Ancestral Selection Graph (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
-uses dynamics identical to the ``big" ARG to simulate an ensemble of correlated
+uses dynamics identical to the ``big'' ARG to simulate an ensemble of correlated
 potential ancestral trees. Weak genic selection is incorporated by sampling a
 true ancestry from the ensemble in a non-uniform way.
-There is no ASG analogue of the more computationally tractable ``little" ARG,
+There is no ASG analogue of the more computationally tractable ``little'' ARG,
 though some gains in tractability can be made by considering typed
 lineages~\citep{etheridge2009coalescent} or by leveraging perfect simulation
 techniques when recurrent mutation is present\citep{fearnhead2001perfect}.
@@ -901,7 +906,7 @@ plotted by ranked time rather than true time on the y-axis.
 The term \emph{phylogenetic network} has been broadly accepted to describe the most general
 type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
 represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
-that labels some of its nodes" (although more narrow and context-dependent definitions can also
+that labels some of its nodes'' (although more narrow and context-dependent definitions can also
 be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
 with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
 as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
@@ -988,7 +993,7 @@ An alternative approach is to treat the ancestry as a latent parameter to be ave
 by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
 or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg}.
-These methods invariably operated on a representation of the ``little ARG", typically
+These methods invariably operated on a representation of the ``little ARG'', typically
 generated until the grand MRCA. They are extremely computationally expensive,
 and applicable to at most hundreds of samples consisting of tens of kilobases with
 human-like parameters.
@@ -1008,7 +1013,7 @@ by making use of the tree sequence representation of marginal trees, suitably en
 to facilitate the computations needed for MCMC sampling \citep{mahmoudi2021inference}.
 While not competitive with the scalability of \texttt{ARGWeaver}, \texttt{ARGInfer} extends
 the feasible range of sequence lengths by at least an order of magnitude when
-compared with methods which sample realisations of the exact ``little ARG".
+compared with methods which sample realisations of the exact ``little ARG''.
 
 
 \begin{figure}
