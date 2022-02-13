@@ -1,14 +1,15 @@
 """
 Utilities for generating and converting ARGs in various formats.
 """
+import collections
 import random
 import math
 import dataclasses
 from typing import List
 from typing import Any
 
-import tskit
 import numpy as np
+import tskit
 
 NODE_IS_RECOMB = 1 << 1
 
@@ -296,24 +297,108 @@ def iter_lineages(individuals):
             yield lineage
 
 
+def simplify_keeping_all_nodes(ts):
+    """
+    Run the Hudson algorithm to convert from an implicit to an explicit edge encoding,
+    but keep all the nodes (like simplify(filter_nodes=False) if that existed)
+    """
+    # get the edges to keep
+    ts2, node_map = ts.simplify(keep_unary=True, map_nodes=True)
+    val, inverted_map = np.unique(node_map, return_index=True)
+    inverted_map = inverted_map[val != tskit.NULL]
+    # only use the edges in the simplified one, but keep the nodes from the original
+    tables = ts.dump_tables()
+    tables.edges.clear()
+    for edge in ts2.tables.edges:
+        tables.edges.append(edge.replace(
+            child=inverted_map[edge.child], parent=inverted_map[edge.parent]))
+    tables.sort()
+    return tables.tree_sequence()    
+
+
+def simplify_remove_pass_through(ts, repeat=False, map_nodes=False):
+    """
+    Remove nonsample nodes that have same single child and parent everywhere in the ts.
+    Removing some pass though nodes can turn previously non-pass-through nodes
+    into pass-through nodes (for example, at the top of a diamond). If repeat==True,
+    we carry on doing removing these nodes repeatedly until
+    there are no pass-though nodes remaining
+    """
+    tables = ts.dump_tables()
+    # remove existing individuals. We will reinstate them later
+    node_map = np.arange(ts.num_nodes)
+
+    while True:
+        tables.individuals.clear()
+        tables.nodes.individual = np.full_like(tables.nodes.individual, tskit.NULL)
+        parent_children_dict = collections.defaultdict(set)
+        for t in ts.trees():
+            # TODO: there must be a more efficient way to do this using edge dicts
+            for u in t.nodes():
+                parent_children_dict[u].add((t.parent(u), tuple(sorted(t.children(u)))))
+        to_keep = np.ones(tables.nodes.num_rows, dtype=bool)
+        for u, parent_children in parent_children_dict.items():
+            if ts.node(u).is_sample():
+                continue
+            if len(parent_children) != 1:
+                continue
+            parent, children = next(iter(parent_children))
+            if len(children) == 1:
+                to_keep[u] = False
+        if np.all(to_keep):
+            break
+        # Add an individual for each kept node, so we can run
+        # simplify(keep_unary_in_individuals=True) to leave the unary portions in.
+        for u in np.where(to_keep)[0]:
+            i = tables.individuals.add_row()
+            tables.nodes[u] = tables.nodes[u].replace(individual=i)
+        tmp_node_map = tables.simplify(
+            keep_unary_in_individuals=True,
+            filter_sites=False,
+            filter_populations=False,
+        )
+        # Keep track of the repeated node mappings
+        node_map[node_map != tskit.NULL] = tmp_node_map[node_map[node_map != tskit.NULL]]
+        if repeat:
+            ts = tables.tree_sequence()
+        else:
+            break
+
+    # Remove all traces of the added individuals
+    tables.individuals.clear()
+    tables.nodes.individual = np.full_like(tables.nodes.individual, tskit.NULL)
+    if map_nodes:
+        return tables.tree_sequence(), node_map
+    else:
+        return tables.tree_sequence()
+
+
 def simplify_keeping_unary_in_coal(ts, map_nodes=False):
     """
     Keep the unary regions of nodes that are coalescent at least someone in the tree seq
     Temporary hack until https://github.com/tskit-dev/tskit/issues/2127 is addressed
     """
-    _, node_map = ts.simplify(map_nodes=True)
     tables = ts.dump_tables()
-    assert tables.individuals.num_rows == 0
-    # Add an individual for each coalescent node, so we can run
-    # simplify(keep_unary_in_individuals=True) to leave the unary portions in.
-    for c_node in np.where(node_map != tskit.NULL)[0]:
-        i = tables.individuals.add_row()
-        tables.nodes[c_node] = tables.nodes[c_node].replace(individual=i)
-    node_map = tables.simplify(keep_unary_in_individuals=True)
-
-    # Remove all traces of the added individuals
+    # remove existing individuals. We will reinstate them later
     tables.individuals.clear()
     tables.nodes.individual = np.full_like(tables.nodes.individual, tskit.NULL)
+
+    _, node_map = ts.simplify(map_nodes=True)
+    keep_nodes = np.where(node_map != tskit.NULL)[0]
+    # Add an individual for each coalescent node, so we can run
+    # simplify(keep_unary_in_individuals=True) to leave the unary portions in.
+    for u in keep_nodes:
+        i = tables.individuals.add_row()
+        tables.nodes[u] = tables.nodes[u].replace(individual=i)
+    node_map = tables.simplify(keep_unary_in_individuals=True)
+
+    # Reinstate individuals
+    tables.individuals.clear()
+    for i in ts.individuals():
+        tables.individuals.append(i)
+    val, inverted_map = np.unique(node_map, return_index=True)
+    inverted_map = inverted_map[val != tskit.NULL]
+    tables.nodes.individual = ts.tables.nodes.individual[inverted_map]
     if map_nodes:
         return tables.tree_sequence(), node_map
     else:
