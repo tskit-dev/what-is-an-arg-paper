@@ -801,21 +801,28 @@ sections, I guess.}
 
 \section*{Anchoring the ARG to the pedigree}
 
-The limitations of the Griffiths ARG encoding are a direct consequence
-of its derivation from the coalescent with recombination stochastic process.
-Indeed, these limitations arise because it is such a \emph{good}
-mathematical encoding, providing sufficient information to
-define the realised ancestry under the assumptions of the model,
-and no more.
+The deep connection between the ARG and the pedigree is of course
+well known
+\citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
+speed2015naturereviewsgenetics}
+and recent discussions of the ARG have illustrated the
+relationship~\citep{mathieson2020ancestry,brandt2021evaluation}, % more??
+showing how the coalescence and recombination events in an ARG
+correspond to particular genomes in the pedigree.
+As discussed in the previous section, the definition of the ARG
+as a \emph{data structure} in terms of these two events is problematic,
+fundamentally limiting the expressivity of the structure.
+Following \citep{mathieson2020ancestry} we instead define the
+ARG data structure \emph{in terms of} an underlying pedigree, so that
+any form of inheritance structure can be modelled.
+% Bit of duplication here, but good to make the point about being
+% motivated by real existing datasets not some academic desire to
+% model complexity that isn't there.
+This, coupled with
+the explicit association of genome coordinates with edges, allows
+us to represent even the bewilderingly complex patterns of relatedness
+present in modern datasets.
 
-We describe here an alternative formulation in which the
-concepts are based on the diploid pedigree, which
-is free from the limitations discussed in the previous section.
-\citet{mathieson2020ancestry} and others
-\citep{wakeley2012genetics,gusfield2014recombinatorics,speed2015naturereviewsgenetics}
-have also suggested this approach, although without explicitly defining
-the roles of nodes and the details of how ancestry
-flows along edges.
 \begin{figure}
     \includegraphics[width=\textwidth]{illustrations/pedigree_figure}
 \caption{\label{fig-pedigree-and-arg}
@@ -826,6 +833,18 @@ transfer of ancestral material. We usually only include nodes in an ARG
 that affect our sample, so that, for example, individuals that are ancestral
 to only one sampled genome are not included.}
 \end{figure}
+
+Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of the model.
+The pedigree is composed of a set of individuals who each carry
+two \emph{genomes} (we assume a diploidy here for concreteness, but there
+is no inherent limitation on ploidy in the model).
+Each genome is inherited from one of the individual's parents, and may
+be the recombined product of that parent's two genomes.
+For example, individual $I_1$ has two genomes $A$ and $B$,
+inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
+recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
+whereas $B$ was inheritied directly from $I_4$'s genome $G$ without
+recombination.
 
 [Here are the basic components of the model]
 
