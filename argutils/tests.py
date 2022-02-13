@@ -203,27 +203,27 @@ class TestSimplifyFunctions:
             assert list(row) != [1, 1]
         
         
-    def test_simplify_keeping_unary_in_coal(self):
-        for ts in [
-            argutils.wh99_example(),
-            argutils.sim_wright_fisher(4, N=10, L=5, seed=1),
-            argutils.sim_coalescent(10, 0.1, 10, seed=3),
-        ]:
-            ts2 = argutils.simplify_keeping_unary_in_coal(ts)
-            ts3 = ts.simplify()
-            assert ts2.num_nodes == ts3.num_nodes
-            has_unary = False
-            for tree in ts2.trees():
-                for n in tree.nodes():
-                    if tree.num_children(n) == 1:
-                        has_unary = True
-            assert has_unary
-            assert ts2.num_individuals == ts.num_individuals
-            
-            has_unary = False
-            for tree in ts3.trees():
-                for n in tree.nodes():
-                    if tree.num_children(n) == 1:
-                        has_unary = True
-            assert not has_unary
-            
+    @pytest.mark.parametrize("ts", [
+        argutils.wh99_example(),
+        argutils.sim_wright_fisher(4, N=10, L=5, seed=1),
+        argutils.sim_coalescent(10, 0.1, 10, seed=3),
+    ])
+    def test_simplify_keeping_unary_in_coal(self, ts):
+        ts2 = argutils.simplify_keeping_unary_in_coal(ts)
+        ts3 = ts.simplify()
+        assert ts2.num_nodes == ts3.num_nodes
+        has_unary = False
+        for tree in ts2.trees():
+            for n in tree.nodes():
+                if tree.num_children(n) == 1:
+                    has_unary = True
+        assert has_unary
+        assert ts2.num_individuals == ts.num_individuals
+        
+        has_unary = False
+        for tree in ts3.trees():
+            for n in tree.nodes():
+                if tree.num_children(n) == 1:
+                    has_unary = True
+        assert not has_unary
+        
