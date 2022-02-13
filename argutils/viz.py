@@ -10,7 +10,18 @@ import networkx as nx
 import numpy as np
 import pydot
 
-def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False, pos=None):
+def draw(
+    ts,
+    ax,
+    *,
+    use_ranked_times=None,
+    tweak_x=None,
+    arrows=False,
+    pos=None,
+    node_size=None,
+    font_size=None,
+    node_color=None,
+    ):
     """
     Draw a graphical representation of a tree sequence. If a metadata key
     called "name" exists for the node, it is taken as
@@ -27,7 +38,15 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False, pos=None):
     
     If pos is passed in, it should be a dictionary mapping nodes to
     positions.
+    
+    node_color is passed to nx.draw directly, so can either be a single
+    colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
+    or a dict of node_id -> colours.
     """
+    if node_size is None:
+        node_size = 200
+    if font_size is None:
+        font_size = 9
     G = convert_nx(ts)
     labels = {}
     for nd in ts.nodes():
@@ -57,10 +76,10 @@ def draw(ts, ax, use_ranked_times=None, tweak_x=None, arrows=False, pos=None):
     nx.draw(
         G,
         pos,
-        # node_color=colour_map,
+        node_color=node_color,
         node_shape="o",
-        node_size=200,
-        font_size=9,
+        node_size=node_size,
+        font_size=font_size,
         labels=labels,
         ax=ax,
         edgelist=[],
