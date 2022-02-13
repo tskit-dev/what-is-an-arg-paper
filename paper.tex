@@ -861,16 +861,35 @@ and no more.
 We describe here an alternative formulation in which the
 concepts are based on the diploid pedigree, which
 is free from the limitations discussed in the previous section.
-\cite{mathieson2020ancestry} and others
+\citet{mathieson2020ancestry} and others
 \citep{wakeley2012genetics,gusfield2014recombinatorics,speed2015naturereviewsgenetics}
 have also suggested this approach, although without explicitly defining
 the roles of nodes and the details of how ancestry
 flows along edges.
 \begin{figure}
-\vspace{5em}
+  \begin{subfigure}[b]{0.25\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{illustrations/pedigree}
+    \caption{Pedigree with genetic inheritance}
+    \label{fig:pedigree}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.25\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{illustrations/pedigree_ARG}
+    \caption{Graph representation of genetic inheritance}
+    \label{fig:ARG-of-pedigree}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{illustrations/pedigree_trees}
+    \caption{Tree representation of genetic inheritance}
+    \label{fig:ts-of-pedigree}
+  \end{subfigure}
 \caption{\label{fig-pedigree-and-arg}
 The (unannotated) ARG is closely related to the pedigree
-graph, where each ``individual'' node is replace by two ``genome''
+graph, where each ``individual'' node is replaced by two ``genome''
 nodes, and edges between parents and children are only included if there is
 transfer of ancestral material. We usually only include nodes in an ARG
 that affect our sample, so that, for example, individuals that are ancestral
