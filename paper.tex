@@ -936,19 +936,74 @@ an ARG, without applying any of these restrictions.
 
 
 \section*{Ancestry resolution and simplification}
+% Note: we want some terminology here to be precise about what we're
+% talking about - perhaps a G-ARG for genome-ARG vs E-ARG for event?
+% Just using ARG for now, can clean up in another pass.
+The definition of an ARG as a data structure in terms of
+individuals' monoploid genomes
+and their direct patterns of inheritance allows us to describe arbitarily
+complex relatedness structures, free from the limitations imposed by
+coalescent approximations.
+An ARG is an intrinsically retrospective
+structure, defined with respect to the ancestry of
+a set of sampled genomes.
+The graph structure (the nodes and their connectivity through edges)
+captures a great deal of information about this ancestry,
+but on its own it cannot tell us about the precise relationships between
+the samples along the genome: do to this, we must construct the
+local (or ``marginal'') trees.
+
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ARG_edge_annotations}
 \caption{\label{fig-ancestry-resolution}
-Implicit vs explicit edge annotations. (a) An eARG equivalent to the encoding described by Griffiths
-can be created by setting all edges to span the full genome, apart from edges between two recombining
-nodes and their recombinant child (edge spans in bold). (b) The sample-resolved eARG, where the
-Hudson simplification algorithm has shortened edge spans so that they encapsulate only the upwards
-transmission of genetic material from the samples A, B, and C; plotted line widths are proportional to the
-genomic span of each edge. The example ARG used here is taken from \citet[][fig. 1]{wiuf1999recombination}.
+Implicit vs explicit edge annotations. (a) An eARG equivalent to the encoding
+described by Griffiths can be created by setting all edges to span the full
+genome, apart from edges between two recombining nodes and their recombinant
+child (edge spans in bold). (b) The sample-resolved eARG, where the Hudson
+simplification algorithm has shortened edge spans so that they encapsulate only
+the upwards transmission of genetic material from the samples A, B, and C;
+plotted line widths are proportional to the genomic span of each edge. The
+example ARG used here is taken from \citet[][fig. 1]{wiuf1999recombination}.
 }
 \end{figure}
+
+% This is weak. Should we give a better description of the algorithm?
+% Not clear yet, and don't want to spend too much time on it if it's
+% unhelpful.
+Given a set of edges $(u, v, I)$ where node $u$ descends from $v$
+over the set of genomic intervals $I$, and a set of sample nodes $S$
+it is straightforward to construct the local tree at position $x$.
+Starting from the sample nodes in $S$, traverse upwards through the
+graph, such that when we are at a node $u$ we follow the edge
+$(u, v, I)$ where $x \in I$. This is essentially the same procedure as
+described by Griffiths~\citep{griffiths1997ancestral}.
+
+Recovering the tree at a single point along the genome, although
+a fundamental operation, is not the only operation that we may wish
+to perform on an ARG. We can make the operation of efficiently
+constructing \emph{all} trees along the genome much more efficient,
+and gain insight into the structure of the ARG,
+if we perform an additional step and \emph{resolve} the ancestral
+material in the ARG with respect to the samples.
+
+As we saw in the section X, the key to efficiently accessing the
+results of the ARG stochastic process is to reason about
+the flow of ancestral material through the graph using Hudson's
+algorithm. The same basic process allows us to determine the
+exact intervals of ancestral material that are flowing through
+each edge in the graph. Concretely, given a set of edges
+$E = \{(u, v, I)\}$ where $u$ is the child, $v$ is the parent
+and $I$ is the set of genomic intervals passed directly from
+$v$ to $u$, the resolution process with respect to a set of
+samples $S$ produces a set of edges $E' = \{(u, v, I)\}$
+where $I$ is the set of genomic intervals over which there is a
+% weak and not correct - how do we say this properly?
+path from at least one element of $S$ to $u$,
+and $u$ is not an MRCA.
+
+This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
 
 
 \begin{figure}
