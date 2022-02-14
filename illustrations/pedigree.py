@@ -71,7 +71,8 @@ def plot_pedigree_figure(pedigree_svg):
     ts_simp = ts.simplify(keep_unary=True)
     
     fig, ax = plt.subplots(1, 1, figsize=(2.5, 5))
-    pos = argutils.viz.draw(ts_simp, ax, node_color=mpl.colors.to_hex(plt.cm.tab20(1)))
+    pos = argutils.viz.draw(
+        ts_simp, ax, reverse_x_axis=True, node_color=mpl.colors.to_hex(plt.cm.tab20(1)))
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     with io.StringIO() as f:
         plt.savefig(f, format='svg')
