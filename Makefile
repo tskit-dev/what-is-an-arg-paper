@@ -2,8 +2,7 @@ DATA=
 FIGURES=
 ILLUSTRATIONS=\
 	illustrations/ARG_recomb_node_deletion.pdf \
-	illustrations/pedigree.pdf \
-	illustrations/pedigree_trees.pdf \
+	illustrations/pedigree_figure.pdf \
 
 
 all: paper.pdf
@@ -17,7 +16,7 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deletion.py
 	python3 $<
 
-illustrations/pedigree_trees.svg: illustrations/pedigree.py
+illustrations/pedigree_figure.svg: illustrations/pedigree.py
 	python3 $<
 
 # NB not reflected in this makefile running pedigree.py also creates pedigree_ARG.pdf
