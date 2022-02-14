@@ -21,6 +21,7 @@ def draw(
     node_size=None,
     font_size=None,
     node_color=None,
+    reverse_x_axis=None,
     ):
     """
     Draw a graphical representation of a tree sequence. If a metadata key
@@ -39,9 +40,12 @@ def draw(
     If pos is passed in, it should be a dictionary mapping nodes to
     positions.
     
-    node_color is passed to nx.draw directly, so can either be a single
+    node_size, font_size, and node_color are all passed to nx.draw directly.
+    In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
     or a dict of node_id -> colours.
+    
+    if reverse_x_axis is True, the graph is reflected horizontally 
     """
     if node_size is None:
         node_size = 200
@@ -56,7 +60,7 @@ def draw(
             labels[nd.id] = str(nd.id)
 
     if pos is None:
-        pos = nx_get_dot_pos(G)
+        pos = nx_get_dot_pos(G, reverse_x_axis)
 
     if use_ranked_times is not None:
         if use_ranked_times:
@@ -133,11 +137,13 @@ def convert_nx(ts):
     return G
 
 
-def nx_get_dot_pos(G):
+def nx_get_dot_pos(G, reverse_x_axis=None):
     """
     Layout using graphviz's "dot" algorithm and return a dict of positions in the
     format required by networkx. We assume that the nodes have a "time" attribute
     """
+    if reverse_x_axis is None:
+        reverse_x_axis = False
     P=nx.drawing.nx_pydot.to_pydot(G) # switch to a Pydot representation
     nodes_at_time = collections.defaultdict(list)
     for nd in P.get_nodes():
@@ -154,10 +160,15 @@ def nx_get_dot_pos(G):
     graphs = pydot.graph_from_dot_data(graphviz_bytes.decode())
     assert len(graphs) == 1
     graph = graphs[0]
-    # negate the coords to get the y axis going in the direction we want.
+    # negate at least the y axis coords, to get the graph going in the direction we want
+    if reverse_x_axis:
+        coord_direction = np.array([-1, -1])
+    else:
+        coord_direction = np.array([1, -1])
+        
     return {
-        # [1:-1] snips off enclosing quotes, negation corrects the y axis direction
-        int(n.get_name()): -np.fromstring(n.get_pos()[1:-1], sep=",")
+        # [1:-1] snips off enclosing quotes
+        int(n.get_name()): np.fromstring(n.get_pos()[1:-1], sep=",") * coord_direction
         # need to iterate over this graph and also all the subgraphs to get all the nodes
         for g in itertools.chain([graph], graph.get_subgraphs()) for n in g.get_nodes()
         if n.get_pos() and n.get_name().isdigit()
