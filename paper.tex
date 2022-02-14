@@ -204,17 +204,17 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (6, 2.4) -- (6, 8);
 
 	% Edge annotations above each event
-	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {}; 
-	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {}; 
-	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {}; 
-	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {}; 
-	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {}; 
-	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {}; 
-	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {}; 
-	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {}; 
-	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {}; 
-	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {}; 
-	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {}; 
+	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {};
+	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {};
+	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {};
+	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {};
+	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {};
+	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {};
+	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {};
+	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {};
+	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {};
+	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {};
+	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {};
 	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {};
 	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {};
 	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {};
@@ -339,16 +339,16 @@ description of the algorithm, and how it may be implemented efficiently.
 	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2); 
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5); 
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4); 
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1); 
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
 	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5); 
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
 	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11, 6); 
+	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
 	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2); 
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
 \end{tikzpicture}
 \end{tabular}
 }
@@ -801,88 +801,99 @@ sections, I guess.}
 
 \section*{Anchoring the ARG to the pedigree}
 
-The limitations of the Griffiths ARG encoding are a direct consequence
-of its derivation from the coalescent with recombination stochastic process.
-Indeed, these limitations arise because it is such a \emph{good}
-mathematical encoding, providing sufficient information to
-define the realised ancestry under the assumptions of the model,
-and no more.
+The deep connection between the ARG and the pedigree is of course
+well known
+\citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
+speed2015naturereviewsgenetics}
+and recent discussions of the ARG have illustrated the
+relationship~\citep{mathieson2020ancestry,brandt2021evaluation}, % more??
+showing how the coalescence and recombination events in an ARG
+correspond to particular genomes in the pedigree.
+As discussed in the previous section, the definition of the ARG
+as a \emph{data structure} in terms of these two events is problematic,
+fundamentally limiting the expressivity of the structure.
+Following \cite{mathieson2020ancestry} we instead define the
+ARG data structure \emph{in terms of} an underlying pedigree, so that
+any form of inheritance structure can be modelled.
+% Bit of duplication here, but good to make the point about being
+% motivated by real existing datasets not some academic desire to
+% model complexity that isn't there.
+This, coupled with
+the explicit association of genome coordinates with edges, allows
+us to represent even the bewilderingly complex patterns of relatedness
+present in modern datasets.
 
-We describe here an alternative formulation in which the
-concepts are based on the diploid pedigree, which
-is free from the limitations discussed in the previous section.
-\citet{mathieson2020ancestry} and others
-\citep{wakeley2012genetics,gusfield2014recombinatorics,speed2015naturereviewsgenetics}
-have also suggested this approach, although without explicitly defining
-the roles of nodes and the details of how ancestry
-flows along edges.
 \begin{figure}
     \includegraphics[width=\textwidth]{illustrations/pedigree_figure}
 \caption{\label{fig-pedigree-and-arg}
-The (unannotated) ARG is closely related to the pedigree
-graph, where each ``individual'' node is replaced by two ``genome''
-nodes, and edges between parents and children are only included if there is
-transfer of ancestral material. We usually only include nodes in an ARG
-that affect our sample, so that, for example, individuals that are ancestral
-to only one sampled genome are not included.}
-\end{figure}
-
-[Here are the basic components of the model]
-
-\begin{enumerate}
-\item A node corresponds to one of a diploid individual's two genomes.
-This is linked explicitly to the pedigree, and is fully general.
-Nodes \emph{may} be labelled with certain flags describing their properties,
-but it's not necessary.
-\item An edge between two nodes defines a genetic inheritance relationship
-between two nodes. Edges are annotated with information about the
-passage of ancestral materal. There are different forms these annotations
-can take. For example, we can follow the approach taken in the Griffiths
-ARG and just annotate recombinant edges with the interval $[0, x)$ or $[x, L)$,
-depending on side of the breakpoint the edge is on. In the most
-general case, we annotate each edge with the full set of disjoint
-intervals of ancestral material that flows along that edge.
-\citep{mcgill2013graphml} also proposed full ancestral material being
-associated with each edge.
-\end{enumerate}
-
-\begin{figure}
-\vspace{5em}
-% NB: not clear if this figure is better off on its own or should be
-% merged with the pedigree one.
-\caption{\label{fig-arg-annotations}
-The specific path through the ARG for a given genome position (and therefore
-the local genealogical tree) cannot be determined without annotations
-to the graph. (A) The classical Griffiths approach annotates recombination
-nodes with the corresponding breakpoint. (B) We can equivalently
-annotate the \emph{edges} with the genomic intervals carrying ancestral
-material. Edge annotations are somewhat more general, and have
-significant computational advantages.}
-\end{figure}
-
-\begin{figure}
-\centering
-\vspace{5em}
-\includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
-\caption{\label{fig-recombination-nodes}
-Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
-ARG including all recombination nodes (red). (b) The same ARG having removed both
-recombination nodes and nodes of common ancestors in which no genetic
-lineages coalesce (cyan). (c) The sequence of trees corresponding to (b): if we were
-to plot out the trees corresponding to (a) we would have more trees, but the topologies
-and MRCA nodes at each genomic location would be identical. For clarity, nodes are
-plotted by ranked time rather than true time on the y-axis.
-% HYW: note that we also truncate nodes for portions in which they are unary,
-% so that nodes which are coalescent nodes over only some of their length
-% (blue-green) become coalescent nodes over their entire length (green). This
-% can, however, throw away some useful information, for example node 4 has
-% only a single parent edge in (a), but 2 parent edges (one of which appears
-% to bypass node 11) in (b). In fact, this edge should go through node 11, but
-% there may be no way to detect this from real data.
+% TODO caption needs another pass. One the full section has been written
+% it'll be clearer what we need to say in the caption vs the text.
+The Ancestral Recombination Graph defined as arbitrary inheritance
+of genomes between diploid (or any ploidy; see text) individuals.
+(A) Each individual consists of two genomes, and each genome is
+inherited as a (potentially) recombinant mixture of the individual's parent's
+genomes. (B) Genomes are modelled as nodes in a graph, and the edges
+denote inheritance. Each edge is annotated with genome coordinates
+defining the specific region(s) inherited. An ARG is a retrospective
+structure defined with
+respect to some set of sample genomes (A--D here), and so only
+genomes directly ancestral to those samples are included.
+(C) This description of inheritance fully defines the
+local relationships along the genome, as shown in the local
+or ``marginal'' trees.
 }
 \end{figure}
 
-\section*{Relationship with other types of phylogenetic networks}
+Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of the model.
+The pedigree is composed of a set of individuals who each carry
+two \emph{genomes} (we assume diploidy here for concreteness, but there
+is no inherent limitation on ploidy).
+Each genome is inherited from one of the individual's parents, and may
+be the recombined product of that parent's two genomes.
+For example, individual $I_1$ has two genomes $A$ and $B$,
+inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
+recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
+whereas $B$ was inherited directly from $I_4$'s genome $G$ without
+recombination.
+
+The focus on modelling genomes rather than events has some interesting
+and important consequences. Firstly, the graph may contain nodes that
+do not correspond to any particular event in the ancestry of the
+samples. For example, node $H$ is the direct ancestor of $D$ in
+Fig~\ref{fig-pedigree-and-arg}, and is not the product of either a
+coalescence or a recombination. Such nodes would usually be removed
+from the graph so that $D$ descends directly from $K$ (see section XXX)
+but there is no necessity for this from a representational perspective.
+This ability can be useful in practice and could be required if,
+% Do we need to spell this out?
+for example, we have a deeply sequenced pedigree of
+haplodiploids. % e.g. Honeybees? Be great to cite an example!
+
+Secondly, the way that we model recombination is subtly different.
+Rather than having a single node that represents the \emph{event},
+there are three nodes (representing the recombinant offspring and
+two parental genomes) and two edges with associated genome coordinate
+intervals (representing the precise inheritance patterns).
+For example, in Fig~\ref{fig-pedigree-and-arg}, node $A$ is the
+recombinant descendent of $E$ and $F$, inheriting positions
+FIXME from $E$ and genome positions FIXME from $F$. Any particular
+node can be both a recombinant (it is the recombined product of
+its parent's genomes) and a common ancestor (the ancestry from
+multiple samples meet at this node; see the next section).
+[More stuff here: clarify why we assign coordinates to edges
+rather than nodes. Basically lay out all the stuff that we can
+talk about \emph{without} going in to the details of
+ancestry resolution.]
+
+\textcolor{red}{TODO: reduce this down to one paragraph, which
+defines the relationship between what we define as an ARG and
+what people mean by phylogenetic networks from the literature.
+We probably don't need to get into quite so much detail on
+the different types that people have studies. Essentially,
+we're ending the section with a brief review which situates
+our definition in the literature. I think pulling apart the
+idea of a ``reticulation'' vs what we call a recombinant
+is essential here.}
 
 The term \emph{phylogenetic network} has been broadly accepted to describe the most general
 type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
@@ -919,8 +930,44 @@ of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled tre
 and the tractability afforded by their relatively simple structure results in a number of attractive
 combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
 an ARG, without applying any of these restrictions.
+
 % AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
 % Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
+
+
+\section*{Ancestry resolution and simplification}
+
+\begin{figure}
+\centering
+\vspace{5em}
+\caption{\label{fig-ancestry-resolution}
+}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\vspace{5em}
+\includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
+\caption{\label{fig-recombination-nodes}
+Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
+ARG including all recombination nodes (red). (b) The same ARG having removed both
+recombination nodes and nodes of common ancestors in which no genetic
+lineages coalesce (cyan). (c) The sequence of trees corresponding to (b): if we were
+to plot out the trees corresponding to (a) we would have more trees, but the topologies
+and MRCA nodes at each genomic location would be identical. For clarity, nodes are
+plotted by ranked time rather than true time on the y-axis.
+% HYW: note that we also truncate nodes for portions in which they are unary,
+% so that nodes which are coalescent nodes over only some of their length
+% (blue-green) become coalescent nodes over their entire length (green). This
+% can, however, throw away some useful information, for example node 4 has
+% only a single parent edge in (a), but 2 parent edges (one of which appears
+% to bypass node 11) in (b). In fact, this edge should go through node 11, but
+% there may be no way to detect this from real data.
+}
+\end{figure}
+
+
 
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
@@ -1010,6 +1057,16 @@ ARGs.
 Discussion points (may or may not be used, certainly would be heavily revised)
 
 \begin{itemize}
+\item It is unfortunate that we are adding yet another meaning to the
+term ARG here, but all we're really doing is making the implicit
+assumptions that others have made (i.e., describing the output of
+Relate, tsinfer etc as ARGs) and making them concrete. We need to have a
+term to describe all of these things, and since people are already using
+ARG for this, we might as well make it rigorous. We can then move away
+from the unfruitful discussion about which methods infer a ``true'' or
+``real'' ARG (none do, really, under the original definitions) and
+instead start discussing the \emph{properties} of these ARGs. (See
+next point also.)
 \item Terminology based around an inferred ancestry being a ``true''
 ARG is impoverished and misleading. The only reasonable interpretation
 of a ARG being true or not is whether it's a sample from the coalescent.
@@ -1030,6 +1087,13 @@ based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
 GraphML~\citep{mcgill2013graphml} has some of the same key ideas
 as tskit though, in particular allowing the annotation of ``live sites''
 to an edge as a set of disjoint intervals that hold ancestral material.
+
+\item There are real computational disadvantages to the Griffiths ARG
+data structure. Having two types of node (three really, as we need
+``sample'' nodes which are also treated differently) complicates algorithms,
+and makes it difficult to reason about the structure of the ARG as a
+graph. For example, there's some weirdness about mutations over
+recombination nodes discussed by Gusfield [Ana?]
 
 \item Comparison metrics are a problem. All evaluations has essentially
 looked at either some form of pairwise comparison of trees along the genome
