@@ -310,10 +310,13 @@ def simplify_keeping_all_nodes(ts):
     tables = ts.dump_tables()
     tables.edges.clear()
     for edge in ts2.tables.edges:
-        tables.edges.append(edge.replace(
-            child=inverted_map[edge.child], parent=inverted_map[edge.parent]))
+        tables.edges.append(
+            edge.replace(
+                child=inverted_map[edge.child], parent=inverted_map[edge.parent]
+            )
+        )
     tables.sort()
-    return tables.tree_sequence()    
+    return tables.tree_sequence()
 
 
 def simplify_remove_pass_through(ts, repeat=False, map_nodes=False):
@@ -358,7 +361,9 @@ def simplify_remove_pass_through(ts, repeat=False, map_nodes=False):
             filter_populations=False,
         )
         # Keep track of the repeated node mappings
-        node_map[node_map != tskit.NULL] = tmp_node_map[node_map[node_map != tskit.NULL]]
+        node_map[node_map != tskit.NULL] = tmp_node_map[
+            node_map[node_map != tskit.NULL]
+        ]
         if repeat:
             ts = tables.tree_sequence()
         else:
@@ -403,6 +408,10 @@ def simplify_keeping_unary_in_coal(ts, map_nodes=False):
         return tables.tree_sequence(), node_map
     else:
         return tables.tree_sequence()
+
+
+def is_recombinant(flags):
+    return (flags & NODE_IS_RECOMB) != 0
 
 
 def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
@@ -487,8 +496,10 @@ def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
                 #     print("\t\t", lin)
 
                 merged_lineage = None
-                is_recombinant = (node_flags[lineage.node] & NODE_IS_RECOMB) != 0
-                if len(lineages) == 1 and not is_recombinant:
+                # is_recombinant = True
+                if len(lineages) == 1 and not is_recombinant(
+                    node_flags[lineages[0].node]
+                ):
                     merged_lineage = lineages[0]
                 elif len(lineages) > 0:
                     if parent.id == -1:

@@ -9,6 +9,20 @@ import numpy as np
 import argutils
 
 
+def assert_arg_properties(ts):
+    # Each node should have at most two parents along the genome.
+    parents = collections.defaultdict(set)
+    for tree in ts.trees():
+        for u in tree.nodes():
+            parent = tree.parent(u)
+            if parent != tskit.NULL:
+                parents[u].add(parent)
+    for nodes in parents.values():
+        assert len(nodes) <= 2
+        if len(nodes) == 2:
+            assert len(set(ts.node(u).time for u in nodes)) == 1
+
+
 class TestSimulate:
     def test_basic_coalescent(self):
         ts = argutils.sim_coalescent(4, L=5, rho=0.1, seed=1)
@@ -32,12 +46,14 @@ class TestSimulate:
         assert ts.num_nodes == 15
         assert all(tree.num_roots == 1 for tree in ts.trees())
 
-    def test_wright_fisher_high_recomb(self):
-        ts = argutils.sim_wright_fisher(4, N=10, L=5, recomb_proba=0.9, seed=1)
+    @pytest.mark.parametrize("seed", range(1, 10))
+    def test_wright_fisher_high_recomb(self, seed):
+        ts = argutils.sim_wright_fisher(4, N=10, L=5, recomb_proba=0.9, seed=seed)
         assert ts.num_samples == 8
         assert ts.sequence_length == 5
         assert ts.num_trees > 1
         assert all(tree.num_roots == 1 for tree in ts.trees())
+        assert_arg_properties(ts)
 
     def test_basic_coalescent_unresolved(self):
         ts = argutils.sim_coalescent(4, L=5, rho=0.1, seed=1, resolved=False)
@@ -134,9 +150,10 @@ class TestResolve:
         # print(resolved.draw_text())
         assert resolved.equals(resolved2, ignore_provenance=True)
 
+
 class TestLabels:
     def test_viz_label_nodes_many(self):
-        ts = argutils.sim_coalescent(20, 0.1, 10, seed=123) # over 26 nodes
+        ts = argutils.sim_coalescent(20, 0.1, 10, seed=123)  # over 26 nodes
         ts = argutils.viz.label_nodes(ts)
         assert ts.num_nodes > len(string.ascii_uppercase)
         i = 0
@@ -148,12 +165,13 @@ class TestLabels:
             i += 1
 
     def test_viz_label_nodes_bespoke(self):
-        ts = argutils.sim_coalescent(20, 0.1, 10, seed=123) # over 26 nodes
+        ts = argutils.sim_coalescent(20, 0.1, 10, seed=123)  # over 26 nodes
         ts = argutils.viz.label_nodes(
-            ts, labels={n: str(i) for n, i in enumerate(range(ts.num_nodes, 0, -1))})
+            ts, labels={n: str(i) for n, i in enumerate(range(ts.num_nodes, 0, -1))}
+        )
         for nd in ts.nodes():
             assert nd.metadata["name"] == f"{ts.num_nodes - nd.id}"
-    
+
 
 class TestSimplifyFunctions:
     def test_simplify_keeping_all_nodes(self):
@@ -191,7 +209,6 @@ class TestSimplifyFunctions:
             if list(row) == [1, 1]:
                 has_pass_through = True
         assert has_pass_through
-        
 
         ts3 = argutils.simplify_remove_pass_through(ts, repeat=True)
         node_edges = np.zeros((ts.num_nodes, 2), dtype=int)
@@ -201,13 +218,15 @@ class TestSimplifyFunctions:
         for i, row in enumerate(node_edges):
             # No more pass thoguh nodes left
             assert list(row) != [1, 1]
-        
-        
-    @pytest.mark.parametrize("ts", [
-        argutils.wh99_example(),
-        argutils.sim_wright_fisher(4, N=10, L=5, seed=1),
-        argutils.sim_coalescent(10, 0.1, 10, seed=3),
-    ])
+
+    @pytest.mark.parametrize(
+        "ts",
+        [
+            argutils.wh99_example(),
+            argutils.sim_wright_fisher(4, N=10, L=5, seed=1),
+            argutils.sim_coalescent(10, 0.1, 10, seed=3),
+        ],
+    )
     def test_simplify_keeping_unary_in_coal(self, ts):
         ts2 = argutils.simplify_keeping_unary_in_coal(ts)
         ts3 = ts.simplify()
@@ -219,11 +238,10 @@ class TestSimplifyFunctions:
                     has_unary = True
         assert has_unary
         assert ts2.num_individuals == ts.num_individuals
-        
+
         has_unary = False
         for tree in ts3.trees():
             for n in tree.nodes():
                 if tree.num_children(n) == 1:
                     has_unary = True
         assert not has_unary
-        
