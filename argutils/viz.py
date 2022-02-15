@@ -5,7 +5,6 @@ import collections
 import itertools
 import string
 
-import tskit
 import networkx as nx
 import numpy as np
 import pydot
@@ -18,6 +17,9 @@ def draw(
     tweak_x=None,
     arrows=False,
     pos=None,
+    draw_edge_widths=False,
+    max_edge_width=5,
+    draw_edge_alpha=False,
     node_size=None,
     font_size=None,
     node_color=None,
@@ -32,20 +34,30 @@ def draw(
     same times sharing a rank. If False, it uses the true (tree sequence)
     times. If None, times from the tree sequence are not used and the
     standard dot layout is used.
-    
+
     tweak_x is a dict of {u: x_adjustment_percent} which allows
     the x position of node u to be hand-adjusted by adding or
     subtracting a percentage of the total x width of the plot
-    
+
     If pos is passed in, it should be a dictionary mapping nodes to
     positions.
     
+    If draw_edge_widths is True, draw the widths of edges in the graphical
+    representation of the tree sequence in proportion to their genomic span.
+    max_edge_width spcifies the maximum edge width to draw (default is 5).
+
+    If draw_edge_alpha is True, draw edges with an alpha value equal to their
+    genomic span / the total sequence length of the tree sequence. If
+    draw_edge_alpha is True and draw_edge_widths is False, all edges are drawn
+    with a width of max_edge_width.
+
     node_size, font_size, and node_color are all passed to nx.draw directly.
     In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
     or a dict of node_id -> colours.
     
     if reverse_x_axis is True, the graph is reflected horizontally 
+
     """
     if node_size is None:
         node_size = 200
@@ -76,6 +88,19 @@ def draw(
         plot_width = np.ptp([x for x, _ in pos.values()])
         for node, tweak_val in tweak_x.items():
             pos[node] = pos[node] + np.array([(tweak_val/100*plot_width), 0])
+
+    if draw_edge_widths:
+        edge_widths = get_edge_spans(G)
+        sequence_length = ts.get_sequence_length()
+        edge_widths = (edge_widths / sequence_length) * max_edge_width
+    else:
+        edge_widths = None
+    if draw_edge_alpha:
+        edge_alpha = get_edge_alpha(G, ts)
+        if not draw_edge_widths:
+            edge_widths = [max_edge_width for edge in G.edges()]
+    else:
+        edge_alpha = None
     # Draw just the nodes
     nx.draw(
         G,
@@ -89,15 +114,21 @@ def draw(
         edgelist=[],
     )
     # Now add the edges
-    nx.draw_networkx_edges(
+    edges = nx.draw_networkx_edges(
         G,
         pos,
         edgelist=G.edges(),
         arrowstyle="-|>" if arrows else "-",
         ax=ax,
+        width=edge_widths
     )
 
+    if edge_alpha is not None:
+        for i, edge in enumerate(edges):
+            edge.set_alpha(edge_alpha[i])
+
     return pos
+
 
 def label_nodes(ts, labels=None):
     """
@@ -106,7 +137,7 @@ def label_nodes(ts, labels=None):
     use the dictionary {0: 'A', 1: 'B', 2: 'C', ... 26: 'Z'}.
     Any nodes without a corresponding key in the labels dictionary will
     simply have their metadata value set to their node id.
-    
+
     Note that this means that if no labels are given, nodes 26 onwards
     will be labelled with numbers rather than ascii uppercase letters.
     """
@@ -148,11 +179,11 @@ def nx_get_dot_pos(G, reverse_x_axis=None):
     nodes_at_time = collections.defaultdict(list)
     for nd in P.get_nodes():
         nodes_at_time[float(nd.get("time"))].append(nd)
-    
+
     # First cluster all nodes at the same times (probably mostly samples)
     for t, nodes in nodes_at_time.items():
         if len(nodes) > 1:
-            S=pydot.Cluster(f"cluster_t{t}")
+            S = pydot.Cluster(f"cluster_t{t}")
             for nd in nodes:
                 S.add_node(nd)
             P.add_subgraph(S)
@@ -174,3 +205,24 @@ def nx_get_dot_pos(G, reverse_x_axis=None):
         if n.get_pos() and n.get_name().isdigit()
     }
 
+
+def get_edge_spans(G):
+    """
+    Returns a list of length "num_edges" in G, the graphical representation of the
+    tree sequence, where each entry is the genomic span of the corresponding edge in the
+    tree sequence divided by the total sequence length.
+    """
+    edge_spans = list()
+    for edge in G.edges():
+        edge_data = G.get_edge_data(edge[0], edge[1])
+        total_span = sum(right - left for (left, right) in edge_data["intervals"])
+        edge_spans.append(total_span)
+    edge_spans = np.array(edge_spans)
+    return edge_spans
+
+
+def get_edge_alpha(G, ts):
+    sequence_length = ts.get_sequence_length()
+    edge_spans = get_edge_spans(G)
+    edge_alpha = (edge_spans / sequence_length)
+    return edge_alpha
