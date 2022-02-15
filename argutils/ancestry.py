@@ -575,3 +575,50 @@ def wh99_example():
 
     tables.sort()
     return tables.tree_sequence()
+
+
+def as_earg(ts):
+    """
+    Returns the specified unresolved ARG as an EARG (E, sigma).
+    """
+    sigma = np.full(ts.num_nodes, int(ts.sequence_length), dtype=int)
+    edges = iter(ts.edges())
+    edge = next(edges, None)
+    E = []
+    while edge is not None:
+        if edge.left == 0 and edge.right == ts.sequence_length:
+            E.append((edge.child, edge.parent))
+        else:
+            assert edge.left == 0
+            breakpoint = edge.right
+            child = edge.child
+            sigma[child] = breakpoint
+            E.append((edge.child, edge.parent))
+            edge = next(edges, None)
+            assert edge.left == breakpoint
+            assert edge.child == child
+            E.append((edge.child, edge.parent))
+        edge = next(edges, None)
+    # We could wrap sigma as a function to be literal about the definition
+    # but this is simpler for debugging.
+    return E, sigma
+
+
+def earg_get_tree(E, sigma, S, x):
+    """
+    Given a minimal EARG definition (E, sigma), return the tree for a the given
+    set of samples at the specified position as a dictionary parent->child.
+    """
+    N = set(S)
+    parent = {}
+    while len(N) > 0:
+        c = N.pop()
+        P = [e[1] for e in E if e[0] == c]
+        if len(P) > 0:
+            if x < sigma[c]:
+                p = P[0]
+            else:
+                p = P[1]
+            parent[c] = p
+            N.add(p)
+    return parent

@@ -85,6 +85,69 @@ class TestSimulate:
         ts2.tables.assert_equals(ts3.tables, ignore_provenance=True)
 
 
+def parent_dict(tree):
+    """
+    Returns the parent dict reachable from the samples for the specified
+    tskit tree. We can't use tree.parent_dict as it includes non-sample
+    leaves.
+    """
+    d = {}
+    # Could make this more efficient avoiding already written paths,
+    # but can't be bothered.
+    for u in tree.tree_sequence.samples():
+        v = tree.parent(u)
+        while v != tskit.NULL:
+            d[u] = v
+            u = v
+            v = tree.parent(u)
+    return d
+
+
+class TestEARG:
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E, sigma = argutils.as_earg(ts)
+        for tree in ts.trees():
+            t = argutils.earg_get_tree(E, sigma, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(10, 12))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E, sigma = argutils.as_earg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.earg_get_tree(E, sigma, ts.samples(), x)
+            assert t == parent_dict(tree)
+
+
 def gmrca_example_resolved():
     # 3.00┊  5  ┊  5  ┊
     #     ┊  ┃  ┊ ┏┻┓ ┊
