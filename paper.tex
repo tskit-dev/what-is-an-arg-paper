@@ -558,9 +558,9 @@ child node $c$ and parent $p$ ($c, p \in \mathbb{N}$), and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}_0$ is a function
 mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
-% Because of our definitions we can't have anything to the left of 0,
-% so you can treat breakpoint at 0 as no recombination.
-$\sigma(u) = 0$ otherwise. For each recombination node $u$ we must
+% This is arbitrary, but handy when you start defining the function
+% for recovering trees; see below
+$\sigma(u) = \infty$ otherwise. For each recombination node $u$ we must
 have exactly two edges in $E$ such that $u$ is the child.
 Note that this description captures only the
 graph topology: if we also wish to know the times of events we need
@@ -695,9 +695,21 @@ and $(x, L)$ from $4$
 }
 \end{figure}
 
+% Not sure if we actually include this, but it's good to work it through
+% to make sure the notation works.
 Given a set of sample nodes $S$ we can recover the local tree at
-position $x$ by the following procedure. Begin by initialising
-a stack
+position $x$ by the following procedure. Let $N$ be a set of
+nodes we are currently constructing the tree at, and let
+$p: \mathbb{N} \rightarrow \mathbb{N}$ be the mapping from child
+node to parent. Firstly, initialise $N \leftarrow S$.
+Then, while $|N| > 0$, we add branches to the
+tree as follows. Let $u$ be an arbitrary element of $N$ (which
+we remove). Then, if $\sigma(u) < x$ we let $j$ be the
+smallest value such that $e_{j,1} = u$, and otherwise
+let $j$ be the largest value such that $e_{j,1} = u$.
+Then, set $v \leftarrow e_{j, 2}$,
+$p_u \leftarrow v$
+and $N \leftarrow N \cup \{v\}$.
 
 The Griffiths ARG encoding is ambiguous because it does not explicitly
 define which of the parent lineages resulting from a recombination
@@ -855,7 +867,7 @@ or ``marginal'' trees.
 Formally, we can define a GARG as a set of edges $E$, where each
 element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
 $c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r])$ over which genome $c$ inherits from $p$ (we may
+disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
 also phrase this in terms of the ancestral material of a sample---see
 the next section).
 
@@ -966,17 +978,12 @@ but on its own it cannot tell us about the precise relationships between
 the samples along the genome: do to this, we must construct the
 local (or ``marginal'') trees.
 
-We can define a GARG as a set of directed edges $E$, where each
-element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-$c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$.
-
 We can define a sample-resolved GARG as a tuple $(S, E)$
 where $S \subset \mathbb{N}$ is a set of sample nodes and
 $E$ is a set of edges. Each element of $E$
 is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
 $c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r])$
+disjoint genomic intervals $(\ell, r]$
 over which genome $c$ inherits from $p$, and there is a path from
 $c$ to some non-empty subset of $S$ through the local trees.
 % Should probably define how we build the local trees somewhere.

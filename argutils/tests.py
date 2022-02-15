@@ -148,6 +148,152 @@ class TestEARG:
             assert t == parent_dict(tree)
 
 
+class TestGARG:
+
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_garg(ts)
+        for tree in ts.trees():
+            t = argutils.garg_get_tree(E, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(5, 8))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_garg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.garg_get_tree(E, ts.samples(), x)
+            assert t == parent_dict(tree)
+
+class TestResolvedGARG:
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_resolved_garg(ts)
+        print(E)
+        for tree in ts.trees():
+            t = argutils.garg_get_tree(E, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(5, 8))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_resolved_garg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.garg_get_tree(E, ts.samples(), x)
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_garg_subset(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E1 = argutils.as_garg(ts)
+        E2 = argutils.as_resolved_garg(ts)
+        assert len(E1) == len(E2)
+        for e1, e2 in zip(E1, E2):
+            assert e1[0] == e2[0]
+            assert e1[1] == e2[1]
+            # This is toe-curlingly bad
+            for x in range(L):
+                if e1[2].contains(x):
+                    assert e2[2].contains(x)
+
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_equal_to_resolved(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_resolved_garg(ts)
+        print(E)
+        tsr = ts.simplify(keep_unary=True)
+        print(tsr.tables.edges)
+        edges = collections.defaultdict(list)
+        for edge in ts.edges():
+            edges[(edge.child, edge.parent)].append((edge.left, edge.right))
+        print(edges)
+
+        for child, parent, intervals in E:
+            print(child, parent, intervals, edges[(child, parent)])
+
+
 def gmrca_example_resolved():
     # 3.00┊  5  ┊  5  ┊
     #     ┊  ┃  ┊ ┏┻┓ ┊

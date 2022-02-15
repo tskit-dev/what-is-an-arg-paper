@@ -8,6 +8,7 @@ import dataclasses
 from typing import List
 from typing import Any
 
+import intervaltree
 import numpy as np
 import tskit
 
@@ -577,6 +578,65 @@ def wh99_example():
     return tables.tree_sequence()
 
 
+class IntervalSet:
+
+    intervals: list = dataclasses.field(default_factory=list)
+
+    def contains(self, x):
+        for left, right in self.intervals:
+            if left <= x < right:
+                return True
+        return False
+
+    def union(self, other):
+        """
+        Returns a new IntervalSet with the union of intervals in this and
+        other.
+        """
+        # Dreadful implementation, but oh well.
+        intervals = self.intervals.copy()
+        for interval in other.intervals:
+            if interval not in intervals:
+                intervals.append(interval)
+        return IntervalSet(intervals)
+
+
+import intervaltree
+
+def as_garg(ts):
+    """
+    Returns the specified unresolved ARG as an GARG E
+    """
+    E = [(edge.child, edge.parent, intervaltree.IntervalTree.from_tuples([(edge.left, edge.right)]))
+        for edge in ts.edges()]
+    return E
+
+def as_resolved_garg(ts):
+    """
+    Returns the specified unresolved ARG as an GARG E with respect to
+    the tree sequences samples.
+    """
+    S = ts.samples()
+    E = as_garg(ts)
+    print(E)
+    I = collections.defaultdict(intervaltree.IntervalTree)
+    for u in S:
+        I[u] = intervaltree.IntervalTree.from_tuples([(0, ts.sequence_length)])
+
+    N = set(S)
+    while len(N) > 0:
+        c = N.pop()
+        for e in [e for e in E if e[0] == c]:
+            p = e[1]
+            print("parent = ", p)
+            print("Ip = ", I[p])
+            print("Ic = ", I[c])
+            print("e = ", e[2])
+            print("intersection = ", I[c].intersection(e[2]))
+            I[p] = I[p].union(I[c].intersection(e[2]))
+            N.add(p)
+    return [(c, p, I[c]) for c, p, _ in E]
+
 def as_earg(ts):
     """
     Returns the specified unresolved ARG as an EARG (E, sigma).
@@ -621,4 +681,22 @@ def earg_get_tree(E, sigma, S, x):
                 p = P[1]
             parent[c] = p
             N.add(p)
+    return parent
+
+
+def garg_get_tree(E, S, x):
+    """
+    Given a minimal GARG definition E, return the tree for a the given
+    set of samples at the specified position as a dictionary parent->child.
+    """
+    N = set(S)
+    parent = {}
+    while len(N) > 0:
+        c = N.pop()
+        P = [e[1] for e in E if e[0] == c and e[2].overlaps(x)]
+        # print(c, P)
+        if len(P) > 0:
+            assert len(P) == 1
+            parent[c] = P[0]
+            N.add(P[0])
     return parent
