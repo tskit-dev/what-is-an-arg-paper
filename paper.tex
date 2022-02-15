@@ -546,25 +546,25 @@ the data structure interpretation.
 The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination on a single
 chromosome, but it has significant drawbacks as the basis for a general purpose
-storage and interchange format.
-The concrete details of how an ARG should be stored and processed
-are not discussed in the literature, % weak, fix.
-but the following is a reasonable approach that mirrors the implementations
-in methods such as [x, y z].
-A Griffiths ARG is composed of a set of $N$ nodes, where each node is an
-integer $0 \leq u < N$, and edges $(u, v)$ define the relationships between
-those nodes (Fig.~\ref{fig-arg-data-structure}A).
-Each node corresponds to an \emph{event}, and is either a common ancestor
-event (in which case it has two children and one parent)
-or a recombination event (when it has one child and two parents).
-Each recombination event is associated with a breakpoint $0 < x < L$,
-which we might encode as a mapping $f: N \rightarrow \{0, ..., L - 1\}$
-such that $f(u)$ is the recombination breakpoint if $u$ is a recombination
-node and $f(u) = \infty$ otherwise. This encoding captures the information
-of a realisation of the ARG stochastic process, but it is important to
-note that it does not uniquely describe the underlying ancestral history
-without stipulating some additional ordering requirements.
-
+storage and interchange format. To avoid confusion, we will refer to this
+ARG encoding as an ``Event ARG'', or EARG.
+There are many ways in which the EARG structure can be formalised (see
+e.g.~\citep{gusfield2014recombinatorics}).
+% It would be slightly easier for us if we defined nodes as in N_0, since
+% we use 0 as a node ID, but leaving for now.
+We can define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
+list of tuples such that $e_j = (c, p)$ defines an edge between
+child node $c$ and parent $p$ ($c, p \in \mathbb{N}$), and
+$\sigma: \mathbb{N} \rightarrow \mathbb{N}_0$ is a function
+mapping nodes to recombination breakpoints, such that $f(u) = x$
+if $u$ is a recombination event with breakpoint $x$ and
+% Because of our definitions we can't have anything to the left of 0,
+% so you can treat breakpoint at 0 as no recombination.
+$f(u) = 0$ otherwise. Note that this description captures only the
+graph topology: if we also wish to know the times of events we need
+an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
+which defines the time of each node.
+An example is given in Fig.~\ref{fig-arg-data-structure}A.
 
 \begin{figure}
 \centering
@@ -676,6 +676,8 @@ Encoding an ARG. (A) The classical approach described by Griffiths
 equates graph nodes with events in the stochastic process,
 and associates recombination breakpoints with nodes. This encoding
 is limited in the ancestral patterns that can be described and ambiguous.
+[TODO clarify that the function is the same things as having two
+types of nodes]
 (B) Equating graph nodes with \emph{genomes} and attaching the
 interval of genome inherited by the child node with edges removes
 this ambiguity and can describe any pattern of genetic inheritance.
@@ -799,13 +801,13 @@ basic idea (which is genuinely simple). Can see how things are
 shaping up after we've got a draft of the rest of the
 sections, I guess.}
 
-\section*{Anchoring the ARG to the pedigree}
+\section*{Genome ARGs}
 
-The deep connection between the ARG and the pedigree is of course
+The deep connection between ARGs and pedigrees is of course
 well known
 \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
 speed2015naturereviewsgenetics}
-and recent discussions of the ARG have illustrated the
+and recent discussions have illustrated the
 relationship~\citep{mathieson2020ancestry,brandt2021evaluation}, % more??
 showing how the coalescence and recombination events in an ARG
 correspond to particular genomes in the pedigree.
@@ -843,6 +845,13 @@ local relationships along the genome, as shown in the local
 or ``marginal'' trees.
 }
 \end{figure}
+
+Formally, we can define a GARG as a set of edges $E$, where each
+element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+$c$ is the child node, $p$ is the parent node and $I$ is the set of
+disjoint genomic intervals $(\ell, r])$ over which genome $c$ inherits from $p$ (we may
+also phrase this in terms of the ancestral material of a sample---see
+the next section).
 
 Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of the model.
 The pedigree is composed of a set of individuals who each carry
@@ -936,9 +945,7 @@ an ARG, without applying any of these restrictions.
 
 
 \section*{Ancestry resolution and simplification}
-% Note: we want some terminology here to be precise about what we're
-% talking about - perhaps a G-ARG for genome-ARG vs E-ARG for event?
-% Just using ARG for now, can clean up in another pass.
+% This is a rough first pass. Will clarify terminology later.
 The definition of an ARG as a data structure in terms of
 individuals' monoploid genomes
 and their direct patterns of inheritance allows us to describe arbitarily
@@ -953,6 +960,15 @@ but on its own it cannot tell us about the precise relationships between
 the samples along the genome: do to this, we must construct the
 local (or ``marginal'') trees.
 
+Formally, we can define a sample-resolved GARG as a tuple $(S, E)$
+where $S \subset \mathbb{N}$ is a set of sample nodes and
+$E$ is a set of edges. Each element of $E$
+is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+$c$ is the child node, $p$ is the parent node and $I$ is the set of
+disjoint genomic intervals $(\ell, r])$
+over which genome $c$ inherits from $p$, and there is a path from
+$c$ to some non-empty subset of $S$ through the local trees.
+% Should probably define how we build the local trees somewhere.
 
 \begin{figure}
 \centering
