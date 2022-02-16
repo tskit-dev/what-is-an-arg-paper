@@ -35,7 +35,7 @@ def arg_node_simplification():
     ax3.set_title("(c) simplify (keep unary in coal)")
     ax4.set_title("(d) fully simplified")
     col = mpl.colors.to_hex(plt.cm.tab20(1))
-    pos = argutils.viz.draw(
+    pos, G = argutils.viz.draw(
         ts, ax1,
         draw_edge_widths=True,
         use_ranked_times=True, node_color=col, tweak_x=t_x)

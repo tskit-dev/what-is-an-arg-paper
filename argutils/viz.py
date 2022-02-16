@@ -24,9 +24,10 @@ def draw(
     font_size=None,
     node_color=None,
     reverse_x_axis=None,
-    ):
+):
     """
-    Draw a graphical representation of a tree sequence. If a metadata key
+    Draw a graphical representation of a tree sequence, returning the node
+    positions and a networkx graph object. If a metadata key
     called "name" exists for the node, it is taken as
     a node label, otherwise the node ID will be used as a label instead.
 
@@ -122,12 +123,11 @@ def draw(
         ax=ax,
         width=edge_widths
     )
-
     if edge_alpha is not None:
         for i, edge in enumerate(edges):
             edge.set_alpha(edge_alpha[i])
 
-    return pos
+    return pos, G
 
 
 def label_nodes(ts, labels=None):
