@@ -10,11 +10,13 @@ import matplotlib.pyplot as plt
 
 import tskit
 
-# useful modules in the top level dir
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
+current_dir = Path(__file__).parent
+
+# useful modules in the top level dir: we should be able to import this if the script is
+# run from the top level dir, but for some reason it fails, so we just add the path here
+sys.path.append(str(current_dir.parent.absolute()))
 import argutils
 
-current_dir = Path(__file__).parent
 
 def plot_pedigree_figure(pedigree_svg):
     n = SimpleNamespace() # convenience labels
@@ -71,7 +73,7 @@ def plot_pedigree_figure(pedigree_svg):
     ts_simp = ts.simplify(keep_unary=True)
     
     fig, ax = plt.subplots(1, 1, figsize=(2.5, 5))
-    pos = argutils.viz.draw(
+    argutils.viz.draw(
         ts_simp, ax, reverse_x_axis=True, node_color=mpl.colors.to_hex(plt.cm.tab20(1)))
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     with io.StringIO() as f:
