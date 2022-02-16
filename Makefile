@@ -1,6 +1,7 @@
 DATA=
 FIGURES=
 ILLUSTRATIONS=\
+	illustrations/ARG_edge_annotations.pdf \
 	illustrations/ARG_recomb_node_deletion.pdf \
 	illustrations/pedigree_figure.pdf \
 
@@ -14,6 +15,9 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex paper.tex
 
 illustrations/ARG_recomb_node_deletion.svg: illustrations/ARG_recomb_node_deletion.py
+	python3 $<
+
+illustrations/ARG_edge_annotations.svg: illustrations/ARG_edge_annotations.py
 	python3 $<
 
 illustrations/pedigree_figure.svg: illustrations/pedigree.py
