@@ -23,6 +23,7 @@ def draw(
     node_size=None,
     font_size=None,
     node_color=None,
+    font_color=None,
     reverse_x_axis=None,
 ):
     """
@@ -52,8 +53,8 @@ def draw(
     If draw_edge_alpha is True, draw edges with an alpha value equal to their
     genomic span / the total sequence length of the tree sequence.
 
-    node_size, font_size, and node_color are all passed to nx.draw directly.
-    In particular this means that node_color can either be a single
+    node_size, font_size, font_color, and node_color are all passed to nx.draw
+    directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
     or a dict of node_id -> colours.
     
@@ -107,6 +108,7 @@ def draw(
         G,
         pos,
         node_color=node_color,
+        font_color=font_color,
         node_shape="o",
         node_size=node_size,
         font_size=font_size,
