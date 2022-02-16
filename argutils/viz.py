@@ -45,12 +45,12 @@ def draw(
     
     If draw_edge_widths is True, draw the widths of edges in the graphical
     representation of the tree sequence in proportion to their genomic span.
-    max_edge_width spcifies the maximum edge width to draw (default is 5).
-
+    max_edge_width specifies the maximum edge width to draw (default is 5).
+    If draw_edge_widths is False, all edges are drawn with a width of
+    max_edge_width.
+    
     If draw_edge_alpha is True, draw edges with an alpha value equal to their
-    genomic span / the total sequence length of the tree sequence. If
-    draw_edge_alpha is True and draw_edge_widths is False, all edges are drawn
-    with a width of max_edge_width.
+    genomic span / the total sequence length of the tree sequence.
 
     node_size, font_size, and node_color are all passed to nx.draw directly.
     In particular this means that node_color can either be a single
@@ -95,7 +95,7 @@ def draw(
         sequence_length = ts.get_sequence_length()
         edge_widths = (edge_widths / sequence_length) * max_edge_width
     else:
-        edge_widths = None
+        edge_widths = max_edge_width
     if draw_edge_alpha:
         edge_alpha = get_edge_alpha(G, ts)
         if not draw_edge_widths:
