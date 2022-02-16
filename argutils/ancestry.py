@@ -535,25 +535,28 @@ def wh99_example():
     """
     L = 7
     tables = tskit.TableCollection(L)
-    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    nodes = tables.nodes
+    edges = tables.edges
+    nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     t = 0
     for _ in range(3):
-        tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=t)
+        nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=t)
 
     def re(child, x):
         nonlocal t
         t += 1
-        left_parent = tables.nodes.add_row(time=t)
-        right_parent = tables.nodes.add_row(time=t)
-        tables.edges.add_row(0, x, left_parent, child)
-        tables.edges.add_row(x, L, right_parent, child)
+        left_parent = nodes.add_row(time=t)
+        right_parent = nodes.add_row(time=t)
+        edges.add_row(0, x, left_parent, child)
+        edges.add_row(x, L, right_parent, child)
+        nodes[child] = nodes[child].replace(flags=nodes[child].flags | NODE_IS_RECOMB)
 
     def ca(*args):
         nonlocal t
         t += 1
-        parent = tables.nodes.add_row(time=t)
+        parent = nodes.add_row(time=t)
         for child in args:
-            tables.edges.add_row(0, L, parent, child)
+            edges.add_row(0, L, parent, child)
 
     re(1, x=4)
     re(2, x=2)
