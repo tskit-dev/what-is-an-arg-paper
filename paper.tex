@@ -523,7 +523,9 @@ loci whereupon branching is due to both selection and
 recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
-\section*{The ARG as a data structure}
+\section*{The Event ARG data structure}
+% When did we move from the ARG is a process to the ARG is a data structure?
+% What was the historical progression from one to the other?
 Early work on ARG inference focused on the problem of
 of inferring parameters of the
 stochastic process, where the ancestry is regarded as a
@@ -543,17 +545,24 @@ and the ARG as a data structure became less clear at this point,
 with \citet{minichiello2006mapping} explicitly arguing for
 the data structure interpretation.
 
+% What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination on a single
 chromosome, but it has significant drawbacks as the basis for a general purpose
 storage and interchange format. To avoid confusion, we will refer to this
 ARG encoding as an ``Event ARG'', or EARG.
-There are many ways in which the EARG structure can be formalised (see
-e.g.~\citep{gusfield2014recombinatorics}); the following is useful
-to illustrate the computational properties of the structure.
-% It would be slightly easier for us if we defined nodes as in N_0, since
-% we use 0 as a node ID, but leaving for now.
-We define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
+The basic unit of an EARG are \emph{events} and correspond directly
+to the events that
+occur in the ARG stochastic process described in the previous section.
+Each event corresponds to a node in the graph, and there are therefore
+two types of node: common ancestor and recombination. As in the
+stochastic process, edges represent lineages, and those lineages
+are modified by the events that they pass through.
+
+% What do we mean by an EARG, formally?
+% NOTE we're using the natural numbers but are using 0 as a node in the
+% examples. Probably want to clear this up a bit.
+Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
 list of tuples such that $e_j = (c, p)$ defines a directed edge between
 child node $c$ and parent $p$ ($c, p \in \mathbb{N}$), and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
@@ -653,8 +662,8 @@ nodelabel/.style={font=\footnotesize}}
 \foreach \u/\lab in {s7/7} \node[nodelabel,anchor=south] at (\u) {\lab};
 
 %% Edges
-\draw (s1) |- (s3);
-\draw (s1) |- (s4) |- (s6);
+\draw (s1) -| (s3);
+\draw (s1) -| (s4) |- (s6);
 \draw (s3) |- (s5);
 \draw (s0) |- (s5);
 \draw (s2) |- (s6);
@@ -747,9 +756,12 @@ $x$ is less than the breakpoint $\sigma(u)$ we follow
 the first edge, and otherwise follow the second edge.
 This ordering requirement, which although straightforward
 to describe, has some drawbacks in practice. For example,
+% Surely the meaning is clear from the context here and we don't need
+% qualify the meaning of "ARG"
 simulating an ARG in this representation is
 complicated by the fact that the
-first event to occur may hit the right-hand lineage rather
+first event to occur may hit the lineage carrying the ancestry
+to the right of the breakpoint rather
 than the left (and so we cannot emit edges as they are generated).
 Such issues can be worked around, of course,
 but depending on the ordering of otherwise indistinguishable
@@ -822,31 +834,22 @@ We require only two changes. Firstly, we let nodes in the
 graph model \emph{genomes} rather than \emph{events}. As we
 see in the next section, this allows us to model complex
 patterns of inheritance without classifying different types of node.
-The second change we must make is to encode
-intervals of ancestry inheritance \emph{explicitly} on graph edges,
-rather than \emph{implicitly} as breakpoints associated with
-recombination events and edge ordering rules.
-That is, given two genomes $p$
-and $c$ where $p$ is the parent genome and $c$ is the child
-(although many generations may have elapsed between the two),
-we associate a set $I$ of intervals of genome which $c$ has
-inherited from $p$.
-These simple changes required to translate from the
-classical Griffiths approach to the proposed encoding
-are shown in Fig.\ref{fig-arg-data-structure}.
-
-\textcolor{red}{
-This falls a bit flat here,  but it's not clear how we're dividing
-the responsibility for explaining the model between the
-different sections.
-Basically, we can't explain everything at
-the end of this section, but we want to give the reader the
-basic idea (which is genuinely simple). Can see how things are
-shaping up after we've got a draft of the rest of the
-sections, I guess.}
+The second change we must make is to associate
+the details of inheritance intervals with \emph{edges} rather than
+as breakpoints associated with recombination events and
+edge ordering rules.
+% That is, given two genomes $p$
+% and $c$ where $p$ is the parent genome and $c$ is the child
+% (although many generations may have elapsed between the two),
+% we associate a set $I$ of intervals of genome which $c$ has
+% inherited from $p$.
+These changes are straightforward, involve no loss of information
+and greatly increase both the expressivity and computational
+power of ancestral recombination graph data structures.
 
 \section*{Genome ARGs}
-
+% We're not the first to talk about ARGs and pedigrees, and we're
+% not doing anything controversial.
 The deep connection between ARGs and pedigrees is of course
 well known
 \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
@@ -855,9 +858,9 @@ and recent discussions have illustrated the
 relationship~\citep{mathieson2020ancestry,brandt2021evaluation}, % more??
 showing how the coalescence and recombination events in an ARG
 correspond to particular genomes in the pedigree.
-As discussed in the previous section, the definition of the ARG
+As discussed in the previous section, the definition of an ARG
 as a \emph{data structure} in terms of these two events is problematic,
-fundamentally limiting the expressivity of the structure.
+fundamentally limiting the patterns of ancestry that can be described.
 Following \cite{mathieson2020ancestry} we instead define the
 ARG data structure \emph{in terms of} an underlying pedigree, so that
 any form of inheritance structure can be modelled.
@@ -870,7 +873,9 @@ us to represent even the bewilderingly complex patterns of relatedness
 present in modern datasets.
 
 \begin{figure}
+\begin{center}
     \includegraphics[width=\textwidth]{illustrations/pedigree_figure}
+\end{center}
 \caption{\label{fig-pedigree-and-arg}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
@@ -880,34 +885,36 @@ of genomes between diploid (or any ploidy; see text) individuals.
 inherited as a (potentially) recombinant mixture of the individual's parent's
 genomes. (B) Genomes are modelled as nodes in a graph, and the edges
 denote inheritance. Each edge is annotated with genome coordinates
-defining the specific region(s) inherited. An ARG is a retrospective
-structure defined with
-respect to some set of sample genomes (A--D here), and so only
-genomes directly ancestral to those samples are included.
+defining the specific region(s) inherited.
 (C) This description of inheritance fully defines the
 local relationships along the genome, as shown in the local
 or ``marginal'' trees.
 }
 \end{figure}
 
-Formally, we can define a GARG as a set of edges $E$, where each
-element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-$c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
-also phrase this in terms of the ancestral material of a sample---see
-the next section).
-
-Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of the model.
+To distinguish from the classical event-based encodings,
+we call this encoding of an ARG data
+structure a ``Genome ARG'', or GARG.
+Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of a GARG.
 The pedigree is composed of a set of individuals who each carry
 two \emph{genomes} (we assume diploidy here for concreteness, but there
 is no inherent limitation on ploidy).
 Each genome is inherited from one of the individual's parents, and may
 be the recombined product of that parent's two genomes.
-For example, individual $I_1$ has two genomes $A$ and $B$,
+For example, individual $I_1$ in Fig.~\ref{fig-pedigree-and-arg}A
+has two genomes $A$ and $B$,
 inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
 recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
 whereas $B$ was inherited directly from $I_4$'s genome $G$ without
-recombination.
+recombination. The pedigree is shown here for concreteness, but
+is not a necessary part of the model. We can reason directly about the
+genomes without necessarily knowing how they are combined within
+individuals. This ``genome-perspective'' is show in
+Fig.~\ref{fig-pedigree-and-arg}B, which depicts the same graph
+of the ancestry of the sample genomes $A$--$D$. The graph
+topology along with the genome coordinate annotations on the
+edges then uniquely defines the trees at every position
+along the genome (Fig.~\ref{fig-pedigree-and-arg}C).
 
 The focus on modelling genomes rather than events has some interesting
 and important consequences. Firstly, the graph may contain nodes that
@@ -937,6 +944,36 @@ multiple samples meet at this node; see the next section).
 rather than nodes. Basically lay out all the stuff that we can
 talk about \emph{without} going in to the details of
 ancestry resolution.]
+
+
+Formally, we can define a GARG as a set of edges $E$, where each
+element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+$c$ is the child node, $p$ is the parent node and $I$ is the set of
+disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
+also phrase this in terms of the ancestral material of a sample---see
+the next section).
+
+% Asking the reader to flick back to figure 2 here, not great.
+The differences between EARGs
+and GARGs are subtle but important, and illustrated in
+Fig.~\ref{fig-arg-data-structure}, which shows a simple ARG
+with three samples and one recombination.
+Fig.~\ref{fig-arg-data-structure}A shows this topology as a
+classical Griffiths-like EARG, and
+Fig.~\ref{fig-arg-data-structure}B shows it as a GARG.
+The two are almost identical, except we model the recombination
+event via the two parental genomes in nodes $3$ and $4$ and explicitly
+store the genomic interval that the child inherited from the
+parent with every edge.
+This approach may seem wasteful since we must store an extra
+node for each recombination and genomic interval information
+with every edge (even though many simply span the full genome).
+However, asymptotically the amount of information stored is the
+same, and as we see in the next section, keeping interval
+information for all edges enables useful generalisations.
+There is also much simplicity to be gained by having
+a single type of node and by treating all edges in the same way.
+
 
 \textcolor{red}{TODO: reduce this down to one paragraph, which
 defines the relationship between what we define as an ARG and
@@ -1231,6 +1268,13 @@ recombination events (and by extension, the complete passage
 of ancestral material the graph). Without position information
 we know that a particular node was an ancestor somewhere along the
 sequence, but not exactly where.
+
+\item We make the point about expressivity of the EARG pretty
+hard, but we don't mention anything about indels and structural
+rearrangements etc. It's probably worth mentioning genome graphs
+somewhere just to fend off this criticism. The high-level point
+would be that it's unlikely to be easier to model this stuff
+using node annotations.
 
 \end{itemize}
 
