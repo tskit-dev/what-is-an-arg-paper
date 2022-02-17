@@ -15,6 +15,7 @@ def draw(
     *,
     use_ranked_times=None,
     tweak_x=None,
+    tweak_y=None,
     arrows=False,
     pos=None,
     draw_edge_widths=False,
@@ -40,6 +41,11 @@ def draw(
     tweak_x is a dict of {u: x_adjustment_percent} which allows
     the x position of node u to be hand-adjusted by adding or
     subtracting a percentage of the total x width of the plot
+
+    tweak_y is a dict of {u: y_adjustment_percent} which allows
+    the y position of node u to be hand-adjusted by adding or
+    subtracting a unit of time ranking (only if use_ranked_times
+    is true).
 
     If pos is passed in, it should be a dictionary mapping nodes to
     positions.
@@ -86,6 +92,9 @@ def draw(
             times = ts.tables.nodes.time
             for i, p in pos.items():
                 p[1] = times[i]
+        if tweak_y:
+            for node, tweak_val in tweak_y.items():
+                pos[node] = pos[node] + np.array([0, tweak_val])
     if tweak_x:
         plot_width = np.ptp([x for x, _ in pos.values()])
         for node, tweak_val in tweak_x.items():
