@@ -549,18 +549,24 @@ chromosome, but it has significant drawbacks as the basis for a general purpose
 storage and interchange format. To avoid confusion, we will refer to this
 ARG encoding as an ``Event ARG'', or EARG.
 There are many ways in which the EARG structure can be formalised (see
-e.g.~\citep{gusfield2014recombinatorics}).
+e.g.~\citep{gusfield2014recombinatorics}); the following is useful
+to illustrate the computational properties of the structure.
 % It would be slightly easier for us if we defined nodes as in N_0, since
 % we use 0 as a node ID, but leaving for now.
-We can define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
+We define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
 list of tuples such that $e_j = (c, p)$ defines a directed edge between
 child node $c$ and parent $p$ ($c, p \in \mathbb{N}$), and
-$\sigma: \mathbb{N} \rightarrow \mathbb{N}_0$ is a function
-mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
+$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
+is a function mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
-% This is arbitrary, but handy when you start defining the function
-% for recovering trees; see below
-$\sigma(u) = \infty$ otherwise. For each recombination node $u$ we must
+$\sigma(u) = \infty$ otherwise. (The use of $\infty$ to denote
+non-recombination nodes is arbitrary, but useful when we extract
+% NOTE: need to be careful about using "local" trees if we're also
+% distinguishing resolved and non-resolved GARGs as being "locally"
+% defined or not. One is topologically local and the other is local
+% along the genome.
+local trees; see below.)
+For each recombination node $u$ we must
 have exactly two edges in $E$ such that $u$ is the child.
 Note that this description captures only the
 graph topology: if we also wish to know the times of events we need
@@ -695,43 +701,63 @@ and $(x, L)$ from $4$
 }
 \end{figure}
 
-% Not sure if we actually include this, but it's good to work it through
-% to make sure the notation works.
-Given a set of sample nodes $S$ we can recover the local tree at
-position $x$ by the following procedure. Let $N$ be a set of
-nodes we are currently constructing the tree at, and let
-$p: \mathbb{N} \rightarrow \mathbb{N}$ be the mapping from child
-node to parent. Firstly, initialise $N \leftarrow S$.
-Then, while $|N| > 0$, we add branches to the
-tree as follows. Let $u$ be an arbitrary element of $N$ (which
-we remove). Then, if $\sigma(u) < x$ we let $j$ be the
-smallest value such that $e_{j,1} = u$, and otherwise
-let $j$ be the largest value such that $e_{j,1} = u$.
-Then, set $v \leftarrow e_{j, 2}$,
-$p_u \leftarrow v$
-and $N \leftarrow N \cup \{v\}$.
+% % Not sure if we actually include this, but it's good to work it through
+% % to make sure the notation works. Maybe something to stick into
+% % an appendix
+% The most fundamental operation that we need to perform on an ARG
+% data structure is extracting the local tree topology at a particular
+% position along the genome. The basic strategy is to traverse
+% the graph upwards, building the tree as we visit each node.
+% At a recombination node, when we have a choice of two parents,
+% we follow the path that corresponds to the position that we
+% are building the tree for. More precisely, let $S$ be the set
+% of sample nodes (usually the leaves of the graph)
+% and $0 \leq x < L$ be a position along the genome, and suppose
+% we are building a mapping $p_u$ that defines the parent of node
+% $u$ at $x$.
+% Let $N$ be a set of
+% nodes we are currently constructing the tree at,
+% and initialise $N \leftarrow S$.
+% Then, while $|N| > 0$, we add branches to the
+% tree as follows. Let $u$ be an arbitrary element of $N$ (which
+% we remove).
+% % This isn't right: we're not handling the case where there's
+% % no edges in E where the child is $u$.
+% Then, if $\sigma(u) < x$ we let $j$ be the
+% smallest value such that $e_{j,1} = u$, and otherwise
+% let $j$ be the largest value such that $e_{j,1} = u$.
+% Then, set $v \leftarrow e_{j, 2}$,
+% $p_u \leftarrow v$
+% and $N \leftarrow N \cup \{v\}$.
 
-The Griffiths ARG encoding is ambiguous because it does not explicitly
-define which of the parent lineages resulting from a recombination
-event carries ancestral material to the left or right of the
-breakpoint. The ambiguity is resolved by adopting a simple rule when
-traversing the graph in order to generate the marginal trees for a
-given position $z$: at a recombination node $u$, we follow the
-first edge in which $u$ is a child if $f(u) \leq z$, and the
-second edge otherwise. This ordering requirement, which straightforward
-% Saying "awkward" too many times here, rephrase.
-to describe can be awkward in practice. For example,
-simulating an ARG in this representation is considerably
+The ordering of edges is a vital element of the EARG encoding.
+This is because there is a fundamental ambiguity involved
+in associating recombination breakpoints with \emph{nodes}
+rather than edges,
+and the only way we can break this symmetry is to assign
+some meaning to the order in which the parents are listed
+(\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
+parents of a recombination event). When we want to recover
+the local tree at a position $x$ along the genome,
+we traverse the graph upwards from the leaves. At a particular
+node $u$, if it has one parent we are at a common ancestor
+node and we simply follow that parent. If we are at a
+recombination node, $u$ has two parents; if
+$x$ is less than the breakpoint $\sigma(u)$ we follow
+the first edge, and otherwise follow the second edge.
+This ordering requirement, which although straightforward
+to describe, has some drawbacks in practice. For example,
+simulating an ARG in this representation is
 complicated by the fact that the
 first event to occur may hit the right-hand lineage rather
-than the left.
-Such awkwardnesses can be worked around, of course,
-but in practice methods such has
-\texttt{beagle}~\citep{lyngso2005minimum} and
-\texttt{KwARG}~\citep{ignatieva2021kwarg}
-resolve this problem by
-associating a label ``P'' (prefix) or ``S'' (suffix) with the
-outbound edges of a recombination event.
+than the left (and so we cannot emit edges as they are generated).
+Such issues can be worked around, of course,
+but depending on the ordering of otherwise indistinguishable
+objects is generally problematic. In practice, several
+methods
+explicitly associate information with the outbound edges
+of a recombination event
+to resolve the problem~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
 % it's not reasonable to assume that one type of event happens
 % at a time any more.
