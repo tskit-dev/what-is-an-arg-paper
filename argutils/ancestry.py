@@ -12,8 +12,6 @@ import numpy as np
 import tskit
 import networkx as nx
 
-from . import viz
-
 NODE_IS_RECOMB = 1 << 1
 
 
