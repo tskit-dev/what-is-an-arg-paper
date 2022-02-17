@@ -10,6 +10,7 @@ from typing import Any
 
 import numpy as np
 import tskit
+import networkx as nx
 
 from . import viz
 
@@ -653,20 +654,17 @@ def as_resolved_garg(ts):
     Returns the specified unresolved ARG as an GARG E with respect to
     the tree sequences samples.
     """
-    G = viz.convert_nx(ts)
-    import networkx as nx
-
-    topological = list(nx.topological_sort(G))
-    # print(topological)
-    Q = collections.deque(ts.samples())
     E = as_garg(ts)
+    G = nx.DiGraph()
+    G.add_edges_from([e[:2] for e in E])
+    # We have to get the topological sorting of the nodes because we don't
+    # have time ordering.
+    topological = list(nx.topological_sort(G))
+
     I = collections.defaultdict(lambda: IntervalSet(ts.sequence_length))
-    for u in Q:
+    for u in ts.samples():
         I[u] = IntervalSet(ts.sequence_length, [(0, ts.sequence_length)])
 
-    # while len(Q) > 0:
-    # print("Q = ", Q)
-    # c = Q.pop()
     Ep = []
     for c in topological:
         # print("c = ", c)
