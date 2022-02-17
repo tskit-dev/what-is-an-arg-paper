@@ -8,9 +8,10 @@ import dataclasses
 from typing import List
 from typing import Any
 
-import intervaltree
 import numpy as np
 import tskit
+
+from . import viz
 
 NODE_IS_RECOMB = 1 << 1
 
@@ -579,63 +580,103 @@ def wh99_example():
 
 
 class IntervalSet:
+    """
+    Naive and simple implementation of discrete intervals.
+    """
 
-    intervals: list = dataclasses.field(default_factory=list)
+    def __init__(self, L, tuples=None):
+        assert int(L) == L
+        self.I = np.zeros(int(L), dtype=int)
+        if tuples is not None:
+            for left, right in tuples:
+                self.insert(left, right)
+
+    def __str__(self):
+        return str(self.I)
+
+    def __repr__(self):
+        return repr(list(self.I))
+
+    def __eq__(self, other):
+        return np.array_equal(self.I == 0, other.I == 0)
+
+    def insert(self, left, right):
+        assert int(left) == left
+        assert int(right) == right
+        self.I[int(left) : int(right)] = 1
 
     def contains(self, x):
-        for left, right in self.intervals:
-            if left <= x < right:
-                return True
-        return False
+        assert int(x) == x
+        return self.I[int(x)] != 0
 
     def union(self, other):
         """
         Returns a new IntervalSet with the union of intervals in this and
         other.
         """
-        # Dreadful implementation, but oh well.
-        intervals = self.intervals.copy()
-        for interval in other.intervals:
-            if interval not in intervals:
-                intervals.append(interval)
-        return IntervalSet(intervals)
+        new = IntervalSet(self.I.shape[0])
+        assert other.I.shape == self.I.shape
+        new.I[:] = np.logical_or(self.I, other.I)
+        return new
 
+    def intersection(self, other):
+        """
+        Returns a new IntervalSet with the intersection of intervals in this and
+        other.
+        """
+        new = IntervalSet(self.I.shape[0])
+        assert other.I.shape == self.I.shape
+        new.I[:] = np.logical_and(self.I, other.I)
+        return new
 
-import intervaltree
+    def is_subset(self, other):
+        """
+        Return True if this set is a subset of other.
+        """
+        a = np.all(other.I[self.I == 1] == 1)
+        b = np.all(self.I[other.I == 0] == 0)
+        return a and b
+
 
 def as_garg(ts):
     """
-    Returns the specified unresolved ARG as an GARG E
+    Returns the specified unresolved ARG as an GARG E.
     """
-    E = [(edge.child, edge.parent, intervaltree.IntervalTree.from_tuples([(edge.left, edge.right)]))
-        for edge in ts.edges()]
-    return E
+    E = collections.defaultdict(lambda: IntervalSet(ts.sequence_length))
+    for edge in ts.edges():
+        E[(edge.child, edge.parent)].insert(edge.left, edge.right)
+    return [(u, v, I) for (u, v), I in E.items()]
+
 
 def as_resolved_garg(ts):
     """
     Returns the specified unresolved ARG as an GARG E with respect to
     the tree sequences samples.
     """
-    S = ts.samples()
-    E = as_garg(ts)
-    print(E)
-    I = collections.defaultdict(intervaltree.IntervalTree)
-    for u in S:
-        I[u] = intervaltree.IntervalTree.from_tuples([(0, ts.sequence_length)])
+    G = viz.convert_nx(ts)
+    import networkx as nx
 
-    N = set(S)
-    while len(N) > 0:
-        c = N.pop()
+    topological = list(nx.topological_sort(G))
+    # print(topological)
+    Q = collections.deque(ts.samples())
+    E = as_garg(ts)
+    I = collections.defaultdict(lambda: IntervalSet(ts.sequence_length))
+    for u in Q:
+        I[u] = IntervalSet(ts.sequence_length, [(0, ts.sequence_length)])
+
+    # while len(Q) > 0:
+    # print("Q = ", Q)
+    # c = Q.pop()
+    Ep = []
+    for c in topological:
+        # print("c = ", c)
         for e in [e for e in E if e[0] == c]:
-            p = e[1]
-            print("parent = ", p)
-            print("Ip = ", I[p])
-            print("Ic = ", I[c])
-            print("e = ", e[2])
-            print("intersection = ", I[c].intersection(e[2]))
-            I[p] = I[p].union(I[c].intersection(e[2]))
-            N.add(p)
-    return [(c, p, I[c]) for c, p, _ in E]
+            p, Ie = e[1:]
+            inter = I[c].intersection(Ie)
+            Ep.append((c, p, inter))
+            I[p] = I[p].union(inter)
+    return Ep
+
 
 def as_earg(ts):
     """
@@ -693,7 +734,7 @@ def garg_get_tree(E, S, x):
     parent = {}
     while len(N) > 0:
         c = N.pop()
-        P = [e[1] for e in E if e[0] == c and e[2].overlaps(x)]
+        P = [e[1] for e in E if e[0] == c and e[2].contains(x)]
         # print(c, P)
         if len(P) > 0:
             assert len(P) == 1
