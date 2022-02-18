@@ -80,9 +80,221 @@ class TestSimulate:
         ts1 = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
         ts2 = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=True)
         ts3 = ts1.simplify(keep_unary=True)
-        # print(ts1.draw_text())
-        # print(ts2.draw_text())
         ts2.tables.assert_equals(ts3.tables, ignore_provenance=True)
+
+
+def parent_dict(tree):
+    """
+    Returns the parent dict reachable from the samples for the specified
+    tskit tree. We can't use tree.parent_dict as it includes non-sample
+    leaves.
+    """
+    d = {}
+    # Could make this more efficient avoiding already written paths,
+    # but can't be bothered.
+    for u in tree.tree_sequence.samples():
+        v = tree.parent(u)
+        while v != tskit.NULL:
+            d[u] = v
+            u = v
+            v = tree.parent(u)
+    return d
+
+
+class TestEARG:
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E, sigma = argutils.as_earg(ts)
+        for tree in ts.trees():
+            t = argutils.earg_get_tree(E, sigma, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(10, 12))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E, sigma = argutils.as_earg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.earg_get_tree(E, sigma, ts.samples(), int(x))
+            assert t == parent_dict(tree)
+
+
+class TestGARG:
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_garg(ts)
+        for tree in ts.trees():
+            t = argutils.garg_get_tree(E, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(5, 8))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_garg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.garg_get_tree(E, ts.samples(), int(x))
+            assert t == parent_dict(tree)
+
+
+def assert_gargs_equal(E1, E2):
+    assert len(E1) == len(E2)
+    d1 = {(u, v): I for (u, v, I) in E1}
+    d2 = {(u, v): I for (u, v, I) in E2}
+    assert len(d1) == len(d2)
+    for key, I1 in d1.items():
+        I2 = d2[key]
+        # print(key, I1, I2)
+        assert I1 == I2
+
+class TestResolvedGARG:
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_left(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_resolved_garg(ts)
+        for tree in ts.trees():
+            t = argutils.garg_get_tree(E, ts.samples(), tree.interval[0])
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(5, 8))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_trees_equal_mid(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E = argutils.as_resolved_garg(ts)
+        for tree in ts.trees():
+            x = tree.interval.left + tree.interval.span / 2
+            t = argutils.garg_get_tree(E, ts.samples(), int(x))
+            assert t == parent_dict(tree)
+
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_garg_subset(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        d1 = {(u, v): I for (u, v, I) in argutils.as_garg(ts)}
+        d2 = {(u, v): I for (u, v, I) in argutils.as_resolved_garg(ts)}
+        assert len(d1) == len(d2)
+        for key, I1 in d1.items():
+            I2 = d2[key]
+            # The intervals for the resolved edges should be a subset of
+            # the unresolved.
+            assert I2.is_subset(I1)
+
+    @pytest.mark.parametrize("seed", range(1, 3))
+    @pytest.mark.parametrize(
+        ["n", "L"],
+        [
+            [2, 2],
+            [8, 2],
+            [16, 2],
+            [2, 10],
+            [8, 10],
+            [16, 10],
+            [10, 50],
+        ],
+    )
+    def test_equal_to_resolved(self, n, L, seed):
+        rho = 0.1
+        ts = argutils.sim_coalescent(n, L=L, rho=rho, seed=seed, resolved=False)
+        E1 = argutils.as_resolved_garg(ts)
+        tsr = ts.simplify(keep_unary=True)
+        E2 = argutils.as_garg(tsr)
+        assert_gargs_equal(E1, E2)
+
+    def test_equal_to_resolved_example(self):
+        E1 = argutils.as_resolved_garg(gmrca_example_unresolved())
+        E2 = argutils.as_garg(gmrca_example_resolved())
+        assert_gargs_equal(E1, E2)
 
 
 def gmrca_example_resolved():
@@ -146,8 +358,6 @@ class TestResolve:
     )
     def test_examples(self, unresolved, resolved):
         resolved2 = unresolved.simplify(keep_unary=True)
-        # print()
-        # print(resolved.draw_text())
         assert resolved.equals(resolved2, ignore_provenance=True)
 
 
@@ -245,3 +455,42 @@ class TestSimplifyFunctions:
                 if tree.num_children(n) == 1:
                     has_unary = True
         assert not has_unary
+
+
+class TestIntervalSet:
+    def test_single_interval(self):
+        s = argutils.IntervalSet(4, [(1, 4)])
+        assert list(s.I) == [0, 1, 1, 1]
+
+    def test_two_intervals(self):
+        s = argutils.IntervalSet(6, [(0, 1), (5, 6)])
+        assert list(s.I) == [1, 0, 0, 0, 0, 1]
+
+    def test_intersection(self):
+        s1 = argutils.IntervalSet(6, [(0, 4)])
+        s2 = argutils.IntervalSet(6, [(3, 6)])
+        s3 = s2.intersection(s1)
+        assert list(s1.I) == [1, 1, 1, 1, 0, 0]
+        assert list(s2.I) == [0, 0, 0, 1, 1, 1]
+        assert list(s3.I) == [0, 0, 0, 1, 0, 0]
+
+    def test_union(self):
+        s1 = argutils.IntervalSet(6, [(0, 4)])
+        s2 = argutils.IntervalSet(6, [(3, 6)])
+        s3 = s2.union(s1)
+        assert list(s1.I) == [1, 1, 1, 1, 0, 0]
+        assert list(s2.I) == [0, 0, 0, 1, 1, 1]
+        assert list(s3.I) == [1, 1, 1, 1, 1, 1]
+
+    def test_is_subset_overlapping(self):
+        s1 = argutils.IntervalSet(6, [(0, 4)])
+        s2 = argutils.IntervalSet(6, [(3, 6)])
+        assert not s1.is_subset(s2)
+        assert not s2.is_subset(s1)
+
+    def test_is_subset_contained(self):
+        s1 = argutils.IntervalSet(6, [(0, 4)])
+        s2 = argutils.IntervalSet(6, [(2, 4)])
+        assert s2.is_subset(s1)
+        assert not s1.is_subset(s2)
+

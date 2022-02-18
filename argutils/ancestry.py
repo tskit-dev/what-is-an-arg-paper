@@ -10,6 +10,7 @@ from typing import Any
 
 import numpy as np
 import tskit
+import networkx as nx
 
 NODE_IS_RECOMB = 1 << 1
 
@@ -575,3 +576,164 @@ def wh99_example():
 
     tables.sort()
     return tables.tree_sequence()
+
+
+class IntervalSet:
+    """
+    Naive and simple implementation of discrete intervals.
+    """
+
+    def __init__(self, L, tuples=None):
+        assert int(L) == L
+        self.I = np.zeros(int(L), dtype=int)
+        if tuples is not None:
+            for left, right in tuples:
+                self.insert(left, right)
+
+    def __str__(self):
+        return str(self.I)
+
+    def __repr__(self):
+        return repr(list(self.I))
+
+    def __eq__(self, other):
+        return np.array_equal(self.I == 0, other.I == 0)
+
+    def insert(self, left, right):
+        assert int(left) == left
+        assert int(right) == right
+        self.I[int(left) : int(right)] = 1
+
+    def contains(self, x):
+        assert int(x) == x
+        return self.I[int(x)] != 0
+
+    def union(self, other):
+        """
+        Returns a new IntervalSet with the union of intervals in this and
+        other.
+        """
+        new = IntervalSet(self.I.shape[0])
+        assert other.I.shape == self.I.shape
+        new.I[:] = np.logical_or(self.I, other.I)
+        return new
+
+    def intersection(self, other):
+        """
+        Returns a new IntervalSet with the intersection of intervals in this and
+        other.
+        """
+        new = IntervalSet(self.I.shape[0])
+        assert other.I.shape == self.I.shape
+        new.I[:] = np.logical_and(self.I, other.I)
+        return new
+
+    def is_subset(self, other):
+        """
+        Return True if this set is a subset of other.
+        """
+        a = np.all(other.I[self.I == 1] == 1)
+        b = np.all(self.I[other.I == 0] == 0)
+        return a and b
+
+
+def as_garg(ts):
+    """
+    Returns the specified unresolved ARG as an GARG E.
+    """
+    E = collections.defaultdict(lambda: IntervalSet(ts.sequence_length))
+    for edge in ts.edges():
+        E[(edge.child, edge.parent)].insert(edge.left, edge.right)
+    return [(u, v, I) for (u, v), I in E.items()]
+
+
+def as_resolved_garg(ts):
+    """
+    Returns the specified unresolved ARG as an GARG E with respect to
+    the tree sequences samples.
+    """
+    E = as_garg(ts)
+    G = nx.DiGraph()
+    G.add_edges_from([e[:2] for e in E])
+    # We have to get the topological sorting of the nodes because we don't
+    # have time ordering.
+    topological = list(nx.topological_sort(G))
+
+    I = collections.defaultdict(lambda: IntervalSet(ts.sequence_length))
+    for u in ts.samples():
+        I[u] = IntervalSet(ts.sequence_length, [(0, ts.sequence_length)])
+
+    Ep = []
+    for c in topological:
+        # print("c = ", c)
+        for e in [e for e in E if e[0] == c]:
+            p, Ie = e[1:]
+            inter = I[c].intersection(Ie)
+            Ep.append((c, p, inter))
+            I[p] = I[p].union(inter)
+    return Ep
+
+
+def as_earg(ts):
+    """
+    Returns the specified unresolved ARG as an EARG (E, sigma).
+    """
+    sigma = np.full(ts.num_nodes, int(ts.sequence_length), dtype=int)
+    edges = iter(ts.edges())
+    edge = next(edges, None)
+    E = []
+    while edge is not None:
+        if edge.left == 0 and edge.right == ts.sequence_length:
+            E.append((edge.child, edge.parent))
+        else:
+            assert edge.left == 0
+            breakpoint = edge.right
+            child = edge.child
+            sigma[child] = breakpoint
+            E.append((edge.child, edge.parent))
+            edge = next(edges, None)
+            assert edge.left == breakpoint
+            assert edge.child == child
+            E.append((edge.child, edge.parent))
+        edge = next(edges, None)
+    # We could wrap sigma as a function to be literal about the definition
+    # but this is simpler for debugging.
+    return E, sigma
+
+
+def earg_get_tree(E, sigma, S, x):
+    """
+    Given a minimal EARG definition (E, sigma), return the tree for a the given
+    set of samples at the specified position as a dictionary parent->child.
+    """
+    N = set(S)
+    parent = {}
+    while len(N) > 0:
+        c = N.pop()
+        P = [e[1] for e in E if e[0] == c]
+        if len(P) > 0:
+            if x < sigma[c]:
+                p = P[0]
+            else:
+                p = P[1]
+            parent[c] = p
+            N.add(p)
+    return parent
+
+
+def garg_get_tree(E, S, x):
+    """
+    Given a minimal GARG definition E, return the tree for a the given
+    set of samples at the specified position as a dictionary parent->child.
+    """
+    N = set(S)
+    parent = {}
+    while len(N) > 0:
+        c = N.pop()
+        P = [e[1] for e in E if e[0] == c and e[2].contains(x)]
+        # print(c, P)
+        if len(P) > 0:
+            assert len(P) == 1
+            parent[c] = P[0]
+            N.add(P[0])
+    return parent
