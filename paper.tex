@@ -562,9 +562,11 @@ are modified by the events that they pass through.
 % What do we mean by an EARG, formally?
 % NOTE we're using the natural numbers but are using 0 as a node in the
 % examples. Probably want to clear this up a bit.
-Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$ is an ordered
-list of tuples such that $e_j = (c, p)$ defines a directed edge between
-child node $c$ and parent $p$ ($c, p \in \mathbb{N}$), and
+Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
+defines a directed acyclic graph where $e_j = (c, p)$ describes
+an edge between
+child node $c$ and parent $p$ ($c, p \in \mathbb{N}$).
+Additionally,
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
@@ -1030,7 +1032,7 @@ an ARG, without applying any of these restrictions.
 % Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
 
 
-\section*{Ancestry resolution and simplification}
+\section*{Ancestry resolution}
 % This is a rough first pass. Will clarify terminology later.
 The definition of an ARG as a data structure in terms of
 individuals' monoploid genomes
@@ -1087,31 +1089,112 @@ original inheritance interval $I_v$ on the edge.
 
 This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
 
+\section*{ARG simplification}
+
+Not all nodes in an ARG are equal. Assuming that we have sequenced the
+genomes of the samples, there are intrinsic limits on what can
+be known about more ancient nodes, determined by the graph topology
+and the flow ancestral material through it.
+\emph{Simplification}~\citep{kelleher2018efficient} is the process
+of removing nodes and re-writing edges in a GARG to remove
+various types of redundancy, while maintaining the crucial properties
+that the meaningful topology in the local trees is not affected,
+and the relationship between nodes in adjacent trees is maintained.
+
 \begin{figure}
 \centering
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
-\caption{\label{fig-recombination-nodes}
-Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
-ARG including all recombination nodes (red). (b) The same ARG having removed both
-recombination nodes and nodes of common ancestors in which no genetic
-lineages coalesce (cyan). (c) The sequence of trees corresponding to (b): if we were
-to plot out the trees corresponding to (a) we would have more trees, but the topologies
-and MRCA nodes at each genomic location would be identical. For clarity, nodes are
-plotted by ranked time rather than true time on the y-axis.
-% HYW: note that we also truncate nodes for portions in which they are unary,
-% so that nodes which are coalescent nodes over only some of their length
-% (blue-green) become coalescent nodes over their entire length (green). This
-% can, however, throw away some useful information, for example node 4 has
-% only a single parent edge in (a), but 2 parent edges (one of which appears
-% to bypass node 11) in (b). In fact, this edge should go through node 11, but
-% there may be no way to detect this from real data.
+\caption{\label{fig-simplification}
+ARG simplification. (A) An ARG simulated from a diploid Wright-Fisher
+model. Note the complex full-sib relationship between B and C; this
+could not be directly represented in a Griffiths-like EARG encoding
+(see section XXX).
+(B) Simplified to remove all
+% trying out this terminology - can define in the text
+1-connected graph components (e.g., diamonds).
+(C) Remove nodes that are unary in all local trees.
+(D) Rewrite edges to skip any unary nodes in local trees.
+(E) The local trees for ARG (A).
+(F) The local trees for ARG (D).
 }
 \end{figure}
 
-% Not sure where this text will end up, but we want it somewhere
-% towards the end.
+% Q: would it help to talk about "tree vertices" here or would it
+% just be more confusing? I worry that people would think that
+% they are two different things then, and it's really important
+% that they get that a node-is-a-node
+The ideas of ``meaningful'' local tree topologies revolve around the
+presence of ``unary'' nodes: a node in the tree that has exactly
+one child. For example, Fig.~\ref{fig-simplification}E shows the
+local trees along the genome for a simulated ARG
+(Fig.~\ref{fig-simplification}A). Consider the right-most tree,
+and the path above node $D$. Before $D$ meets its common ancestor
+over the interval $(93, 100]$ with the other samples it passes through
+nodes $H, K, N, R$ and $S$, reflecting the corresponding
+traversal through the ARG (see section XXX). Such unary nodes
+in a local tree are not usually considered significant,
+because they provide very little information and are not
+detectable by information from the tree. % weak
+The nodes in a tree usually mark the points where samples find a
+\emph{common} ancestor, rather than focusing on specific
+ancestors. For most purposes, we would consider an edge
+directly joining sample $D$ to the node $T$ to be more
+useful and informative. Simplification is the process of removing
+these uninformative and (for most computational purposes)
+inefficient unary paths.
 
+The first type of simplification that we can perform is to remove
+graph topology that is invisible to the samples. The most well
+known example of such topology is a so-called
+``diamond''~\citep{rasmussen2014genome}
+in which the two parent nodes of a recombination immediately
+join again into a common ancestor (e.g. $K,N,O$ and $R$ in
+Fig.~\ref{fig-simplification}A).
+Unless we are specifically
+interested in the recombination event or ancestral genomes,
+there is no information in this topology and the diamond can b
+e replaced by a single edge. More generally, any
+subgraph which is singly-connected in both the leafward and
+rootward direction (a ``super-diamond'') is non-identifiable and can be
+replaced by a single edge. This definition includes the case
+of a single node that has one inbound and one outbound edge.
+Fig.~\ref{fig-simplification}B shows the result of this type of
+graph-level simplification.
+
+Simplifying away diamonds will remove many unary nodes from the
+local trees, there can still be nodes that are unary in all
+of the local trees. For example, node $H$ is one of the
+parents of the recombinant node $D$ is still present in
+Fig.~\ref{fig-simplification}B after diamond removal, but
+it is unary in all of the local trees since it has an
+in-degree of $1$.
+Fig.~\ref{fig-simplification}C shows the resulting graph
+after removing these nodes.
+
+The remaining nodes are MRCAs of some subset of the samples
+at \emph{some} positions along the genome. We still have
+some unary nodes in the local trees, but these nodes will
+correspond to a coalescence in at least one other
+local tree. For example, node $E$ is unary in the first tree
+of Fig.~\ref{fig-simplification}E, but is either binary
+or ternary in the other trees (recall this is a Wright-Fisher
+simulation).
+
+The final level of simplification is to remove \emph{all}
+unary nodes from the local trees (Fig.~\ref{fig-simplification}D
+and E). [And continue]
+
+
+% This text might go somewhere
+% We may have nodes corresponding to genomes that are ancestral to
+% the sample along their entire span
+% (e.g.\ node $H$ in Fig.~\ref{fig-ancestry-resolution}),
+% genomes that carry no genetic material ancestral to the sample at all
+% (e.g.\ node $J$ in Fig.~\ref{fig-ancestry-resolution}),
+% and every possibility along the continuum between these extremes.
+% Clearly, we can only ever hope to infer the fraction of an ancestor's
+% genome that is ancestral to the sample.
 
 
 \section*{ARG inference methods}
