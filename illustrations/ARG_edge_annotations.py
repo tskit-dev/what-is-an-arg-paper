@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import tskit
+import PIL
+import string
 
 current_dir = Path(__file__).parent
 
@@ -57,39 +59,91 @@ def arg_edge_annotations():
                     font_size=16,
                     edge_labels={(e.child, e.parent): f"({e.left:.0f},{e.right:.0f}]" for e in ts.edges() if func1(e) and func2(e)},
                     horizontalalignment=halign,
-                )        
+                    bbox=dict(boxstyle="round,pad=0.05", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0)),
+                )
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20,12), sharey=True)
+    fig.tight_layout()
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(25,13), sharey=True)
-    
-    ax1.set_title("(a) eARG with implicit\nencoding (Wiuf & Hein)")
+    ax1.set_title("(a) eARG with implicit\nencoding (Wiuf & Hein)", fontsize="xx-large")
     ts = argutils.viz.label_nodes(argutils.wh99_example())
     pos, G = argutils.viz.draw(
         ts, ax1,
-        use_ranked_times=False,
+        use_ranked_times=True,
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
-        node_size=450,
+        node_size=100,
         max_edge_width=2,
         font_size=14,
         tweak_x={
-            0: 10, 3: 29, 4: 2.5, 7: 20, 11: 10, 12: -18,
-            20: -23, 19: 4, 21: -11, 17: -25, 13: -16,
-            8: 2, 9: -24, 5: -16, 6: -41, 15: 1, 16: -26, 2: -10
+            0: 10, 3: 29, 4: 2.5, 7: 20, 11: 9, 12: -17,
+            20: -22.5, 19: 3.5, 21: -11, 17: -25, 13: -16,
+            8: 2, 9: -24, 5: -16, 6: -41, 15: 0.6, 16: -25.6, 2: -10
+        },
+        tweak_y={
+            22: 1, 17: 0.8
         }
     )
     add_edge_labels(ax1, ts, G, pos)
     
-    ax2.set_title("(b) explicit encoding\n(i.e. non-ancestral removed)")
+    ax2.set_title("(b) explicit encoding\n(i.e. non-ancestral removed)", fontsize="xx-large")
     ts2 = argutils.simplify_keeping_all_nodes(ts)
     pos, G = argutils.viz.draw(
         ts2, ax2, pos=pos,
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
-        node_size=450,
+        node_size=200,
         font_size=14,
         #arrows=True,
         draw_edge_widths=True,
     )
     add_edge_labels(ax2, ts2, G, pos)
-    
+
+    # From https://networkx.org/documentation/stable/auto_examples/drawing/plot_custom_node_icons.html
+    icons = {
+        "genome_empty": "node_icons/genome_empty.png",
+        "genome_empty_hamburger": "node_icons/genome_empty_hamburger.png",
+        "genome_full": "node_icons/genome_full.png",
+    }
+    for letter in list(string.ascii_uppercase[3:G.number_of_nodes()]):
+        icons["genome_" + letter] = "node_icons/genome_" + letter + ".png"
+    # Load images
+    images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
+
+    # Panel (a)
+    tr_figure = ax1.transData.transform
+    tr_axes = fig.transFigure.inverted().transform
+    icon_size = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.0003
+    icon_center = icon_size / 2.0
+    for n in G.nodes:
+        G.nodes[n]["image"] = images["genome_empty"]
+    for n in G.nodes:
+        xf, yf = tr_figure(pos[n])
+        xa, ya = tr_axes((xf, yf))
+        a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
+        a.imshow(G.nodes[n]["image"])
+        a.set_title(string.ascii_uppercase[n], y=0, verticalalignment="bottom", loc="center", fontsize="xx-large")
+        a.axis("off")
+
+    # Panel (b)
+    tr_figure = ax2.transData.transform
+    tr_axes = fig.transFigure.inverted().transform
+    icon_size = (ax2.get_xlim()[1] - ax2.get_xlim()[0]) * 0.0003
+    icon_center = icon_size / 2.0
+    for n in [0, 1, 2]:
+        G.nodes[n]["image"] = images["genome_full"]
+    for n in range(3, G.number_of_nodes()):
+        G.nodes[n]["image"] = images["genome_" + string.ascii_uppercase[n]]
+    G.nodes[9]["image"] = images["genome_empty_hamburger"]
+    for n in G.nodes:
+        xf, yf = tr_figure(pos[n])
+        xa, ya = tr_axes((xf, yf))
+        a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
+        a.imshow(G.nodes[n]["image"])
+        if n in [2, 4, 6, 7, 13, 21]:
+            n_loc = "right"
+        else:
+            n_loc = "center"
+        a.set_title(string.ascii_uppercase[n], verticalalignment="top", loc=n_loc, fontsize="x-large")
+        a.axis("off")
 
     graph_io = io.StringIO()
     plt.savefig(graph_io, format="svg", bbox_inches='tight')
@@ -111,4 +165,3 @@ svg = (
 svg += arg_edge_annotations()
 with open(current_dir / f"{outfile}.svg", "wt") as f:
     f.write(svg)
-    
