@@ -8,6 +8,7 @@ import networkx as nx
 import numpy as np
 import tskit
 import PIL
+import string
 
 current_dir = Path(__file__).parent
 
@@ -95,30 +96,18 @@ def arg_edge_annotations():
         draw_edge_widths=True,
     )
     add_edge_labels(ax2, ts2, G, pos)
-    
-    
+
     # From https://networkx.org/documentation/stable/auto_examples/drawing/plot_custom_node_icons.html
     icons = {
         "genome_empty": "node_icons/genome_empty.png",
         "genome_empty_hamburger": "node_icons/genome_empty_hamburger.png",
         "genome_full": "node_icons/genome_full.png",
-        "genome_0-4": "node_icons/genome_0-4.png",
-        "genome_4-7": "node_icons/genome_4-7.png",
-        "genome_0-2": "node_icons/genome_0-2.png",
-        "genome_2-7": "node_icons/genome_2-7.png",
-        "genome_0-2-4-7": "node_icons/genome_0-2-4-7.png",
-        "genome_4-6": "node_icons/genome_4-6.png",
-        "genome_6-7": "node_icons/genome_6-7.png",
-        "genome_0-1": "node_icons/genome_0-1.png",
-        "genome_00-11": "node_icons/genome_00-11.png",
-        "genome_1-7": "node_icons/genome_1-7.png",
-        "genome_00-22-2-7": "node_icons/genome_00-22-2-7.png",
-        "genome_11-22-2-7": "node_icons/genome_11-22-2-7.png",
-        "genome_22-77": "node_icons/genome_22-77.png",
-        "genome_ancestral": "node_icons/genome_ancestral.png",
     }
+    for letter in list(string.ascii_uppercase[3:G.number_of_nodes()]):
+        icons["genome_" + letter] = "node_icons/genome_" + letter + ".png"
     # Load images
     images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
+
     # Panel (a)
     tr_figure = ax1.transData.transform
     tr_axes = fig.transFigure.inverted().transform
@@ -131,43 +120,19 @@ def arg_edge_annotations():
         xa, ya = tr_axes((xf, yf))
         a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
         a.imshow(G.nodes[n]["image"])
-        a.set_title(str("ABCDEFGHIJKLMNOPQRSTUVWXYZ")[n], y=0, verticalalignment="bottom", loc="center", fontsize="xx-large")
+        a.set_title(string.ascii_uppercase[n], y=0, verticalalignment="bottom", loc="center", fontsize="xx-large")
         a.axis("off")
 
-        
     # Panel (b)
     tr_figure = ax2.transData.transform
     tr_axes = fig.transFigure.inverted().transform
     icon_size = (ax2.get_xlim()[1] - ax2.get_xlim()[0]) * 0.0003
     icon_center = icon_size / 2.0
-    for n in [0, 1, 2, 7, 14, 18, 22]:
+    for n in [0, 1, 2]:
         G.nodes[n]["image"] = images["genome_full"]
-    for n in [3]:
-        G.nodes[n]["image"] = images["genome_0-4"]
-    for n in [15]:
-        G.nodes[n]["image"] = images["genome_4-6"]
-    for n in [4, 12, 13]:
-        G.nodes[n]["image"] = images["genome_4-7"]
-    for n in [16]:
-        G.nodes[n]["image"] = images["genome_6-7"]
-    for n in [9]:
-        G.nodes[n]["image"] = images["genome_empty_hamburger"]
-    for n in [10]:
-        G.nodes[n]["image"] = images["genome_0-2-4-7"]
-    for n in [5, 8, 11]:
-        G.nodes[n]["image"] = images["genome_0-2"]
-    for n in [19]:
-        G.nodes[n]["image"] = images["genome_00-11"]
-    for n in [20]:
-        G.nodes[n]["image"] = images["genome_11-22-2-7"]
-    for n in [21]:
-        G.nodes[n]["image"] = images["genome_22-77"]
-    for n in [6, 17]:
-        G.nodes[n]["image"] = images["genome_2-7"]
-    for n in [14, 18]:
-        G.nodes[n]["image"] = images["genome_00-22-2-7"]
-    for n in [22]:
-        G.nodes[n]["image"] = images["genome_ancestral"]
+    for n in range(3, G.number_of_nodes()):
+        G.nodes[n]["image"] = images["genome_" + string.ascii_uppercase[n]]
+    G.nodes[9]["image"] = images["genome_empty_hamburger"]
     for n in G.nodes:
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
@@ -177,7 +142,7 @@ def arg_edge_annotations():
             n_loc = "right"
         else:
             n_loc = "center"
-        a.set_title(str("ABCDEFGHIJKLMNOPQRSTUVWXYZ")[n], verticalalignment="top", loc=n_loc, fontsize="x-large")
+        a.set_title(string.ascii_uppercase[n], verticalalignment="top", loc=n_loc, fontsize="x-large")
         a.axis("off")
 
     graph_io = io.StringIO()
