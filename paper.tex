@@ -1030,7 +1030,7 @@ an ARG, without applying any of these restrictions.
 % Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
 
 
-\section*{Ancestry resolution and simplification}
+\section*{Ancestry resolution}
 % This is a rough first pass. Will clarify terminology later.
 The definition of an ARG as a data structure in terms of
 individuals' monoploid genomes
@@ -1087,12 +1087,33 @@ original inheritance interval $I_v$ on the edge.
 
 This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
 
+\section*{ARG simplification}
+
+Not all nodes in an ARG are equal. Assuming that we have sequenced the
+genomes of the samples, there are intrinsic limits on what can
+be known about more ancient nodes, determined by the graph topology
+and the flow ancestral material through it.
+\emph{Simplification}~\citep{kelleher2018efficient} is the process
+of removing nodes and re-writing edges in a GARG to remove
+various types of redundancy, while maintaining the crucial properties
+that the meaningful topology in the local trees is not affected,
+and the relationship between nodes in adjacent trees is maintained.
+
+We may have nodes corresponding to genomes that are ancestral to
+the sample along their entire span
+(e.g.\ node $H$ in Fig.~\ref{fig-ancestry-resolution}),
+genomes that carry no genetic material ancestral to the sample at all
+(e.g.\ node $J$ in Fig.~\ref{fig-ancestry-resolution}),
+and every possibility along the continuum between these extremes.
+Clearly, we can only ever hope to infer the fraction of an ancestor's
+genome that is ancestral to the sample.
+
 \begin{figure}
 \centering
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/ARG_recomb_node_deletion}
-\caption{\label{fig-recombination-nodes}
-Recombination nodes are optional in an edge-annotated ARG. (a) A simulated
+\caption{\label{fig-simplification}
+ARG simplification. (a) A simulated
 ARG including all recombination nodes (red). (b) The same ARG having removed both
 recombination nodes and nodes of common ancestors in which no genetic
 lineages coalesce (cyan). (c) The sequence of trees corresponding to (b): if we were
@@ -1108,9 +1129,6 @@ plotted by ranked time rather than true time on the y-axis.
 % there may be no way to detect this from real data.
 }
 \end{figure}
-
-% Not sure where this text will end up, but we want it somewhere
-% towards the end.
 
 
 
