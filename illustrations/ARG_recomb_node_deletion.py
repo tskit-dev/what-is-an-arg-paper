@@ -21,12 +21,15 @@ outfile = "ARG_recomb_node_deletion"
 
 def arg_node_simplification():
     seed = 372
-    t_x={9: 3, 6: -8, 18: 50, 19: -15, 17: 5, 13: 10, 14: 2, 10: -10, 15: 5, 16: -5, 7: -5, 11: 5, 8: 8}
+    t_x={
+        9: 3, 6: -8, 18: 50, 19: -15, 17: 5,
+        13: 35, 14: -23, 10: -10, 15: 5, 16: -5,
+        7: -5, 11: 5, 8: 8}
 
     ts = argutils.sim_wright_fisher(2, 10, 100, recomb_proba=0.1, seed=seed)
     labels = {i: string.ascii_uppercase[i] for i in range(len(string.ascii_uppercase))}
     # relabel the nodes to get samples reading A B C D
-    labels.update({2: 'B', 3: 'C', 1: "D"})
+    labels.update({2: 'B', 3: 'C', 1: "D", 14: "N", 13: "O"})
     ts = argutils.viz.label_nodes(ts, labels)
     
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(12,5))
