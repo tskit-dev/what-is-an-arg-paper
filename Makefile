@@ -3,7 +3,9 @@ FIGURES=
 ILLUSTRATIONS=\
 	illustrations/ARG_edge_annotations.pdf \
 	illustrations/ARG_recomb_node_deletion.pdf \
-	illustrations/pedigree_figure.pdf \
+	illustrations/arg-in-pedigree.pdf \
+
+	# illustrations/pedigree_figure.pdf \
 
 
 all: paper.pdf
@@ -13,6 +15,9 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	bibtex paper
 	pdflatex paper.tex
 	pdflatex paper.tex
+
+illustrations/%.svg: illustrations.py
+	python3 illustrations.py $*
 
 illustrations/ARG_recomb_node_deletion.svg: illustrations.py
 	python3 illustrations.py arg-node-simplification

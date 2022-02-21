@@ -312,7 +312,7 @@ def arg_node_simplification():
 
 
 @click.command()
-def pedigree():
+def arg_in_pedigree():
     """
     The ARG as embedded in diploid pedigree.
     """
@@ -408,13 +408,13 @@ def pedigree():
         '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
     )
     top_svg += "\n".join(svg)
-    with open("illustrations/pedigree_figure.svg", "wt") as f:
+    with open("illustrations/arg-in-pedigree.svg", "wt") as f:
         f.write(top_svg)
 
 
 cli.add_command(arg_edge_annotations)
 cli.add_command(arg_node_simplification)
-cli.add_command(pedigree)
+cli.add_command(arg_in_pedigree)
 
 if __name__ == "__main__":
     cli()

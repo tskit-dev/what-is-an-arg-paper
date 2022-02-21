@@ -876,9 +876,9 @@ present in modern datasets.
 
 \begin{figure}
 \begin{center}
-    \includegraphics[width=\textwidth]{illustrations/pedigree_figure}
+    \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
-\caption{\label{fig-pedigree-and-arg}
+\caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
 The Ancestral Recombination Graph defined as arbitrary inheritance
@@ -897,13 +897,13 @@ or ``marginal'' trees.
 To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
 structure a ``Genome ARG'', or GARG.
-Fig~\ref{fig-pedigree-and-arg} illustrates the basic elements of a GARG.
+Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a GARG.
 The pedigree is composed of a set of individuals who each carry
 two \emph{genomes} (we assume diploidy here for concreteness, but there
 is no inherent limitation on ploidy).
 Each genome is inherited from one of the individual's parents, and may
 be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-pedigree-and-arg}A
+For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}A
 has two genomes $A$ and $B$,
 inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
 recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
@@ -912,17 +912,17 @@ recombination. The pedigree is shown here for concreteness, but
 is not a necessary part of the model. We can reason directly about the
 genomes without necessarily knowing how they are combined within
 individuals. This ``genome-perspective'' is show in
-Fig.~\ref{fig-pedigree-and-arg}B, which depicts the same graph
+Fig.~\ref{fig-arg-in-pedigree}B, which depicts the same graph
 of the ancestry of the sample genomes $A$--$D$. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
-along the genome (Fig.~\ref{fig-pedigree-and-arg}C).
+along the genome (Fig.~\ref{fig-arg-in-pedigree}C).
 
 The focus on modelling genomes rather than events has some interesting
 and important consequences. Firstly, the graph may contain nodes that
 do not correspond to any particular event in the ancestry of the
 samples. For example, node $H$ is the direct ancestor of $D$ in
-Fig~\ref{fig-pedigree-and-arg}, and is not the product of either a
+Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
 coalescence or a recombination. Such nodes would usually be removed
 from the graph so that $D$ descends directly from $K$ (see section XXX)
 but there is no necessity for this from a representational perspective.
@@ -936,7 +936,7 @@ Rather than having a single node that represents the \emph{event},
 there are three nodes (representing the recombinant offspring and
 two parental genomes) and two edges with associated genome coordinate
 intervals (representing the precise inheritance patterns).
-For example, in Fig~\ref{fig-pedigree-and-arg}, node $A$ is the
+For example, in Fig~\ref{fig-arg-in-pedigree}, node $A$ is the
 recombinant descendent of $E$ and $F$, inheriting positions
 FIXME from $E$ and genome positions FIXME from $F$. Any particular
 node can be both a recombinant (it is the recombined product of
