@@ -2,11 +2,8 @@ DATA=
 FIGURES=
 ILLUSTRATIONS=\
 	illustrations/ARG_edge_annotations.pdf \
-	illustrations/ARG_recomb_node_deletion.pdf \
+	illustrations/simplification.pdf \
 	illustrations/arg-in-pedigree.pdf \
-
-	# illustrations/pedigree_figure.pdf \
-
 
 all: paper.pdf
 
@@ -19,16 +16,9 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 illustrations/%.svg: illustrations.py
 	python3 illustrations.py $*
 
-illustrations/ARG_recomb_node_deletion.svg: illustrations.py
-	python3 illustrations.py arg-node-simplification
-
 illustrations/ARG_edge_annotations.svg: illustrations.py
 	python3 illustrations.py arg-edge-annotations
 
-illustrations/pedigree_figure.svg: illustrations.py
-	python3 illustrations.py pedigree
-
-# NB not reflected in this makefile running pedigree.py also creates pedigree_ARG.pdf
 
 %.pdf : %.svg
 	# For inkscape >= 1.0

@@ -208,7 +208,7 @@ def arg_edge_annotations():
 
 
 @click.command()
-def arg_node_simplification():
+def simplification():
     """
     Sequentially simplifying a WF simulation.
     """
@@ -300,14 +300,12 @@ def arg_node_simplification():
     svg.append('<g transform="translate(0 400) scale(0.83)">' + tree_svg + "</g>")
     svg.append("</g></svg>")
 
-    outfile = "ARG_recomb_node_deletion"
-
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
         '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
     )
     top_svg += "\n".join(svg)
-    with open(f"illustrations/{outfile}.svg", "wt") as f:
+    with open(f"illustrations/simplification.svg", "wt") as f:
         f.write(top_svg)
 
 
@@ -413,7 +411,7 @@ def arg_in_pedigree():
 
 
 cli.add_command(arg_edge_annotations)
-cli.add_command(arg_node_simplification)
+cli.add_command(simplification)
 cli.add_command(arg_in_pedigree)
 
 if __name__ == "__main__":
