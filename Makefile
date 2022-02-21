@@ -1,7 +1,7 @@
 DATA=
 FIGURES=
 ILLUSTRATIONS=\
-	illustrations/ARG_edge_annotations.pdf \
+	illustrations/ancestry-resolution.pdf \
 	illustrations/simplification.pdf \
 	illustrations/arg-in-pedigree.pdf \
 

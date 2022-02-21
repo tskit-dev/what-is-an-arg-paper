@@ -19,9 +19,9 @@ def cli():
 
 
 @click.command()
-def arg_edge_annotations():
+def ancestry_resolution():
     """
-    Ancestry propagation via WH99 graph.
+    Ancestry resolution on the WH99 graph.
     """
 
     def add_edge_labels(ax, ts, G, pos):
@@ -202,8 +202,7 @@ def arg_edge_annotations():
         '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
     )
     top_svg += "\n".join(svg)
-    outfile = "ARG_edge_annotations"
-    with open(f"illustrations/{outfile}.svg", "wt") as f:
+    with open(f"illustrations/ancestry-resolution.svg", "wt") as f:
         f.write(top_svg)
 
 
@@ -410,9 +409,9 @@ def arg_in_pedigree():
         f.write(top_svg)
 
 
-cli.add_command(arg_edge_annotations)
-cli.add_command(simplification)
 cli.add_command(arg_in_pedigree)
+cli.add_command(ancestry_resolution)
+cli.add_command(simplification)
 
 if __name__ == "__main__":
     cli()
