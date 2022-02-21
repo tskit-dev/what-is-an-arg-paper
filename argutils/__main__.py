@@ -31,7 +31,7 @@ def simulate(num_samples, sequence_length, rho, seed, output):
 def draw(input, output):
     ts = tskit.load(input)
     fig, ax1 = plt.subplots(1, 1, figsize=(5, 6))
-    argutils.draw(ts, ax1)
+    argutils.draw(ts, ax1, draw_edge_widths=True)
     plt.savefig(output)
 
 
