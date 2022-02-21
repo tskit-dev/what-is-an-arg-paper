@@ -129,12 +129,12 @@ def arg_edge_annotations():
 
     # From https://networkx.org/documentation/stable/auto_examples/drawing/plot_custom_node_icons.html
     icons = {
-        "genome_empty": "illustrations/node_icons/genome_empty.png",
-        "genome_empty_hamburger": "illustrations/node_icons/genome_empty_hamburger.png",
-        "genome_full": "illustrations/node_icons/genome_full.png",
+        "genome_empty": "illustrations/assets/genome_empty.png",
+        "genome_empty_hamburger": "illustrations/assets/genome_empty_hamburger.png",
+        "genome_full": "illustrations/assets/genome_full.png",
     }
     for letter in list(string.ascii_uppercase[3 : G.number_of_nodes()]):
-        icons["genome_" + letter] = "illustrations/node_icons/genome_" + letter + ".png"
+        icons["genome_" + letter] = "illustrations/assets/genome_" + letter + ".png"
     # Load images
     images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
 
@@ -317,7 +317,7 @@ def pedigree():
     The ARG as embedded in diploid pedigree.
     """
 
-    pedigree_svg = pathlib.Path("illustrations/pedigree.svg").read_text()
+    pedigree_svg = pathlib.Path("illustrations/assets/pedigree.svg").read_text()
     pedigree_svg = pedigree_svg[pedigree_svg.find("<svg") :]
 
     n = SimpleNamespace()  # convenience labels

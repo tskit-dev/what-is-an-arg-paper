@@ -20,7 +20,7 @@ illustrations/ARG_recomb_node_deletion.svg: illustrations.py
 illustrations/ARG_edge_annotations.svg: illustrations.py
 	python3 illustrations.py arg-edge-annotations
 
-illustrations/pedigree_figure.svg: illustrations/pedigree.py
+illustrations/pedigree_figure.svg: illustrations.py
 	python3 illustrations.py pedigree
 
 # NB not reflected in this makefile running pedigree.py also creates pedigree_ARG.pdf
