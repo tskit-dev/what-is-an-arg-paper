@@ -49,10 +49,9 @@ spellcheck: aspell.conf
 clean:
 	rm -f *.pdf
 	rm -f illustrations/*.pdf
+	rm -f illustrations/*.svg
 	rm -f *.log *.dvi *.aux
 	rm -f *.blg *.bbl
-	rm -f *.eps *.[1-9]
-	rm -f src/*.mpx *.mpx
 
 mrproper: clean
 	rm -f *.ps *.pdf
