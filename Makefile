@@ -5,6 +5,8 @@ FIGURES=
 # the corresponding function/command in illustrations.py, making
 # sure that it writes out the corresponding SVG file. The Makefile will
 # take care of the rest.
+# NB: ensure that any additional static files that must be stored in
+# git are put in the illustrations/assets directory.
 ILLUSTRATIONS=\
 	illustrations/ancestry-resolution.pdf \
 	illustrations/simplification.pdf \

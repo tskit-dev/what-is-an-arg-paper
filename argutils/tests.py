@@ -494,3 +494,10 @@ class TestIntervalSet:
         assert s2.is_subset(s1)
         assert not s1.is_subset(s2)
 
+
+class TestConvertArgweaver:
+
+    def test_example(self):
+        ts = argutils.convert_argweaver(open("examples/argweaver.arg"))
+        print(ts)
+
