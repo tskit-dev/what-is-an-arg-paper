@@ -1,5 +1,10 @@
 DATA=
 FIGURES=
+# To add a new illustration, add a line for the corresponding figure name
+# here (use hyphens to separate words, not underscores). Then, define
+# the corresponding function/command in illustrations.py, making
+# sure that it writes out the corresponding SVG file. The Makefile will
+# take care of the rest.
 ILLUSTRATIONS=\
 	illustrations/ancestry-resolution.pdf \
 	illustrations/simplification.pdf \
@@ -16,17 +21,9 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 illustrations/%.svg: illustrations.py
 	python3 illustrations.py $*
 
-illustrations/ARG_edge_annotations.svg: illustrations.py
-	python3 illustrations.py arg-edge-annotations
-
-
 %.pdf : %.svg
-	# For inkscape >= 1.0
+	# Needs inkscape >= 1.0
 	inkscape --export-type="pdf" $<
-	# For inkscape < 1, this works (but is missing some shading)
-	# inkscape $< --export-pdf=$@
-	# This gives a faithful conversion to pdf, but needs some page trimming
-	# chromium --headless --no-margins --print-to-pdf=$@ $<
 
 paper.ps: paper.dvi
 	dvips paper
@@ -50,4 +47,3 @@ clean:
 
 mrproper: clean
 	rm -f *.ps *.pdf
-
