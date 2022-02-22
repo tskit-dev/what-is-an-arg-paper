@@ -755,6 +755,20 @@ def earg_to_garg(ts):
     Given an EARG encoded in the specified tree sequence, return the
     corresponding GARG in which we create two parental nodes
     instead of a single recombination event.
+
+    NOTE: it's important to realise here that we can't tell if an
+    input ARG is a GARG or an EARG just by looking at the edges.
+    There's no difference topologically between an EARG in which
+    the focal recombination node is the child in two edges,
+    or a GARG in which the *recombinant* node is the child in
+    two edges. We could check some properties of the nodes (like,
+    the two parents should be at different times in an EARG), but
+    they make assumptions also. So, this transformation may be useless in
+    practise.
+
+    However, the general approach in which we graft on some
+    extra topology in a minimally destructive way is worth
+    keeping for now.
     """
     # TODO need to resolve what we mean by the terminology here, the
     # ts EARG is different to what we're working with above.

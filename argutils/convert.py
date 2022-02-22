@@ -68,6 +68,7 @@ def convert_argweaver(infile):
             tables.edges.add_row(0, L, parents[0], child)
         elif len(parents) == 2:
             # Recombination node.
+            # If we wanted a GARG here we'd add an extra node
             x = breakpoints[child]
             tables.edges.add_row(0, x, parents[0], child)
             tables.edges.add_row(x, L, parents[1], child)
@@ -77,7 +78,13 @@ def convert_argweaver(infile):
     tables.sort()
     # print(tables)
     ts = tables.tree_sequence()
-    # print(ts.simplify(keep_unary=True).draw_text())
+    # The plan here originally was to use the earg_to_garg method to
+    # convert the recombination events to two parents (making a
+    # standard GARG). However, there are some complexities here so
+    # returning the ARG topology as defined for now. There is an
+    # argument that we should do this anyway, since that's the structure
+    # that was returned and makes very little difference.
+
     # garg = argutils.earg_to_garg(ts)
-    # return garg
+
     return ts.simplify(keep_unary=True)

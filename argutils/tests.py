@@ -534,8 +534,6 @@ class TestConvertArgweaver:
     def test_example(self):
         with open("examples/argweaver.arg") as f:
             ts = argutils.convert_argweaver(f)
-            print(ts.tables)
-            ts.dump("argweaver_example.trees")
         # print(ts.draw_text())
         assert ts.sequence_length == 1000
         assert ts.num_samples == 8
