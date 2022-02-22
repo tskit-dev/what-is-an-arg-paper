@@ -1,6 +1,8 @@
 """
 Utilities for generating and converting ARGs in various formats.
 """
+from __future__ import annotations
+
 import collections
 import random
 import math
@@ -674,6 +676,9 @@ def as_resolved_garg(ts):
     return Ep
 
 
+# TODO Need to be clearer here - what are the assumptions about how things
+# are encoded in the tree sequence? We should probably call this
+# as_minimial_arg or something.
 def as_earg(ts):
     """
     Returns the specified unresolved ARG as an EARG (E, sigma).
@@ -737,3 +742,81 @@ def garg_get_tree(E, S, x):
             parent[c] = P[0]
             N.add(P[0])
     return parent
+
+
+@dataclasses.dataclass
+class RecombinationEvent:
+    parent_edges: List[tskit.Edge] = dataclasses.field(default_factory=list)
+    child_edge: tskit.Edge | None = None
+
+
+def earg_to_garg(ts):
+    """
+    Given an EARG encoded in the specified tree sequence, return the
+    corresponding GARG in which we create two parental nodes
+    instead of a single recombination event.
+
+    NOTE: it's important to realise here that we can't tell if an
+    input ARG is a GARG or an EARG just by looking at the edges.
+    There's no difference topologically between an EARG in which
+    the focal recombination node is the child in two edges,
+    or a GARG in which the *recombinant* node is the child in
+    two edges. We could check some properties of the nodes (like,
+    the two parents should be at different times in an EARG), but
+    they make assumptions also. So, this transformation may be useless in
+    practise.
+
+    However, the general approach in which we graft on some
+    extra topology in a minimally destructive way is worth
+    keeping for now.
+    """
+    # TODO need to resolve what we mean by the terminology here, the
+    # ts EARG is different to what we're working with above.
+
+    L = ts.sequence_length
+    # Map from recombination nodes to the RecombinationEvent objects.
+    recombination_events = collections.defaultdict(RecombinationEvent)
+
+    for edge in ts.edges():
+        if edge.left != 0 and edge.right != ts.sequence_length:
+            raise ValueError("only edges like (0, x], (x, L] or (0, L]) are allowed")
+        if edge.left != 0 or edge.right != ts.sequence_length:
+            recombination_events[edge.child].parent_edges.append(edge)
+    for edge in ts.edges():
+        if edge.parent in recombination_events:
+            event = recombination_events[edge.parent]
+            assert event.child_edge == None
+            event.child_edge = edge
+
+    # print(recombination_events)
+    tables = ts.dump_tables()
+    tables.edges.clear()
+    for edge in ts.edges():
+        if (
+            edge.child not in recombination_events
+            and edge.parent not in recombination_events
+        ):
+            tables.edges.add_row(edge.left, edge.right, edge.parent, edge.child)
+
+    for u, event in recombination_events.items():
+        assert len(event.parent_edges) == 2
+        pe1, pe2 = event.parent_edges
+        # Rewrite the edges for the first parent, reusing the existing node.
+        tables.edges.add_row(pe1.left, pe1.right, u, event.child_edge.child)
+        tables.edges.add_row(0, L, pe1.parent, u)
+        # Add a new node for the second path
+        # TODO there must be a better way of doing this:
+        u_obj = ts.node(u)
+        v = tables.nodes.add_row(
+            flags=u_obj.flags,
+            time=u_obj.time,
+            individual=u_obj.individual,
+            population=u_obj.population,
+            metadata=u_obj.metadata,
+        )
+        # Add the edges from the other path.
+        tables.edges.add_row(pe2.left, pe2.right, v, event.child_edge.child)
+        tables.edges.add_row(0, L, pe2.parent, v)
+
+    tables.sort()
+    return tables.tree_sequence()

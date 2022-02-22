@@ -201,6 +201,7 @@ def assert_gargs_equal(E1, E2):
         # print(key, I1, I2)
         assert I1 == I2
 
+
 class TestResolvedGARG:
     @pytest.mark.parametrize("seed", range(1, 3))
     @pytest.mark.parametrize(
@@ -351,6 +352,40 @@ def gmrca_example_unresolved():
     return tables.tree_sequence()
 
 
+class TestEARGtoGARG:
+    def test_example(self):
+        # 3.00┊     4   ┊
+        #     ┊  ┏━━┻━┓ ┊
+        # 2.00┊  3    ┃ ┊
+        #     ┊ ┏┻┓   ┃ ┊
+        # 1.00┊ ┃ ┗━2━┛ ┊
+        #     ┊ ┃   ┃   ┊
+        # 0.00┊ 0   1   ┊
+        #
+        tables = tskit.TableCollection(2)
+        tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=0)
+        tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=0)
+        tables.nodes.add_row(time=1)
+        tables.nodes.add_row(time=2)
+        tables.nodes.add_row(time=3)
+
+        tables.edges.add_row(0, 2, 2, 1)
+        tables.edges.add_row(0, 2, 3, 0)
+        tables.edges.add_row(0, 2, 4, 3)
+        tables.edges.add_row(0, 1, 3, 2)
+        tables.edges.add_row(1, 2, 4, 2)
+
+        tables.sort()
+        ts = tables.tree_sequence()
+        ts2 = argutils.earg_to_garg(ts)
+        # Can't easily compare the unresolved version because the node IDs
+        # differ.
+        ts3 = ts2.simplify(keep_unary=True)
+        ts3.tables.assert_equals(
+            gmrca_example_resolved().tables, ignore_provenance=True
+        )
+
+
 class TestResolve:
     @pytest.mark.parametrize(
         ["unresolved", "resolved"],
@@ -494,3 +529,12 @@ class TestIntervalSet:
         assert s2.is_subset(s1)
         assert not s1.is_subset(s2)
 
+
+class TestConvertArgweaver:
+    def test_example(self):
+        with open("examples/argweaver.arg") as f:
+            ts = argutils.convert_argweaver(f)
+        # print(ts.draw_text())
+        assert ts.sequence_length == 1000
+        assert ts.num_samples == 8
+        # TODO more tests
