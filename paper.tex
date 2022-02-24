@@ -587,7 +587,7 @@ An example is given in Fig.~\ref{fig-arg-data-structure}A.
 
 \begin{figure}
 \centering
-\begin{tabular}{cc}
+% \begin{tabular}{cc}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
@@ -615,17 +615,18 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [nodelabel,anchor=north west] at ($(-6.5,5)$) {
+\node [nodelabel,anchor=north west] at ($(-8.5,5)$) {
 \begin{tabular}{c|c}
-\multicolumn{2}{c}{Breakpoint}\\
+% \multicolumn{2}{c}{Breakpoint}\\
+node & breakpoint\\
 \hline
-0 & $\infty$ \\
-1 & $\infty$ \\
-2 & $\infty$ \\
+0 & $\varnothing$ \\
+1 & $\varnothing$ \\
+2 & $\varnothing$ \\
 3 & $x$ \\
-4 & $\infty$ \\
-5 & $\infty$ \\
-6 & $\infty$ \\
+4 & $\varnothing$ \\
+5 & $\varnothing$ \\
+6 & $\varnothing$ \\
 \end{tabular}};
 
 \node [nodelabel,anchor=north west] at ($(-2.5,5)$) {
@@ -641,74 +642,38 @@ $(4, 6)$ \\
 $(5, 6)$ \\
 \end{tabular}};
 
-\end{tikzpicture}
-&
-\begin{tikzpicture}[x=5mm,y=5mm,node distance=2mm and 20mm]
-\tikzset{greynode/.style={circle,fill,inner sep=1},
-nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (2, 1) {};
-\node (s4) [greynode] at (4, 1) {};
-\node (s5) [greynode] at (1, 2) {};
-\node (s6) [greynode] at (5, 3) {};
-\node (s7) [greynode] at (3, 4) {};
-
-\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s3/3} \node[nodelabel,anchor=east] at (\u) {\lab};
-\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=west] at (\u) {\lab};
-\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s6/6} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s7/7} \node[nodelabel,anchor=south] at (\u) {\lab};
-
-%% Edges
-\draw (s1) -| (s3);
-\draw (s1) -| (s4) |- (s6);
-\draw (s3) |- (s5);
-\draw (s0) |- (s5);
-\draw (s2) |- (s6);
-\draw (s5) |- (s7);
-\draw (s6) |- (s7);
-
-\node [nodelabel,anchor=north west] at ($(-5,5)$) {
+\node [nodelabel,anchor=north west] at ($(6,5)$) {
 \begin{tabular}{ll}
 Edges\\
 \hline
-$(0, 5)$ & $(0, L]$ \\
-$(1, 3)$ & $(0, x]$ \\
-$(1, 4)$ & $(x, L]$ \\
-$(2, 6)$ & $(0, L]$ \\
-$(3, 5)$ & $(0, L]$ \\
+$(0, 4)$ & $(0, L]$ \\
+$(1, 3)$ & $(0, L]$ \\
+$(2, 5)$ & $(0, L]$ \\
+$(3, 4)$ & $(0, x]$ \\
+$(3, 5)$ & $(x, L]$ \\
 $(4, 6)$ & $(0, L]$ \\
-$(5, 7)$ & $(0, L]$ \\
-$(6, 7)$ & $(0, L]$ \\
+$(5, 6)$ & $(0, L]$ \\
 \end{tabular}};
 
+
 \end{tikzpicture}
-\\
-(A) & (B) \\
-\end{tabular}
 \caption{\label{fig-arg-data-structure}
-Encoding an ARG. (A) The classical approach described by Griffiths
+Node vs edge breakpoint annotations.
+The classical approach described by Griffiths
 equates graph nodes with events in the stochastic process,
-and associates recombination breakpoints with nodes. This encoding
-is limited in the ancestral patterns that can be described and ambiguous.
+and associates recombination breakpoint information with \emph{nodes} (left).
+This encoding
+is limited in the pattern of inheritance that can be described
+and requires that edges be ordered to avoid ambiguity.
 [TODO clarify that the function is the same things as having two
 types of nodes]
-(B) Equating graph nodes with \emph{genomes} and attaching the
-interval of genome inherited by the child node with edges removes
-this ambiguity and can describe any pattern of genetic inheritance.
-The most important change between the two encodings is to represent
-a recombination event (node 3 in A) by two parent genomes
-(nodes 3 and 4 in B) and explicitly storing the interval
-that the child inherits from each parent along the two corresponding
-edges. Thus, child $1$ in inherits $(0, x]$ from $3$
-and $(x, L)$ from $4$
-(for recombination breakpoint $x$ and a sequence of length $L$).
-\textcolor{red}{This is very much a draft; let's see how it works with
- the text and other figures and tidy it up in a later revision}
+The alternative is to associate breakpoint annotations
+with \emph{edges} (right).
+Associating the interval of genome inherited by the child node
+from the parent with the corresponding edge, allows
+any pattern genetic inheritance to be described and does
+not required edges to be ordered.
 }
 \end{figure}
 
