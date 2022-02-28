@@ -531,59 +531,40 @@ of inferring parameters of the
 stochastic process, where the ancestry is regarded as a
 latent parameter to be averaged out
 \citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
-fearnhead2001estimating}. These methods met with limited success
+fearnhead2001estimating}.
+% FIXME: need some proper statistical language here to describe why these
+% methods didn't work so well.
+These methods met with limited success
 due to the overwhelmingly large and
-horribly structured [Jere: what's the right way to say this?]
-state space of ARGs. The focus subsequently shifted to
-the more tractable---but still
-NP-hard~\citep{wang2001perfect}---problem of computing
+horribly structured [Jere: what's the right way to say this?] state space of ARGs.
+The focus subsequently shifted to the more
+tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
 The distinction between the ARG as a stochastic process
-and the ARG as a data structure became less clear at this point,
-with \citet{minichiello2006mapping} explicitly arguing for
-the data structure interpretation.
+and the ARG as a \emph{data structure}~\citep{minichiello2006mapping}
+became important at this point,
+since parsimonious ARGs have no immediate connection to
+the stochastic process. Indeed, the ARG instances produced by
+the coalescent with recombination are usually highly unparsimonious,
+since they contain many invisible recombinations
+(although those produced under the SMC may be parsimonious, depending
+on the pattern of mutations that is present).
 
 % What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination on a single
-chromosome, but it has significant drawbacks as the basis for a general purpose
+economical description of the coalescent with recombination,
+but it has significant drawbacks as the basis for a general purpose
 storage and interchange format. To avoid confusion, we will refer to this
 ARG encoding as an ``Event ARG'', or EARG.
-The basic unit of an EARG are \emph{events} and correspond directly
-to the events that
+The fundamental units of an EARG are the \emph{events} that correspond directly
+to those that
 occur in the ARG stochastic process described in the previous section.
 Each event corresponds to a node in the graph, and there are therefore
 two types of node: common ancestor and recombination. As in the
 stochastic process, edges represent lineages, and those lineages
 are modified by the events that they pass through.
-
-% What do we mean by an EARG, formally?
-% NOTE we're using the natural numbers but are using 0 as a node in the
-% examples. Probably want to clear this up a bit.
-Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
-defines a directed acyclic graph where $e_j = (c, p)$ describes
-an edge between
-child node $c$ and parent $p$ ($c, p \in \mathbb{N}$).
-Additionally,
-$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
-is a function mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
-if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \infty$ otherwise. (The use of $\infty$ to denote
-non-recombination nodes is arbitrary, but useful when we extract
-% NOTE: need to be careful about using "local" trees if we're also
-% distinguishing resolved and non-resolved GARGs as being "locally"
-% defined or not. One is topologically local and the other is local
-% along the genome.
-local trees; see below.)
-For each recombination node $u$ we must
-have exactly two edges in $E$ such that $u$ is the child.
-Note that this description captures only the
-graph topology: if we also wish to know the times of events we need
-an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
-which defines the time of each node.
-An example is given in Fig.~\ref{fig-arg-data-structure}A.
 
 \begin{figure}
 \centering
@@ -666,8 +647,6 @@ and associates recombination breakpoint information with \emph{nodes} (left).
 This encoding
 is limited in the patterns of inheritance that can be described
 and requires that edges be ordered to avoid ambiguity.
-[TODO clarify that the function is the same things as having two
-types of nodes]
 The alternative is to associate breakpoint annotations
 with \emph{edges} (right).
 Associating the interval of genome inherited by the child node
@@ -676,6 +655,29 @@ any pattern genetic inheritance to be described and does
 not require edges to be ordered.
 }
 \end{figure}
+
+% What do we mean by an EARG, formally?
+% NOTE we're using the natural numbers but are using 0 as a node in the
+% examples. Probably want to clear this up a bit.
+Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
+is an ordered list of edges defining a directed acyclic graph and
+$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
+is a function mapping nodes to recombination breakpoints,
+such that $\sigma(u) = x$
+if $u$ is a recombination event with breakpoint $x$ and
+$\sigma(u) = \varnothing$ otherwise.
+(Note that this formulation is equivalent to stipulating two
+different ``types'' of node and only storing breakpoints
+with recombination nodes).
+Each edge $e_j = (c, p)$ describes an edge between
+child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
+For each recombination node $u$ we must
+have exactly two edges in $e$ such that $u$ is the child.
+Note that this description captures only the
+graph topology: if we also wish to know the times of events we need
+an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
+which defines the time of each node.
+An example is given in Fig.~\ref{fig-arg-data-structure}A.
 
 % % Not sure if we actually include this, but it's good to work it through
 % % to make sure the notation works. Maybe something to stick into
@@ -713,16 +715,20 @@ rather than edges,
 and the only way we can break this symmetry is to assign
 some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
-parents of a recombination event). When we want to recover
-the local tree at a position $x$ along the genome,
+parents of a recombination event). This is usually described
+in terms of the process in which we extract the local trees
+along the genome from an EARG.
+To recover
+the tree at genome coordinate $x$,
 we traverse the graph upwards from the leaves. At a particular
 node $u$, if it has one parent we are at a common ancestor
 node and we simply follow that parent. If we are at a
-recombination node, $u$ has two parents; if
+recombination node, $u$ has two parents: if
 $x$ is less than the breakpoint $\sigma(u)$ we follow
-the first edge, and otherwise follow the second edge.
-This ordering requirement, which although straightforward
-to describe, has some drawbacks in practice. For example,
+the edge to the first parent, and otherwise follow the edge
+to the second parent.
+This ordering requirement, which is straightforward
+to describe, has some practical drawbacks. For example,
 % Surely the meaning is clear from the context here and we don't need
 % qualify the meaning of "ARG"
 simulating an ARG in this representation is
@@ -1125,7 +1131,7 @@ rootward direction (a ``super-diamond'') is non-identifiable and can be
 replaced by a single edge. This definition includes the case
 of a single node that has one inbound and one outbound edge.
 Fig.~\ref{fig-simplification}B shows the result of this type of
-graph-level simplification.
+graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
 local trees, there can still be nodes that are unary in all
