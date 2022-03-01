@@ -25,9 +25,9 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:snap-object-midpoints="true"
-     inkscape:zoom="0.49698543"
-     inkscape:cx="345.08054"
-     inkscape:cy="636.8396"
+     inkscape:zoom="0.8662255"
+     inkscape:cx="312.27434"
+     inkscape:cy="1200.0339"
      inkscape:window-width="1396"
      inkscape:window-height="847"
      inkscape:window-x="44"
@@ -1288,32 +1288,8 @@
        id="text2715"
        style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect2717)" />
     <g
-       id="g8620"
-       transform="translate(0.55391854,-2.3688739)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241"><tspan
-           sodipodi:role="line"
-           id="tspan3239"
-           style="font-size:7.05556px;fill:#808080;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
        id="g8620-6-7-1-85"
-       transform="translate(-102.75942,9.9598172)">
+       transform="translate(-102.29696,11.1891)">
       <rect
          style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
          id="rect4791-6-4-5-8"
@@ -1336,176 +1312,8 @@
            y="228.3972">(0,3]</tspan></text>
     </g>
     <g
-       id="g8620-6"
-       transform="translate(-6.3033541,-82.632902)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8"
-           style="font-size:7.05556px;fill:#808080;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-7"
-       transform="translate(-64.4648,-82.632902)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-4"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-4"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-9"
-           style="font-size:7.05556px;fill:#808080;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-7-1"
-       transform="translate(-94.93032,-82.90986)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-4-5"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-4-5"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-9-5"
-           style="font-size:7.05556px;fill:#808080;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-7-1-8"
-       transform="translate(-64.187841,-66.292304)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-4-5-2"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-4-5-9"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-9-5-8"
-           style="font-size:7.05556px;fill:#808080;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-4"
-       transform="translate(-26.244422,-146.61049)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-1"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-7"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-1"
-           style="font-size:7.05556px;stroke-width:0.264583;fill:#808080"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-4-8"
-       transform="translate(-88.560256,-162.95109)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-1-7"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-7-8"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-1-7"
-           style="font-size:7.05556px;stroke-width:0.264583;fill:#808080"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
-       id="g8620-6-7-1-2"
-       transform="translate(-24.305707,-9.5156542)">
-      <rect
-         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
-         id="rect4791-6-4-5-0"
-         width="22.771273"
-         height="8.9705019"
-         x="137.21416"
-         y="221.91898"
-         ry="3.3172145"
-         rx="3.2101941" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="137.37503"
-         y="228.3972"
-         id="text3241-7-4-5-7"><tspan
-           sodipodi:role="line"
-           id="tspan3239-8-9-5-4"
-           style="font-size:7.05556px;fill:#666666;stroke-width:0.264583"
-           x="137.37503"
-           y="228.3972">(0,10]</tspan></text>
-    </g>
-    <g
        id="g8620-6-7-1-2-2"
-       transform="translate(-90.953884,-5.3612652)">
+       transform="translate(-91.48626,-1.6282111)">
       <rect
          style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
          id="rect4791-6-4-5-0-9"
@@ -1529,7 +1337,7 @@
     </g>
     <g
        id="g8620-6-7-1-2-2-1"
-       transform="translate(-52.627178,21.226825)">
+       transform="translate(-52.094802,22.291578)">
       <rect
          style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
          id="rect4791-6-4-5-0-9-8"
