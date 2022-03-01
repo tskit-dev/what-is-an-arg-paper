@@ -313,12 +313,40 @@ def arg_in_pedigree():
     """
     The ARG as embedded in diploid pedigree.
     """
+    def add_edge_labels(ax, ts, G, pos, n):
+        params = {
+            "G": G,
+            "pos": pos,
+            "ax": ax,
+            "rotate": False,
+            "font_size": 12,
+            "bbox": dict(
+                boxstyle="round,pad=0.1",
+                ec=(1.0, 1.0, 1.0),
+                fc=(1.0, 1.0, 1.0)),
+        }
+        edge_labels={(e.child, e.parent): f"({e.left:.0f},{e.right:.0f}]" for e in ts.edges()}
+        full_edges = {k: v for k, v in edge_labels.items() if not argutils.is_recombinant(ts.node(k[0]).flags)}
+        nx.draw_networkx_edge_labels(
+            **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.E}
+        nx.draw_networkx_edge_labels(
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.5)
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.F}
+        nx.draw_networkx_edge_labels(
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.7)
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.E}
+        nx.draw_networkx_edge_labels(
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.3)
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.F}
+        nx.draw_networkx_edge_labels(
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.5)
 
     pedigree_svg = pathlib.Path("illustrations/assets/pedigree.svg").read_text()
     pedigree_svg = pedigree_svg[pedigree_svg.find("<svg") :]
 
     n = SimpleNamespace()  # convenience labels
-    l = 100
+    l = 10
     tables = tskit.TableCollection(sequence_length=l)
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     for gen in range(4):
@@ -332,14 +360,19 @@ def arg_in_pedigree():
                     "genome": "paternal" if genome == 0 else "maternal",
                 }
                 setattr(n, label, tables.nodes.num_rows)
+                flags = 0
+                if gen == 0:
+                    flags |= tskit.NODE_IS_SAMPLE
+                if label == "A" or label == "C":
+                    flags |= argutils.NODE_IS_RECOMB
                 tables.nodes.add_row(
-                    flags=tskit.NODE_IS_SAMPLE if gen == 0 else 0,
+                    flags=flags,
                     time=gen,
                     metadata=metadata,
                     individual=i,
                 )
 
-    bp = [25, 60]
+    bp = [3, 6]
     tables.edges.clear()
     tables.individuals[0] = tables.individuals[0].replace(parents=[2, 3])
     tables.edges.add_row(child=n.A, parent=n.E, left=0, right=bp[0])
@@ -368,36 +401,44 @@ def arg_in_pedigree():
     tables.sort()
     ts = tables.tree_sequence()
 
-    ts_simp = ts.simplify(keep_unary=True)
+    ts_used = ts  # argutils.remove_unused_nodes(ts)  # use this to remove unused nodes
 
-    fig, ax = plt.subplots(1, 1, figsize=(2.5, 5))
-    argutils.viz.draw(
-        ts_simp, ax, reverse_x_axis=True, node_color=mpl.colors.to_hex(plt.cm.tab20(1))
-    )
+    fig, ax = plt.subplots(1, 1, figsize=(3.8, 5))
+    col = mpl.colors.to_hex(plt.cm.tab20(1))
+    pos, G = argutils.viz.draw(
+        ts_used, ax,
+        reverse_x_axis=True,
+        draw_edge_widths=False,
+        node_color=col,
+        tweak_x={l:(-13 if l< 12 else -20) for l in range(8,16)},
+        max_edge_width=2)
+    add_edge_labels(ax, ts_used, G, pos, n)
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     with io.StringIO() as f:
         plt.savefig(f, format="svg")
         pedigree_ARG = f.getvalue()
         pedigree_ARG = pedigree_ARG[pedigree_ARG.find("<svg") :]
+    plt.close(fig)
+    ts_simp = ts_used.simplify(keep_unary=True)
     pedigree_ts = ts_simp.draw_svg(
         size=(500, 500), node_labels={n.id: n.metadata["name"] for n in ts_simp.nodes()}
     )
 
     svg = [
-        '<svg width="900" height="500" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
         "<style>.tree-sequence text {font-family: sans-serif}</style>"
         '<text font-size="2em" font-family="serif" transform="translate(80, 30)">'
         "(a)</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(335, 30)">'
+        '<text font-size="2em" font-family="serif" transform="translate(380, 30)">'
         "(b)</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(680, 30)">'
+        '<text font-size="2em" font-family="serif" transform="translate(780, 30)">'
         "(c)</text>",
-        '<g transform="translate(10, 50)">',
+        '<g transform="translate(10, 60)">',
     ]
     svg.append('<g transform="scale(0.36)">' + pedigree_svg + "</g>")
     svg.append('<g transform="translate(240 -10) scale(0.83)">' + pedigree_ARG + "</g>")
-    svg.append('<g transform="translate(470) scale(0.83)">' + pedigree_ts + "</g>")
+    svg.append('<g transform="translate(580) scale(0.83)">' + pedigree_ts + "</g>")
     svg.append("</g></svg>")
 
     top_svg = (
