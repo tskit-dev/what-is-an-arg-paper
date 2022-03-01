@@ -300,6 +300,15 @@ def iter_lineages(individuals):
             yield lineage
 
 
+def remove_unused_nodes(ts):
+    """
+    Remove any nodes not referenced in the edge table, but keep the edges
+    """
+    tables = ts.tables
+    used_nodes = np.unique(np.concatenate((tables.edges.parent, tables.edges.child)))
+    return ts.subset(used_nodes)
+
+
 def simplify_keeping_all_nodes(ts):
     """
     Run the Hudson algorithm to convert from an implicit to an explicit edge encoding,

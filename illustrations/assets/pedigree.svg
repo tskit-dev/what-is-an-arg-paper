@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="127.23921mm"
+   width="130.50952mm"
    height="281.81128mm"
-   viewBox="0 0 127.2392 281.81128"
+   viewBox="0 0 130.50951 281.81128"
    version="1.1"
    id="svg5"
    sodipodi:docname="pedigree.svg"
-   inkscape:version="1.1 (c4e8f9e, 2021-05-24)"
+   inkscape:version="1.2-alpha1 (b6a15bb, 2022-02-23)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,21 +25,28 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:snap-object-midpoints="true"
-     inkscape:zoom="0.28178964"
-     inkscape:cx="-255.50975"
-     inkscape:cy="487.95265"
+     inkscape:zoom="0.8662255"
+     inkscape:cx="312.27434"
+     inkscape:cy="1200.0339"
      inkscape:window-width="1396"
      inkscape:window-height="847"
-     inkscape:window-x="53"
+     inkscape:window-x="44"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     inkscape:deskcolor="#d1d1d1" />
   <defs
      id="defs2">
+    <rect
+       x="400.33104"
+       y="798.05407"
+       width="73.024555"
+       height="44.336337"
+       id="rect2717" />
     <pattern
        inkscape:collect="always"
        xlink:href="#pattern53463"
@@ -447,7 +454,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-40,-9.9999999)">
+     transform="translate(-34.559284,-9.9999999)">
     <g
        id="g47982"
        style="stroke:#eeeeee;stroke-opacity:1">
@@ -548,9 +555,9 @@
        transform="rotate(-90,99.999994,150)">
       <g
          id="g44848"
-         style="fill:#00ffff">
+         style="fill:#cccccc">
         <rect
-           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect44844"
            width="31.749998"
            height="4.75"
@@ -562,9 +569,9 @@
       <g
          id="g44852"
          transform="translate(0,11.000001)"
-         style="fill:#ff00ff">
+         style="fill:#cccccc">
         <rect
-           style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect44850"
            width="31.75"
            height="4.75"
@@ -579,9 +586,9 @@
        transform="matrix(0,1,1,0,-50,210)">
       <g
          id="g44225"
-         style="fill:#00ffff">
+         style="fill:#cccccc">
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect44221"
            width="21"
            height="4.75"
@@ -590,7 +597,7 @@
            ry="0"
            rx="0" />
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect44223"
            width="10.749999"
            height="4.75"
@@ -602,9 +609,9 @@
       <g
          id="g44229"
          transform="translate(0,11.000001)"
-         style="fill:#ff00ff">
+         style="fill:#cccccc">
         <rect
-           style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect44227"
            width="31.75"
            height="4.75"
@@ -619,9 +626,9 @@
        transform="matrix(0,1,1,0,-130,210)">
       <g
          id="g43547"
-         style="fill:#ff0000">
+         style="fill:#cccccc">
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect43541"
            width="5"
            height="4.75"
@@ -630,7 +637,7 @@
            ry="0"
            rx="0" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect43543"
            width="26.749998"
            height="4.75"
@@ -642,9 +649,9 @@
       <g
          id="g43555"
          transform="translate(0,11.000001)"
-         style="fill:#ffff00">
+         style="fill:#cccccc">
         <rect
-           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect43549"
            width="31.75"
            height="4.75"
@@ -756,9 +763,9 @@
       <g
          id="g48074"
          transform="translate(0,11.000001)"
-         style="fill:#c8beb7;stroke:#c8beb7">
+         style="fill:#ffffff;stroke:#c8beb7">
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect48064"
            width="31.75"
            height="4.75"
@@ -771,16 +778,16 @@
          id="g48062"
          style="fill:none">
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect48060"
-           width="10.749999"
+           width="11"
            height="4.75"
-           x="65.125"
+           x="65"
            y="182.125"
            ry="0"
            rx="0" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect48056"
            width="5"
            height="4.75"
@@ -789,21 +796,12 @@
            ry="0"
            rx="0" />
         <rect
-           style="fill:#ffff00;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect48058"
-           width="26.749998"
-           height="2.5"
-           x="49.125"
-           y="182.125"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#ffff00;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect10566"
-           width="21.189032"
-           height="2.5"
-           x="44.020237"
-           y="184.5"
+           width="16"
+           height="4.7680254"
+           x="49"
+           y="182.23198"
            ry="0"
            rx="0" />
         <rect
@@ -823,9 +821,9 @@
        style="fill:#c8beb7;stroke:#c8beb7">
       <g
          id="g52338"
-         style="fill:#c8beb7;stroke:#c8beb7">
+         style="fill:#ffffff;stroke:#c8beb7">
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect52336"
            width="31.749998"
            height="4.75"
@@ -837,9 +835,9 @@
       <g
          id="g52342"
          transform="translate(0,11.000001)"
-         style="fill:#c8beb7;stroke:#c8beb7">
+         style="fill:#ffffff;stroke:#c8beb7">
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect52340"
            width="31.75"
            height="4.75"
@@ -856,9 +854,9 @@
       <g
          id="g52704"
          transform="translate(0,11.000001)"
-         style="fill:#c8beb7;stroke:#c8beb7">
+         style="fill:#ffffff;stroke:#c8beb7">
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect52702"
            width="31.75"
            height="4.75"
@@ -871,39 +869,12 @@
          id="g52712"
          style="fill:none">
         <rect
-           style="fill:#ffff00;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect12468"
-           width="31.75"
-           height="1.25"
-           x="44.125"
-           y="184.5"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect12772"
-           width="31.75"
-           height="1.25"
-           x="44.125"
-           y="183.25"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#1a1a1a;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect12792"
            width="31.75"
-           height="1.25"
+           height="4.875"
            x="44.125"
            y="182"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect52706"
-           width="31.75"
-           height="1.25"
-           x="44.125"
-           y="185.75"
            ry="0"
            rx="0" />
         <rect
@@ -934,9 +905,9 @@
       <g
          id="g49803"
          transform="translate(0,11.000001)"
-         style="fill:#c8beb7;stroke:#c8beb7">
+         style="fill:#ffffff;stroke:#c8beb7">
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect49795"
            width="31.75"
            height="4.75"
@@ -949,39 +920,30 @@
          id="g49811"
          style="fill:none">
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect49809"
-           width="26.749998"
+           width="11"
            height="4.75"
-           x="49.125"
+           x="64.718803"
            y="182.125"
            ry="0"
            rx="0" />
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect49805"
-           width="21"
+           width="5"
            height="4.75"
            x="44.125"
            y="182"
            ry="0"
            rx="0" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect49807"
            width="15.999999"
-           height="1.6669999"
+           height="4.7545528"
            x="49.125"
            y="182"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect13658"
-           width="31.749998"
-           height="1.67"
-           x="44.125"
-           y="185.33"
            ry="0"
            rx="0" />
         <rect
@@ -1052,39 +1014,30 @@
          transform="translate(0,11.000001)"
          style="fill:none">
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect2268"
-           width="26.749998"
-           height="2.5999999"
-           x="49.125"
-           y="184.39999"
+           width="11.292356"
+           height="4.9999938"
+           x="64.582642"
+           y="182"
            ry="0"
            rx="0" />
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect2266"
            width="5"
-           height="2.5"
+           height="4.875"
            x="44.125"
            y="182"
            ry="0"
            rx="0" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.250002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect1464"
-           width="26.749998"
-           height="2.4999981"
+           width="15.457644"
+           height="4.866951"
            x="49.125"
            y="182"
-           ry="0"
-           rx="0" />
-        <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-           id="rect1484"
-           width="21"
-           height="2.5"
-           x="44.125"
-           y="184.5"
            ry="0"
            rx="0" />
         <rect
@@ -1100,7 +1053,7 @@
       <g
          id="g42852">
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect42765"
            width="5"
            height="5"
@@ -1109,7 +1062,7 @@
            ry="0"
            rx="0" />
         <rect
-           style="fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.25;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect42847"
            width="10.749999"
            height="5"
@@ -1118,7 +1071,7 @@
            ry="0"
            rx="0" />
         <rect
-           style="fill:#c8beb7;fill-opacity:1;stroke:#c8beb7;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           style="fill:#ffffff;fill-opacity:1;stroke:#c8beb7;stroke-width:0.250001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
            id="rect42545"
            width="15.999999"
            height="4.75"
@@ -1227,107 +1180,230 @@
          y="32.665482">P</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="80.567383"
        y="209.6946"
        id="text3400"><tspan
          sodipodi:role="line"
          id="tspan3398"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="80.567383"
-         y="209.6946">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="209.6946">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan3754">3</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="80.567383"
        y="289.69461"
        id="text5688"><tspan
          sodipodi:role="line"
          id="tspan5686"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="80.567383"
-         y="289.69461">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="289.69461">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan5684">1</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="156.7674"
        y="289.69461"
        id="text5694"><tspan
          sodipodi:role="line"
          id="tspan5692"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="156.7674"
-         y="289.69461">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="289.69461">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan5690">2</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="156.8329"
        y="209.6946"
        id="text6952"><tspan
          sodipodi:role="line"
          id="tspan6950"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="156.8329"
-         y="209.6946">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="209.6946">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan6948">4</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="80.567383"
        y="49.886196"
        id="text8762"><tspan
          sodipodi:role="line"
          id="tspan8760"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="80.567383"
-         y="49.886196">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="49.886196">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan8758">7</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="80.567383"
        y="129.88623"
        id="text8768"><tspan
          sodipodi:role="line"
          id="tspan8766"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="80.567383"
-         y="129.88623">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="129.88623">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan8764">5</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="156.7674"
        y="129.88623"
        id="text8774"><tspan
          sodipodi:role="line"
          id="tspan8772"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="156.7674"
-         y="129.88623">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="129.88623">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan8770">6</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="156.8329"
        y="49.886196"
        id="text8780"><tspan
          sodipodi:role="line"
          id="tspan8778"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#939393;fill-opacity:1;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#b3b3b3;fill-opacity:1;stroke-width:0.264583"
          x="156.8329"
-         y="49.886196">I<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#939393;fill-opacity:1"
+         y="49.886196">i<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:65%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';baseline-shift:sub;fill:#b3b3b3;fill-opacity:1"
    id="tspan8776">8</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,34.559284,9.9999999)"
+       id="text2715"
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect2717)" />
+    <g
+       id="g8620-6-7-1-85"
+       transform="translate(-102.29696,11.1891)">
+      <rect
+         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
+         id="rect4791-6-4-5-8"
+         width="18.339924"
+         height="8.9705019"
+         x="137.21416"
+         y="221.91898"
+         ry="3.3172145"
+         rx="3.2101941" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="137.37503"
+         y="228.3972"
+         id="text3241-7-4-5-3"><tspan
+           sodipodi:role="line"
+           id="tspan3239-8-9-5-0"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+           x="137.37503"
+           y="228.3972">(0,3]</tspan></text>
+    </g>
+    <g
+       id="g8620-6-7-1-2-2"
+       transform="translate(-91.48626,-1.6282111)">
+      <rect
+         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
+         id="rect4791-6-4-5-0-9"
+         width="22.771273"
+         height="8.9705019"
+         x="137.21416"
+         y="221.91898"
+         ry="3.3172145"
+         rx="3.2101941" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="137.37503"
+         y="228.3972"
+         id="text3241-7-4-5-7-7"><tspan
+           sodipodi:role="line"
+           id="tspan3239-8-9-5-4-5"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+           x="137.37503"
+           y="228.3972">(3,10]</tspan></text>
+    </g>
+    <g
+       id="g8620-6-7-1-2-2-1"
+       transform="translate(-52.094802,22.291578)">
+      <rect
+         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
+         id="rect4791-6-4-5-0-9-8"
+         width="22.771273"
+         height="8.9705019"
+         x="137.21416"
+         y="221.91898"
+         ry="3.3172145"
+         rx="3.2101941" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="137.37503"
+         y="228.3972"
+         id="text3241-7-4-5-7-7-7"><tspan
+           sodipodi:role="line"
+           id="tspan3239-8-9-5-4-5-1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+           x="137.37503"
+           y="228.3972">(6,10]</tspan></text>
+    </g>
+    <g
+       id="g8620-6-7-1-2-2-1-4"
+       transform="translate(-31.301315,12.087169)">
+      <rect
+         style="fill:#ffffff;stroke-width:0.799999;stroke-linecap:round;paint-order:markers fill stroke"
+         id="rect4791-6-4-5-0-9-8-1"
+         width="22.771273"
+         height="8.9705019"
+         x="137.21416"
+         y="221.91898"
+         ry="3.3172145"
+         rx="3.2101941" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="138.48286"
+         y="227.84328"
+         id="text3241-7-4-5-7-7-7-6"><tspan
+           sodipodi:role="line"
+           id="tspan3239-8-9-5-4-5-1-1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+           x="138.48286"
+           y="227.84328">(0,6]</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:6.35px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="137.03421"
+       y="276.98871"
+       id="text48376"><tspan
+         sodipodi:role="line"
+         id="tspan48374"
+         style="font-size:6.35px;stroke-width:0.264583"
+         x="137.03421"
+         y="276.98871">6</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:6.35px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="48.010216"
+       y="262.12097"
+       id="text48376-8"><tspan
+         sodipodi:role="line"
+         id="tspan48374-9"
+         style="font-size:6.35px;stroke-width:0.264583"
+         x="48.010216"
+         y="262.12097">3</tspan></text>
   </g>
 </svg>
