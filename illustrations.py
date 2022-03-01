@@ -321,7 +321,7 @@ def arg_in_pedigree():
             "rotate": False,
             "font_size": 12,
             "bbox": dict(
-                boxstyle="round,pad=0.1",
+                boxstyle="round,pad=0.05",
                 ec=(1.0, 1.0, 1.0),
                 fc=(1.0, 1.0, 1.0)),
         }
@@ -331,16 +331,16 @@ def arg_in_pedigree():
             **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
         lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.E}
         nx.draw_networkx_edge_labels(
-            **params, font_weight="bold", edge_labels=lab, label_pos=0.5)
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.35)
         lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.F}
         nx.draw_networkx_edge_labels(
-            **params, font_weight="bold", edge_labels=lab, label_pos=0.7)
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.3)
         lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.E}
         nx.draw_networkx_edge_labels(
-            **params, font_weight="bold", edge_labels=lab, label_pos=0.3)
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.7)
         lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.F}
         nx.draw_networkx_edge_labels(
-            **params, font_weight="bold", edge_labels=lab, label_pos=0.5)
+            **params, font_weight="bold", edge_labels=lab, label_pos=0.55)
 
     pedigree_svg = pathlib.Path("illustrations/assets/pedigree.svg").read_text()
     pedigree_svg = pedigree_svg[pedigree_svg.find("<svg") :]
