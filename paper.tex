@@ -801,23 +801,27 @@ generalise the model to more appropriately reflect the realities
 of modern datasets.
 
 Fortunately, it is straightforward to generalise the classical Griffiths
-encoding to both simplify implementations and to encompass any
+EARG encoding to both simplify implementations and to encompass any
 possible pattern of genetic inheritance.
-We require only two changes. Firstly, we let nodes in the
-graph model \emph{genomes} rather than \emph{events}. As we
-see in the next section, this allows us to model complex
-patterns of inheritance without classifying different types of node.
-The second change we must make is to associate
+The only change that we require is to associate
 the details of inheritance intervals with \emph{edges} rather than
 as breakpoints associated with recombination events and
-edge ordering rules.
-% That is, given two genomes $p$
-% and $c$ where $p$ is the parent genome and $c$ is the child
-% (although many generations may have elapsed between the two),
-% we associate a set $I$ of intervals of genome which $c$ has
-% inherited from $p$.
-These changes are straightforward, involve no loss of information
-and greatly increase both the expressivity and computational
+edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}B
+where this alternative edge annotation formulation is
+shown. By associating the interval $(0, x)$ with edge $(3,4)$
+and the interval $(x, L)$ with $(3, 5)$ we make the encoding
+unambigous: we can list the edges in any order, and it
+will describe the same set of local genealogical trees.
+This approach is also more flexible, because any pattern
+of inheritance can be described by these intervals. For
+example, if a gene conversion event occured where a segment
+between between positions $x$ and $y$ was inherited by
+node $3$ from $5$, we would state this by associating
+the intervals $\{(0, x], (y, L]\}$ with $(3,4)$ and
+$\{(x, y]\}$ with $(3,5)$.
+This change is straightforward, involves no loss of information
+and (as we see in later sections)
+greatly increases both the expressivity and computational
 power of ancestral recombination graph data structures.
 
 \section*{Genome ARGs}
