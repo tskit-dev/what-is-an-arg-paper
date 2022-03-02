@@ -372,7 +372,7 @@ def arg_in_pedigree():
                     individual=i,
                 )
 
-    bp = [3, 6]
+    bp = [2, 7]
     tables.edges.clear()
     tables.individuals[0] = tables.individuals[0].replace(parents=[2, 3])
     tables.edges.add_row(child=n.A, parent=n.E, left=0, right=bp[0])

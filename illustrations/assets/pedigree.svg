@@ -25,8 +25,8 @@
      showgrid="false"
      inkscape:snap-object-midpoints="true"
      inkscape:zoom="0.8662255"
-     inkscape:cx="397.12523"
-     inkscape:cy="905.65332"
+     inkscape:cx="307.65661"
+     inkscape:cy="-1387.0522"
      inkscape:window-width="1396"
      inkscape:window-height="847"
      inkscape:window-x="44"
@@ -906,7 +906,7 @@
            id="tspan3239-8-9-5-0"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(0,3]</tspan></text>
+           y="228.3972">(0,2]</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2"
@@ -930,7 +930,7 @@
            id="tspan3239-8-9-5-4-5"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(3,10]</tspan></text>
+           y="228.3972">(2,10]</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2-1"
@@ -954,7 +954,7 @@
            id="tspan3239-8-9-5-4-5-1"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(6,10]</tspan></text>
+           y="228.3972">(7,10]</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2-1-4"
@@ -978,7 +978,7 @@
            id="tspan3239-8-9-5-4-5-1-1"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="138.48286"
-           y="227.84328">(0,6]</tspan></text>
+           y="227.84328">(0,7]</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -990,7 +990,7 @@
          id="tspan48374"
          style="font-size:6.35px;stroke-width:0.264583"
          x="137.03421"
-         y="276.98871">6</tspan></text>
+         y="276.98871">7</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:6.35px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1001,6 +1001,6 @@
          id="tspan48374-9"
          style="font-size:6.35px;stroke-width:0.264583"
          x="48.010216"
-         y="262.12097">3</tspan></text>
+         y="262.12097">2</tspan></text>
   </g>
 </svg>
