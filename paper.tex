@@ -863,10 +863,10 @@ labelled \textsf{A} to \textsf{P}. Black lines show transmission paths connectin
 genomes in the current generation (\textsf{A} to \textsf{D}) with their ancestors.
 Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{A}
 and \textsf{C} are independent recombinants of the paternal genomes \textsf{E}
-and \textsf{F}: the region of genome transmitted through each edge is shown in
-these cases. Where genomes merge into a common ancestor, the merged region
-is shown darker, until all genomic regions are fully coalesced in genome \textsf{N}
-in the oldest generation.
+and \textsf{F}: in these cases the edge annotations have been shown, indicating the
+region of genome transmitted. Genomes are shaded such that where, backwards in time,
+they merge into a common ancestor, the merged region is darker; this shows that all
+genomic regions are fully coalesced in genome \textsf{N} in the oldest generation.
 (b) The equivalent genome ARG, where there is a single type of node (representing
 a genome) along with annotations on all edges; annotations showing partial
 transmission are highlighted in bold. Recombination, such as that causing the
@@ -1047,14 +1047,18 @@ $c$ to some non-empty subset of $S$ through the local trees.
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
-Implicit vs explicit edge annotations. (a) An gARG equivalent to the encoding
-described by Griffiths can be created by setting all edges to span the full
-genome, apart from edges between two recombining nodes and their recombinant
-child (edge spans in bold). (b) The sample-resolved gARG, where the Hudson
-simplification algorithm has shortened edge spans so that they encapsulate only
-the upwards transmission of genetic material from the samples A, B, and C;
-plotted line widths are proportional to the genomic span of each edge. The
-example ARG used here is taken from \citet[][fig. 1]{wiuf1999recombination}.
+The \citet[][fig. 1]{wiuf1999recombination} example graph as a gARG, with contrasting
+edge annotation schemes.
+(a) Edge annotations that reflect immediate inheritance, i.e. transmission of all
+genetic material between parent and child. All edges span the full genome from position 0 to 7,
+apart from those linking a recombinant and its two parents (bold).
+(b) Sample-resolved edge annotations: the Hudson simplification algorithm has been used to
+shorten edge spans to reflect only the upwards transmission of genetic
+material from the samples \textsf{A}, \textsf{B}, and \textsf{C}. The depiction of the genome within
+each node is shaded as in figure \ref{fig-arg-in-pedigree}a to show
+coalescing regions of genome back to the grand MRCA genome \textsf{W}.
+In this case, using line widths to reflect the genomic span of each edge can
+help to visualise the relative importance of different transmission pathways. 
 }
 \end{figure}
 
