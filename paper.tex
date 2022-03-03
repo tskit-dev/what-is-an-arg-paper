@@ -845,9 +845,9 @@ correspond to particular genomes in the pedigree.
 As discussed in the previous section, the definition of an ARG
 as a \emph{data structure} in terms of these two events is problematic,
 fundamentally limiting the patterns of ancestry that can be described.
-Following \cite{mathieson2020ancestry} we instead define the
-ARG data structure \emph{in terms of} an underlying pedigree, so that
-any form of inheritance structure can be modelled.
+Following \cite{mathieson2020ancestry} instead of focussing on events,
+we define the ARG data structure in terms \emph{genomes} and the patterns of
+transmission between them.
 % Bit of duplication here, but good to make the point about being
 % motivated by real existing datasets not some academic desire to
 % model complexity that isn't there.
@@ -889,35 +889,34 @@ To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
 structure a ``Genome ARG'', or GARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a GARG.
-The pedigree is composed of a set of individuals who each carry
-two \emph{genomes} (we assume diploidy here for concreteness, but there
-is no inherent limitation on ploidy).
-Each genome is inherited from one of the individual's parents, and may
-be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}A
-has two genomes $A$ and $B$,
-inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
-recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
-whereas $B$ was inherited directly from $I_4$'s genome $G$ without
-recombination. The pedigree is shown here for concreteness, but
-is not a necessary part of the model. We can reason directly about the
-genomes without necessarily knowing how they are combined within
-individuals. This ``genome-perspective'' is show in
-Fig.~\ref{fig-arg-in-pedigree}B, which depicts the same graph
-of the ancestry of the sample genomes $A$--$D$. The graph
+For concreteness, Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
+embedded in a inbred diploid pedigree, in which each
+individual carries two genomes (each individual, labelled $i_1$ to $i_8$,
+therefore has a paternal genome on the right and a maternal one on
+the left, although in principle there is no requirement for a specific mating
+system or ploidy). A genome is inherited from one of the individual's parents,
+and may be the recombined product of that parent's two genomes.
+For example, individual $i_1$ has two genomes \textsf{A} and \textsf{B},
+inherited from parents $i_3$ and $i_4$. Genome \textsf{A} is the product of
+recombining $i_3$'s two genomes \textsf{E} and \textsf{F} at position 2,
+whereas \textsf{B} was inherited directly from $i_4$'s genome \textsf{G} without
+recombination. Fig.~\ref{fig-arg-in-pedigree}b illustrates that the patterns of
+transmission between genomes can be followed without necessarily knowing
+how they are combined within individuals. This ``genome-perspective''
+simply depicts the ancestry of the sample genomes $A$--$D$. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
-along the genome (Fig.~\ref{fig-arg-in-pedigree}C).
+along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
 
 The focus on modelling genomes rather than events has some interesting
 and important consequences. Firstly, the graph may contain nodes that
-do not correspond to any particular event in the ancestry of the
-samples. For example, node $H$ is the direct ancestor of $D$ in
+do not correspond to any particular event in the ancestry of the samples.
+For example, node \textsf{H} is the direct ancestor of \textsf{D} in
 Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
 coalescence or a recombination. Such nodes would usually be removed
-from the graph so that $D$ descends directly from $K$ (see section XXX)
-but there is no necessity for this from a representational perspective.
-This ability can be useful in practice and could be required if,
+from the graph so that \textsf{D} descends directly from \textsf{K} (see
+section XXX) but there is no necessity for this from a representational
+perspective. This ability can be useful in practice and could be required if,
 % Do we need to spell this out?
 for example, we have a deeply sequenced pedigree of
 haplodiploids. % e.g. Honeybees? Be great to cite an example!
@@ -927,12 +926,18 @@ Rather than having a single node that represents the \emph{event},
 there are three nodes (representing the recombinant offspring and
 two parental genomes) and two edges with associated genome coordinate
 intervals (representing the precise inheritance patterns).
-For example, in Fig~\ref{fig-arg-in-pedigree}, node $A$ is the
-recombinant descendent of $E$ and $F$, inheriting positions
-FIXME from $E$ and genome positions FIXME from $F$. Any particular
+For example, in Fig~\ref{fig-arg-in-pedigree}, node \textsf{C} is the
+recombinant descendent of \textsf{E} and \textsf{F}, inheriting positions
+0 to 7 from $E$ and genome positions 7 to 10 from $F$. Any particular
 node can be both a recombinant (it is the recombined product of
 its parent's genomes) and a common ancestor (the ancestry from
 multiple samples meet at this node; see the next section).
+% Here was can talk about representing the recombination by a
+% recombinant and 2 parent "recombination nodes" rather than
+% a single "recombination node" as in the normal ARG representation.
+% We may also wish to note that in this example the recombination nodes
+% are shared between siblings, and can also be coalescent nodes
+% this ties in with stuff discussed 3 paras below.
 [More stuff here: clarify why we assign coordinates to edges
 rather than nodes. Basically lay out all the stuff that we can
 talk about \emph{without} going in to the details of
