@@ -908,6 +908,19 @@ topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
 along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
 
+Formally, we can define a GARG as a set of edges $E$, where each
+element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+$c$ is the child node, $p$ is the parent node and $I$ is the set of
+disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
+also phrase this in terms of the ancestral material of a sample---see
+the next section). Deriving the local tree at a point $x$
+follows largely the same pattern as for an EARG but is somewhat
+simpler because coordinate information is directly associated with
+edges. Starting with the sample nodes $S$ we traverse
+upwards through the graph from child to parent. At each node $u$, we find an
+edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$ (if it
+exists) and move to the next node $p$.
+
 The focus on modelling genomes rather than events has some interesting
 and important consequences. Firstly, the graph may contain nodes that
 do not correspond to any particular event in the ancestry of the samples.
@@ -943,19 +956,6 @@ rather than nodes. Basically lay out all the stuff that we can
 talk about \emph{without} going in to the details of
 ancestry resolution.]
 
-
-Formally, we can define a GARG as a set of edges $E$, where each
-element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-$c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
-also phrase this in terms of the ancestral material of a sample---see
-the next section). Deriving the local tree at a point $x$
-follows largely the same pattern as for an EARG but is somewhat
-simpler because coordinate information is directly associated with
-edges. Starting with the sample nodes $S$ we traverse
-upwards through the graph from child to parent. At each node $u$, we find an
-edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$ (if it
-exists) and move to the next node $p$.
 
 % Asking the reader to flick back to figure 2 here, not great.
 The differences between EARGs
