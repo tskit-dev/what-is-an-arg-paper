@@ -77,7 +77,7 @@ def ancestry_resolution():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 12), sharey=True)
     fig.tight_layout()
 
-    ax1.set_title("(a) eARG with implicit\nencoding (Wiuf & Hein)", fontsize="xx-large")
+    ax1.set_title("(a)", fontsize=32, family="serif")
     ts = argutils.viz.label_nodes(argutils.wh99_example())
     pos, G = argutils.viz.draw(
         ts,
@@ -111,9 +111,7 @@ def ancestry_resolution():
     )
     add_edge_labels(ax1, ts, G, pos)
 
-    ax2.set_title(
-        "(b) explicit encoding\n(i.e. non-ancestral removed)", fontsize="xx-large"
-    )
+    ax2.set_title("(b)", fontsize=32, family="serif")
     ts2 = argutils.simplify_keeping_all_nodes(ts)
     pos, G = argutils.viz.draw(
         ts2,
