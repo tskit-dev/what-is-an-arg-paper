@@ -118,6 +118,11 @@ with some examples.
 % Perhaps we should also mention something about simplification and unknowable
 % nodes, e.g. "show how some of the nodes are not required for useful interpretation
 % of ancestry".
+\item Throughout, we consider ARGs defined for a single chromosome comprising
+of a fixed number of discrete sites. Our argument applies equally well to ARGs
+defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
+koskela2019robust} and to idealised, continuous chromosomes, but addressing 
+all these cases simultaneously would result in needlessly bulky notation.  
 \end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
@@ -156,13 +161,13 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.1, 1.1) -- (5.1, 0.8);
 	\node [label=below:{\small $w$}] at (5.1, 1) {};
 
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
 
 	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
 	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
@@ -170,14 +175,14 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.6, 2.15) -- (6.1, 2.15);
 	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
 
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
 	\draw (-0.4, 2.85) -- (0.2, 2.85);
 	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
 	\draw (1.6, 2.85) -- (1.9, 2.85);
 	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
 	\draw (2.2, 2.85) -- (2.4, 2.85);
 
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
 	\node [scale=0.2,label=above left:{\small A}] at (-0.5,4.5) {A};
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.3, 4.25);
@@ -204,20 +209,20 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (6, 2.4) -- (6, 8);
 
 	% Edge annotations above each event
-	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {};
-	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {};
-	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {};
-	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {};
-	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {};
-	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {};
-	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {};
-	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {};
-	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {};
-	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {};
-	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {};
-	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {};
-	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {};
-	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {};
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (0.2,0.6) {};
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (4.2,0.4) {};
+	\node [label=right:{\small$\{(0,m,1)\}$}] at (5.8,0.4) {};
+	\node [label=left:{\small$\{(0,m,2)\}$}] at (5.2,1.6) {};
+	\node [label=left:{\small$\{(0,v,1)\}$}] at (-0.8,2.3) {};
+	\node [label=right:{\small$\{(v,m,1)\}$}] at (0.8,2.1) {};
+	\node [label=right:{\small$\{(0,w,2)\}$}] at (3.8,3.9) {};
+	\node [label=left:{\small$\{(w,m,2)\}$}] at (6.2,5) {};
+	\node [label=right:{\small$\{(x,m,1)\}$}] at (-0.2,3.8) {};
+	\node [label=right:{\small$\{(v,x,1)\}$}] at (1.8,4.1) {};
+	\node [label=left:{\small$\{(0,v,1), (x,m,1)\}$}] at (-0.3,5.2) {};
+	\node [label=right:{\small$\{(0,v,2)\}$}] at (2.8,6.4) {};
+	\node [label=left:{\small$\{(x,m,1)\}$}] at (-1.3,7) {};
+	\node [label=right:{\small$\{(0,v,1)\}$}] at (0.3,6.4) {};
 
 	% Dashed lines for start and end times
 	\draw[dashed] (-2, 0) -- (11.1, 0);
@@ -227,19 +232,19 @@ description of the algorithm, and how it may be implemented efficiently.
 
 	% Numbers of extant ancestors and links, from top to bottom
 	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{2}{2}$ \; $(2 L - x - w) \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $(2 L + 2 v - x - w) \rho$}] at (7.5, 6.6) {};
-	\node[label=right:{$\binom{3}{2}$ \; $(2 L + v - w) \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{4}{2}$ \; $(2 L + x - v) \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{5}{2}$ \; $2 L \rho$}] at (7.5, 3.8) {};
-	\node[label=right:{$\binom{4}{2}$ \; $2 L \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $2 L \rho$}] at (7.5, 1.95) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 L \rho$}] at (7.5, 1.35) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
+	\node[label=right:{$\binom{2}{2}$ \; $\frac{2 m - x - w - 2}{m - 1} \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + 2 v - x - w - 3}{m - 1} \rho$}] at (7.5, 6.6) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m + v - w - 3}{m - 1} \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + x - v - 4}{m - 1} \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{5}{2}$ \; $\frac{2 m - 5}{m - 1} \rho$}] at (7.5, 3.8) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m - 4}{m -1} \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m - 3}{m - 1} \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
 	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11.1, 1.5);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11.1, 1.7);
 	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4);
 	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1);
 	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5);
@@ -260,13 +265,13 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.1, 1.1) -- (5.1, 0.8);
 	\node [label=below:{\small $w$}] at (5.1, 1) {};
 
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
 
 	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
 	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
@@ -276,14 +281,14 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
 	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
 
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
 	\draw (-0.4, 2.85) -- (0.2, 2.85);
 	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
 	\draw (1.6, 2.85) -- (1.9, 2.85);
 	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
 	\draw (2.2, 2.85) -- (2.4, 2.85);
 
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.3, 4.25);
 	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
@@ -326,21 +331,21 @@ description of the algorithm, and how it may be implemented efficiently.
 
 	% Numbers of extant ancestors and links, from top to bottom
 	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 6.9) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 6.3) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{6}{2}$ \; $6 L \rho$}] at (7.5, 4.15) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 3.45) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 1.95) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 L \rho$}] at (7.5, 1.35) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 6.9) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 6.3) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{6}{2}$ \; $6 \rho$}] at (7.5, 4.15) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 3.45) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
 	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
 	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
 	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
 	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
@@ -354,7 +359,7 @@ description of the algorithm, and how it may be implemented efficiently.
 }
 \caption{(A)
 A realisation of the graph traversed by Hudson's algorithm started from a
-sample of three continuous chromosomes of length $L$ at time $t = 0$, and
+sample of three chromosomes of length $m$ at time $t = 0$, and
 propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
 at event B, while that on $[0, v)$ is reached at event C.
 The non-ancestral segment $[v, w)$ above
@@ -452,9 +457,9 @@ are $k$ lineages present. We choose two lineages (edges) uniformly, and merge th
 into a common ancestor lineage. Recombination events are different
 to Hudson's algorithm, however. Rather than occuring at a rate which depends on
 the specific distribution of ancestral material among lineages, the
-rate of recombination is now simply $k \rho (m - 1)$. At a recombination event
+rate of recombination is now simply $k \rho$. At a recombination event
 we choose a lineage (edge) uniformly, and a
-breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
+breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
 Common Ancestor, GMRCA), which is guaranteed to
@@ -535,8 +540,9 @@ fearnhead2001estimating}.
 % FIXME: need some proper statistical language here to describe why these
 % methods didn't work so well.
 These methods met with limited success
-due to the overwhelmingly large and
-horribly structured [Jere: what's the right way to say this?] state space of ARGs.
+due to the overwhelmingly large state space of ARGs, which also has
+no simple geometry or neighbourhood structure that an inference or
+sampling method could exploit.
 The focus subsequently shifted to the more
 tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
@@ -752,8 +758,9 @@ with recombination, which explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
-population size $N$ and [some assumptions about genome length]
-\textcolor{red}{what is this Jere?}. While these approximations are
+population size $N$, and that the genome is short enough that,
+with high probability, the number of concurrent lineages in the ARG remains
+much smaller than $N$ at each time. While these approximations are
 reasonable
 to make when studying the Kreitman \emph{Drosphila Melanogaster}
 dataset~\citep{kreitman1983nucleotide} ($n=11$, $N\approx 10^6$,
