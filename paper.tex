@@ -121,8 +121,8 @@ with some examples.
 \item Throughout, we consider ARGs defined for a single chromosome comprising
 of a fixed number of discrete sites. Our argument applies equally well to ARGs
 defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
-koskela2019robust} and to idealised, continuous chromosomes, but addressing 
-all these cases simultaneously would result in needlessly bulky notation.  
+koskela2019robust} and to idealised, continuous chromosomes, but addressing
+all these cases simultaneously would result in needlessly bulky notation.
 \end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
@@ -877,7 +877,7 @@ genomic regions are fully coalesced in genome \textsf{N} in the oldest generatio
 (b) The equivalent genome ARG, where there is a single type of node (representing
 a genome) along with annotations on all edges; annotations showing partial
 transmission are highlighted in bold. Recombination, such as that causing the
-breakpoint at position 7, is associated with two parent genomes (\textsf{E} and 
+breakpoint at position 7, is associated with two parent genomes (\textsf{E} and
 \textsf{F}) and a child genome (the recombinant, \textsf{C}).
 (c) The edge-annotated genome ARG in (b) fully defines the
 local relationships along the genome, as shown in the local
@@ -1065,7 +1065,7 @@ material from the samples \textsf{A}, \textsf{B}, and \textsf{C}. The depiction 
 each node is shaded as in figure \ref{fig-arg-in-pedigree}a to show
 coalescing regions of genome back to the grand MRCA genome \textsf{W}.
 In this case, using line widths to reflect the genomic span of each edge can
-help to visualise the relative importance of different transmission pathways. 
+help to visualise the relative importance of different transmission pathways.
 }
 \end{figure}
 
@@ -1181,6 +1181,10 @@ unary nodes from the local trees (Fig.~\ref{fig-simplification}D
 and E). [And continue]
 
 
+[We should discuss the relationship between ARG nodes and SPRs
+here. Cite \citep{deng2021distribution} too. Maybe we want to make
+this a separate section, as it's a subtle and important point.]
+
 % This text might go somewhere
 % We may have nodes corresponding to genomes that are ancestral to
 % the sample along their entire span
@@ -1238,6 +1242,9 @@ way of generating MCMC proposals for ARGs, a similar idea was leveraged in \text
 % AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
+
+Espalier~\citep{rasmussen2022espalier} uses Maximum Agreement Forests to
+minimise the differences between local trees estimated using other methods.
 
 \subsection*{Model-based methods}
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
