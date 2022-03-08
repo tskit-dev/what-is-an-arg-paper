@@ -538,3 +538,10 @@ class TestConvertArgweaver:
         assert ts.sequence_length == 1000
         assert ts.num_samples == 8
         # TODO more tests
+
+class TestConvertKwARG:
+    def test_example(self):
+        with open("examples/kreitman.kwarg") as f:
+            ts = argutils.convert_kwarg(f, 11, 43)
+        assert ts.sequence_length == 43
+        assert ts.num_samples == 11

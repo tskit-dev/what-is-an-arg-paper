@@ -88,3 +88,46 @@ def convert_argweaver(infile):
     # garg = argutils.earg_to_garg(ts)
 
     return ts.simplify(keep_unary=True)
+
+def convert_kwarg(infile, num_samples, sequence_length):
+    """
+    Convert a KwARG output file to a tree sequence.
+    """
+
+    tables = tskit.TableCollection(sequence_length=sequence_length)
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    time = 0.0
+
+    node_ids = {}
+    for n in range(num_samples):
+        node_ids[n] = n
+        tsk_id = tables.nodes.add_row(flags=tskit.NODE_IS_SAMPLE, time=0.0, metadata=n)
+
+    for x in infile:
+        line = x.split()
+        if (line[0] == "Mutation"):
+            site_id = tables.sites.add_row(position=int(line[3]) - 1, ancestral_state='0')
+            tables.mutations.add_row(site=site_id, node=node_ids[int(line[6]) - 1], derived_state='1')
+        elif (line[0] == "Coalescing"):
+            c1 = node_ids[int(line[2]) - 1]
+            c2 = node_ids[int(line[4]) - 1]
+            time += 1
+            tsk_id = tables.nodes.add_row(flags=0, time=time, metadata=line[2])
+            node_ids[int(line[2]) - 1] = tsk_id
+            tables.edges.add_row(0, sequence_length, tsk_id, c1)
+            tables.edges.add_row(0, sequence_length, tsk_id, c2)
+        elif (line[0] == "---->Recombination"):
+            breakpoint = int(line[6][:-1]) - 1
+            n1 = node_ids[int(line[3]) - 1]
+            time += 1
+            tsk_id_1 = tables.nodes.add_row(flags=0, time=time, metadata=line[3])
+            node_ids[int(line[3]) - 1] = tsk_id_1
+            tsk_id_2 = tables.nodes.add_row(flags=0, time=time, metadata=line[11])
+            node_ids[int(line[11]) - 1] = tsk_id_2
+            tables.edges.add_row(0, breakpoint, tsk_id_1, n1)
+            tables.edges.add_row(breakpoint, sequence_length, tsk_id_2, n1)
+
+    tables.sort()
+    ts = tables.tree_sequence()
+
+    return argutils.simplify_keeping_all_nodes(ts)
