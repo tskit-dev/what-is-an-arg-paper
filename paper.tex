@@ -87,7 +87,7 @@ genetics.
 
 Recent breakthroughs in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
-schaefer2021ancestral,wohns2021unified}
+schaefer2021ancestral,wohns2022unified}
 and data representation~\citep{kelleher2016efficient}
 have raised the genuine prospect of genealogical analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
@@ -118,6 +118,11 @@ with some examples.
 % Perhaps we should also mention something about simplification and unknowable
 % nodes, e.g. "show how some of the nodes are not required for useful interpretation
 % of ancestry".
+\item Throughout, we consider ARGs defined for a single chromosome comprising
+of a fixed number of discrete sites. Our argument applies equally well to ARGs
+defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
+koskela2019robust} and to idealised, continuous chromosomes, but addressing
+all these cases simultaneously would result in needlessly bulky notation.
 \end{enumerate}
 
 \section*{Ancestral graphs and stochastic processes}
@@ -156,13 +161,13 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.1, 1.1) -- (5.1, 0.8);
 	\node [label=below:{\small $w$}] at (5.1, 1) {};
 
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
 
 	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
 	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
@@ -170,14 +175,14 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.6, 2.15) -- (6.1, 2.15);
 	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
 
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
 	\draw (-0.4, 2.85) -- (0.2, 2.85);
 	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
 	\draw (1.6, 2.85) -- (1.9, 2.85);
 	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
 	\draw (2.2, 2.85) -- (2.4, 2.85);
 
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
 	\node [scale=0.2,label=above left:{\small A}] at (-0.5,4.5) {A};
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.3, 4.25);
@@ -204,20 +209,20 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (6, 2.4) -- (6, 8);
 
 	% Edge annotations above each event
-	\node [label=left:{\small$\{[0,L)\};1$}] at (0.2,0.6) {};
-	\node [label=left:{\small$\{[0,L)\};1$}] at (4.2,0.4) {};
-	\node [label=right:{\small$\{[0,L)\};1$}] at (5.8,0.4) {};
-	\node [label=left:{\small$\{[0,L)\};2$}] at (5.2,1.6) {};
-	\node [label=left:{\small$\{[0,v)\};1$}] at (-0.8,2.3) {};
-	\node [label=right:{\small$\{[v,L)\};1$}] at (0.8,2.1) {};
-	\node [label=right:{\small$\{[0,w)\};2$}] at (3.8,3.9) {};
-	\node [label=left:{\small$\{[w,L)\};2$}] at (6.2,5) {};
-	\node [label=right:{\small$\{[x,L)\};1$}] at (-0.2,3.8) {};
-	\node [label=right:{\small$\{[v,x)\};1$}] at (1.8,4.1) {};
-	\node [label=left:{\small$\{[0,v), [x, L)\};1$}] at (-0.3,5.2) {};
-	\node [label=right:{\small$\{[0,v)\};2$}] at (2.8,6.4) {};
-	\node [label=left:{\small$\{[x,L)\};1$}] at (-1.3,7) {};
-	\node [label=right:{\small$\{[0,v)\};1$}] at (0.3,6.4) {};
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (0.2,0.6) {};
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (4.2,0.4) {};
+	\node [label=right:{\small$\{(0,m,1)\}$}] at (5.8,0.4) {};
+	\node [label=left:{\small$\{(0,m,2)\}$}] at (5.2,1.6) {};
+	\node [label=left:{\small$\{(0,v,1)\}$}] at (-0.8,2.3) {};
+	\node [label=right:{\small$\{(v,m,1)\}$}] at (0.8,2.1) {};
+	\node [label=right:{\small$\{(0,w,2)\}$}] at (3.8,3.9) {};
+	\node [label=left:{\small$\{(w,m,2)\}$}] at (6.2,5) {};
+	\node [label=right:{\small$\{(x,m,1)\}$}] at (-0.2,3.8) {};
+	\node [label=right:{\small$\{(v,x,1)\}$}] at (1.8,4.1) {};
+	\node [label=left:{\small$\{(0,v,1), (x,m,1)\}$}] at (-0.3,5.2) {};
+	\node [label=right:{\small$\{(0,v,2)\}$}] at (2.8,6.4) {};
+	\node [label=left:{\small$\{(x,m,1)\}$}] at (-1.3,7) {};
+	\node [label=right:{\small$\{(0,v,1)\}$}] at (0.3,6.4) {};
 
 	% Dashed lines for start and end times
 	\draw[dashed] (-2, 0) -- (11.1, 0);
@@ -227,19 +232,19 @@ description of the algorithm, and how it may be implemented efficiently.
 
 	% Numbers of extant ancestors and links, from top to bottom
 	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{2}{2}$ \; $(2 L - x - w) \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $(2 L + 2 v - x - w) \rho$}] at (7.5, 6.6) {};
-	\node[label=right:{$\binom{3}{2}$ \; $(2 L + v - w) \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{4}{2}$ \; $(2 L + x - v) \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{5}{2}$ \; $2 L \rho$}] at (7.5, 3.8) {};
-	\node[label=right:{$\binom{4}{2}$ \; $2 L \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $2 L \rho$}] at (7.5, 1.95) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 L \rho$}] at (7.5, 1.35) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
+	\node[label=right:{$\binom{2}{2}$ \; $\frac{2 m - x - w - 2}{m - 1} \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + 2 v - x - w - 3}{m - 1} \rho$}] at (7.5, 6.6) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m + v - w - 3}{m - 1} \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + x - v - 4}{m - 1} \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{5}{2}$ \; $\frac{2 m - 5}{m - 1} \rho$}] at (7.5, 3.8) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m - 4}{m -1} \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m - 3}{m - 1} \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
 	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11.1, 1.5);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11.1, 1.7);
 	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4);
 	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1);
 	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5);
@@ -260,13 +265,13 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw (5.1, 1.1) -- (5.1, 0.8);
 	\node [label=below:{\small $w$}] at (5.1, 1) {};
 
-	\draw (0, 0) -- (0, 1.5) -- (-1,1.5) -- (1,1.5);
-	\draw (-1.4, 1.3) -- (-1.1, 1.3) -- (-1.1, 1.2) -- (-1.4, 1.2) -- (-1.4, 1.3);
-	\draw (-1.1, 1.25) -- (-0.6, 1.25);
-	\draw (0.6, 1.25) -- (0.9, 1.25);
-	\draw (0.9, 1.3) -- (1.4, 1.3) -- (1.4, 1.2) -- (0.9, 1.2) -- (0.9, 1.3);
-	\draw (1.2, 1.4) -- (1.2, 1.1);
-	\node [label=below:{\small $x$}] at (1.2, 1.3) {};
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
 
 	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
 	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
@@ -276,14 +281,14 @@ description of the algorithm, and how it may be implemented efficiently.
 	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
 	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
 
-	\draw (1, 1.5) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
 	\draw (-0.4, 2.85) -- (0.2, 2.85);
 	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
 	\draw (1.6, 2.85) -- (1.9, 2.85);
 	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
 	\draw (2.2, 2.85) -- (2.4, 2.85);
 
-	\draw (-1, 1.5) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.3, 4.25);
 	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
@@ -326,21 +331,21 @@ description of the algorithm, and how it may be implemented efficiently.
 
 	% Numbers of extant ancestors and links, from top to bottom
 	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 6.9) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 6.3) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{6}{2}$ \; $6 L \rho$}] at (7.5, 4.15) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 L \rho$}] at (7.5, 3.45) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 L \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 1.95) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 L \rho$}] at (7.5, 1.35) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 L \rho$}] at (7.5, 0.6) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 6.9) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 6.3) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{6}{2}$ \; $6 \rho$}] at (7.5, 4.15) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 3.45) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
 	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.5) -- (11, 1.5);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
 	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
 	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
 	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
@@ -354,7 +359,7 @@ description of the algorithm, and how it may be implemented efficiently.
 }
 \caption{(A)
 A realisation of the graph traversed by Hudson's algorithm started from a
-sample of three continuous chromosomes of length $L$ at time $t = 0$, and
+sample of three chromosomes of length $m$ at time $t = 0$, and
 propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
 at event B, while that on $[0, v)$ is reached at event C.
 The non-ancestral segment $[v, w)$ above
@@ -452,9 +457,9 @@ are $k$ lineages present. We choose two lineages (edges) uniformly, and merge th
 into a common ancestor lineage. Recombination events are different
 to Hudson's algorithm, however. Rather than occuring at a rate which depends on
 the specific distribution of ancestral material among lineages, the
-rate of recombination is now simply $k \rho (m - 1)$. At a recombination event
+rate of recombination is now simply $k \rho$. At a recombination event
 we choose a lineage (edge) uniformly, and a
-breakpoint $0 < x < L$ uniformly on its genome. We terminate the edge at a
+breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
 Common Ancestor, GMRCA), which is guaranteed to
@@ -531,63 +536,45 @@ of inferring parameters of the
 stochastic process, where the ancestry is regarded as a
 latent parameter to be averaged out
 \citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
-fearnhead2001estimating}. These methods met with limited success
-due to the overwhelmingly large and
-horribly structured [Jere: what's the right way to say this?]
-state space of ARGs. The focus subsequently shifted to
-the more tractable---but still
-NP-hard~\citep{wang2001perfect}---problem of computing
+fearnhead2001estimating}.
+% FIXME: need some proper statistical language here to describe why these
+% methods didn't work so well.
+These methods met with limited success
+due to the overwhelmingly large state space of ARGs, which also has
+no simple geometry or neighbourhood structure that an inference or
+sampling method could exploit.
+The focus subsequently shifted to the more
+tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
 The distinction between the ARG as a stochastic process
-and the ARG as a data structure became less clear at this point,
-with \citet{minichiello2006mapping} explicitly arguing for
-the data structure interpretation.
+and the ARG as a \emph{data structure}~\citep{minichiello2006mapping}
+became important at this point,
+since parsimonious ARGs have no immediate connection to
+the stochastic process. Indeed, the ARG instances produced by
+the coalescent with recombination are usually highly unparsimonious,
+since they contain many invisible recombinations
+(although those produced under the SMC may be parsimonious, depending
+on the pattern of mutations that is present).
 
 % What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination on a single
-chromosome, but it has significant drawbacks as the basis for a general purpose
+economical description of the coalescent with recombination,
+but it has significant drawbacks as the basis for a general purpose
 storage and interchange format. To avoid confusion, we will refer to this
 ARG encoding as an ``Event ARG'', or EARG.
-The basic unit of an EARG are \emph{events} and correspond directly
-to the events that
+The fundamental units of an EARG are the \emph{events} that correspond directly
+to those that
 occur in the ARG stochastic process described in the previous section.
 Each event corresponds to a node in the graph, and there are therefore
 two types of node: common ancestor and recombination. As in the
 stochastic process, edges represent lineages, and those lineages
 are modified by the events that they pass through.
 
-% What do we mean by an EARG, formally?
-% NOTE we're using the natural numbers but are using 0 as a node in the
-% examples. Probably want to clear this up a bit.
-Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
-defines a directed acyclic graph where $e_j = (c, p)$ describes
-an edge between
-child node $c$ and parent $p$ ($c, p \in \mathbb{N}$).
-Additionally,
-$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
-is a function mapping nodes to recombination breakpoints, such that $\sigma(u) = x$
-if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \infty$ otherwise. (The use of $\infty$ to denote
-non-recombination nodes is arbitrary, but useful when we extract
-% NOTE: need to be careful about using "local" trees if we're also
-% distinguishing resolved and non-resolved GARGs as being "locally"
-% defined or not. One is topologically local and the other is local
-% along the genome.
-local trees; see below.)
-For each recombination node $u$ we must
-have exactly two edges in $E$ such that $u$ is the child.
-Note that this description captures only the
-graph topology: if we also wish to know the times of events we need
-an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
-which defines the time of each node.
-An example is given in Fig.~\ref{fig-arg-data-structure}A.
-
 \begin{figure}
 \centering
-\begin{tabular}{cc}
+% \begin{tabular}{cc}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
@@ -615,17 +602,18 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [nodelabel,anchor=north west] at ($(-6.5,5)$) {
+\node [nodelabel,anchor=north west] at ($(-8.5,5)$) {
 \begin{tabular}{c|c}
-\multicolumn{2}{c}{Breakpoint}\\
+% \multicolumn{2}{c}{Breakpoint}\\
+node & breakpoint\\
 \hline
-0 & $\infty$ \\
-1 & $\infty$ \\
-2 & $\infty$ \\
+0 & $\varnothing$ \\
+1 & $\varnothing$ \\
+2 & $\varnothing$ \\
 3 & $x$ \\
-4 & $\infty$ \\
-5 & $\infty$ \\
-6 & $\infty$ \\
+4 & $\varnothing$ \\
+5 & $\varnothing$ \\
+6 & $\varnothing$ \\
 \end{tabular}};
 
 \node [nodelabel,anchor=north west] at ($(-2.5,5)$) {
@@ -641,76 +629,61 @@ $(4, 6)$ \\
 $(5, 6)$ \\
 \end{tabular}};
 
-\end{tikzpicture}
-&
-\begin{tikzpicture}[x=5mm,y=5mm,node distance=2mm and 20mm]
-\tikzset{greynode/.style={circle,fill,inner sep=1},
-nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (2, 1) {};
-\node (s4) [greynode] at (4, 1) {};
-\node (s5) [greynode] at (1, 2) {};
-\node (s6) [greynode] at (5, 3) {};
-\node (s7) [greynode] at (3, 4) {};
-
-\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s3/3} \node[nodelabel,anchor=east] at (\u) {\lab};
-\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=west] at (\u) {\lab};
-\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s6/6} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s7/7} \node[nodelabel,anchor=south] at (\u) {\lab};
-
-%% Edges
-\draw (s1) -| (s3);
-\draw (s1) -| (s4) |- (s6);
-\draw (s3) |- (s5);
-\draw (s0) |- (s5);
-\draw (s2) |- (s6);
-\draw (s5) |- (s7);
-\draw (s6) |- (s7);
-
-\node [nodelabel,anchor=north west] at ($(-5,5)$) {
+\node [nodelabel,anchor=north west] at ($(6,5)$) {
 \begin{tabular}{ll}
 Edges\\
 \hline
-$(0, 5)$ & $(0, L]$ \\
-$(1, 3)$ & $(0, x]$ \\
-$(1, 4)$ & $(x, L]$ \\
-$(2, 6)$ & $(0, L]$ \\
-$(3, 5)$ & $(0, L]$ \\
+$(0, 4)$ & $(0, L]$ \\
+$(1, 3)$ & $(0, L]$ \\
+$(2, 5)$ & $(0, L]$ \\
+$(3, 4)$ & $(0, x]$ \\
+$(3, 5)$ & $(x, L]$ \\
 $(4, 6)$ & $(0, L]$ \\
-$(5, 7)$ & $(0, L]$ \\
-$(6, 7)$ & $(0, L]$ \\
+$(5, 6)$ & $(0, L]$ \\
 \end{tabular}};
 
+
 \end{tikzpicture}
-\\
-(A) & (B) \\
-\end{tabular}
 \caption{\label{fig-arg-data-structure}
-Encoding an ARG. (A) The classical approach described by Griffiths
+Node vs edge breakpoint annotations.
+The classical approach described by Griffiths
 equates graph nodes with events in the stochastic process,
-and associates recombination breakpoints with nodes. This encoding
-is limited in the ancestral patterns that can be described and ambiguous.
-[TODO clarify that the function is the same things as having two
-types of nodes]
-(B) Equating graph nodes with \emph{genomes} and attaching the
-interval of genome inherited by the child node with edges removes
-this ambiguity and can describe any pattern of genetic inheritance.
-The most important change between the two encodings is to represent
-a recombination event (node 3 in A) by two parent genomes
-(nodes 3 and 4 in B) and explicitly storing the interval
-that the child inherits from each parent along the two corresponding
-edges. Thus, child $1$ in inherits $(0, x]$ from $3$
-and $(x, L)$ from $4$
-(for recombination breakpoint $x$ and a sequence of length $L$).
-\textcolor{red}{This is very much a draft; let's see how it works with
- the text and other figures and tidy it up in a later revision}
+and associates recombination breakpoint information with \emph{nodes} (left).
+This encoding
+is limited in the patterns of inheritance that can be described
+and requires that edges be ordered to avoid ambiguity.
+The alternative is to associate breakpoint annotations
+with \emph{edges} (right).
+Associating the interval of genome inherited by the child node
+from the parent with the corresponding edge allows
+any pattern genetic inheritance to be described and does
+not require edges to be ordered.
 }
 \end{figure}
+
+% What do we mean by an EARG, formally?
+% NOTE we're using the natural numbers but are using 0 as a node in the
+% examples. Probably want to clear this up a bit.
+Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
+is an ordered list of edges defining a directed acyclic graph and
+$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
+is a function mapping nodes to recombination breakpoints,
+such that $\sigma(u) = x$
+if $u$ is a recombination event with breakpoint $x$ and
+$\sigma(u) = \varnothing$ otherwise.
+(Note that this formulation is equivalent to stipulating two
+different ``types'' of node and only storing breakpoints
+with recombination nodes).
+Each edge $e_j = (c, p)$ describes an edge between
+child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
+For each recombination node $u$ we must
+have exactly two edges in $e$ such that $u$ is the child.
+Note that this description captures only the
+graph topology: if we also wish to know the times of events we need
+an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
+which defines the time of each node.
+An example is given in Fig.~\ref{fig-arg-data-structure}A.
 
 % % Not sure if we actually include this, but it's good to work it through
 % % to make sure the notation works. Maybe something to stick into
@@ -748,16 +721,20 @@ rather than edges,
 and the only way we can break this symmetry is to assign
 some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
-parents of a recombination event). When we want to recover
-the local tree at a position $x$ along the genome,
+parents of a recombination event). This is usually described
+in terms of the process in which we extract the local trees
+along the genome from an EARG.
+To recover
+the tree at genome coordinate $x$,
 we traverse the graph upwards from the leaves. At a particular
 node $u$, if it has one parent we are at a common ancestor
 node and we simply follow that parent. If we are at a
-recombination node, $u$ has two parents; if
+recombination node, $u$ has two parents: if
 $x$ is less than the breakpoint $\sigma(u)$ we follow
-the first edge, and otherwise follow the second edge.
-This ordering requirement, which although straightforward
-to describe, has some drawbacks in practice. For example,
+the edge to the first parent, and otherwise follow the edge
+to the second parent.
+This ordering requirement, which is straightforward
+to describe, has some practical drawbacks. For example,
 % Surely the meaning is clear from the context here and we don't need
 % qualify the meaning of "ARG"
 simulating an ARG in this representation is
@@ -781,8 +758,9 @@ with recombination, which explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
-population size $N$ and [some assumptions about genome length]
-\textcolor{red}{what is this Jere?}. While these approximations are
+population size $N$, and that the genome is short enough that,
+with high probability, the number of concurrent lineages in the ARG remains
+much smaller than $N$ at each time. While these approximations are
 reasonable
 to make when studying the Kreitman \emph{Drosphila Melanogaster}
 dataset~\citep{kreitman1983nucleotide} ($n=11$, $N\approx 10^6$,
@@ -830,23 +808,27 @@ generalise the model to more appropriately reflect the realities
 of modern datasets.
 
 Fortunately, it is straightforward to generalise the classical Griffiths
-encoding to both simplify implementations and to encompass any
+EARG encoding to both simplify implementations and to encompass any
 possible pattern of genetic inheritance.
-We require only two changes. Firstly, we let nodes in the
-graph model \emph{genomes} rather than \emph{events}. As we
-see in the next section, this allows us to model complex
-patterns of inheritance without classifying different types of node.
-The second change we must make is to associate
+The only change that we require is to associate
 the details of inheritance intervals with \emph{edges} rather than
 as breakpoints associated with recombination events and
-edge ordering rules.
-% That is, given two genomes $p$
-% and $c$ where $p$ is the parent genome and $c$ is the child
-% (although many generations may have elapsed between the two),
-% we associate a set $I$ of intervals of genome which $c$ has
-% inherited from $p$.
-These changes are straightforward, involve no loss of information
-and greatly increase both the expressivity and computational
+edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}B
+where this alternative edge annotation formulation is
+shown. By associating the interval $(0, x)$ with edge $(3,4)$
+and the interval $(x, L)$ with $(3, 5)$ we make the encoding
+unambigous: we can list the edges in any order, and it
+will describe the same set of local genealogical trees.
+This approach is also more flexible, because any pattern
+of inheritance can be described by these intervals. For
+example, if a gene conversion event occured where a segment
+between between positions $x$ and $y$ was inherited by
+node $3$ from $5$, we would state this by associating
+the intervals $\{(0, x], (y, L]\}$ with $(3,4)$ and
+$\{(x, y]\}$ with $(3,5)$.
+This change is straightforward, involves no loss of information
+and (as we see in later sections)
+greatly increases both the expressivity and computational
 power of ancestral recombination graph data structures.
 
 \section*{Genome ARGs}
@@ -863,9 +845,9 @@ correspond to particular genomes in the pedigree.
 As discussed in the previous section, the definition of an ARG
 as a \emph{data structure} in terms of these two events is problematic,
 fundamentally limiting the patterns of ancestry that can be described.
-Following \cite{mathieson2020ancestry} we instead define the
-ARG data structure \emph{in terms of} an underlying pedigree, so that
-any form of inheritance structure can be modelled.
+Following \cite{mathieson2020ancestry} instead of focussing on events,
+we define the ARG data structure in terms \emph{genomes} and the patterns of
+transmission between them.
 % Bit of duplication here, but good to make the point about being
 % motivated by real existing datasets not some academic desire to
 % model complexity that isn't there.
@@ -881,14 +863,23 @@ present in modern datasets.
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
-The Ancestral Recombination Graph defined as arbitrary inheritance
-of genomes between diploid (or any ploidy; see text) individuals.
-(A) Each individual consists of two genomes, and each genome is
-inherited as a (potentially) recombinant mixture of the individual's parent's
-genomes. (B) Genomes are modelled as nodes in a graph, and the edges
-denote inheritance. Each edge is annotated with genome coordinates
-defining the specific region(s) inherited.
-(C) This description of inheritance fully defines the
+The Ancestral Recombination Graph defined in terms of genomes embedded
+in a pedigree. (a) Diploid individuals, visualised in a highly inbred pedigree and
+labelled $i_1$ to $i_8$, contain both paternal (left) and maternal (right) genomes
+labelled \textsf{A} to \textsf{P}. Black lines show transmission paths connecting
+genomes in the current generation (\textsf{A} to \textsf{D}) with their ancestors.
+Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{A}
+and \textsf{C} are independent recombinants of the paternal genomes \textsf{E}
+and \textsf{F}: in these cases the edge annotations have been shown, indicating the
+region of genome transmitted. Genomes are shaded such that where, backwards in time,
+they merge into a common ancestor, the merged region is darker; this shows that all
+genomic regions are fully coalesced in genome \textsf{N} in the oldest generation.
+(b) The equivalent genome ARG, where there is a single type of node (representing
+a genome) along with annotations on all edges; annotations showing partial
+transmission are highlighted in bold. Recombination, such as that causing the
+breakpoint at position 7, is associated with two parent genomes (\textsf{E} and
+\textsf{F}) and a child genome (the recombinant, \textsf{C}).
+(c) The edge-annotated genome ARG in (b) fully defines the
 local relationships along the genome, as shown in the local
 or ``marginal'' trees.
 }
@@ -898,35 +889,34 @@ To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
 structure a ``Genome ARG'', or GARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a GARG.
-The pedigree is composed of a set of individuals who each carry
-two \emph{genomes} (we assume diploidy here for concreteness, but there
-is no inherent limitation on ploidy).
-Each genome is inherited from one of the individual's parents, and may
-be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}A
-has two genomes $A$ and $B$,
-inherited from parents $I_3$ and $I_4$. Genome $A$ is the product of
-recombining $I_3$'s two genomes $E$ and $F$ at position FIXME,
-whereas $B$ was inherited directly from $I_4$'s genome $G$ without
-recombination. The pedigree is shown here for concreteness, but
-is not a necessary part of the model. We can reason directly about the
-genomes without necessarily knowing how they are combined within
-individuals. This ``genome-perspective'' is show in
-Fig.~\ref{fig-arg-in-pedigree}B, which depicts the same graph
-of the ancestry of the sample genomes $A$--$D$. The graph
+For concreteness, Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
+embedded in a inbred diploid pedigree, in which each
+individual carries two genomes (each individual, labelled $i_1$ to $i_8$,
+therefore has a paternal genome on the right and a maternal one on
+the left, although in principle there is no requirement for a specific mating
+system or ploidy). A genome is inherited from one of the individual's parents,
+and may be the recombined product of that parent's two genomes.
+For example, individual $i_1$ has two genomes \textsf{A} and \textsf{B},
+inherited from parents $i_3$ and $i_4$. Genome \textsf{A} is the product of
+recombining $i_3$'s two genomes \textsf{E} and \textsf{F} at position 2,
+whereas \textsf{B} was inherited directly from $i_4$'s genome \textsf{G} without
+recombination. Fig.~\ref{fig-arg-in-pedigree}b illustrates that the patterns of
+transmission between genomes can be followed without necessarily knowing
+how they are combined within individuals. This ``genome-perspective''
+simply depicts the ancestry of the sample genomes $A$--$D$. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
-along the genome (Fig.~\ref{fig-arg-in-pedigree}C).
+along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
 
 The focus on modelling genomes rather than events has some interesting
 and important consequences. Firstly, the graph may contain nodes that
-do not correspond to any particular event in the ancestry of the
-samples. For example, node $H$ is the direct ancestor of $D$ in
+do not correspond to any particular event in the ancestry of the samples.
+For example, node \textsf{H} is the direct ancestor of \textsf{D} in
 Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
 coalescence or a recombination. Such nodes would usually be removed
-from the graph so that $D$ descends directly from $K$ (see section XXX)
-but there is no necessity for this from a representational perspective.
-This ability can be useful in practice and could be required if,
+from the graph so that \textsf{D} descends directly from \textsf{K} (see
+section XXX) but there is no necessity for this from a representational
+perspective. This ability can be useful in practice and could be required if,
 % Do we need to spell this out?
 for example, we have a deeply sequenced pedigree of
 haplodiploids. % e.g. Honeybees? Be great to cite an example!
@@ -936,12 +926,18 @@ Rather than having a single node that represents the \emph{event},
 there are three nodes (representing the recombinant offspring and
 two parental genomes) and two edges with associated genome coordinate
 intervals (representing the precise inheritance patterns).
-For example, in Fig~\ref{fig-arg-in-pedigree}, node $A$ is the
-recombinant descendent of $E$ and $F$, inheriting positions
-FIXME from $E$ and genome positions FIXME from $F$. Any particular
+For example, in Fig~\ref{fig-arg-in-pedigree}, node \textsf{C} is the
+recombinant descendent of \textsf{E} and \textsf{F}, inheriting positions
+0 to 7 from $E$ and genome positions 7 to 10 from $F$. Any particular
 node can be both a recombinant (it is the recombined product of
 its parent's genomes) and a common ancestor (the ancestry from
 multiple samples meet at this node; see the next section).
+% Here was can talk about representing the recombination by a
+% recombinant and 2 parent "recombination nodes" rather than
+% a single "recombination node" as in the normal ARG representation.
+% We may also wish to note that in this example the recombination nodes
+% are shared between siblings, and can also be coalescent nodes
+% this ties in with stuff discussed 3 paras below.
 [More stuff here: clarify why we assign coordinates to edges
 rather than nodes. Basically lay out all the stuff that we can
 talk about \emph{without} going in to the details of
@@ -1063,14 +1059,18 @@ $c$ to some non-empty subset of $S$ through the local trees.
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
-Implicit vs explicit edge annotations. (a) An gARG equivalent to the encoding
-described by Griffiths can be created by setting all edges to span the full
-genome, apart from edges between two recombining nodes and their recombinant
-child (edge spans in bold). (b) The sample-resolved gARG, where the Hudson
-simplification algorithm has shortened edge spans so that they encapsulate only
-the upwards transmission of genetic material from the samples A, B, and C;
-plotted line widths are proportional to the genomic span of each edge. The
-example ARG used here is taken from \citet[][fig. 1]{wiuf1999recombination}.
+The \citet[][fig. 1]{wiuf1999recombination} example graph as a gARG, with contrasting
+edge annotation schemes.
+(a) Edge annotations that reflect immediate inheritance, i.e. transmission of all
+genetic material between parent and child. All edges span the full genome from position 0 to 7,
+apart from those linking a recombinant and its two parents (bold).
+(b) Sample-resolved edge annotations: the Hudson simplification algorithm has been used to
+shorten edge spans to reflect only the upwards transmission of genetic
+material from the samples \textsf{A}, \textsf{B}, and \textsf{C}. The depiction of the genome within
+each node is shaded as in figure \ref{fig-arg-in-pedigree}a to show
+coalescing regions of genome back to the grand MRCA genome \textsf{W}.
+In this case, using line widths to reflect the genomic span of each edge can
+help to visualise the relative importance of different transmission pathways.
 }
 \end{figure}
 
@@ -1160,7 +1160,7 @@ rootward direction (a ``super-diamond'') is non-identifiable and can be
 replaced by a single edge. This definition includes the case
 of a single node that has one inbound and one outbound edge.
 Fig.~\ref{fig-simplification}B shows the result of this type of
-graph-level simplification.
+graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
 local trees, there can still be nodes that are unary in all
@@ -1185,6 +1185,10 @@ The final level of simplification is to remove \emph{all}
 unary nodes from the local trees (Fig.~\ref{fig-simplification}D
 and E). [And continue]
 
+
+[We should discuss the relationship between ARG nodes and SPRs
+here. Cite \citep{deng2021distribution} too. Maybe we want to make
+this a separate section, as it's a subtle and important point.]
 
 % This text might go somewhere
 % We may have nodes corresponding to genomes that are ancestral to
@@ -1243,6 +1247,9 @@ way of generating MCMC proposals for ARGs, a similar idea was leveraged in \text
 % AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
+
+Espalier~\citep{rasmussen2022espalier} uses Maximum Agreement Forests to
+minimise the differences between local trees estimated using other methods.
 
 \subsection*{Model-based methods}
 An alternative approach is to treat the ancestry as a latent parameter to be averaged out
@@ -1369,7 +1376,7 @@ requires that we essentially recapitulate the state of Hudson's
 algorithm (see XXX section) at each node in
 the graph~\citep{baumdicker2021efficient}. Having resolved ancestry
 substantially simplifies this process. Thirdly, computing
-[FIXME describe what we did in tsdate]~\citep{wohns2021unified}.
+[FIXME describe what we did in tsdate]~\citep{wohns2022unified}.
 
 Sequentially generating the marginal trees along the genome
 is also fundamental, and is necessary whenever we need to
@@ -1382,7 +1389,7 @@ change (and stay the same), leading to efficient algorithms
 for computing population genetic
 statistics~\citep{kelleher2016efficient,kelleher2018efficient},
 implementing the Li and Stephens
-model~\citep{kelleher2019inferring,wohns2021unified}
+model~\citep{kelleher2019inferring,wohns2022unified}
 and likely many more.
 
 
