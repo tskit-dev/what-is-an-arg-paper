@@ -1188,7 +1188,7 @@ and E). [And continue]
 \section*{ARGs and SPRs}
 \citet{wiuf1999ancestry,wiuf1999recombination} recast
 the coalescent with recombination
-as a process along the genome rather than backwards in time.
+as a stocastic process along the genome rather than backwards in time.
 In this formulation we begin at one end of a chromosome by
 sampling a tree under the standard coalescent, and then reason
 about how this tree is modified by recombination events
@@ -1203,11 +1203,16 @@ which are central to many modern methods.
 Under the coalescent with recombination (or SMC) each local
 tree along the genome is transformed into the next by
 a ``subtree prune-and-regraft'' (SPR)
-% FIXME there should be earlier refs for SPRs, right?
-operation~\citep{song2003on,song2006properties}.
+% Hein et al call it the "subtree transfer" operation but it's
+% the same thing.
+operation~\citep{hein1990reconstructing,song2003on,song2006properties}.
 The number of SPRs required to transform one leaf-labelled tree
-into another is known as the SPR distance [cite]
-and is computable in O(??) time.
+into another is known as the SPR distance
+% Hein 1996 say that SPR distance is NP-hard, but Allen 2001
+% say this is wrong. But then Bordewich went ahead and said
+% yes, actually it is NP hard.
+and is NP-hard to
+compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 
 [Discussion of SPRs in an EARG]
 
@@ -1227,23 +1232,27 @@ corresponding to passing through L and meeting at M.
 
 The equivalence between an ARG and a set of local trees
 separated by SPRs is often mentioned [e.g. x y z], but
-it is not obvious how to produce an ARG given (say) a
-collection of newick trees. If the internal nodes are
-labelled, then we can simply input the edges for each
-tree in turn, which can easily be ``squashed'' down
-to a minimal representation. However, internal nodes
-are rarely labelled in newick trees, and therefore
-the process of contructing a graph is much harder.
-In princple, we can contruct an EARG by reasoning
-about the SPRs that must has occured between two
-adjacent trees and postulating the recombination
-nodes that must have occured. However, this process
-is computationally expensive [How expensive? is this
-what Espalier does?] Additionally, unless some extra
-information is provided the time of the recombination
-will not be known. Fundamentally, we must include the
-unary nodes corresponding to recombination parents
-in the trees if we wish to recover an ARG from them.
+it is important to note that while extracting local
+trees from an ARG is straightforward, the converse
+process of reconstructing precisely the same ARG from
+these trees is more problematic. If the internal
+nodes are consistently labelled and unary nodes are
+included in the local trees (e.g., Fig~\ref{fig-simplification})
+then it is easy to exactly reconstruct the ARG.
+Otherwise, the problem is much more difficult and it
+may not be possible to uniquely reconstruct the original ARG.
+Without labels for the internal nodes, we are forced to
+to reason about which subtrees remain the same and which
+differ due to the SPR separating adjacent trees in order to
+assign node identity. Without the internal unary nodes marking
+recombinations, we must infer their existence. In
+general, there will not be a unique solution to this problem,
+and so there can be many possible ARGs compatible with
+a given list of
+% want to say "standard phylogenetic" trees here or something, but
+% and they don't have to be binary (just arity > 1), but thought
+% this would be familiar to readers?
+leaf-labelled binary trees.
 
 [ Cite \citep{deng2021distribution} somewhere here.]
 
