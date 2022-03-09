@@ -4,7 +4,8 @@ msprime>=1.0.0
 numpy
 networkx
 pandas
-pydot  
+pydot
+scipy
 tsinfer>=0.2.1
 tskit>=0.3.4
 click

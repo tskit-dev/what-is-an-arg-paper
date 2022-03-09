@@ -8,6 +8,8 @@ import networkx as nx
 import PIL
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats
 import tskit
 
 import argutils
@@ -212,12 +214,12 @@ def simplification():
     seed = 372
     t_x = {
         9: 3,
-        6: -8,
-        18: 50,
+        6: -15,
+        18: 15,
         19: -15,
         17: 5,
-        13: 10,
-        14: 2,
+        13: 30,
+        14: -20,
         10: -10,
         15: 5,
         16: -5,
@@ -227,27 +229,36 @@ def simplification():
     }
 
     ts = argutils.sim_wright_fisher(2, 10, 100, recomb_proba=0.1, seed=seed)
+    tables = ts.dump_tables()
+    rank_times = scipy.stats.rankdata(tables.nodes.time, method="dense")
+    # tweak rank times here for nicer viz
+    rank_times = np.where(rank_times == 1, 0, rank_times)
+    tables.nodes.time = rank_times
+    node_order = np.arange(tables.nodes.num_rows)
+    # NB this isn't quite right
+    node_order[[0, 1, 2, 3]] = [2, 1, 3, 0]
+    tables.subset(node_order)
+    tables.sort()
+    ts=tables.tree_sequence()
+
     labels = {i: string.ascii_uppercase[i] for i in range(len(string.ascii_uppercase))}
     # relabel the nodes to get samples reading A B C D
-    labels.update({2: "B", 3: "C", 1: "D"})
-    ts = argutils.viz.label_nodes(ts, labels)
+    labels.update({0: "B", 2: "A", 3: "C", 1: "D", 4: "F", 5: "E", 13: "O", 14: "N", 7: "I", 8: "H", 10: "L", 11: "K"})
+    #labels = {i: i for i in range(26)}
+    ts1 = argutils.viz.label_nodes(ts, labels)
 
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(12, 5))
-    ax1.set_title("(a) little ARG")
-    ax2.set_title("(b) remove pass through")
-    ax3.set_title("(c) simplify (keep unary in coal)")
-    ax4.set_title("(d) fully simplified")
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 12))
     col = mpl.colors.to_hex(plt.cm.tab20(1))
     pos, G = argutils.viz.draw(
-        ts,
+        ts1,
         ax1,
         draw_edge_widths=True,
-        use_ranked_times=True,
+        use_ranked_times=False,
         node_color=col,
         tweak_x=t_x,
     )
     ts2, node_map = argutils.simplify_remove_pass_through(
-        ts, repeat=True, map_nodes=True
+        ts1, repeat=True, map_nodes=True
     )
     argutils.viz.draw(
         ts2,
@@ -256,7 +267,7 @@ def simplification():
         pos={node_map[i]: p for i, p in pos.items()},
         node_color=col,
     )
-    ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts, map_nodes=True)
+    ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts1, map_nodes=True)
     argutils.viz.draw(
         ts3,
         ax3,
@@ -264,7 +275,7 @@ def simplification():
         pos={node_map[i]: p for i, p in pos.items()},
         node_color=col,
     )
-    ts4, node_map = ts.simplify(map_nodes=True)
+    ts4, node_map = ts1.simplify(map_nodes=True)
     argutils.viz.draw(
         ts4,
         ax4,
@@ -275,27 +286,38 @@ def simplification():
 
     graph1_io = io.StringIO()
     plt.savefig(graph1_io, format="svg", bbox_inches="tight")
+    plt.close()
     graph1_svg = graph1_io.getvalue()
     graph1_svg = graph1_svg[graph1_svg.find("<svg") :]
 
-    tree_svg = ts.draw_svg(
-        size=(970, 250),
-        time_scale="rank",
-        node_labels=labels,
-        style=".x-axis .tick .lab {font-weight: regular; font-size: 12}",
-    )
+    svg = [
+        '<svg width="900" height="900" xmlns="http://www.w3.org/2000/svg" '
+        'xmlns:xlink="http://www.w3.org/1999/xlink">',
+        "<style>.tree-sequence text {font-family: sans-serif}</style>"
+    ]
+    svg.append('<g transform="translate(40, 0) scale(0.87)">' + graph1_svg + "</g>")
+
+    for i, ts in enumerate([ts1, ts2, ts3, ts4]):
+        tree_svg = ts.draw_svg(
+            size=(750, 250),
+            #time_scale="rank",
+            node_labels={n.id: n.metadata["name"] for n in ts.nodes()},
+            x_label=None if i == 3 else "",
+            style=(
+                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} '
+                '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}'
+            ),
+        )
+        svg.append(
+            f'<text font-size="2em" font-family="serif" transform="translate(0, {200 * i + 30})">' +
+            f'({string.ascii_lowercase[i]})</text>'
+        )
+        svg.append(f'<g transform="translate(250 {205 * i}) scale(0.83)">' + tree_svg + "</g>")
+    svg.append("</svg>")
+
 
     # figlabelstyle = 'font-family="serif" font-size="30px"'
 
-    svg = [
-        '<svg width="900" height="700" xmlns="http://www.w3.org/2000/svg" '
-        'xmlns:xlink="http://www.w3.org/1999/xlink">',
-        "<style>.tree-sequence text {font-family: sans-serif}</style>"
-        '<g transform="translate(10, 50)">',
-    ]
-    svg.append('<g transform="scale(0.87)">' + graph1_svg + "</g>")
-    svg.append('<g transform="translate(0 400) scale(0.83)">' + tree_svg + "</g>")
-    svg.append("</g></svg>")
 
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
