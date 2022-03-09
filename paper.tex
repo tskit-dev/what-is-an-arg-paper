@@ -1185,10 +1185,78 @@ The final level of simplification is to remove \emph{all}
 unary nodes from the local trees (Fig.~\ref{fig-simplification}D
 and E). [And continue]
 
+\section*{ARGs and SPRs}
+\citet{wiuf1999ancestry,wiuf1999recombination} recast
+the coalescent with recombination
+as a stocastic process along the genome rather than backwards in time.
+In this formulation we begin at one end of a chromosome by
+sampling a tree under the standard coalescent, and then reason
+about how this tree is modified by recombination events
+as we move along the genome. Although this algorithm is
+significantly more complicated to simulate than Hudson's
+backwards in time approach, it has led to substantial
+insights into the process of recombination itself
+and to the sequentially Markov Coalescent (SMC)
+approximations~\citep{mcvean2005approximating,marjoram2006fast}
+which are central to many modern methods.
 
-[We should discuss the relationship between ARG nodes and SPRs
-here. Cite \citep{deng2021distribution} too. Maybe we want to make
-this a separate section, as it's a subtle and important point.]
+Under the coalescent with recombination (or SMC) each local
+tree along the genome is transformed into the next by
+a ``subtree prune-and-regraft'' (SPR)
+% Hein et al call it the "subtree transfer" operation but it's
+% the same thing.
+operation~\citep{hein1990reconstructing,song2003on,song2006properties}.
+The number of SPRs required to transform one leaf-labelled tree
+into another is known as the SPR distance
+% Hein 1996 say that SPR distance is NP-hard, but Allen 2001
+% say this is wrong. But then Bordewich went ahead and said
+% yes, actually it is NP hard.
+and is NP-hard to
+compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
+
+[Discussion of SPRs in an EARG]
+
+The effects of recombination as we move from left-to-right along
+the genome in an unsimplified GARG are easy to interpret.
+Consider the leftmost tree in Fig~\ref{fig-simplification}.
+In the first tree the parent of B is F, and in the second
+tree its parent is E. Since both parents are present as
+unary nodes in the tree, we simply change one edge in
+order to effect the transition.
+A more complex transition occurs when we have a regraft operation
+that occurs above the current root (i.e., the current oldest
+non-unary node). For example, the transition between the
+second and third trees corresponds to node D switching
+from the path through I to H, and we then must add branches
+corresponding to passing through L and meeting at M.
+
+The equivalence between an ARG and a set of local trees
+separated by SPRs is often mentioned [e.g. x y z], but
+it is important to note that while extracting local
+trees from an ARG is straightforward, the converse
+process of reconstructing precisely the same ARG from
+these trees is more problematic. If the internal
+nodes are consistently labelled and unary nodes are
+included in the local trees (e.g., Fig~\ref{fig-simplification})
+then it is easy to exactly reconstruct the ARG.
+Otherwise, the problem is much more difficult and it
+may not be possible to uniquely reconstruct the original ARG.
+Without labels for the internal nodes, we are forced to
+to reason about which subtrees remain the same and which
+differ due to the SPR separating adjacent trees in order to
+assign node identity. Without the internal unary nodes marking
+recombinations, we must infer their existence. In
+general, there will not be a unique solution to this problem,
+and so there can be many possible ARGs compatible with
+a given list of
+% want to say "standard phylogenetic" trees here or something, but
+% and they don't have to be binary (just arity > 1), but thought
+% this would be familiar to readers?
+% Jere: Could just say leaf-labelled "marginal trees", "ancestral trees",
+% "local trees", or something like that.
+leaf-labelled binary trees.
+
+[ Cite \citep{deng2021distribution} somewhere here.]
 
 % This text might go somewhere
 % We may have nodes corresponding to genomes that are ancestral to
