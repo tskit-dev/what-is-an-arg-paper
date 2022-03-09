@@ -357,7 +357,7 @@ description of the algorithm, and how it may be implemented efficiently.
 \end{tikzpicture}
 \end{tabular}
 }
-\caption{(A)
+\caption{(a)
 A realisation of the graph traversed by Hudson's algorithm started from a
 sample of three chromosomes of length $m$ at time $t = 0$, and
 propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
@@ -367,7 +367,7 @@ A contributes to the rate of effective recombinations because it
 is trapped between ancestral segments. The two columns titled CA and RE
 are the respective rates of mergers and recombinations when
 the recombination rate is $\rho$.
-(B) A corresponding realisation of a big ARG, which augments Hudson's algorithm
+(b) A corresponding realisation of a big ARG, which augments Hudson's algorithm
 by tracking nonancestral lineages. The result is a simpler state space and
 dynamics, at the cost of extra nodes and edges, highlighted in red, which do
 not affect the local tree at any site.}
@@ -1106,17 +1106,16 @@ and the relationship between nodes in adjacent trees is maintained.
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
-ARG simplification. (A) An ARG simulated from a diploid Wright-Fisher
+ARG simplification. (a) An ARG and equivalent local trees simulated
+from a diploid Wright-Fisher
 model. Note the complex full-sib relationship between B and C; this
 could not be directly represented in a Griffiths-like EARG encoding
 (see section XXX).
-(B) Simplified to remove all
+(b) Simplified to remove all
 % trying out this terminology - can define in the text
 1-connected graph components (e.g., diamonds).
-(C) Remove nodes that are unary in all local trees.
-(D) Rewrite edges to skip any unary nodes in local trees.
-(E) The local trees for ARG (A).
-(F) The local trees for ARG (D).
+(c) Remove nodes that are unary in all local trees.
+(d) Rewrite edges to skip any unary nodes in local trees.
 }
 \end{figure}
 
@@ -1126,9 +1125,10 @@ could not be directly represented in a Griffiths-like EARG encoding
 % that they get that a node-is-a-node
 The ideas of ``meaningful'' local tree topologies revolve around the
 presence of ``unary'' nodes: a node in the tree that has exactly
-one child. For example, Fig.~\ref{fig-simplification}E shows the
-local trees along the genome for a simulated ARG
-(Fig.~\ref{fig-simplification}A). Consider the right-most tree,
+one child. For example, Fig.~\ref{fig-simplification} shows a set of
+four simulated gARGs and the local trees that can be constructed from
+them (for simplicity, edge annotations are not shown)
+Consider the right-most tree in Fig.~\ref{fig-simplification}a
 and the path above node $D$. Before $D$ meets its common ancestor
 over the interval $(93, 100]$ with the other samples it passes through
 nodes $H, K, N, R$ and $S$, reflecting the corresponding
@@ -1150,7 +1150,7 @@ known example of such topology is a so-called
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
 join again into a common ancestor (e.g. $K,N,O$ and $R$ in
-Fig.~\ref{fig-simplification}A).
+Fig.~\ref{fig-simplification}a).
 Unless we are specifically
 interested in the recombination event or ancestral genomes,
 there is no information in this topology and the diamond can b
@@ -1159,17 +1159,17 @@ subgraph which is singly-connected in both the leafward and
 rootward direction (a ``super-diamond'') is non-identifiable and can be
 replaced by a single edge. This definition includes the case
 of a single node that has one inbound and one outbound edge.
-Fig.~\ref{fig-simplification}B shows the result of this type of
+Fig.~\ref{fig-simplification}b shows the result of this type of
 graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
 local trees, there can still be nodes that are unary in all
 of the local trees. For example, node $H$ is one of the
 parents of the recombinant node $D$ is still present in
-Fig.~\ref{fig-simplification}B after diamond removal, but
+Fig.~\ref{fig-simplification}b after diamond removal, but
 it is unary in all of the local trees since it has an
 in-degree of $1$.
-Fig.~\ref{fig-simplification}C shows the resulting graph
+Fig.~\ref{fig-simplification}c shows the resulting graph
 after removing these nodes.
 
 The remaining nodes are MRCAs of some subset of the samples
@@ -1177,13 +1177,13 @@ at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
 local tree. For example, node $E$ is unary in the first tree
-of Fig.~\ref{fig-simplification}E, but is either binary
+of Fig.~\ref{fig-simplification}a, but is either binary
 or ternary in the other trees (recall this is a Wright-Fisher
 simulation).
 
 The final level of simplification is to remove \emph{all}
-unary nodes from the local trees (Fig.~\ref{fig-simplification}D
-and E). [And continue]
+unary nodes from the local trees (Fig.~\ref{fig-simplification}d).
+[And continue]
 
 
 [We should discuss the relationship between ARG nodes and SPRs
