@@ -21,6 +21,7 @@ def draw(
     draw_edge_widths=False,
     max_edge_width=5,
     draw_edge_alpha=False,
+    nonsample_node_shrink=None,
     node_size=None,
     font_size=None,
     node_color=None,
@@ -59,6 +60,10 @@ def draw(
     If draw_edge_alpha is True, draw edges with an alpha value equal to their
     genomic span / the total sequence length of the tree sequence.
 
+    If "nonsample_node_shrink" is not None, it should be an integer giving the
+    amount by which nonsample node symbols are reduced; in this case labels on
+    the nodes are omitted
+    
     node_size, font_size, font_color, and node_color are all passed to nx.draw
     directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
@@ -69,15 +74,23 @@ def draw(
     """
     if node_size is None:
         node_size = 200
+    if nonsample_node_shrink is not None:
+        # Shrink the nonsample label size
+        node_size_array = np.full(ts.num_nodes, node_size / nonsample_node_shrink)
+        node_size_array[ts.samples()] = node_size
+        node_size = node_size_array
     if font_size is None:
         font_size = 9
     G = convert_nx(ts)
     labels = {}
     for nd in ts.nodes():
-        try:
-            labels[nd.id] = str(nd.metadata["name"])
-        except (TypeError, KeyError):
-            labels[nd.id] = str(nd.id)
+        if nonsample_node_shrink is not None and not nd.is_sample():
+            labels[nd.id] = ""
+        else:
+            try:
+                labels[nd.id] = str(nd.metadata["name"])
+            except (TypeError, KeyError):
+                labels[nd.id] = str(nd.id)
 
     if pos is None:
         pos = nx_get_dot_pos(G, reverse_x_axis)
@@ -129,9 +142,10 @@ def draw(
     edges = nx.draw_networkx_edges(
         G,
         pos,
-        edgelist=G.edges(),
+        edgelist=list(G.edges()),
         arrowstyle="-|>" if arrows else "-",
         ax=ax,
+        node_size=node_size,
         width=edge_widths
     )
     if edge_alpha is not None:
