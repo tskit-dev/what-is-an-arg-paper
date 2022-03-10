@@ -893,7 +893,7 @@ Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
 discrete generations and carry two genomes. Each individual (labelled
 $i_1$ to $i_8$) therefore has a paternal genome (on the right) and a maternal one
-(on the left), although the pedigree is only shown for concreteness, and 
+(on the left), although the pedigree is only shown for concreteness, and
 there is no inherent limitation on mating system, ploidy, or age structure.
 A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
@@ -1319,6 +1319,7 @@ way of generating MCMC proposals for ARGs, a similar idea was leveraged in \text
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
 
+
 Espalier~\citep{rasmussen2022espalier} uses Maximum Agreement Forests to
 minimise the differences between local trees estimated using other methods.
 
@@ -1334,7 +1335,8 @@ human-like parameters.
 
 Due to the computational expense of sampling ``little ARGs'', state-of-the-art
 Monte Carlo methods typically rely on cheaper, approximate models.
-The most prominent examples are \texttt{ARGWeaver} \citep{rasmussen2014genome}
+The most prominent examples are
+\texttt{ARGWeaver}~\citep{rasmussen2014genome,hubisz2020mapping,hubisz2020inference}
 and \texttt{Arbores} \citep{heine2018bridging}. The former also utilises a time
 discretisation approximation, but scales to dozens of mammal-like genomes.
 The \texttt{ClonalOrigin} method \citep{didelot2010inference,
@@ -1344,7 +1346,8 @@ model and data structure, though it is not as scalable as \texttt{ARGWeaver}.
 A very recent MCMC method called \texttt{ARGInfer} has resulted in the first
 improvement in the scalability of Monte Carlo methods for the exact ARG model
 by making use of the tree sequence representation of marginal trees, suitably enriched
-to facilitate the computations needed for MCMC sampling \citep{mahmoudi2021inference}.
+to facilitate the computations needed for MCMC sampling
+\citep{mahmoudi2022bayesian}.
 While not competitive with the scalability of \texttt{ARGWeaver}, \texttt{ARGInfer} extends
 the feasible range of sequence lengths by at least an order of magnitude when
 compared with methods which sample realisations of the exact ``little ARG''.
