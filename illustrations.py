@@ -503,6 +503,7 @@ def inference():
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
         pos, G = argutils.viz.draw(
             ts, ax,
+            nonsample_node_shrink=5,
             use_ranked_times=True if name == "Tsinfer" else None,
             draw_edge_widths=True,
             node_color=col,
