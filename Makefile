@@ -11,6 +11,7 @@ ILLUSTRATIONS=\
 	illustrations/ancestry-resolution.pdf \
 	illustrations/simplification.pdf \
 	illustrations/arg-in-pedigree.pdf \
+	illustrations/inference.pdf \
 
 all: paper.pdf
 

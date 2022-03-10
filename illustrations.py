@@ -1,6 +1,7 @@
 import pathlib
 import string
 import io
+import json
 from types import SimpleNamespace
 
 import click
@@ -11,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
 import tskit
+import tsinfer
 
 import argutils
 
@@ -470,9 +472,68 @@ def arg_in_pedigree():
         f.write(top_svg)
 
 
+@click.command()
+def inference():
+    tree_seqs = {}
+    # KwARG
+    with open("examples/kreitman.kwarg") as f:
+        ts = argutils.convert_kwarg(f, 11, 43)
+        # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
+        ts = argutils.viz.label_nodes(ts)
+        tree_seqs["KwARG"] = ts
+
+    # Tsinfer
+    with open("examples/kreitman_snp.txt") as file:
+        data = np.array([[int(d) for d in line.strip()] for line in file])
+    with tsinfer.SampleData(sequence_length=data.shape[1]) as sample_data:
+        for pos, sites in enumerate(data.T):
+            sample_data.add_site(pos, sites)
+    ts = tsinfer.infer(sample_data)
+    # For the moment, tsinfer uses byte metadata, so we need to convert it to json
+    tables = ts.dump_tables()
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    for n in ts.nodes():
+        tables.nodes[n.id] = tables.nodes[n.id].replace(
+            metadata = json.loads(n.metadata.decode() or "{}"))
+    ts = tables.tree_sequence()
+    tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts)
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    col = mpl.colors.to_hex(plt.cm.tab20(1))
+    for ax, (name, ts) in zip(axes, tree_seqs.items()):
+        pos, G = argutils.viz.draw(
+            ts, ax,
+            use_ranked_times=True if name == "Tsinfer" else None,
+            draw_edge_widths=True,
+            node_color=col,
+            max_edge_width=2)
+        ax.set_title(name)
+
+    graph_io = io.StringIO()
+    plt.savefig(graph_io, format="svg", bbox_inches="tight")
+    graph_svg = graph_io.getvalue()
+    plt.close()
+
+    svg = [
+        # Could concatenate more SVG stuff here in <g> tags, e.g.
+        # if we wanted to draw the 2 plots as 2 separate svg plots\
+        # rather than using plt.subplots
+        graph_svg[graph_svg.find("<svg") :]
+    ]
+
+    top_svg = (
+        '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+        '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
+    )
+    top_svg += "\n".join(svg)
+    with open(f"illustrations/inference.svg", "wt") as f:
+        f.write(top_svg)
+     
+
 cli.add_command(arg_in_pedigree)
 cli.add_command(ancestry_resolution)
 cli.add_command(simplification)
+cli.add_command(inference)
 
 if __name__ == "__main__":
     cli()
