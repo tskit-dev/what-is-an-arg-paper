@@ -116,8 +116,8 @@ edges rather than nodes.
 the properties of the structures inferred by different methods, and illustrate
 with some examples.
 % Perhaps we should also mention something about simplification and unknowable
-% nodes, e.g. "show how some of the nodes are not required for useful interpretation
-% of ancestry".
+% nodes, e.g. ``show how some of the nodes are not required for useful interpretation
+% of ancestry''.
 \item Throughout, we consider ARGs defined for a single chromosome comprising
 of a fixed number of discrete sites. Our argument applies equally well to ARGs
 defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
@@ -736,7 +736,7 @@ to the second parent.
 This ordering requirement, which is straightforward
 to describe, has some practical drawbacks. For example,
 % Surely the meaning is clear from the context here and we don't need
-% qualify the meaning of "ARG"
+% qualify the meaning of ``ARG''
 simulating an ARG in this representation is
 complicated by the fact that the
 first event to occur may hit the lineage carrying the ancestry
@@ -846,8 +846,8 @@ As discussed in the previous section, the definition of an ARG
 as a \emph{data structure} in terms of these two events is problematic,
 fundamentally limiting the patterns of ancestry that can be described.
 Following \cite{mathieson2020ancestry} instead of focussing on events,
-we define the ARG data structure in terms \emph{genomes} and the patterns of
-transmission between them.
+we define the ARG data structure in terms of \emph{genomes} and the
+patterns of transmission between them.
 % Bit of duplication here, but good to make the point about being
 % motivated by real existing datasets not some academic desire to
 % model complexity that isn't there.
@@ -889,60 +889,26 @@ To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
 structure a ``Genome ARG'', or GARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a GARG.
-For concreteness, Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
-embedded in a inbred diploid pedigree, in which each
-individual carries two genomes (each individual, labelled $i_1$ to $i_8$,
-therefore has a paternal genome on the right and a maternal one on
-the left, although in principle there is no requirement for a specific mating
-system or ploidy). A genome is inherited from one of the individual's parents,
+Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
+embedded in an inbred diploid pedigree, in which individuals occur at
+discrete generations and carry two genomes. Each individual (labelled
+$i_1$ to $i_8$) therefore has a paternal genome (on the right) and a maternal one
+(on the left), although the pedigree is only shown for concreteness, and 
+there is no inherent limitation on mating system, ploidy, or age structure.
+A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
 For example, individual $i_1$ has two genomes \textsf{A} and \textsf{B},
 inherited from parents $i_3$ and $i_4$. Genome \textsf{A} is the product of
 recombining $i_3$'s two genomes \textsf{E} and \textsf{F} at position 2,
 whereas \textsf{B} was inherited directly from $i_4$'s genome \textsf{G} without
-recombination. Fig.~\ref{fig-arg-in-pedigree}b illustrates that the patterns of
+recombination. Fig.~\ref{fig-arg-in-pedigree}b shows the bare gARG, illustrating
+that the patterns of
 transmission between genomes can be followed without necessarily knowing
 how they are combined within individuals. This ``genome-perspective''
 simply depicts the ancestry of the sample genomes $A$--$D$. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
 along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
-
-The focus on modelling genomes rather than events has some interesting
-and important consequences. Firstly, the graph may contain nodes that
-do not correspond to any particular event in the ancestry of the samples.
-For example, node \textsf{H} is the direct ancestor of \textsf{D} in
-Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
-coalescence or a recombination. Such nodes would usually be removed
-from the graph so that \textsf{D} descends directly from \textsf{K} (see
-section XXX) but there is no necessity for this from a representational
-perspective. This ability can be useful in practice and could be required if,
-% Do we need to spell this out?
-for example, we have a deeply sequenced pedigree of
-haplodiploids. % e.g. Honeybees? Be great to cite an example!
-
-Secondly, the way that we model recombination is subtly different.
-Rather than having a single node that represents the \emph{event},
-there are three nodes (representing the recombinant offspring and
-two parental genomes) and two edges with associated genome coordinate
-intervals (representing the precise inheritance patterns).
-For example, in Fig~\ref{fig-arg-in-pedigree}, node \textsf{C} is the
-recombinant descendent of \textsf{E} and \textsf{F}, inheriting positions
-0 to 7 from $E$ and genome positions 7 to 10 from $F$. Any particular
-node can be both a recombinant (it is the recombined product of
-its parent's genomes) and a common ancestor (the ancestry from
-multiple samples meet at this node; see the next section).
-% Here was can talk about representing the recombination by a
-% recombinant and 2 parent "recombination nodes" rather than
-% a single "recombination node" as in the normal ARG representation.
-% We may also wish to note that in this example the recombination nodes
-% are shared between siblings, and can also be coalescent nodes
-% this ties in with stuff discussed 3 paras below.
-[More stuff here: clarify why we assign coordinates to edges
-rather than nodes. Basically lay out all the stuff that we can
-talk about \emph{without} going in to the details of
-ancestry resolution.]
-
 
 Formally, we can define a GARG as a set of edges $E$, where each
 element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
@@ -957,26 +923,63 @@ upwards through the graph from child to parent. At each node $u$, we find an
 edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$ (if it
 exists) and move to the next node $p$.
 
-% Asking the reader to flick back to figure 2 here, not great.
-The differences between EARGs
-and GARGs are subtle but important, and illustrated in
-Fig.~\ref{fig-arg-data-structure}, which shows a simple ARG
-with three samples and one recombination.
-Fig.~\ref{fig-arg-data-structure}A shows this topology as a
-classical Griffiths-like EARG, and
-Fig.~\ref{fig-arg-data-structure}B shows it as a GARG.
-The two are almost identical, except we model the recombination
-event via the two parental genomes in nodes $3$ and $4$ and explicitly
-store the genomic interval that the child inherited from the
-parent with every edge.
-This approach may seem wasteful since we must store an extra
-node for each recombination and genomic interval information
-with every edge (even though many simply span the full genome).
+The focus on genomes rather than events has some interesting
+and important ramifications. Firstly, a gARG may contain nodes that
+do not correspond to any particular event in the ancestry of the samples.
+For example, node \textsf{H} is the direct ancestor of \textsf{D} in
+Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
+coalescence or a recombination. Such nodes would usually be removed
+from the graph so that \textsf{D} descends directly from \textsf{K} (see
+section XXX) but there is no necessity for this from a representational
+perspective. This ability can be useful in practice and could be required if,
+% Do we need to spell this out?
+for example, we have a deeply sequenced pedigree of
+haplodiploids. % e.g. Honeybees? Be great to cite an example!
+
+Secondly, unlike in an eARG, nodes in a gARG are not classified into different
+types. Indeed a single node can have both multiple children
+and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
+for instance, node \textsf{A} were to have two children.
+% It is a shame that this is not actually shown in fig 3, but I don't think
+% we can do this unless we have 5 generations
+Moreover, a single node can have more than 2 children, and (as we shall see in
+section XXX), more than 2 parents. Another way to state this is that transitions
+between nodes in a gARG can encapsulate multiple events in an eARG.
+
+The final point deals with the way in which recombination is represented, and is
+closely linked to which genomes are chosen as the nodes in a gARG.
+We could potentially choose genomes at any point in the life cycle: for instance,
+we could chose to represent gametes as ARG nodes. However, the most intuitive
+choice is where genomes represent diploid individuals in each generation, as in
+Fig~\ref{fig-arg-in-pedigree}a. In this case recombination
+is not represented by a single ``recombination node'' (as in an eARG), but with
+two parent genomes between which recombination takes place (e.g.
+nodes \textsf{E} and \textsf{F}), and a
+single resulting ``recombinant'' genome (e.g. \textsf{C}). The
+edges that link this recombinant with its two parents carry the information
+concerning breakpoint location that would normally be present on the
+``recombination nod'' in an eARG. For example, node \textsf{C} in
+Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{E}
+and positions 7 to 10 from \textsf{F}, indicating that the breakpoint is at position 7.
+
+This method for representing recombinations may seem wasteful,
+since more than one node is required for each recombination,
+and genomic interval information must be stored on every edge.
 However, asymptotically the amount of information stored is the
-same, and as we see in the next section, keeping interval
-information for all edges enables useful generalisations.
-There is also much simplicity to be gained by having
+same, and there is much simplicity to be gained by having
 a single type of node and by treating all edges in the same way.
+More importantly --- as we see in the next section --- we gain the
+ability to simplify the ARG by removing nodes without affecting the
+local tree topologies, and also the ability to record only the
+regions of genome relevant to the final, sample genomes. This last
+feature turns out to be the key to efficient processing of the ARG.
+
+[Possibly more stuff here: clarify why we assign coordinates to edges
+rather than nodes. Basically lay out all the stuff that we can
+talk about \emph{without} going in to the details of
+ancestry resolution.]
+
+
 
 \textcolor{red}{TODO: reduce this down to one paragraph, which
 defines the relationship between what we define as an ARG and
@@ -1025,7 +1028,7 @@ combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consid
 an ARG, without applying any of these restrictions.
 
 % AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
-% Also: are we not defining ARGs as "binary networks"? Might be good to specify this here.
+% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
 
 
 \section*{Ancestry resolution}
@@ -1120,7 +1123,7 @@ could not be directly represented in a Griffiths-like EARG encoding
 }
 \end{figure}
 
-% Q: would it help to talk about "tree vertices" here or would it
+% Q: would it help to talk about ``tree vertice'' here or would it
 % just be more confusing? I worry that people would think that
 % they are two different things then, and it's really important
 % that they get that a node-is-a-node
@@ -1329,7 +1332,7 @@ generated until the grand MRCA. They are extremely computationally expensive,
 and applicable to at most hundreds of samples consisting of tens of kilobases with
 human-like parameters.
 
-Due to the computational expense of sampling ``little ARGs", state-of-the-art
+Due to the computational expense of sampling ``little ARGs'', state-of-the-art
 Monte Carlo methods typically rely on cheaper, approximate models.
 The most prominent examples are \texttt{ARGWeaver} \citep{rasmussen2014genome}
 and \texttt{Arbores} \citep{heine2018bridging}. The former also utilises a time
