@@ -50,3 +50,7 @@ clean:
 
 mrproper: clean
 	rm -f *.ps *.pdf
+
+deps:
+	# this should download and compile ARGweaver, Relate etc
+	make -C tools
