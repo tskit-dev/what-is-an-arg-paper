@@ -485,13 +485,23 @@ def inference():
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
     tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts)
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    # ARGweaver
+    ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
+    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts)
+
+    fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     col = mpl.colors.to_hex(plt.cm.tab20(1))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
+        if name == "Tsinfer":
+            use_ranked_times = True
+        if name == "ARGweaver":
+            use_ranked_times = None
+        if name == "KwARG":
+            use_ranked_times = None
         pos, G = argutils.viz.draw(
             ts, ax,
             nonsample_node_shrink=5,
-            use_ranked_times=True if name == "Tsinfer" else None,
+            use_ranked_times=use_ranked_times,
             draw_edge_widths=True,
             node_color=col,
             max_edge_width=2)
