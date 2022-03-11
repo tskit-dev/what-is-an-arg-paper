@@ -213,21 +213,21 @@ def simplification():
     """
     seed = 372
     t_x = {
+        4: 15,
+        12: -5,
         9: 3,
         6: -15,
         18: 15,
-        19: -15,
         17: 5,
         13: 30,
         14: -20,
         10: -10,
-        15: 5,
-        16: -5,
+        15: 3,
+        16: -13,
         7: -5,
         11: 5,
-        8: 8,
+        8: 10,
     }
-
     ts = argutils.sim_wright_fisher(2, 10, 100, recomb_proba=0.1, seed=seed)
     tables = ts.dump_tables()
     rank_times = scipy.stats.rankdata(tables.nodes.time, method="dense")
