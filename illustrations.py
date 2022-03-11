@@ -495,6 +495,14 @@ def inference():
     for n in ts.nodes():
         tables.nodes[n.id] = tables.nodes[n.id].replace(
             metadata = json.loads(n.metadata.decode() or "{}"))
+    # temporary hack: remove the ultimate ancestor if it exists
+    oldest_node = np.argmax(tables.nodes.time)
+    if np.sum(tables.edges.parent==oldest_node) == 1:
+        # only a single edge connects to the root. This is a unary "ultimate ancestor"
+        # and can be removed (it will be removed in later tsinfer versions anyway)
+        use = np.arange(tables.nodes.num_rows)
+        use = use[use != oldest_node]
+        tables.subset(use)
     ts = tables.tree_sequence()
     tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts)
 
