@@ -31,9 +31,11 @@ def convert_argweaver(infile):
 
     # Make an nx DiGraph so we can do a topological sort.
     G = nx.DiGraph()
+    time_map = {} # argweaver times to allocated time
     for row in name_to_record.values():
         child = row["name"]
         parents = row["parents"]
+        time_map[row["age"]] = row["age"]
         G.add_node(child)
         if isinstance(parents, str):
             for parent in row["parents"].split(","):
@@ -44,17 +46,21 @@ def convert_argweaver(infile):
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
     breakpoints = np.full(len(G), tables.sequence_length)
     aw_to_tsk_id = {}
-    for node in nx.topological_sort(G):
+    min_time_diff = min(np.diff(sorted(time_map.keys())))
+    epsilon = min_time_diff / 1e6
+    for node in nx.lexicographical_topological_sort(G):
         record = name_to_record[node]
         flags = 0
-        if node.startswith("n"):
+        # Sample nodes are marked as "gene" events
+        if record["event"] == "gene":
             flags = tskit.NODE_IS_SAMPLE
             assert record["age"] == 0
-            assert record["event"] == "gene"
-            time = 0
+            time = record["age"]
         else:
-            # Use topological sort order for age for the moment.
-            time += 1
+            time = time_map[record["age"]]
+            # Argweaver allows age of parent and child to be the same, so we
+            # need to add epsilons to enforce parent_age > child_age
+            time_map[record["age"]] += epsilon
         tsk_id = tables.nodes.add_row(flags=flags, time=time, metadata=record)
         aw_to_tsk_id[node] = tsk_id
         if record["event"] == "recomb":
