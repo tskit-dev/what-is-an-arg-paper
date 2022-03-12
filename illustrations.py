@@ -476,18 +476,34 @@ def arg_in_pedigree():
 @click.command()
 def inference():
     tree_seqs = {}
+
     # KwARG
     ts = tskit.load("examples/Kreitman_SNP_kwarg.trees")
     # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
-    tree_seqs["KwARG"] = argutils.viz.label_nodes(ts)
+    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["KwARG"] = argutils.viz.label_nodes(
+        ts,
+        labels=labels, # Use labels from Tsinfer
+    )
 
     # Tsinfer
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
-    tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts)
+    labels = {}
+    for n in ts.nodes():
+        labels[n.id] = ""
+        if n.individual != tskit.NULL:
+            ind_metadata = ts.individual(n.individual).metadata
+            try:
+                labels[n.id] = ind_metadata["name"]
+            except TypeError:
+                labels[n.id] = json.loads(ind_metadata.decode())["name"]
+    tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts, labels=labels)
+
 
     # ARGweaver
     ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
-    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts)
+    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
 
     fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     col = mpl.colors.to_hex(plt.cm.tab20(1))
@@ -500,7 +516,8 @@ def inference():
             use_ranked_times = None
         pos, G = argutils.viz.draw(
             ts, ax,
-            nonsample_node_shrink=5,
+            node_size=30,
+            rotated_sample_labels=True,
             use_ranked_times=use_ranked_times,
             draw_edge_widths=True,
             node_color=col,
@@ -508,7 +525,9 @@ def inference():
         ax.set_title(name)
 
     graph_io = io.StringIO()
-    plt.savefig(graph_io, format="svg", bbox_inches="tight")
+    fig.tight_layout()
+    #fig.subplots_adjust(bottom=0.1)
+    plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
 

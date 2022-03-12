@@ -78,7 +78,8 @@ def tsinfer_input():
 
 @click.command()
 def kwarg_input():
-    with open("examples/Kreitman_SNP.kwarg", "wt") as file:
+    # a simple 0/1 sites-by-samples matrix
+    with open("examples/Kreitman_SNP.matrix", "wt") as file:
         for row in sample_data.sites_genotypes[:].T:
             print("".join(str(g) for g in row), file=file)
 

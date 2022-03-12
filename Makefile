@@ -23,7 +23,7 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 
 inference_inputs: \
 	examples/Kreitman_SNP.samples \
-	examples/Kreitman_SNP.kwarg \
+	examples/Kreitman_SNP.matrix \
 	examples/Kreitman_SNP.sites
 
 inference_outputs: \

@@ -42,9 +42,19 @@ def run_tsinfer():
 
 @click.command()
 def run_kwarg():
-    # TODO - run kwarg here to create examples/kreitman.kwarg
+    sample_data = tsinfer.load("examples/Kreitman_SNP.samples") # to get the sample names
+    # TODO - run kwarg on Kreitman_SNP.matrix here to create examples/kreitman.kwarg
     with open("examples/kreitman.kwarg") as f:
-        ts = argutils.convert_kwarg(f, 11, 43)
+        ts = argutils.convert_kwarg(
+            f,
+            11,
+            43,
+            sample_names={
+                s.id: sample_data.individual(s.individual).metadata["name"]
+                for s in sample_data.samples()
+            },
+        )
+        # Label the samples
         ts.dump("examples/Kreitman_SNP_kwarg.trees")
 
 @click.command()
@@ -59,7 +69,7 @@ def run_argweaver():
         "--popsize", "1e6",
         "--mutrate", "5.49e-09",  # From stdpopsim
         "--recombrate", "8.4e-09",  # From stdpopsim
-        "--randseed", "123",
+        "--randseed", "111",
         "--iters", "3",
         "--sample-step", "10000",
         "--no-compress-output",
