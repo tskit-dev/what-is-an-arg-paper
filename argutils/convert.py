@@ -95,7 +95,7 @@ def convert_argweaver(infile):
 
     return ts.simplify(keep_unary=True)
 
-def convert_kwarg(infile, num_samples, sequence_length):
+def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
     """
     Convert a KwARG output file to a tree sequence.
     """
@@ -107,8 +107,12 @@ def convert_kwarg(infile, num_samples, sequence_length):
     node_ids = {}
     for n in range(num_samples):
         node_ids[n] = n
+        if sample_names is not None and n in sample_names:
+            name = sample_names[n]
+        else:
+            name = n
         tsk_id = tables.nodes.add_row(
-            flags=tskit.NODE_IS_SAMPLE, time=0.0, metadata={"sample": n})
+            flags=tskit.NODE_IS_SAMPLE, time=0.0, metadata={"name": name})
 
     for x in infile:
         line = x.split()

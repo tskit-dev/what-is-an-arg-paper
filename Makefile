@@ -21,6 +21,35 @@ paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex paper.tex
 	pdflatex paper.tex
 
+inference_inputs: \
+	examples/Kreitman_SNP.samples \
+	examples/Kreitman_SNP.matrix \
+	examples/Kreitman_SNP.sites
+
+inference_outputs: \
+	inference_inputs \
+	examples/Kreitman_SNP_tsinfer.trees \
+	examples/Kreitman_SNP_kwarg.trees \
+	examples/Kreitman_SNP_argweaver.trees \
+
+examples/Kreitman_SNP.samples: make_example_inputs.py
+	python3 	make_example_inputs.py tsinfer-input
+
+examples/Kreitman_SNP.kwarg: make_example_inputs.py
+	python3 	make_example_inputs.py kwarg-input
+
+examples/Kreitman_SNP.sites: make_example_inputs.py
+	python3 	make_example_inputs.py argweaver-input
+
+examples/Kreitman_SNP_tsinfer.trees: make_example_outputs.py
+	python3 	make_example_outputs.py run-tsinfer
+
+examples/Kreitman_SNP_kwarg.trees: make_example_outputs.py
+	python3 	make_example_outputs.py run-kwarg
+
+examples/Kreitman_SNP_argweaver.trees: make_example_outputs.py
+	python3 	make_example_outputs.py run-argweaver
+
 illustrations/%.svg: illustrations.py
 	python3 illustrations.py $*
 

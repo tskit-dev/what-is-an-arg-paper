@@ -22,6 +22,7 @@ def draw(
     max_edge_width=5,
     draw_edge_alpha=False,
     nonsample_node_shrink=None,
+    rotated_sample_labels=None,
     node_size=None,
     font_size=None,
     node_color=None,
@@ -64,6 +65,9 @@ def draw(
     amount by which nonsample node symbols are reduced; in this case labels on
     the nodes are omitted
     
+    If "rotated_sample_labels" is True, sample lables are rotated and placed
+    below the nodes
+    
     node_size, font_size, font_color, and node_color are all passed to nx.draw
     directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
@@ -83,7 +87,9 @@ def draw(
         font_size = 9
     G = convert_nx(ts)
     labels = {}
+    is_sample = {}
     for nd in ts.nodes():
+        is_sample[nd.id] = nd.is_sample()
         if nonsample_node_shrink is not None and not nd.is_sample():
             labels[nd.id] = ""
         else:
@@ -130,7 +136,7 @@ def draw(
         G,
         pos,
         node_color=node_color,
-        font_color=font_color,
+        with_labels=False,
         node_shape="o",
         node_size=node_size,
         font_size=font_size,
@@ -138,6 +144,22 @@ def draw(
         ax=ax,
         edgelist=[],
     )
+    text = nx.draw_networkx_labels(
+        G,
+        pos,
+        font_color=font_color,
+        font_size=font_size,
+        labels=labels,
+        ax=ax,
+    )
+    y_below_extra = 0.02 * np.diff(ax.get_ylim())  # 2% of the y range
+    if rotated_sample_labels:
+        for nd, t in text.items():
+            if is_sample[nd]:
+                x, y = t.get_position()
+                t.set_rotation(-90)
+                t.set_position((x, y - y_below_extra))
+                t.set_va('top')
     # Now add the edges
     edges = nx.draw_networkx_edges(
         G,

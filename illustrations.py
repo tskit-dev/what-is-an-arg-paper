@@ -230,6 +230,7 @@ def simplification():
         11: 5,
         8: 10,
     }
+
     ts = argutils.sim_wright_fisher(2, 10, 100, recomb_proba=0.1, seed=seed)
     tables = ts.dump_tables()
     rank_times = scipy.stats.rankdata(tables.nodes.time, method="dense")
@@ -475,51 +476,58 @@ def arg_in_pedigree():
 @click.command()
 def inference():
     tree_seqs = {}
+
     # KwARG
-    with open("examples/kreitman.kwarg") as f:
-        ts = argutils.convert_kwarg(f, 11, 43)
-        # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
-        ts = argutils.viz.label_nodes(ts)
-        tree_seqs["KwARG"] = ts
+    ts = tskit.load("examples/Kreitman_SNP_kwarg.trees")
+    # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
+    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["KwARG"] = argutils.viz.label_nodes(
+        ts,
+        labels=labels, # Use labels from Tsinfer
+    )
 
     # Tsinfer
-    with open("examples/kreitman_snp.txt") as file:
-        data = np.array([[int(d) for d in line.strip()] for line in file])
-    with tsinfer.SampleData(sequence_length=data.shape[1]) as sample_data:
-        for pos, sites in enumerate(data.T):
-            sample_data.add_site(pos, sites)
-    ts = tsinfer.infer(sample_data)
-    # For the moment, tsinfer uses byte metadata, so we need to convert it to json
-    tables = ts.dump_tables()
-    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
+    labels = {}
     for n in ts.nodes():
-        tables.nodes[n.id] = tables.nodes[n.id].replace(
-            metadata = json.loads(n.metadata.decode() or "{}"))
-    # temporary hack: remove the ultimate ancestor if it exists
-    oldest_node = np.argmax(tables.nodes.time)
-    if np.sum(tables.edges.parent==oldest_node) == 1:
-        # only a single edge connects to the root. This is a unary "ultimate ancestor"
-        # and can be removed (it will be removed in later tsinfer versions anyway)
-        use = np.arange(tables.nodes.num_rows)
-        use = use[use != oldest_node]
-        tables.subset(use)
-    ts = tables.tree_sequence()
-    tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts)
+        labels[n.id] = ""
+        if n.individual != tskit.NULL:
+            ind_metadata = ts.individual(n.individual).metadata
+            try:
+                labels[n.id] = ind_metadata["name"]
+            except TypeError:
+                labels[n.id] = json.loads(ind_metadata.decode())["name"]
+    tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts, labels=labels)
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
+    # ARGweaver
+    ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
+    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
+
+    fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     col = mpl.colors.to_hex(plt.cm.tab20(1))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
+        if name == "Tsinfer":
+            use_ranked_times = True
+        if name == "ARGweaver":
+            use_ranked_times = None
+        if name == "KwARG":
+            use_ranked_times = None
         pos, G = argutils.viz.draw(
             ts, ax,
-            nonsample_node_shrink=5,
-            use_ranked_times=True if name == "Tsinfer" else None,
+            node_size=30,
+            rotated_sample_labels=True,
+            use_ranked_times=use_ranked_times,
             draw_edge_widths=True,
             node_color=col,
             max_edge_width=2)
         ax.set_title(name)
 
     graph_io = io.StringIO()
-    plt.savefig(graph_io, format="svg", bbox_inches="tight")
+    fig.tight_layout()
+    #fig.subplots_adjust(bottom=0.1)
+    plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
 
