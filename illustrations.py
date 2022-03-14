@@ -143,15 +143,17 @@ def ancestry_resolution():
     # Panel (a)
     tr_figure = ax1.transData.transform
     tr_axes = fig.transFigure.inverted().transform
-    icon_size = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.0003
-    icon_center = icon_size / 2.0
+    icon_size1 = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.00029
+    icon_center1 = icon_size1 / 2.0
+    icon_size2 = icon_size1 * 0.9
+    icon_center2 = icon_size2 / 2.0
     for n in G.nodes:
         G.nodes[n]["image"] = images["genome_empty"]
     for n in G.nodes:
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
-        a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
-        a.imshow(G.nodes[n]["image"])
+        a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2-0.0015])
+        a.imshow(G.nodes[n]["image"], aspect='auto', interpolation='spline36')
         a.set_title(
             string.ascii_uppercase[n],
             y=0,
@@ -164,8 +166,10 @@ def ancestry_resolution():
     # Panel (b)
     tr_figure = ax2.transData.transform
     tr_axes = fig.transFigure.inverted().transform
-    icon_size = (ax2.get_xlim()[1] - ax2.get_xlim()[0]) * 0.0003
-    icon_center = icon_size / 2.0
+    icon_size1 = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.00029
+    icon_center1 = icon_size1 / 2.0
+    icon_size2 = icon_size1 * 0.9
+    icon_center2 = icon_size2 / 2.0
     for n in [0, 1, 2]:
         G.nodes[n]["image"] = images["genome_full"]
     for n in range(3, G.number_of_nodes()):
@@ -174,8 +178,8 @@ def ancestry_resolution():
     for n in G.nodes:
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
-        a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
-        a.imshow(G.nodes[n]["image"])
+        a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2-0.0015])
+        a.imshow(G.nodes[n]["image"], aspect='auto', interpolation='spline36')
         if n in [2, 4, 6, 7, 13, 21]:
             n_loc = "right"
         else:
