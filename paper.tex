@@ -1191,7 +1191,7 @@ and E). [And continue]
 \section*{ARGs and SPRs}
 \citet{wiuf1999ancestry,wiuf1999recombination} recast
 the coalescent with recombination
-as a stocastic process along the genome rather than backwards in time.
+as a stochastic process along the genome rather than backwards in time.
 In this formulation we begin at one end of a chromosome by
 sampling a tree under the standard coalescent, and then reason
 about how this tree is modified by recombination events
@@ -1271,6 +1271,55 @@ leaf-labelled binary trees.
 % Clearly, we can only ever hope to infer the fraction of an ancestor's
 % genome that is ancestral to the sample.
 
+\section*{Evaluation of sampling probabilities}
+
+The conditional sampling probability $p(G | D)$ of an ARG $G$ given an observed
+realization of genetic diversity $D$ at its sampled leaves is a central concept in
+model fitting and selection. Under the Bayesian paradigm, it defines the posterior
+distribution $p(G | D) \propto p(D | G) p(G)$, where $p(D | G)$ is the likelihood
+of the data $D$ given $G$, and $p(G)$ is a prior distribution for the underlying
+ARG $G$. Under the frequentist paradigm, $p(G)$ can be interpreted as a regularizer,
+and $p(G | D)$ as a regularized likelihood. In both cases, $p(G)$ is typically specified
+as the sampling distribution of a stochastic process, such as the coalescent with
+recombination. Essentially all of the model-based inference methods surveyed below
+rely on evaluation of a likelihood and a prior. Two contemporary examples of
+likelihood-based methods are  \cite{mahmoudi2022bayesian, guo2022recombination}.
+
+In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is the law of
+a Poisson process on the ancestral material on the edges of the ARG, which implies
+that mutation processes at two sites are conditionally independent given the
+underlying ancestral trees at those sites. A prototypical example is 
+\citet[Eq.\ (2)]{mahmoudi2022bayesian}. Hence, $p(D | G)$ can be evaluated
+regardless of the precise data structure used to store $G$, provided that it encodes
+at least all marginal ancestral trees along the sampled sequences.  Choosing the
+right data structure can still have a dramatic effect on the efficiency with which
+$p(D | G)$ can be evaluated \citep{mahmoudi2022bayesian}.
+
+In contrast, evaluating $p(G)$ under the coalescent with recombination
+(or related models) requires knowledge of the number of extant lineages and
+the number of links available for recombination (i.e.\ ones at which a recombination
+would split ancestral material) at each time along the ARG
+\citep[Eq.\ (3)]{mahmoudi2022bayesian}. These cannot be uniquely determined
+from just the marginal trees at each site because branches at multiple trees can be
+contained in the same ancestral lineage. Instead, a richer data structure akin to the
+EARG or GARG is needed. Moreover, because EARG does not explicitly store the flow
+of ancestral material along its edges---a necessary piece of information for
+computing the number of effective recombination links at each time---evaluating
+$p(G)$ based on an EARG essentially requires turning it into a GARG at runtime.
+
+The number of extant lineages at a given time is not explicitly represented even
+in a GARG, and needs to be calculated from the node and edge tables.
+For example, any edges with the same child and parent nodes are contained within
+the same lineage. Under the coalescent with recombination, the two edges
+originating from a recombinant child are also contained within a single lineage
+until the time of their parent nodes, at which point they split. Nodes S, T, and U
+in panel (a) of Figure \ref{fig-ancestry-resolution} provide a concrete example
+of the latter: the edges from S to T and S to U are distinct, but correspond to only
+a single lineage in the time interval they span. We emphasize that these
+conventions grouping edges into lineages are not part of the GARG data structure.
+While they are convenient for analysis using the coalescent with recombination,
+other models, such as discrete time Wright--Fisher models with finite populations,
+may benefit from different ways to associate edges with lineages.
 
 \section*{ARG inference methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
