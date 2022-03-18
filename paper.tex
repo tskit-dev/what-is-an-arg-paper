@@ -588,10 +588,10 @@ nodelabel/.style={font=\footnotesize}}
 \node (s6) [greynode] at (3, 4) {};
 
 \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/0, s1/1, s2/2} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/4} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/5} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/3, s6/6} \node[nodelabel,anchor=south] at (\u) {\lab};
+\foreach \u/\lab in {s0/$\textsf{A}$, s1/$\textsf{B}$, s2/$\textsf{C}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/$\textsf{E}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/$\textsf{F}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/$\textsf{D}$, s6/$\textsf{G}$} \node[nodelabel,anchor=south] at (\u) {\lab};
 
 %% Edges
 \draw (s1) -- (s3);
@@ -602,45 +602,45 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [nodelabel,anchor=north west] at ($(-8.5,5)$) {
+\node [nodelabel,anchor=north west] at ($(-10,5)$) {
 \begin{tabular}{c|c}
 % \multicolumn{2}{c}{Breakpoint}\\
 node & breakpoint\\
 \hline
-0 & $\varnothing$ \\
-1 & $\varnothing$ \\
-2 & $\varnothing$ \\
-3 & $x$ \\
-4 & $\varnothing$ \\
-5 & $\varnothing$ \\
-6 & $\varnothing$ \\
+$\textsf{A}$ & $\varnothing$ \\
+$\textsf{B}$ & $\varnothing$ \\
+$\textsf{C}$ & $\varnothing$ \\
+$\textsf{D}$ & $x$ \\
+$\textsf{E}$ & $\varnothing$ \\
+$\textsf{F}$ & $\varnothing$ \\
+$\textsf{G}$ & $\varnothing$ \\
 \end{tabular}};
 
-\node [nodelabel,anchor=north west] at ($(-2.5,5)$) {
+\node [nodelabel,anchor=north west] at ($(-4,5)$) {
 \begin{tabular}{l}
 Edges\\
 \hline
-$(0, 4)$ \\
-$(1, 3)$ \\
-$(2, 5)$ \\
-$(3, 4)$ \\
-$(3, 5)$ \\
-$(4, 6)$ \\
-$(5, 6)$ \\
+$(\textsf{A}, \textsf{E})$ \\
+$(\textsf{B}, \textsf{D})$ \\
+$(\textsf{C}, \textsf{F})$ \\
+$(\textsf{D}, \textsf{E})$ \\
+$(\textsf{D}, \textsf{F})$ \\
+$(\textsf{E}, \textsf{G})$ \\
+$(\textsf{F}, \textsf{G})$ \\
 \end{tabular}};
 
 
-\node [nodelabel,anchor=north west] at ($(6,5)$) {
+\node [nodelabel,anchor=north west] at ($(7,5)$) {
 \begin{tabular}{ll}
 Edges\\
 \hline
-$(0, 4)$ & $(0, L]$ \\
-$(1, 3)$ & $(0, L]$ \\
-$(2, 5)$ & $(0, L]$ \\
-$(3, 4)$ & $(0, x]$ \\
-$(3, 5)$ & $(x, L]$ \\
-$(4, 6)$ & $(0, L]$ \\
-$(5, 6)$ & $(0, L]$ \\
+$(\textsf{A}, \textsf{E})$ & $(0, L]$ \\
+$(\textsf{B}, \textsf{D})$ & $(0, L]$ \\
+$(\textsf{C}, \textsf{F})$ & $(0, L]$ \\
+$(\textsf{D}, \textsf{E})$ & $(0, x]$ \\
+$(\textsf{D}, \textsf{F})$ & $(x, L]$ \\
+$(\textsf{E}, \textsf{G})$ & $(0, L]$ \\
+$(\textsf{F}, \textsf{G})$ & $(0, L]$ \\
 \end{tabular}};
 
 
