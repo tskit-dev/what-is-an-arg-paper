@@ -73,11 +73,18 @@ def cli():
 
 @click.command()
 def tsinfer_input():
+    """
+    Create a ".sample" file in the format required by tsinfer
+    (see https://tsinfer.readthedocs.io/en/latest/tutorial.html)
+    """
     saved_samples = sample_data.copy(path="examples/Kreitman_SNP.samples")
     saved_samples.finalise()
 
 @click.command()
 def kwarg_input():
+    """
+    Create a ".matrix" file in the format required by kwarg
+    """
     # a simple 0/1 sites-by-samples matrix
     with open("examples/Kreitman_SNP.matrix", "wt") as file:
         for row in sample_data.sites_genotypes[:].T:
@@ -86,6 +93,9 @@ def kwarg_input():
 
 @click.command()
 def argweaver_input():
+    """
+    Create a ".sites" file in the format required by ARGweaver
+    """
     with open("examples/Kreitman_SNP.sites", "wt") as file:
         print(
             "NAMES",
@@ -106,9 +116,37 @@ def argweaver_input():
                 file=file,
             )
 
+@click.command()
+def relate_input():
+    """
+    Create a ".haps" file and a ".sample" file in the format required by relate
+    (see https://myersgroup.github.io/relate/input_data.html)
+    """
+    with open("examples/Kreitman_SNP.haps", "wt") as file:
+        for v in sample_data.variants():
+            assert len(v.alleles) == 2
+            print(
+                "2",
+                f"SNP{v.site.id}",
+                int(v.site.position),
+                v.alleles[0],
+                v.alleles[1],
+                " ".join([str(g) for g in v.genotypes]),
+                sep=" ",
+                file=file,
+            )
+    with open("examples/Kreitman_SNP.sample", "wt") as file:
+        print("ID_1 ID_2 missing", file=file)
+        print("0    0    0", file=file)
+        for i in sample_data.individuals():
+            assert len(i.samples) == 1
+            assert i.id == i.samples[0]
+            print(f'{i.metadata["name"].replace("-", "")} NA 0', file=file)
+
 cli.add_command(tsinfer_input)
 cli.add_command(kwarg_input)
 cli.add_command(argweaver_input)
+cli.add_command(relate_input)
 
 if __name__ == "__main__":
     cli()

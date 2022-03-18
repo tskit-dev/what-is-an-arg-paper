@@ -35,7 +35,7 @@ def draw(
     called "name" exists for the node, it is taken as
     a node label, otherwise the node ID will be used as a label instead.
 
-    If use_ranked times is True, the y axis uses the time ranks, with the
+    If use_ranked_times is True, the y axis uses the time ranks, with the
     same times sharing a rank. If False, it uses the true (tree sequence)
     times. If None, times from the tree sequence are not used and the
     standard dot layout is used.

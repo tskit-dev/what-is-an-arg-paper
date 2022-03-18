@@ -509,6 +509,17 @@ def inference():
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
     tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
 
+    # Relate JBOT
+    ts = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")
+    tables = ts.dump_tables()
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    for i, n in enumerate(tables.nodes):
+        tables.nodes[i] = n.replace(metadata={})
+    ts = tables.tree_sequence()
+    # labels not stored by default in the Relate ts metadata, so use the previous ones
+    labels = {n.id: labels[n.id] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["Relate JBOT"] = argutils.viz.label_nodes(ts, labels=labels)
+
     fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     col = mpl.colors.to_hex(plt.cm.tab20(1))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
@@ -518,6 +529,8 @@ def inference():
             use_ranked_times = None
         if name == "KwARG":
             use_ranked_times = None
+        if name == "Relate JBOT":
+            use_ranked_times = True
         pos, G = argutils.viz.draw(
             ts, ax,
             node_size=30,
