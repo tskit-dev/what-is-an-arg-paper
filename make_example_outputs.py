@@ -12,6 +12,10 @@ import argutils
 import numpy as np
 import click
 
+mu = 5.49e-09  # From stdpopsim
+rho = 8.4e-09  # From stdpopsim
+Ne = 1e6  # Random guess
+
 @click.group()
 def cli():
     pass
@@ -57,6 +61,7 @@ def run_kwarg():
         # Label the samples
         ts.dump("examples/Kreitman_SNP_kwarg.trees")
 
+
 @click.command()
 def run_argweaver():
     os.makedirs("examples/argweaver_output", exist_ok=True)
@@ -66,9 +71,9 @@ def run_argweaver():
         "--output", "examples/argweaver_output/arg-sample",
         "--overwrite",
         "--smc-prime",
-        "--popsize", "1e6",
-        "--mutrate", "5.49e-09",  # From stdpopsim
-        "--recombrate", "8.4e-09",  # From stdpopsim
+        "--popsize", str(Ne),
+        "--mutrate", str(mu),
+        "--recombrate", str(rho),
         "--randseed", "111",
         "--iters", "3",
         "--sample-step", "10000",
@@ -85,9 +90,55 @@ def run_argweaver():
         ts.dump("examples/Kreitman_SNP_argweaver.trees")
 
 
+@click.command()
+def run_relate():
+    sample_data = tsinfer.load("examples/Kreitman_SNP.samples")  # just for the seq len
+    dir = "examples/Relate_output/"
+    outfiles = "Kreitman_SNP"
+    os.makedirs(dir, exist_ok=True)
+    map_name = "Kreitman_SNP.map"
+    with open(f"examples/{map_name}", "wt") as file:
+        cM_per_MB = rho * 1e8
+        print("pos", "COMBINED_rate", "Genetic_Map", sep=" ", file=file)
+        print(0, f"{cM_per_MB:.5f}", 0, sep=" ", file=file)
+        print(
+            int(sample_data.sequence_length),
+            f"{cM_per_MB:.5f}",
+            sample_data.sequence_length / 1e6 * cM_per_MB,
+            sep=" ",
+            file=file)
+    subprocess.run(
+        [
+            "../../tools/relate/bin/Relate",
+            "--mode", "All",
+            "-m", str(mu),
+            "-N", str(Ne),
+            "--haps", "../Kreitman_SNP.haps",
+            "--sample", "../Kreitman_SNP.sample",
+            "--map", f"../{map_name}",
+            "--seed",  "111",
+            "-o", outfiles,
+        ],
+        cwd=dir,
+    )
+
+    # Convert to JBOT tree sequence format
+    subprocess.run([
+        "tools/relate/bin/RelateFileFormats",
+        "--mode", "ConvertToTreeSequence",
+        "-i", f"{dir}{outfiles}",
+        "-o", f"examples/Kreitman_SNP_relate_jbot"
+    ])
+    
+    # Convert to time-uncalibrated tree sequence format
+    #with open("examples/argweaver_output/arg-sample.0.arg") as f:
+    #ts = argutils.convert_relate_without_times(outfiles
+    
+    
 cli.add_command(run_tsinfer)
 cli.add_command(run_kwarg)
 cli.add_command(run_argweaver)
+cli.add_command(run_relate)
 
 if __name__ == "__main__":
     cli()

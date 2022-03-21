@@ -142,3 +142,65 @@ def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
     ts = tables.tree_sequence()
 
     return argutils.simplify_keeping_all_nodes(ts)
+
+
+def convert_relate_without_times(infile):
+    """
+    Convert a Relate .anc file to a tree sequence, but with time_units="uncalibrated"
+    which allows us to create an proper ARG rather than a JBOT. See
+    https://myersgroup.github.io/relate/getting_started.html#Output
+    
+    NUM_HAPLOTYPES 8
+NUM_TREES 7619
+0: 8:(607.26519 0.000 0 86) 13:(2702.54805 0.000 0 28) 9:(2641.61779 0.000 0 41) 11:(3724.67317 3.000 0 28) 9:(2641.61779 7.000 0 41) 12:(5155.21459 5.000 0 21) 10:(3088.44253 4.000 0 28) 8:(607.26519 4.000 0 86) 13:(2095.28286 2.000 0 28) 10:(446.82474 0.000 0 28) 11:(636.23064 0.000 0 28) 12:(1430.54142 0.000 0 21) 14:(1247.46463 0.000 0 21) 14:(3700.13116 2.000 0 21) -1:(0.00000 0.000 0 21) 
+21: 8:(667.04955 0.000 0 86) 11:(2266.08783 0.000 0 28) 9:(2335.63438 0.000 0 41) 12:(3455.60941 3.000 0 28) 9:(2335.63438 7.000 0 41) 14:(7848.96712 
+5.000 21 41) 10:(3236.77021 4.000 0 28) 8:(667.04955 4.000 0 86) 11:(1599.03828 2.000 0 28) 10:(901.13583 0.000 0 28) 12:(218.83920 0.000 0 28) 13:(14
+58.13811 0.000 21 28) 13:(268.61652 0.000 21 28) 14:(4124.74119 5.000 21 41) -1:(0.00000 0.000 21 28) 
+
+    """
+    # Make an nx DiGraph so we can do a topological sort.
+    G = nx.DiGraph()
+    haps = next(infile)
+    assert haps.startswith("NUM_HAPLOTYPES")
+    num_samples = int(haps[len("NUM_HAPLOTYPES"):])
+    node_map={}
+    for i in range(num_samples):
+        G.add_node(i)
+        node_map[i] = i
+    trees = next(infile)
+    assert haps.startswith("NUM_TREES")
+    num_trees = int(haps[len("NUM_TREES"):])
+    edges = {}
+    for line in infile:
+        p = line.find(":")
+        assert p >= 0
+        left_pos = line[:p]
+        line = line[(p+1):-1].strip()
+        assert line[-1] == ")"
+        branches = line.split(")")
+        tree = []
+        for child, branch in enumerate(branches):
+            p = branch.find(":")
+            parent = int(branch[:p])
+            vals = branch[p:].strip().split() # split on whitespace
+            # In Relate, node IDs are not necessarily shared across trees. We need to
+            # make node IDs unique by looking at each tree, going through the nodes
+            # in postorder, and if the edge to the node hasn't been seen before (i.e.
+            # with the same (parent, child, left, right) values, we change the parent
+            # node ID to a new unique one (note that this means we must have SMC trees
+            # (as we can't know if we have returned to the same node in later trees)
+            edge = (child, parent, val[-2], vals[-1])
+            tree.push(edge)
+            # parent, child, left, right -> new_parent_id
+            if edge not in edges:
+                i = len(node_map)
+                node_map[parent] = i
+                G.add_node(i)
+                edges[edge] = i  # record that in this edge the parent is actually ID i
+            else:
+                node_map[parent] = edges[edge]
+        for edge in tree:
+            G.add_edge(node_map[edge[0]], node_map[edge[1]], left=edge[2], right=edge[3])
+         
+            
+        

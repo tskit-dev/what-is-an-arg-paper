@@ -1,5 +1,6 @@
 graphlib_backport  # for python < 3.9
 matplotlib
+colorcet
 msprime>=1.0.0
 numpy
 networkx
