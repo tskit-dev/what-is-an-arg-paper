@@ -261,7 +261,7 @@ def simplification():
         ax1,
         draw_edge_widths=True,
         use_ranked_times=False,
-        node_color=col,
+        node_arity_colors=True,
         tweak_x=t_x,
     )
     ts2, node_map = argutils.simplify_remove_pass_through(
@@ -272,7 +272,7 @@ def simplification():
         ax2,
         draw_edge_widths=True,
         pos={node_map[i]: p for i, p in pos.items()},
-        node_color=col,
+        node_arity_colors=True,
     )
     ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts1, map_nodes=True)
     argutils.viz.draw(
@@ -280,7 +280,7 @@ def simplification():
         ax3,
         draw_edge_widths=True,
         pos={node_map[i]: p for i, p in pos.items()},
-        node_color=col,
+        node_arity_colors=True,
     )
     ts4, node_map = ts1.simplify(map_nodes=True)
     argutils.viz.draw(
@@ -288,7 +288,7 @@ def simplification():
         ax4,
         draw_edge_widths=True,
         pos={node_map[i]: p for i, p in pos.items()},
-        node_color=col,
+        node_arity_colors=True,
     )
 
     graph1_io = io.StringIO()
@@ -521,7 +521,6 @@ def inference():
     tree_seqs["Relate JBOT"] = argutils.viz.label_nodes(ts, labels=labels)
 
     fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
-    col = mpl.colors.to_hex(plt.cm.tab20(1))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
         if name == "Tsinfer":
             use_ranked_times = True
@@ -537,9 +536,9 @@ def inference():
             rotated_sample_labels=True,
             use_ranked_times=use_ranked_times,
             draw_edge_widths=True,
-            node_color=col,
+            node_arity_colors=True,
             max_edge_width=2)
-        ax.set_title(name)
+        ax.set_title(name + f"\n{ts.num_trees} trees")
 
     graph_io = io.StringIO()
     fig.tight_layout()

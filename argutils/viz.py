@@ -2,12 +2,38 @@
 Viz routines for args.
 """
 import collections
+import colorsys
 import itertools
 import string
 
+import colorcet
+import matplotlib as mpl
 import networkx as nx
 import numpy as np
 import pydot
+
+
+def arity_colors(n_parents):
+    assert n_parents >= 0
+    if n_parents == 0:
+        return colorcet.cm.CET_I1(255)  # Red
+    if n_parents == 1:
+        return colorcet.cm.CET_I1(200)  # Yellow
+    # Max out at full blue if 20 or more parents, use log scale
+    multiple_parents_val = (min(np.log2(n_parents), np.log2(10)) - 1) / (np.log2(10) - 1)
+    return colorcet.cm.CET_I1(100 - int(multiple_parents_val * 100))
+
+
+def make_color(rgb, lighten=0):
+    """
+    Make a hex colour from this rgb colour and potentially lighten it (to white if l=0)
+    By default, make a tiny bit darker anyway
+    """
+    amount = 1.2 * (1 - lighten)
+    c = colorsys.rgb_to_hls(*rgb[:3])
+    c = colorsys.hls_to_rgb(c[0], 1 - amount * (1-c[1]), c[2])
+    return mpl.colors.to_hex(c)
+
 
 def draw(
     ts,
@@ -21,6 +47,7 @@ def draw(
     draw_edge_widths=False,
     max_edge_width=5,
     draw_edge_alpha=False,
+    node_arity_colors=False,
     nonsample_node_shrink=None,
     rotated_sample_labels=None,
     node_size=None,
@@ -61,6 +88,16 @@ def draw(
     If draw_edge_alpha is True, draw edges with an alpha value equal to their
     genomic span / the total sequence length of the tree sequence.
 
+    If `node_arity_colours` is True, the colour of the nodes is determined
+    by the number of children and number of parents. In particular, the brightness
+    of the fill colour is determined by the proportion of genome over which the node
+    has 2 or more children (i.e. is "coalescent") compared to the amount of genome over
+    which it has any children (if never coalescent, it it white). The hue of the
+    colour (both for the stroke and the fill) indicated the number of parents of a
+    node (red is 0, yellow/brown is 1, green to blue are 2 -> N parents. If 
+    `node_arity_colours` is True, node_colour is ignored and font_color is
+    set to white for sample nodes.
+
     If "nonsample_node_shrink" is not None, it should be an integer giving the
     amount by which nonsample node symbols are reduced; in this case labels on
     the nodes are omitted
@@ -71,7 +108,7 @@ def draw(
     node_size, font_size, font_color, and node_color are all passed to nx.draw
     directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
-    or a dict of node_id -> colours.
+    or a list of colours (which is ignored if node_arity_colors is True)
     
     if reverse_x_axis is True, the graph is reflected horizontally 
 
@@ -85,18 +122,21 @@ def draw(
         node_size = node_size_array
     if font_size is None:
         font_size = 9
+    if font_color is None:
+        font_color = "k"
+        
     G = convert_nx(ts)
-    labels = {}
+    labels_by_colour = {font_color: {}}  #  so we can change font colour
     is_sample = {}
     for nd in ts.nodes():
         is_sample[nd.id] = nd.is_sample()
         if nonsample_node_shrink is not None and not nd.is_sample():
-            labels[nd.id] = ""
+            labels_by_colour[font_color][nd.id] = ""
         else:
             try:
-                labels[nd.id] = str(nd.metadata["name"])
+                labels_by_colour[font_color][nd.id] = str(nd.metadata["name"])
             except (TypeError, KeyError):
-                labels[nd.id] = str(nd.id)
+                labels_by_colour[font_color][nd.id] = str(nd.id)
 
     if pos is None:
         pos = nx_get_dot_pos(G, reverse_x_axis)
@@ -131,35 +171,67 @@ def draw(
             edge_widths = [max_edge_width for edge in G.edges()]
     else:
         edge_alpha = None
+
     # Draw just the nodes
+    edge_color = None
+    if node_arity_colors:
+        # Isoluminant colours
+        spans = collections.defaultdict(float)
+        c_spans = collections.defaultdict(float)
+        for tree in ts.trees():
+            for node in tree.nodes():
+                if tree.num_children(node) > 0:
+                    spans[node] += tree.span
+                if tree.num_children(node) > 1:
+                    c_spans[node] += tree.span
+        node_color = []
+        edge_color = []
+        for n, deg in G.out_degree():
+            col = arity_colors(deg)
+            # get span over which this is not unary
+            if spans[n] == 0:
+                assert ts.node(n).is_sample()
+                node_color.append("#000000")
+                edge_color.append(make_color(col))
+            else:
+                edge_color.append(make_color(col))
+                node_color.append(make_color(col, lighten= 1 - (c_spans[n]/spans[n])))
+        if not rotated_sample_labels:
+            # Sample nodes are filled black, so we need to change the label colour
+            labs = labels_by_colour[font_color]
+            labels_by_colour["w"] = {k: v for k, v in labs.items() if ts.node(k).is_sample()}
+            labs = {k: v for k, v in labs.items() if not ts.node(k).is_sample()}
+            
+
     nx.draw(
         G,
         pos,
         node_color=node_color,
+        edgecolors=edge_color,
         with_labels=False,
         node_shape="o",
         node_size=node_size,
         font_size=font_size,
-        labels=labels,
         ax=ax,
         edgelist=[],
     )
-    text = nx.draw_networkx_labels(
-        G,
-        pos,
-        font_color=font_color,
-        font_size=font_size,
-        labels=labels,
-        ax=ax,
-    )
-    y_below_extra = 0.02 * np.diff(ax.get_ylim())  # 2% of the y range
-    if rotated_sample_labels:
-        for nd, t in text.items():
-            if is_sample[nd]:
-                x, y = t.get_position()
-                t.set_rotation(-90)
-                t.set_position((x, y - y_below_extra))
-                t.set_va('top')
+    for font_color, labels in labels_by_colour.items():
+        text = nx.draw_networkx_labels(
+            G,
+            pos,
+            font_color=font_color,
+            font_size=font_size,
+            labels=labels,
+            ax=ax,
+        )
+        y_below_extra = 0.018 * np.diff(ax.get_ylim())  # 2% of the y range
+        if rotated_sample_labels:
+            for nd, t in text.items():
+                if is_sample[nd]:
+                    x, y = t.get_position()
+                    t.set_rotation(-90)
+                    t.set_position((x, y - y_below_extra))
+                    t.set_va('top')
     # Now add the edges
     edges = nx.draw_networkx_edges(
         G,
