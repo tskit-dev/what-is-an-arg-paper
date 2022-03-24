@@ -490,6 +490,11 @@ def inference():
         labels=labels, # Use labels from Tsinfer
     )
 
+    # ARGweaver
+    ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
+    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
+
     # Tsinfer
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
     labels = {}
@@ -502,12 +507,6 @@ def inference():
             except TypeError:
                 labels[n.id] = json.loads(ind_metadata.decode())["name"]
     tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts, labels=labels)
-
-
-    # ARGweaver
-    ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
-    labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
 
     # Relate JBOT
     ts = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")
