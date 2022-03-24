@@ -495,7 +495,7 @@ def inference():
     # ARGweaver
     ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["ARGweaver ex."] = argutils.viz.label_nodes(ts, labels=labels)
+    tree_seqs["ARGweaver example"] = argutils.viz.label_nodes(ts, labels=labels)
 
     # Tsinfer
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
@@ -510,7 +510,7 @@ def inference():
                 labels[n.id] = json.loads(ind_metadata.decode())["name"]
     tree_seqs["Tsinfer"] = argutils.viz.label_nodes(ts, labels=labels)
 
-    # Relate JBOT
+    # Relate JBOT (normally commented out)
     ts = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")
     tables = ts.dump_tables()
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
@@ -519,9 +519,20 @@ def inference():
     ts = tables.tree_sequence()
     # labels not stored by default in the Relate ts metadata, so use the previous ones
     labels = {n.id: labels[n.id] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["Relate JBOT"] = argutils.viz.label_nodes(ts, labels=labels)
+    # tree_seqs["Relate JBOT"] = argutils.viz.label_nodes(ts, labels=labels)
 
-    widths = np.ones(4)
+    # Relate non JBOT
+    ts = tskit.load("examples/Kreitman_SNP_relate_merged.trees")
+    tables = ts.dump_tables()
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    for i, n in enumerate(tables.nodes):
+        tables.nodes[i] = n.replace(metadata={})
+    ts = tables.tree_sequence()
+    # labels not stored by default in the Relate ts metadata, so use the previous ones
+    labels = {n.id: labels[n.id] if n.is_sample() else "" for n in ts.nodes()}
+    tree_seqs["Relate"] = argutils.viz.label_nodes(ts, labels=labels)
+
+    widths = np.ones(len(tree_seqs))
     heights = [1, 0.1]
     fig, axes = plt.subplots(2, len(tree_seqs), figsize=(10, 6),
                              gridspec_kw=dict(
@@ -529,15 +540,16 @@ def inference():
     tree_seq_positions = []
     edge_colors_by_ts = {}
     max_rank_by_ts = {}
-    for ax, (name, ts) in zip(axes[0], tree_seqs.items()):
-        tweak_x = {}
+    for ax, ax_edges, (name, ts) in zip(axes[0], axes[1], tree_seqs.items()):
+        reverse_x_axis = False
+        tweak_x={}
         use_ranked_times = None  # By default use Y axis layout from graphviz dot
         if name == "Tsinfer":
             tweak_x = {
                 21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
                 23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
             }
-        if name == "ARGweaver ex.":
+        if name == "ARGweaver example":
             tweak_x = {
                 54: -10
             }
@@ -552,6 +564,18 @@ def inference():
                 30: 35, 26: 5, 29: 25, 28: 25, 25: -5, 23: -10, 22: -15, 21: -2, 27: 25, 24: 20,
                 20: -10, 15: -42, 11: -5, 16: -10, 13: -40, 18: -10, 19: -10,
             }
+
+        if name == "Relate":
+            reverse_x_axis=True
+            tweak_x = {
+                20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
+                6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
+                28: 5, 26: 16, 17: -15, 16: 5, 21: -2, 23: 2, 29: 5
+            }
+
+        # Interesting to look at what the semi-simplified graphs look like
+        # ts = argutils.simplify_keeping_unary_in_coal(ts)
+
         # Sort edges by the age of the child node
         edges_argsorted = scipy.stats.rankdata(ts.tables.nodes.time[ts.tables.edges.child], method='dense') - 1
         edge_sorted_dict = {edge_id: sorted_edge_id
@@ -578,32 +602,32 @@ def inference():
             node_arity_colors=True,
             tweak_x=tweak_x,
             max_edge_width=2,
-            edge_colors=edge_colors_by_nodes)
-        tree_seq_positions.append(pos)
+            edge_colors=edge_colors_by_nodes,
+            reverse_x_axis=reverse_x_axis,
+        )
         ax.set_title(name + f"\n{ts.num_trees} trees")
 
-    # Add breakpoints and stacked edges below tree sequences, w same colormap as above
-    for ax, (name, tree_seq), p in zip(axes[1], tree_seqs.items(), tree_seq_positions):
-        ax.axis("off")
+        # Add breakpoints and stacked edges below tree sequences, w same colormap as above
+        ax_edges.axis("off")
         left_coord = 0.1
         width = 0.8
 
         edges = {}
-        times = tree_seq.tables.nodes.time
+        times = ts.tables.nodes.time
         for ((i, tree), (interval, edges_out, edges_in)) in zip(enumerate(
-                tree_seq.trees()), tree_seq.edge_diffs()):
+                ts.trees()), ts.edge_diffs()):
 
             relative_span = ((tree.interval.right - tree.interval.left) /
-                             tree_seq.get_sequence_length())
+                             ts.get_sequence_length())
 
             for edge in edges_in:
                 edges[edge.id] = (left_coord, -1, times[edge.child])
             for edge in edges_out:
                 edges[edge.id] = (edges[edge.id][0], left_coord, edges[edge.id][2])
 
-            ax.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
+            ax_edges.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
             left_coord += relative_span * width
-            ax.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
+            ax_edges.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
         # Colormap normalization to the number of edges in each tree sequence (as above)
         norm = mpl.colors.Normalize(vmin=0, vmax=max_rank_by_ts[name])
 
@@ -615,11 +639,11 @@ def inference():
             if right == -1:
                 right = left_coord
             rect = patches.Rectangle(
-                (left, (index / tree_seq.num_edges)),
+                (left, (index / ts.num_edges)),
                 (right - left),
-                (1 / tree_seq.num_edges), linewidth=1,
+                (1 / ts.num_edges), linewidth=1,
                 facecolor=edge_colors_by_ts[name][key])
-            ax.add_patch(rect)
+            ax_edges.add_patch(rect)
 
     graph_io = io.StringIO()
     fig.tight_layout()
@@ -630,7 +654,7 @@ def inference():
 
     svg = [
         # Could concatenate more SVG stuff here in <g> tags, e.g.
-        # if we wanted to draw the 2 plots as 2 separate svg plots\
+        # if we wanted to draw the 2 plots as 2 separate svg plots
         # rather than using plt.subplots
         graph_svg[graph_svg.find("<svg"):]
     ]

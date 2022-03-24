@@ -126,16 +126,36 @@ def run_relate():
 
     # Convert to JBOT tree sequence format
     subprocess.run([
-        "tools/relate/bin/RelateFileFormats",
+        "tools/relate_lib/bin/Convert",
         "--mode", "ConvertToTreeSequence",
-        "-i", f"{dir}{outfiles}",
-        "-o", f"examples/Kreitman_SNP_relate_jbot"
+        "--anc", f"{dir}{outfiles}.anc",
+        "--mut", f"{dir}{outfiles}.mut",
+        "-o", f"examples/Kreitman_SNP_relate_jbot",
     ])
     
     # Convert to time-uncalibrated tree sequence format
-    #with open("examples/argweaver_output/arg-sample.0.arg") as f:
-    #ts = argutils.convert_relate_without_times(outfiles
-    
+    ts_jbot = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")
+    ts = argutils.relate_ts_JBOT_to_ts(
+        ts_jbot,
+        # Hack here
+        additional_equivalents={
+            24: 14, 34: 14,
+            21: 11,
+            22: 12, 32: 12,
+            23: 13, 33: 13,
+            29: 18,
+            })
+    # See if we can get nicer times
+    try:
+        tables = ts.dump_tables()
+        for n in ts.nodes():
+            tables.nodes[n.id] = n.replace(
+                time=np.mean([v for v in n.metadata["Relate_times"].values()]))
+        tables.sort()
+        ts = tables.tree_sequence()
+    except:
+        print("Can't set plausible Relate time orders, reverting to arbitary")
+    ts.dump("examples/Kreitman_SNP_relate_merged.trees")
     
 cli.add_command(run_tsinfer)
 cli.add_command(run_kwarg)

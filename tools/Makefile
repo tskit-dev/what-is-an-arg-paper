@@ -1,4 +1,4 @@
-all: argweaver relate
+all: argweaver relate relate_lib
 
 argweaver: 
 	git clone https://github.com/CshlSiepelLab/argweaver
@@ -18,6 +18,17 @@ relate:
 	  cmake .. && \
 	  make
 
+relate_lib: 
+	git clone https://github.com/leospeidel/relate_lib
+	# checkout a specific revision (latest dev as of Mar 2022)
+	cd relate_lib && \
+	  git checkout 0b461f3c7282d784e5a65122c029bf4a857cbee5 && \
+	  mkdir build && \
+	  cd build && \
+	  cmake .. && \
+	  make
+
 clean:
 	rm -rf argweaver
 	rm -rf relate
+	rm -rf relate_lib

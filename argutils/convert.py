@@ -144,63 +144,86 @@ def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
     return argutils.simplify_keeping_all_nodes(ts)
 
 
-def convert_relate_without_times(infile):
+def relate_ts_JBOT_to_ts(ts, additional_equivalents=None):
     """
-    Convert a Relate .anc file to a tree sequence, but with time_units="uncalibrated"
-    which allows us to create an proper ARG rather than a JBOT. See
-    https://myersgroup.github.io/relate/getting_started.html#Output
+    Convert a tree sequence from Relate (converted via relate_lib/bin/Convert, which
+    provides equivalenet via metadata, into a tree sequence in which the nodes
+    have been merged, and new times allocated that are consistent with the ARG
     
-    NUM_HAPLOTYPES 8
-NUM_TREES 7619
-0: 8:(607.26519 0.000 0 86) 13:(2702.54805 0.000 0 28) 9:(2641.61779 0.000 0 41) 11:(3724.67317 3.000 0 28) 9:(2641.61779 7.000 0 41) 12:(5155.21459 5.000 0 21) 10:(3088.44253 4.000 0 28) 8:(607.26519 4.000 0 86) 13:(2095.28286 2.000 0 28) 10:(446.82474 0.000 0 28) 11:(636.23064 0.000 0 28) 12:(1430.54142 0.000 0 21) 14:(1247.46463 0.000 0 21) 14:(3700.13116 2.000 0 21) -1:(0.00000 0.000 0 21) 
-21: 8:(667.04955 0.000 0 86) 11:(2266.08783 0.000 0 28) 9:(2335.63438 0.000 0 41) 12:(3455.60941 3.000 0 28) 9:(2335.63438 7.000 0 41) 14:(7848.96712 
-5.000 21 41) 10:(3236.77021 4.000 0 28) 8:(667.04955 4.000 0 86) 11:(1599.03828 2.000 0 28) 10:(901.13583 0.000 0 28) 12:(218.83920 0.000 0 28) 13:(14
-58.13811 0.000 21 28) 13:(268.61652 0.000 21 28) 14:(4124.74119 5.000 21 41) -1:(0.00000 0.000 21 28) 
-
+    the additional_equivalents parameter is a hack because relate_lib doesn't
+    calculate equivalent edges if the edges are above sample nodes. This is therefore
+    a supplementary dictionary of cases where *nodes* (not edges) in the input
+    tree sequence can be thought as equivalent.
     """
-    # Make an nx DiGraph so we can do a topological sort.
+    # make a map of relate node_id -> canonical node id (the first one used in relate)
+    node_map = additional_equivalents.copy() or {}
+    ns = set()
     G = nx.DiGraph()
-    haps = next(infile)
-    assert haps.startswith("NUM_HAPLOTYPES")
-    num_samples = int(haps[len("NUM_HAPLOTYPES"):])
-    node_map={}
-    for i in range(num_samples):
-        G.add_node(i)
-        node_map[i] = i
-    trees = next(infile)
-    assert haps.startswith("NUM_TREES")
-    num_trees = int(haps[len("NUM_TREES"):])
-    edges = {}
-    for line in infile:
-        p = line.find(":")
-        assert p >= 0
-        left_pos = line[:p]
-        line = line[(p+1):-1].strip()
-        assert line[-1] == ")"
-        branches = line.split(")")
-        tree = []
-        for child, branch in enumerate(branches):
-            p = branch.find(":")
-            parent = int(branch[:p])
-            vals = branch[p:].strip().split() # split on whitespace
-            # In Relate, node IDs are not necessarily shared across trees. We need to
-            # make node IDs unique by looking at each tree, going through the nodes
-            # in postorder, and if the edge to the node hasn't been seen before (i.e.
-            # with the same (parent, child, left, right) values, we change the parent
-            # node ID to a new unique one (note that this means we must have SMC trees
-            # (as we can't know if we have returned to the same node in later trees)
-            edge = (child, parent, val[-2], vals[-1])
-            tree.push(edge)
-            # parent, child, left, right -> new_parent_id
-            if edge not in edges:
-                i = len(node_map)
-                node_map[parent] = i
-                G.add_node(i)
-                edges[edge] = i  # record that in this edge the parent is actually ID i
-            else:
-                node_map[parent] = edges[edge]
-        for edge in tree:
-            G.add_edge(node_map[edge[0]], node_map[edge[1]], left=edge[2], right=edge[3])
-         
+    assert ts.num_nodes == ts.num_samples + (ts.num_samples - 1) * ts.num_trees
+    for ediff in ts.edge_diffs():
+        # each tree should have new edges
+        if len(ediff.edges_in) != 0 and len(ediff.edges_out) != 0:
+            assert len(ediff.edges_in) == len(ediff.edges_out) == (2 * (ts.num_samples - 1))
+        # look for equivalent edges based on node metadata
+        out_edges = {e.child: e for e in ediff.edges_out}
+        for e_in in ediff.edges_in:
+            # equivalents stored in the child node
+            md = np.fromstring(ts.node(e_in.child).metadata, dtype=int, sep=' ')
+            if len(md) != 0 and md[0] != -1:
+                equivalent_to = out_edges[md[0]]
+                # both parent and child nodes of this edge have an equivalent
+                equivalent_child = node_map.get(equivalent_to.child, equivalent_to.child)
+                equivalent_parent = node_map.get(equivalent_to.parent, equivalent_to.parent)
+                if e_in.child in node_map:
+                    # could happen because another edge could have same parent
+                    assert node_map[e_in.child] == equivalent_child
+                else:
+                    node_map[e_in.child] = equivalent_child
+                if e_in.parent in node_map:
+                    assert node_map[e_in.parent] == equivalent_parent
+                else:
+                    node_map[e_in.parent] = equivalent_parent
+    for node in ts.nodes():
+        if node.id not in node_map:
+            node_map[node.id] = node.id
+    for u in set(node_map.values()):
+        G.add_node(u, flags=ts.node(u).flags, time=0, relate_times={})
+    for node in ts.nodes():
+        assert G.nodes[node_map[node.id]]["flags"] == node.flags
+        G.nodes[node_map[node.id]]["relate_times"][node.id] = node.time
+
+    # collect all the intervals for each edge (will be squashed later)
+    edges = collections.defaultdict(list)
+    for e in ts.edges():
+        edges[(node_map[e.child], node_map[e.parent])].append((e.left, e.right))
+
+    # Turn this into a graph so we can do a topological sort
+    for k, v in edges.items():
+        G.add_edge(*k, intervals=v)
+    # Set arbitrary times by topological_sort
+    for i, n in enumerate(nx.lexicographical_topological_sort(G)):
+        if G.nodes[n]["flags"] & tskit.NODE_IS_SAMPLE:
+            assert G.nodes[n]["time"] == 0
+            G.nodes[n]["time"] = 0
+        else:
+            G.nodes[n]["time"] = i
+
+    # Create a new tree sequence using these times
+    tables = tskit.TableCollection(ts.sequence_length)
+    tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    for n in range(max(G.nodes())+1):
+        try:
+            node = G.nodes[n]
+            tables.nodes.add_row(flags=node["flags"], time=node["time"], metadata={"Relate_times": node["relate_times"]})
+        except:
+            tables.nodes.add_row(time=0) # dummy, unused
+
+    for child, parent, attribute in G.edges(data=True):
+        for i in attribute["intervals"]:
+            tables.edges.add_row(child = child, parent=parent, left=i[0], right=i[1])
+    tables.sort()
+    tables.simplify()
+    tables.edges.squash()  # probably don't need this: I think simplify() squashes edges
+    return tables.tree_sequence()        
             
         
