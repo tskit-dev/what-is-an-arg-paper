@@ -19,8 +19,8 @@ def arity_colors(n_parents):
         return colorcet.cm.CET_I1(255)  # Red
     if n_parents == 1:
         return colorcet.cm.CET_I1(200)  # Yellow
-    # Max out at full blue if 20 or more parents, use log scale
-    multiple_parents_val = (min(np.log2(n_parents), np.log2(10)) - 1) / (np.log2(10) - 1)
+    # Max out at full blue if 6 or more parents; use log scale
+    multiple_parents_val = (min(np.log2(n_parents), np.log2(6)) - 1) / (np.log2(6) - 1)
     return colorcet.cm.CET_I1(100 - int(multiple_parents_val * 100))
 
 
