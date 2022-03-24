@@ -11,6 +11,7 @@ import matplotlib as mpl
 import networkx as nx
 import numpy as np
 import pydot
+import scipy.stats
 
 
 def arity_colors(n_parents):
@@ -143,8 +144,7 @@ def draw(
 
     if use_ranked_times is not None:
         if use_ranked_times:
-            _, inv = np.unique(ts.tables.nodes.time, return_inverse=True)
-            ranked_times = (np.cumsum(np.bincount(inv)) - 1)[inv]
+            ranked_times = scipy.stats.rankdata(ts.tables.nodes.time, method="dense")
             for i, p in pos.items():
                 p[1] = ranked_times[i]
         else:
