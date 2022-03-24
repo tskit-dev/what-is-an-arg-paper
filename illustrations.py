@@ -522,13 +522,13 @@ def inference():
     fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
         if name == "Tsinfer":
-            use_ranked_times = True
+            use_ranked_times = True  # Ranked node times
         if name == "ARGweaver":
-            use_ranked_times = None
+            use_ranked_times = None  # Y axis uses layout from graphviz dot
         if name == "KwARG":
-            use_ranked_times = None
+            use_ranked_times = None  # Y axis uses layout from graphviz dot
         if name == "Relate JBOT":
-            use_ranked_times = True
+            use_ranked_times = True  # Ranked node times
         pos, G = argutils.viz.draw(
             ts, ax,
             node_size=30,
