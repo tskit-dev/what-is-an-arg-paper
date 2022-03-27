@@ -7,6 +7,7 @@ import os
 import subprocess
 
 import tsinfer
+import tsdate
 import tskit
 import argutils
 import numpy as np
@@ -41,6 +42,7 @@ def run_tsinfer():
         use = use[use != oldest_node]
         tables.subset(use)
     ts = tables.tree_sequence()
+    ts = tsdate.date(ts, mutation_rate = mu, Ne = Ne)
     ts.dump("examples/Kreitman_SNP_tsinfer.trees")
 
 
