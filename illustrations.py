@@ -479,21 +479,21 @@ def arg_in_pedigree():
 
 @click.command()
 def inference():
+    """
+    Examples of ARGs produced by various inference algorithms
+    """
     tree_seqs = {}
 
     # KwARG
     ts = tskit.load("examples/Kreitman_SNP_kwarg.trees")
     # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["KwARG"] = argutils.viz.label_nodes(
-        ts,
-        labels=labels, # Use labels from Tsinfer
-    )
+    tree_seqs["KwARG"] = argutils.viz.label_nodes(ts, labels=labels)
 
     # ARGweaver
     ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
+    tree_seqs["ARGweaver ex."] = argutils.viz.label_nodes(ts, labels=labels)
 
     # Tsinfer
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
@@ -521,14 +521,28 @@ def inference():
 
     fig, axes = plt.subplots(1, len(tree_seqs), figsize=(10, 5))
     for ax, (name, ts) in zip(axes, tree_seqs.items()):
+        tweak_x={}
+        use_ranked_times = None  # By default use Y axis layout from graphviz dot
         if name == "Tsinfer":
-            use_ranked_times = True  # Ranked node times
-        if name == "ARGweaver":
-            use_ranked_times = None  # Y axis uses layout from graphviz dot
+            tweak_x={
+                21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
+                23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
+            }
+        if name == "ARGweaver ex.":
+            tweak_x={
+                54: -10
+            }
         if name == "KwARG":
-            use_ranked_times = None  # Y axis uses layout from graphviz dot
+            tweak_x={
+                18: 5, 17: 7, 16: 5, 13: -2, 20: -7, 19: -8, 11: -5, 12: -5, 35: -3,
+                22: -5, 23: -5, 33: 10, 27: 5, 32: 8, 29: -2, 28: 2, 26: 5, 25: 3,
+            }
         if name == "Relate JBOT":
-            use_ranked_times = True  # Ranked node times
+            tweak_x={
+                40: 25, 35: 27, 38: 48, 31: 15, 34: 23, 37: 39, 36: 33, 33: 15, 32: 12,
+                30: 35, 26: 5, 29: 25, 28: 25, 25: -5, 23: -10, 22: -15, 21: -2, 27: 25, 24: 20,
+                20: -10, 15: -42, 11: -5, 16: -10, 13: -40, 18: -10, 19: -10,
+            }
         pos, G = argutils.viz.draw(
             ts, ax,
             node_size=30,
@@ -536,6 +550,7 @@ def inference():
             use_ranked_times=use_ranked_times,
             draw_edge_widths=True,
             node_arity_colors=True,
+            tweak_x=tweak_x,
             max_edge_width=2)
         ax.set_title(name + f"\n{ts.num_trees} trees")
 
