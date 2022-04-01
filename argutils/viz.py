@@ -49,6 +49,7 @@ def draw(
     max_edge_width=5,
     draw_edge_alpha=False,
     node_arity_colors=False,
+    edge_colors=None,
     nonsample_node_shrink=None,
     rotated_sample_labels=None,
     node_size=None,
@@ -79,13 +80,13 @@ def draw(
 
     If pos is passed in, it should be a dictionary mapping nodes to
     positions.
-    
+
     If draw_edge_widths is True, draw the widths of edges in the graphical
     representation of the tree sequence in proportion to their genomic span.
     max_edge_width specifies the maximum edge width to draw (default is 5).
     If draw_edge_widths is False, all edges are drawn with a width of
     max_edge_width.
-    
+
     If draw_edge_alpha is True, draw edges with an alpha value equal to their
     genomic span / the total sequence length of the tree sequence.
 
@@ -95,23 +96,27 @@ def draw(
     has 2 or more children (i.e. is "coalescent") compared to the amount of genome over
     which it has any children (if never coalescent, it it white). The hue of the
     colour (both for the stroke and the fill) indicated the number of parents of a
-    node (red is 0, yellow/brown is 1, green to blue are 2 -> N parents. If 
+    node (red is 0, yellow/brown is 1, green to blue are 2 -> N parents. If
     `node_arity_colours` is True, node_colour is ignored and font_color is
     set to white for sample nodes.
+
+    If `edge_colors` is not None, it should be a dictionary where keys are a tuple
+    of (edge child node, edge parent node) and values are a hex color. If
+    `edge_colors` is None, then
 
     If "nonsample_node_shrink" is not None, it should be an integer giving the
     amount by which nonsample node symbols are reduced; in this case labels on
     the nodes are omitted
-    
+
     If "rotated_sample_labels" is True, sample lables are rotated and placed
     below the nodes
-    
+
     node_size, font_size, font_color, and node_color are all passed to nx.draw
     directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
     or a list of colours (which is ignored if node_arity_colors is True)
-    
-    if reverse_x_axis is True, the graph is reflected horizontally 
+
+    if reverse_x_axis is True, the graph is reflected horizontally
 
     """
     if node_size is None:
@@ -125,9 +130,9 @@ def draw(
         font_size = 9
     if font_color is None:
         font_color = "k"
-        
+
     G = convert_nx(ts)
-    labels_by_colour = {font_color: {}}  #  so we can change font colour
+    labels_by_colour = {font_color: {}}  # so we can change font colour
     is_sample = {}
     for nd in ts.nodes():
         is_sample[nd.id] = nd.is_sample()
@@ -173,7 +178,7 @@ def draw(
         edge_alpha = None
 
     # Draw just the nodes
-    edge_color = None
+    arity_edge_color = None
     if node_arity_colors:
         # Isoluminant colours
         spans = collections.defaultdict(float)
@@ -185,29 +190,28 @@ def draw(
                 if tree.num_children(node) > 1:
                     c_spans[node] += tree.span
         node_color = []
-        edge_color = []
+        arity_edge_color = []
         for n, deg in G.out_degree():
             col = arity_colors(deg)
             # get span over which this is not unary
             if spans[n] == 0:
                 assert ts.node(n).is_sample()
                 node_color.append("#000000")
-                edge_color.append(make_color(col))
+                arity_edge_color.append(make_color(col))
             else:
-                edge_color.append(make_color(col))
-                node_color.append(make_color(col, lighten= 1 - (c_spans[n]/spans[n])))
+                arity_edge_color.append(make_color(col))
+                node_color.append(make_color(col, lighten= 1 - (c_spans[n] / spans[n])))
         if not rotated_sample_labels:
             # Sample nodes are filled black, so we need to change the label colour
             labs = labels_by_colour[font_color]
             labels_by_colour["w"] = {k: v for k, v in labs.items() if ts.node(k).is_sample()}
             labs = {k: v for k, v in labs.items() if not ts.node(k).is_sample()}
-            
 
     nx.draw(
         G,
         pos,
         node_color=node_color,
-        edgecolors=edge_color,
+        edgecolors=arity_edge_color,
         with_labels=False,
         node_shape="o",
         node_size=node_size,
@@ -232,6 +236,14 @@ def draw(
                     t.set_rotation(-90)
                     t.set_position((x, y - y_below_extra))
                     t.set_va('top')
+    # Assign edge colors using the ordering of edges in the networkx representation
+    if edge_colors is not None:
+        ordered_edge_color = []
+        for edge_id, edge in enumerate(G.edges()):
+            ordered_edge_color.append(edge_colors[(edge[0], edge[1])])
+    else:
+        ordered_edge_color = None
+
     # Now add the edges
     edges = nx.draw_networkx_edges(
         G,
@@ -240,7 +252,8 @@ def draw(
         arrowstyle="-|>" if arrows else "-",
         ax=ax,
         node_size=node_size,
-        width=edge_widths
+        width=edge_widths,
+        edge_color=ordered_edge_color
     )
     if edge_alpha is not None:
         for i, edge in enumerate(edges):
