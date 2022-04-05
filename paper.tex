@@ -1109,17 +1109,23 @@ and the relationship between nodes in adjacent trees is maintained.
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
-ARG simplification. (A) An ARG simulated from a diploid Wright-Fisher
-model. Note the complex full-sib relationship between B and C; this
-could not be directly represented in a Griffiths-like EARG encoding
+ARG simplification. In all cases the graph visualization is shown on the left
+and the equivalent marginal trees on the right.
+(A) An ARG simulated from a diploid Wright-Fisher
+model. Note that the genome \textsf{K} has three children and the genomes
+\textsf{E} and \textsf{G} simultaneously have multiple parents and multiple children;
+neither could not be directly represented in a Griffiths-like EARG encoding
 (see section XXX).
 (B) Simplified to remove all
 % trying out this terminology - can define in the text
-1-connected graph components (e.g., diamonds).
-(C) Remove nodes that are unary in all local trees.
-(D) Rewrite edges to skip any unary nodes in local trees.
-(E) The local trees for ARG (A).
-(F) The local trees for ARG (D).
+1-connected graph components (e.g., diamonds such as \textsf{JLMN}).
+(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
+that have only one child (e.g. \textsf{N}) and nodes that have more
+than one child (i.e. are ``common ancestors'') but never represent coalescences
+in the local trees (e.g. \textsf{R}).
+(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
+information such as the fact that \textsf{K} is connected to \textsf{A} via \textsf{E}; it
+can also create many extra roots.
 }
 \end{figure}
 
