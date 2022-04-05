@@ -482,6 +482,29 @@ def inference():
     """
     Examples of ARGs produced by various inference algorithms
     """
+    def get_edge_colors(ts):
+        """
+        Return a dict of edge colours for nodes and a dict of edge colors for edges
+        """
+        # Sort edges by the age of the child node
+        edges_argsorted = scipy.stats.rankdata(
+            ts.tables.nodes.time[ts.tables.edges.child], method='dense') - 1
+        edge_sorted_dict = {edge_id: sorted_edge_id
+                            for edge_id, sorted_edge_id in enumerate(edges_argsorted)}
+        # Create a dictionary w keys: (parent, child) of each edge; values: edge color
+        edge_colors_by_nodes = {}
+        edge_colors_by_id = {}
+        # Colormap normalization to the number of edges in each tree sequence
+        max_rank_by_ts[name] = np.max(edges_argsorted)
+        norm = mpl.colors.Normalize(vmin=0, vmax=max_rank_by_ts[name])
+        for key_edge, edge in enumerate(ts.edges()):
+            color = argutils.viz.make_color(
+                    edge_colormap(norm(edge_sorted_dict[key_edge])))
+            edge_colors_by_nodes[edge.child, edge.parent] = color
+            edge_colors_by_id[key_edge] = color
+        return edge_colors_by_nodes, edge_colors_by_id
+
+
     tree_seqs = {}
     # Assign colormap for edges
     edge_colormap = plt.cm.viridis
@@ -538,73 +561,59 @@ def inference():
                              gridspec_kw=dict(
                              width_ratios=widths, height_ratios=heights))
     tree_seq_positions = []
-    edge_colors_by_ts = {}
     max_rank_by_ts = {}
     for ax, ax_edges, (name, ts) in zip(axes[0], axes[1], tree_seqs.items()):
-        reverse_x_axis = False
-        tweak_x={}
-        use_ranked_times = None  # By default use Y axis layout from graphviz dot
+        params = dict(
+            # some of these can get overwritten
+            node_size=30,
+            rotated_sample_labels=True,
+            reverse_x_axis = False,
+            draw_edge_widths=True,
+            node_arity_colors=True,
+            max_edge_width=2,
+            tweak_x={},
+            use_ranked_times = None,  # By default use Y axis layout from graphviz dot
+        )
         if name == "Tsinfer":
-            tweak_x = {
+            params["tweak_x"] = {
                 21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
                 23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
             }
         if name == "ARGweaver example":
-            tweak_x = {
+            params["tweak_x"] = {
                 54: -10
             }
         if name == "KwARG":
-            tweak_x = {
+            params["tweak_x"] = {
                 18: 5, 17: 7, 16: 5, 13: -2, 20: -7, 19: -8, 11: -5, 12: -5, 35: -3,
                 22: -5, 23: -5, 33: 10, 27: 5, 32: 8, 29: -2, 28: 2, 26: 5, 25: 3,
             }
         if name == "Relate JBOT":
-            tweak_x = {
+            params["tweak_x"] = {
                 40: 25, 35: 27, 38: 48, 31: 15, 34: 23, 37: 39, 36: 33, 33: 15, 32: 12,
                 30: 35, 26: 5, 29: 25, 28: 25, 25: -5, 23: -10, 22: -15, 21: -2, 27: 25, 24: 20,
                 20: -10, 15: -42, 11: -5, 16: -10, 13: -40, 18: -10, 19: -10,
             }
 
         if name == "Relate":
-            reverse_x_axis=True
-            tweak_x = {
+            params["reverse_x_axis"]=True
+            params["tweak_x"] = {
                 20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
                 6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
                 28: 5, 26: 16, 17: -15, 16: 5, 21: -2, 23: 2, 29: 5
             }
 
-        # Interesting to look at what the semi-simplified graphs look like
-        # ts = argutils.simplify_keeping_unary_in_coal(ts)
-
-        # Sort edges by the age of the child node
-        edges_argsorted = scipy.stats.rankdata(ts.tables.nodes.time[ts.tables.edges.child], method='dense') - 1
-        edge_sorted_dict = {edge_id: sorted_edge_id
-                            for edge_id, sorted_edge_id in enumerate(edges_argsorted)}
-        # Create a dictionary w keys: (parent, child) of each edge; values: edge color
-        edge_colors_by_nodes = {}
-        edge_colors_by_id = {}
-        # Colormap normalization to the number of edges in each tree sequence
-        max_rank_by_ts[name] = np.max(edges_argsorted)
-        norm = mpl.colors.Normalize(vmin=0, vmax=max_rank_by_ts[name])
-        for key_edge, edge in enumerate(ts.edges()):
-            color = argutils.viz.make_color(
-                    edge_colormap(norm(edge_sorted_dict[key_edge])))
-            edge_colors_by_nodes[edge.child, edge.parent] = color
-            edge_colors_by_id[key_edge] = color
-        edge_colors_by_ts[name] = edge_colors_by_id
-
-        pos, G = argutils.viz.draw(
-            ts, ax,
-            node_size=30,
-            rotated_sample_labels=True,
-            use_ranked_times=use_ranked_times,
-            draw_edge_widths=True,
-            node_arity_colors=True,
-            tweak_x=tweak_x,
-            max_edge_width=2,
-            edge_colors=edge_colors_by_nodes,
-            reverse_x_axis=reverse_x_axis,
-        )
+        edge_colors_by_node, edge_colors_by_id = get_edge_colors(ts)
+        pos, G = argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, **params)
+        ## Uncomment below to see equivalent simplified versions instead
+        # ax.clear()
+        # ts, node_map = ts.simplify(map_nodes=True)
+        # pos = {node_map[k]:v for k, v in pos.items()}
+        # edge_colors_by_node, edge_colors_by_id = get_edge_colors(ts)
+        # params["tweak_x"] = None
+        # params["reverse_x_axis"] = None
+        # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
+        
         ax.set_title(name + f"\n{ts.num_trees} trees")
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
@@ -633,7 +642,7 @@ def inference():
 
         # Sort edges by age of child (as done above)
         edges_sorted = dict(sorted(edges.items(), key=lambda item: item[1][2]))
-        for index, (key, edge) in enumerate(edges_sorted.items()):
+        for index, (edge_id, edge) in enumerate(edges_sorted.items()):
             left = edge[0]
             right = edge[1]
             if right == -1:
@@ -642,7 +651,7 @@ def inference():
                 (left, (index / ts.num_edges)),
                 (right - left),
                 (1 / ts.num_edges), linewidth=1,
-                facecolor=edge_colors_by_ts[name][key])
+                facecolor=edge_colors_by_id[edge_id])
             ax_edges.add_patch(rect)
 
     graph_io = io.StringIO()
