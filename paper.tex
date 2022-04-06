@@ -10,6 +10,7 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
+\usepackage{hyperref}
 
 \begin{document}
 
@@ -96,9 +97,9 @@ begun to appear~\citep{osmond2021estimating} and many more are sure to
 follow~\citep{harris2019database}. This vibrant research area, however,
 has a significant difficulty, which, if not addressed, will substantially hamper
 progress. We currently lack a well-defined data-model and shared terminology
-to discuss recombining genealogies,
-leading to basic errors in statements about what different inference methods
-produce as output (see the XXX section below), as well as presenting serious
+to discuss recombining genealogies, leading to basic errors in statements
+about what different inference methods produce as output (see the
+``\nameref{ARG_inference_methods}'' section), as well as presenting serious
 difficulties in either comparing the outputs of different methods or
 (from a users perspective) using multiple inference methods in an analysis.
 
@@ -808,7 +809,7 @@ generalise the model to more appropriately reflect the realities
 of modern datasets.
 
 Fortunately, it is straightforward to generalise the classical Griffiths
-EARG encoding to both simplify implementations and to encompass any
+eARG encoding to both simplify implementations and to encompass any
 possible pattern of genetic inheritance.
 The only change that we require is to associate
 the details of inheritance intervals with \emph{edges} rather than
@@ -887,8 +888,8 @@ or ``marginal'' trees.
 
 To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
-structure a ``Genome ARG'', or GARG.
-Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a GARG.
+structure a ``Genome ARG'', or gARG.
+Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG.
 Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
 discrete generations and carry two genomes. Each individual (labelled
@@ -910,13 +911,13 @@ topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
 along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
 
-Formally, we can define a GARG as a set of edges $E$, where each
+Formally, we can define a gARG as a set of edges $E$, where each
 element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
 $c$ is the child node, $p$ is the parent node and $I$ is the set of
 disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
 also phrase this in terms of the ancestral material of a sample---see
 the next section). Deriving the local tree at a point $x$
-follows largely the same pattern as for an EARG but is somewhat
+follows largely the same pattern as for an eARG but is somewhat
 simpler because coordinate information is directly associated with
 edges. Starting with the sample nodes $S$ we traverse
 upwards through the graph from child to parent. At each node $u$, we find an
@@ -930,11 +931,15 @@ For example, node \textsf{H} is the direct ancestor of \textsf{D} in
 Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
 coalescence or a recombination. Such nodes would usually be removed
 from the graph so that \textsf{D} descends directly from \textsf{K} (see
-section XXX) but there is no necessity for this from a representational
-perspective. This ability can be useful in practice and could be required if,
+the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
+a representational perspective. This ability can be useful in practice and could be
 % Do we need to spell this out?
-for example, we have a deeply sequenced pedigree of
-haplodiploids. % e.g. Honeybees? Be great to cite an example!
+required if, for example, we have a deeply sequenced pedigree of haplodiploids.
+% e.g. Honeybees? Be great to cite an example!
+% Note by Yan - if we actually have the sequence, then this turns into
+% a sample node, so would be normally included anyway. Perhaps, therefore
+% we should talk about these "pass though" nodes in the context
+% of internal samples.
 
 Secondly, unlike in an eARG, nodes in a gARG are not classified into different
 types. Indeed a single node can have both multiple children
@@ -943,8 +948,9 @@ for instance, node \textsf{A} were to have two children.
 % It is a shame that this is not actually shown in fig 3, but I don't think
 % we can do this unless we have 5 generations
 Moreover, a single node can have more than 2 children, and (as we shall see in
-section XXX), more than 2 parents. Another way to state this is that transitions
-between nodes in a gARG can encapsulate multiple events in an eARG.
+the ``\nameref{ARG_simplification}'' section, more than 2 parents. Another way to
+state this is that transitions between nodes in a gARG can encapsulate multiple
+events in an eARG.
 
 The final point deals with the way in which recombination is represented, and is
 closely linked to which genomes are chosen as the nodes in a gARG.
@@ -1031,7 +1037,7 @@ an ARG, without applying any of these restrictions.
 % Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
 
 
-\section*{Ancestry resolution}
+\section*{Ancestry resolution}\label{Ancestry_resolution}
 % This is a rough first pass. Will clarify terminology later.
 The definition of an ARG as a data structure in terms of
 individuals' monoploid genomes
@@ -1092,7 +1098,7 @@ original inheritance interval $I_v$ on the edge.
 
 This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
 
-\section*{ARG simplification}
+\section*{ARG simplification}\label{ARG_simplification}
 
 Not all nodes in an ARG are equal. Assuming that we have sequenced the
 genomes of the samples, there are intrinsic limits on what can
@@ -1144,7 +1150,8 @@ local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path abo
 60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
 node \textsf{Q}, it passes through  \textsf{E},  \textsf{J},  \textsf{M},  \textsf{N} and 
 \textsf{P}, which in this region of the genome are all unary nodes. This reflects the
-passage of this span of genome through the ARG towards the root (see section XXX).
+passage of this span of genome through the ARG towards the root (see the
+``\nameref{Ancestry_resolution}'' section).
 Such unary nodes in a local tree are not usually considered important,
 because they provide very little information and are not
 detectable by information from the tree. % weak
@@ -1346,7 +1353,7 @@ While they are convenient for analysis using the coalescent with recombination,
 other models, such as discrete time Wright--Fisher models with finite populations,
 may benefit from different ways to associate edges with lineages.
 
-\section*{ARG inference methods}
+\section*{ARG inference methods}\label{ARG_inference_methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
 to explicitly \emph{infer} ARGs from sequencing data.
 
