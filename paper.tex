@@ -130,312 +130,14 @@ all these cases simultaneously would result in needlessly bulky notation.
 The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
 hudson1983testing, tajima1983evolutionary}
 provides the theoretical underpinning for much of contemporary population genetics.
-Hudson extended the coalescent to include
-recombination~\citep{hudson1983properties,hudson1990gene}
+\citet{hudson1983properties,hudson1990gene} extended the coalescent to include
+recombination
 and the model has proved to be an especially powerful basis for
 simulations~\citep{hudson2002generating,baumdicker2021efficient}.
-Hudson's algorithm is concerned with simulating the process of
-the coalescent with recombination as efficiently as possible, and operates by
-tracking segments of ancestral material carried by ancestors as
-we go backwards in time. The details of Hudson's algorithm and how the
-results of the ancestral process are represented are critical to later
-discussions, and so we will explain the process in some detail.
-See~\cite{kelleher2016efficient} for a more detailed
-description of the algorithm, and how it may be implemented efficiently.
+\cite{kelleher2016efficient} provide a description of his algorithm along with
+an efficient implementation, the details of which turn out to be highly relevant in 
+later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
-
-\begin{figure}[ht]
-\centering
-% FIXME this is a quick nasty hack to make the figure a bit smaller and
-% prevent flushing all the other figures to the end of the document.
-\scalebox{0.5}{
-\begin{tabular}{cc}
-\begin{tikzpicture}
-	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
-	\draw (-0.1, -0.1) -- (-0.1, -0.4);
-	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
-	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
-	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
-
-	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
-	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
-	\draw (5.1, 1.1) -- (5.1, 0.8);
-	\node [label=below:{\small $w$}] at (5.1, 1) {};
-
-	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
-	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
-	\draw (-1.1, 1.45) -- (-0.6, 1.45);
-	\draw (0.6, 1.45) -- (0.9, 1.45);
-	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
-	\draw (1.2, 1.6) -- (1.2, 1.3);
-	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
-
-	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
-	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
-	\draw (4.1, 2.15) -- (4.4, 2.15);
-	\draw (5.6, 2.15) -- (6.1, 2.15);
-	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
-
-	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
-	\draw (-0.4, 2.85) -- (0.2, 2.85);
-	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
-	\draw (1.6, 2.85) -- (1.9, 2.85);
-	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
-	\draw (2.2, 2.85) -- (2.4, 2.85);
-
-	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\node [scale=0.2,label=above left:{\small A}] at (-0.5,4.5) {A};
-	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
-	\draw (-0.6, 4.25) -- (-0.3, 4.25);
-	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
-	\draw (-0.5, 4.4) -- (-0.5, 4.1);
-	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
-
-	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\node [scale=0.2,label=above left:{\small B}] at (3,5.4) {B};
-	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
-	\draw (2.9, 5.15) -- (3.4, 5.15);
-
-	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
-	\draw (-1.9, 5.75) -- (-1.3, 5.75);
-	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
-	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
-	\draw (0.4, 5.75) -- (0.9, 5.75);
-
-	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
-	\node [scale=0.2,label=above:{\small C}] at (1.75,7.2) {C};
-	\draw (1.35, 6.95) -- (2.15, 6.95);
-
-	\draw (-1.5, 6) -- (-1.5, 8);
-	\draw (6, 2.4) -- (6, 8);
-
-	% Edge annotations above each event
-	\node [label=left:{\small$\{(0,m,1)\}$}] at (0.2,0.6) {};
-	\node [label=left:{\small$\{(0,m,1)\}$}] at (4.2,0.4) {};
-	\node [label=right:{\small$\{(0,m,1)\}$}] at (5.8,0.4) {};
-	\node [label=left:{\small$\{(0,m,2)\}$}] at (5.2,1.6) {};
-	\node [label=left:{\small$\{(0,v,1)\}$}] at (-0.8,2.3) {};
-	\node [label=right:{\small$\{(v,m,1)\}$}] at (0.8,2.1) {};
-	\node [label=right:{\small$\{(0,w,2)\}$}] at (3.8,3.9) {};
-	\node [label=left:{\small$\{(w,m,2)\}$}] at (6.2,5) {};
-	\node [label=right:{\small$\{(x,m,1)\}$}] at (-0.2,3.8) {};
-	\node [label=right:{\small$\{(v,x,1)\}$}] at (1.8,4.1) {};
-	\node [label=left:{\small$\{(0,v,1), (x,m,1)\}$}] at (-0.3,5.2) {};
-	\node [label=right:{\small$\{(0,v,2)\}$}] at (2.8,6.4) {};
-	\node [label=left:{\small$\{(x,m,1)\}$}] at (-1.3,7) {};
-	\node [label=right:{\small$\{(0,v,1)\}$}] at (0.3,6.4) {};
-
-	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11.1, 0);
-	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11.1, 8);
-	\node [label=left:{$t = T$}] at (-2,8) {};
-
-	% Numbers of extant ancestors and links, from top to bottom
-	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{2}{2}$ \; $\frac{2 m - x - w - 2}{m - 1} \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + 2 v - x - w - 3}{m - 1} \rho$}] at (7.5, 6.6) {};
-	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m + v - w - 3}{m - 1} \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + x - v - 4}{m - 1} \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{5}{2}$ \; $\frac{2 m - 5}{m - 1} \rho$}] at (7.5, 3.8) {};
-	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m - 4}{m -1} \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m - 3}{m - 1} \rho$}] at (7.5, 2.05) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
-
-	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.7) -- (11.1, 1.7);
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4);
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5);
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11.1, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11.1, 6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11.1, 7.2);
-\end{tikzpicture}
-&
-\begin{tikzpicture}
-	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
-	\draw (-0.1, -0.1) -- (-0.1, -0.4);
-	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
-	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
-	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
-
-	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
-	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
-	\draw (5.1, 1.1) -- (5.1, 0.8);
-	\node [label=below:{\small $w$}] at (5.1, 1) {};
-
-	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
-	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
-	\draw (-1.1, 1.45) -- (-0.6, 1.45);
-	\draw (0.6, 1.45) -- (0.9, 1.45);
-	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
-	\draw (1.2, 1.6) -- (1.2, 1.3);
-	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
-
-	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
-	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
-	\draw (4.1, 2.15) -- (4.4, 2.15);
-	\draw (5.6, 2.15) -- (6.1, 2.15);
-	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
-	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
-	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
-
-	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
-	\draw (-0.4, 2.85) -- (0.2, 2.85);
-	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
-	\draw (1.6, 2.85) -- (1.9, 2.85);
-	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
-	\draw (2.2, 2.85) -- (2.4, 2.85);
-
-	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
-	\draw (-0.6, 4.25) -- (-0.3, 4.25);
-	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
-	\draw (-0.5, 4.4) -- (-0.5, 4.1);
-	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
-
-	\draw (6, 2.4) -- (6, 3.8) -- (7, 3.8);
-	\draw [color=red](6, 3.8) -- (5, 3.8);
-	\draw (4.6, 3.55) -- (5.4, 3.55);
-	\draw (6.6, 3.55) -- (7.1, 3.55);
-	\draw (7.1, 3.6) -- (7.4, 3.6) -- (7.4, 3.5) -- (7.1, 3.5) -- (7.1, 3.6);
-
-	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
-	\draw (2.9, 5.15) -- (3.4, 5.15);
-
-	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
-	\draw (-1.9, 5.75) -- (-1.3, 5.75);
-	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
-	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
-	\draw (0.4, 5.75) -- (0.9, 5.75);
-
-	\draw [color=red](5, 3.8) -- (5, 6.6) -- (4, 6.6);
-	\draw (4,6.6) -- (3,6.6) -- (3, 5.4);
-	\draw (3.6, 6.4) -- (3.9, 6.4) -- (3.9, 6.3) -- (3.6, 6.3) -- (3.6, 6.4);
-	\draw (3.9, 6.35) -- (4.4, 6.35);
-
-	\draw (0.5, 6) -- (0.5, 7.2) -- (4,7.2) -- (4,6.6);
-	\draw (1.85, 6.95) -- (2.65, 6.95);
-
-	\draw (-1.5, 6) -- (-1.5, 8);
-	\draw [color=red](2.25, 7.2) -- (2.25, 8);
-	\draw (7, 3.8) -- (7, 8);
-
-	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11, 0);
-	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11, 8);
-	\node [label=left:{$t = T$}] at (-2,8) {};
-
-	% Numbers of extant ancestors and links, from top to bottom
-	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 7.6) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 6.9) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 6.3) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 5.7) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 4.95) {};
-	\node[label=right:{$\binom{6}{2}$ \; $6 \rho$}] at (7.5, 4.15) {};
-	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 3.45) {};
-	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 2.75) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 2.05) {};
-	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
-	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
-
-	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
-	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
-	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
-\end{tikzpicture}
-\end{tabular}
-}
-\caption{(A)
-A realisation of the graph traversed by Hudson's algorithm started from a
-sample of three chromosomes of length $m$ at time $t = 0$, and
-propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
-at event B, while that on $[0, v)$ is reached at event C.
-The non-ancestral segment $[v, w)$ above
-A contributes to the rate of effective recombinations because it
-is trapped between ancestral segments. The two columns titled CA and RE
-are the respective rates of mergers and recombinations when
-the recombination rate is $\rho$.
-(B) A corresponding realisation of a big ARG, which augments Hudson's algorithm
-by tracking nonancestral lineages. The result is a simpler state space and
-dynamics, at the cost of extra nodes and edges, highlighted in red, which do
-not affect the local tree at any site.}
-\label{hudson_vs_bigARG}
-\end{figure}
-
-Hudson's algorithm operates by tracking the state of a set of ancestral
-lineages as we go backwards in time.
-% jk-note unclear here about the best choice of notation. We could have
-% lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
-% of a tuple (I_j, a_j), where I is a vector of intervals. Going to
-% stick with the original tuple notation for now.
-%
-% Each lineage consists of a set of
-% equal-length vectors $\mathbf{l}$, $\mathbf{r}$ and $\mathbf{a}$
-% such that for each $1 \leq j \leq \left| l \right|$,
-% $[\mathbf{l}_j, \mathbf{r}_j)$ is a half-closed genomic interval and
-% $\mathbf{a}_j$ is an integer
-% tracking the number of samples the lineage is ancestral to over the interval.
-% Assume that the intervals are sorted from left-to-right so that $\mathbf{l}_1$
-% and $\mathbf{r}_{|\mathbf{r}|}$ are the left- and right-most positions
-% covered by the lineage, respectively.
-Each lineage consists of a list of
-disjoint ancestry segments $(\ell, r, a)$, where
-$[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
-tracking the number of samples to which the lineage is ancestral over that interval.
-(We also usually track the tree node associated with each segment, but
-that is not important for our purposes here so we omit it.)
-If we have $n$ samples and a genome of length $m$, the process begins with $n$ lineages
-of the form $\{(0, m, 1)\}$. The process then works backwards in time from
-the present day as a series of random common ancestor or recombination events.
-Recombination events occur at a rate determined by the amount of ancestral material and
-the way in which it is distributed along a chromosome.
-Let $L$ be the set of ancestors at a given time $t$. Recombination events
-happen at rate $\rho \nu / (m - 1)$ where
-\[
-\nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
-    - \min_{(\ell, r, a) \in x}\ell - 1 \right)
-\]
-is the number of available `links' that may be broken. Thus, the rate of
-recombination is determined by the left- and right-most extent of the
-ancestral material carried by each lineage. At a recombination
-event we choose one of these links uniformly and break it. Given a lineage
-$x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
-$x_1$ and $x_2$ such that FILL IN DETAILS
-
-When $k = |L|$ lineages are present, common ancestor events
-occur at rate $\binom{k}{2}$. In a common ancestor event, two lineages
-are chosen uniformly at random and their ancestry segments merged.
-If we have overlapping intervals of ancestry from the two lineages,
-say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
-\emph{coalescence} occurs and ancestor represented by the current event
-will be present as a node (at least) in the marginal trees covering
-the interval $[\ell, r)$. The result of this coalescence is a segment
-$(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
-ancestry for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
-we have found the most recent common ancestor of all samples in
-the interval $[\ell, r)$ and so we do not need to simulate its history any further.
-Nonoverlapping intervals of ancestry from the two lineages are included
-in the resulting lineage without changes. Eventually, as the process continues,
-we find resultant lineages in which all segments have fully coalescenced,
-and so the number of extant lineages gradually dwindles down to zero.
-
-% NOTE: it would probably be helpful to have a drawing of the ARG process
-% in-progress here to help us talk about it. What is the full state
-% that is remembered as we go through the process? It does help to think
-% about the process as choosing edges to merge, not nodes.
 The Ancestral Recombination Graph (ARG) was later introduced by
 Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
 griffiths1997ancestral}, and is a
@@ -445,21 +147,21 @@ process, the original ARG literature is focused on mathematical
 results about the stochastic process. Griffiths and colleagues used the word
 ``ARG'' to refer to both a specific branching-coalescing stochastic process and
 the graph structure derived from this process. For clarity, we will refer to the
-process as the Griffiths process, or the coalescent with recombination (CwR),
-and following XX-Who?-XX, we refer to the the structure as the ``big ARG'', as
-opposed to the ``little ARG'' traversed by Hudson's algorithm
-(\citet{wiuf1999recombination} refer to these structures as ARG and HUD respectively).
+process as the Griffiths process, or the coalescent with recombination (CwR)
+\citep{minichiello2006mapping}.
 
+% NOTE: it might be helpful to have a drawing of the ARG process
+% in-progress here to help us talk about it. What is the full state
+% that is remembered as we go through the process? It does help to think
+% about the process as choosing edges to merge, not nodes.
+% We could also refer to Fig.~\ref{fig-arg-data-structure} if we want a simple picture
+% to go with this
 In the Griffiths formulation, each edge in the graph corresponds to an extant
 lineage and nodes are events in the process (the initial $n$ leaf nodes are
-``sampling'' events). As in Hudson's
-algorithm, common ancestor events occur at rate $\binom{k}{2}$ when there
+``sampling'' events). Common ancestor events occur at rate $\binom{k}{2}$ when there
 are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
-into a common ancestor lineage. Recombination events are different
-to Hudson's algorithm, however. Rather than occuring at a rate which depends on
-the specific distribution of ancestral material among lineages, the
-rate of recombination is now simply $k \rho$. At a recombination event
-we choose a lineage (edge) uniformly, and a
+into a common ancestor lineage. Recombination events happen at a rate of
+$k \rho$. Here, we choose a lineage (edge) uniformly, and a
 breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
 node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
@@ -467,33 +169,7 @@ Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the linear vs quadratic rates of branching
 and coalescing. The graph structure and breakpoints associated with
 recombination nodes provides sufficient information to later recover the marginal
-trees (see the next section for more details and discussion on this point).
-
-The state-space of the Griffiths process is much simpler than Hudson's algorithm,
-which greatly facilitates mathematical reasoning. This simplicity comes at a
-substantial cost, however, if we wish to use it as a practical means of
-simulating recombinant ancestry. The big ARG is vast, and any realisation
-for even moderate levels of recombination is far too large to be of practical
-use. The number of events in the big ARG, all the way back to the GMRCA
-is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
-of events required to simulate the little ARG is
-$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
-This disparity in the number of events in the two formulations is
-because the majority of the events that occur in the big ARG do
-not affect the genetic ancestry of the sample in any way. Recombination
-events that occur outside of ancestral material do not have any bearing
-on the ancestry of the sample, and so the structure is hugely redundant.
-As~\cite{wiuf1999recombination} note,
-``an `ancestral' sequence in the birth and death process
-need not have any genetic material in common with a
-sequence descended from it.''
-
-% Full quote:
-% This process simplifies mathematics on the account that the notion of an
-% ancestor will have a less restrictive meaning than usual:
-% An ``ancestral'' sequence in the birth and death process
-% need not have any genetic material in common with a
-% sequence descended from it.
+trees and calculate sampling probabilities (see the ``\nameref{probabilities}'' section).
 
 [Review of other work done on the ARG stochastic process here.
 Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
@@ -528,6 +204,55 @@ unlinked chromosomes~\citep{fearnhead2003ancestral}, recombining
 loci whereupon branching is due to both selection and
 recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
+
+\textcolor{red}{TODO: reduce the text below down to one paragraph, which
+defines the relationship between what we define as an ARG and
+what people mean by phylogenetic networks from the literature.
+We probably don't need to get into quite so much detail on
+the different types that people have studies. Essentially,
+we're ending the section with a brief review which situates
+our definition in the literature. I think pulling apart the
+idea of a ``reticulation'' vs what we call a recombinant
+is essential here.}
+
+The term \emph{phylogenetic network} has been broadly accepted to describe the most general
+type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
+represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
+that labels some of its nodes'' (although more narrow and context-dependent definitions can also
+be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
+with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
+as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
+
+Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
+reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
+model the evolution of viruses, reticulation nodes correspond to exchange of
+(non-recombining) genomic segments between viral particles inside a co-infected host.
+In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
+different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
+correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
+The ARG is a subtype of a recombination network under this definition (restricting to one crossover
+recombination per reticulation node).
+% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
+% conversion (seems implied above)?
+
+Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
+one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
+In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
+\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
+tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
+the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
+A reticulation loop that does not share any node with another reticulation loop is termed a gall
+\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
+called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
+by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
+of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
+and the tractability afforded by their relatively simple structure results in a number of attractive
+combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
+an ARG, without applying any of these restrictions.
+
+% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
+% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
 
 \section*{The Event ARG data structure}
 % When did we move from the ARG is a process to the ARG is a data structure?
@@ -666,7 +391,7 @@ not require edges to be ordered.
 % What do we mean by an EARG, formally?
 % NOTE we're using the natural numbers but are using 0 as a node in the
 % examples. Probably want to clear this up a bit.
-Formally, we can define an EARG as a tuple $(e, \sigma)$, where $e$
+Formally, we can define an eARG as a tuple $(e, \sigma)$, where $e$
 is an ordered list of edges defining a directed acyclic graph and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints,
@@ -684,7 +409,7 @@ Note that this description captures only the
 graph topology: if we also wish to know the times of events we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
 which defines the time of each node.
-An example is given in Fig.~\ref{fig-arg-data-structure}A.
+An example is given in Fig.~\ref{fig-arg-data-structure}.
 
 % % Not sure if we actually include this, but it's good to work it through
 % % to make sure the notation works. Maybe something to stick into
@@ -715,7 +440,7 @@ An example is given in Fig.~\ref{fig-arg-data-structure}A.
 % $p_u \leftarrow v$
 % and $N \leftarrow N \cup \{v\}$.
 
-The ordering of edges is a vital element of the EARG encoding.
+The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
 in associating recombination breakpoints with \emph{nodes}
 rather than edges,
@@ -724,7 +449,7 @@ some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
 parents of a recombination event). This is usually described
 in terms of the process in which we extract the local trees
-along the genome from an EARG.
+along the genome from an eARG.
 To recover
 the tree at genome coordinate $x$,
 we traverse the graph upwards from the leaves. At a particular
@@ -986,59 +711,12 @@ talk about \emph{without} going in to the details of
 ancestry resolution.]
 
 
-
-\textcolor{red}{TODO: reduce this down to one paragraph, which
-defines the relationship between what we define as an ARG and
-what people mean by phylogenetic networks from the literature.
-We probably don't need to get into quite so much detail on
-the different types that people have studies. Essentially,
-we're ending the section with a brief review which situates
-our definition in the literature. I think pulling apart the
-idea of a ``reticulation'' vs what we call a recombinant
-is essential here.}
-
-The term \emph{phylogenetic network} has been broadly accepted to describe the most general
-type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
-represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
-that labels some of its nodes'' (although more narrow and context-dependent definitions can also
-be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
-with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
-as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
-
-Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
-reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
-model the evolution of viruses, reticulation nodes correspond to exchange of
-(non-recombining) genomic segments between viral particles inside a co-infected host.
-In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
-different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
-correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
-The ARG is a subtype of a recombination network under this definition (restricting to one crossover
-recombination per reticulation node).
-% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
-% conversion (seems implied above)?
-
-Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
-In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
-one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
-In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
-\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
-tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
-the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
-A reticulation loop that does not share any node with another reticulation loop is termed a gall
-\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
-called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
-by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
-of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
-and the tractability afforded by their relatively simple structure results in a number of attractive
-combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
-an ARG, without applying any of these restrictions.
-
-% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
-% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
-
-
 \section*{Ancestry resolution}\label{Ancestry_resolution}
 % This is a rough first pass. Will clarify terminology later.
+% Need to introduce Hudson's algorithm as concerned with simulating the process of
+% the coalescent with recombination as efficiently as possible, and properly merge in
+% with this section.
+
 The definition of an ARG as a data structure in terms of
 individuals' monoploid genomes
 and their direct patterns of inheritance allows us to describe arbitrarily
@@ -1053,7 +731,7 @@ but on its own it cannot tell us about the precise relationships between
 the samples along the genome: do to this, we must construct the
 local (or ``marginal'') trees.
 
-We can define a sample-resolved GARG as a tuple $(S, E)$
+We can define a sample-resolved gARG as a tuple $(S, E)$
 where $S \subset \mathbb{N}$ is a set of sample nodes and
 $E$ is a set of edges. Each element of $E$
 is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
@@ -1083,6 +761,11 @@ help to visualise the relative importance of different transmission pathways.
 }
 \end{figure}
 
+% We should talk about ARG and HUD here. Fig~\ref{fig-ancestry-resolution}A shows
+% ARG (the Griffiths graph). However, we have a small issue that subfig B
+% doesn't strictly show HUD, because it doesn't terminate as soon as all samples have coalesced.
+% We could potentially colour the top (non-HUD) section of the plot in a different colour?
+
 Given a gARG $E$ and the set of samples $S$ we can \emph{resolve} its
 ancestry by noting that the resolved interval $Ir$ on an edge $(c,p,I)$
 is given by [Rough notes]
@@ -1096,7 +779,91 @@ original inheritance interval $I_v$ on the edge.
  from the gARG and the ancestry intervals of the resolved gARG.
 \end{itemize}
 
-This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
+This process is illustrated in Fig~\ref{fig-ancestry-resolution}. It is intimately linked to 
+Hudson's algorithm which operates by
+tracking segments of ancestral material carried by ancestors as
+we go backwards in time. 
+
+% jk-note unclear here about the best choice of notation. We could have
+% lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
+% of a tuple (I_j, a_j), where I is a vector of intervals. Going to
+% stick with the original tuple notation for now.
+%
+% Each lineage consists of a set of
+% equal-length vectors $\mathbf{l}$, $\mathbf{r}$ and $\mathbf{a}$
+% such that for each $1 \leq j \leq \left| l \right|$,
+% $[\mathbf{l}_j, \mathbf{r}_j)$ is a half-closed genomic interval and
+% $\mathbf{a}_j$ is an integer
+% tracking the number of samples the lineage is ancestral to over the interval.
+% Assume that the intervals are sorted from left-to-right so that $\mathbf{l}_1$
+% and $\mathbf{r}_{|\mathbf{r}|}$ are the left- and right-most positions
+% covered by the lineage, respectively.
+Each lineage consists of a list of
+disjoint ancestry segments $(\ell, r, a)$, where
+$[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
+tracking the number of samples to which the lineage is ancestral over that interval.
+(We also usually track the tree node associated with each segment, but
+that is not important for our purposes here so we omit it.)
+If we have $n$ samples and a genome of length $m$, the process begins with $n$ lineages
+of the form $\{(0, m, 1)\}$. The process then works backwards in time from
+the present day as a series of random common ancestor or recombination events.
+Recombination events occur at a rate determined by the amount of ancestral material and
+the way in which it is distributed along a chromosome.
+Let $L$ be the set of ancestors at a given time $t$. Recombination events
+happen at rate $\rho \nu / (m - 1)$ where
+\[
+\nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
+    - \min_{(\ell, r, a) \in x}\ell - 1 \right)
+\]
+is the number of available `links' that may be broken. Thus, the rate of
+recombination is determined by the left- and right-most extent of the
+ancestral material carried by each lineage. At a recombination
+event we choose one of these links uniformly and break it. Given a lineage
+$x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
+$x_1$ and $x_2$ such that FILL IN DETAILS
+
+When $k = |L|$ lineages are present, common ancestor events
+occur at rate $\binom{k}{2}$. In a common ancestor event, two lineages
+are chosen uniformly at random and their ancestry segments merged.
+If we have overlapping intervals of ancestry from the two lineages,
+say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
+\emph{coalescence} occurs and ancestor represented by the current event
+will be present as a node (at least) in the marginal trees covering
+the interval $[\ell, r)$. The result of this coalescence is a segment
+$(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
+ancestry for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
+we have found the most recent common ancestor of all samples in
+the interval $[\ell, r)$ and so we do not need to simulate its history any further.
+Nonoverlapping intervals of ancestry from the two lineages are included
+in the resulting lineage without changes. Eventually, as the process continues,
+we find resultant lineages in which all segments have fully coalescenced,
+and so the number of extant lineages gradually dwindles down to zero.
+
+The state-space of the Griffiths process is much simpler than Hudson's algorithm,
+which greatly facilitates mathematical reasoning. This simplicity comes at a
+substantial cost, however, if we wish to use it as a practical means of
+simulating recombinant ancestry. The big ARG is vast, and any realisation
+for even moderate levels of recombination is far too large to be of practical
+use. The number of events in the big ARG, all the way back to the GMRCA
+is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
+of events required to simulate the little ARG is
+$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
+This disparity in the number of events in the two formulations is
+because the majority of the events that occur in the big ARG do
+not affect the genetic ancestry of the sample in any way. Recombination
+events that occur outside of ancestral material do not have any bearing
+on the ancestry of the sample, and so the structure is hugely redundant.
+As~\cite{wiuf1999recombination} note,
+``an `ancestral' sequence in the birth and death process
+need not have any genetic material in common with a
+sequence descended from it.''
+% Full quote:
+% This process simplifies mathematics on the account that the notion of an
+% ancestor will have a less restrictive meaning than usual:
+% An ``ancestral'' sequence in the birth and death process
+% need not have any genetic material in common with a
+% sequence descended from it.
+
 
 \section*{ARG simplification}\label{ARG_simplification}
 
@@ -1303,7 +1070,239 @@ leaf-labelled binary trees.
 % Clearly, we can only ever hope to infer the fraction of an ancestor's
 % genome that is ancestral to the sample.
 
-\section*{Evaluation of sampling probabilities}
+\section*{Evaluation of sampling probabilities}\label{probabilities}
+
+
+\begin{figure}[ht]
+\centering
+% FIXME this is a quick nasty hack to make the figure a bit smaller and
+% prevent flushing all the other figures to the end of the document.
+\scalebox{0.5}{
+\begin{tabular}{cc}
+\begin{tikzpicture}
+	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
+	\draw (-0.1, -0.1) -- (-0.1, -0.4);
+	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
+	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
+	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
+
+	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
+	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
+	\draw (5.1, 1.1) -- (5.1, 0.8);
+	\node [label=below:{\small $w$}] at (5.1, 1) {};
+
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
+
+	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
+	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
+	\draw (4.1, 2.15) -- (4.4, 2.15);
+	\draw (5.6, 2.15) -- (6.1, 2.15);
+	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
+
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (-0.4, 2.85) -- (0.2, 2.85);
+	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
+	\draw (1.6, 2.85) -- (1.9, 2.85);
+	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
+	\draw (2.2, 2.85) -- (2.4, 2.85);
+
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\node [scale=0.2,label=above left:{\small A}] at (-0.5,4.5) {A};
+	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
+	\draw (-0.6, 4.25) -- (-0.3, 4.25);
+	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
+	\draw (-0.5, 4.4) -- (-0.5, 4.1);
+	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
+
+	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
+	\node [scale=0.2,label=above left:{\small B}] at (3,5.4) {B};
+	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
+	\draw (2.9, 5.15) -- (3.4, 5.15);
+
+	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
+	\draw (-1.9, 5.75) -- (-1.3, 5.75);
+	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
+	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
+	\draw (0.4, 5.75) -- (0.9, 5.75);
+
+	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
+	\node [scale=0.2,label=above:{\small C}] at (1.75,7.2) {C};
+	\draw (1.35, 6.95) -- (2.15, 6.95);
+
+	\draw (-1.5, 6) -- (-1.5, 8);
+	\draw (6, 2.4) -- (6, 8);
+
+	% Edge annotations above each event
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (0.2,0.6) {};
+	\node [label=left:{\small$\{(0,m,1)\}$}] at (4.2,0.4) {};
+	\node [label=right:{\small$\{(0,m,1)\}$}] at (5.8,0.4) {};
+	\node [label=left:{\small$\{(0,m,2)\}$}] at (5.2,1.6) {};
+	\node [label=left:{\small$\{(0,v,1)\}$}] at (-0.8,2.3) {};
+	\node [label=right:{\small$\{(v,m,1)\}$}] at (0.8,2.1) {};
+	\node [label=right:{\small$\{(0,w,2)\}$}] at (3.8,3.9) {};
+	\node [label=left:{\small$\{(w,m,2)\}$}] at (6.2,5) {};
+	\node [label=right:{\small$\{(x,m,1)\}$}] at (-0.2,3.8) {};
+	\node [label=right:{\small$\{(v,x,1)\}$}] at (1.8,4.1) {};
+	\node [label=left:{\small$\{(0,v,1), (x,m,1)\}$}] at (-0.3,5.2) {};
+	\node [label=right:{\small$\{(0,v,2)\}$}] at (2.8,6.4) {};
+	\node [label=left:{\small$\{(x,m,1)\}$}] at (-1.3,7) {};
+	\node [label=right:{\small$\{(0,v,1)\}$}] at (0.3,6.4) {};
+
+	% Dashed lines for start and end times
+	\draw[dashed] (-2, 0) -- (11.1, 0);
+	\node [label=left:{$t = 0$}] at (-2,0) {};
+	\draw[dashed] (-2, 8) -- (11.1, 8);
+	\node [label=left:{$t = T$}] at (-2,8) {};
+
+	% Numbers of extant ancestors and links, from top to bottom
+	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
+	\node[label=right:{$\binom{2}{2}$ \; $\frac{2 m - x - w - 2}{m - 1} \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + 2 v - x - w - 3}{m - 1} \rho$}] at (7.5, 6.6) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m + v - w - 3}{m - 1} \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m + x - v - 4}{m - 1} \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{5}{2}$ \; $\frac{2 m - 5}{m - 1} \rho$}] at (7.5, 3.8) {};
+	\node[label=right:{$\binom{4}{2}$ \; $\frac{2 m - 4}{m -1} \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $\frac{2 m - 3}{m - 1} \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
+
+	% Gray dashed lines to visually separate holding times
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11.1, 1.7);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1);
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5);
+	\draw[color=gray, dashed] (7.5, 5.4) -- (11.1, 5.4);
+	\draw[color=gray, dashed] (7.5, 6) -- (11.1, 6);
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11.1, 7.2);
+\end{tikzpicture}
+&
+\begin{tikzpicture}
+	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
+	\draw (-0.1, -0.1) -- (-0.1, -0.4);
+	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
+	\draw (3.6, -0.2) -- (4.4, -0.2) -- (4.4, -0.3) -- (3.6, -0.3) -- (3.6, -0.2);
+	\draw (5.6, -0.2) -- (6.4, -0.2) -- (6.4, -0.3) -- (5.6, -0.3) -- (5.6, -0.2);
+
+	\draw (4,0) -- (4, 1.2) -- (6, 1.2) -- (6,0);
+	\draw (4.6, 1) -- (5.4, 1) -- (5.4, 0.9) -- (4.6, 0.9) -- (4.6, 1);
+	\draw (5.1, 1.1) -- (5.1, 0.8);
+	\node [label=below:{\small $w$}] at (5.1, 1) {};
+
+	\draw (0, 0) -- (0, 1.7) -- (-1,1.7) -- (1,1.7);
+	\draw (-1.4, 1.5) -- (-1.1, 1.5) -- (-1.1, 1.4) -- (-1.4, 1.4) -- (-1.4, 1.5);
+	\draw (-1.1, 1.45) -- (-0.6, 1.45);
+	\draw (0.6, 1.45) -- (0.9, 1.45);
+	\draw (0.9, 1.5) -- (1.4, 1.5) -- (1.4, 1.4) -- (0.9, 1.4) -- (0.9, 1.5);
+	\draw (1.2, 1.6) -- (1.2, 1.3);
+	\node [label=below:{\small $x$}] at (1.2, 1.5) {};
+
+	\draw (5, 1.2) -- (5, 2.4) -- (4,2.4) -- (6,2.4);
+	\draw (3.6, 2.2) -- (4.1, 2.2) -- (4.1, 2.1) -- (3.6, 2.1) -- (3.6, 2.2);
+	\draw (4.1, 2.15) -- (4.4, 2.15);
+	\draw (5.6, 2.15) -- (6.1, 2.15);
+	\draw (6.1, 2.2) -- (6.4, 2.2) -- (6.4, 2.1) -- (6.1, 2.1) -- (6.1, 2.2);
+	\draw [color=red](5.8, 2.3) -- (5.8, 2.0);
+	\node [label={[red]below:{\small $z$}}] at (5.8, 2.1) {};
+
+	\draw (1, 1.7) -- (1, 3.1) -- (0,3.1) -- (2,3.1);
+	\draw (-0.4, 2.85) -- (0.2, 2.85);
+	\draw (0.2, 2.9) -- (0.4, 2.9) -- (0.4, 2.8) -- (0.2, 2.8) -- (0.2, 2.9);
+	\draw (1.6, 2.85) -- (1.9, 2.85);
+	\draw (1.9, 2.9) -- (2.2, 2.9) -- (2.2, 2.8) -- (1.9, 2.8) -- (1.9, 2.9);
+	\draw (2.2, 2.85) -- (2.4, 2.85);
+
+	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
+	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
+	\draw (-0.6, 4.25) -- (-0.3, 4.25);
+	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
+	\draw (-0.5, 4.4) -- (-0.5, 4.1);
+	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
+
+	\draw (6, 2.4) -- (6, 3.8) -- (7, 3.8);
+	\draw [color=red](6, 3.8) -- (5, 3.8);
+	\draw (4.6, 3.55) -- (5.4, 3.55);
+	\draw (6.6, 3.55) -- (7.1, 3.55);
+	\draw (7.1, 3.6) -- (7.4, 3.6) -- (7.4, 3.5) -- (7.1, 3.5) -- (7.1, 3.6);
+
+	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
+	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
+	\draw (2.9, 5.15) -- (3.4, 5.15);
+
+	\draw (-0.5, 4.5) -- (-0.5, 6) -- (-1.5,6) -- (0.5,6);
+	\draw (-1.9, 5.75) -- (-1.3, 5.75);
+	\draw (-1.3, 5.8) -- (-1.1, 5.8) -- (-1.1, 5.7) -- (-1.3, 5.7) -- (-1.3, 5.8);
+	\draw (0.1, 5.8) -- (0.4, 5.8) -- (0.4, 5.7) -- (0.1, 5.7) -- (0.1, 5.8);
+	\draw (0.4, 5.75) -- (0.9, 5.75);
+
+	\draw [color=red](5, 3.8) -- (5, 6.6) -- (4, 6.6);
+	\draw (4,6.6) -- (3,6.6) -- (3, 5.4);
+	\draw (3.6, 6.4) -- (3.9, 6.4) -- (3.9, 6.3) -- (3.6, 6.3) -- (3.6, 6.4);
+	\draw (3.9, 6.35) -- (4.4, 6.35);
+
+	\draw (0.5, 6) -- (0.5, 7.2) -- (4,7.2) -- (4,6.6);
+	\draw (1.85, 6.95) -- (2.65, 6.95);
+
+	\draw (-1.5, 6) -- (-1.5, 8);
+	\draw [color=red](2.25, 7.2) -- (2.25, 8);
+	\draw (7, 3.8) -- (7, 8);
+
+	% Dashed lines for start and end times
+	\draw[dashed] (-2, 0) -- (11, 0);
+	\node [label=left:{$t = 0$}] at (-2,0) {};
+	\draw[dashed] (-2, 8) -- (11, 8);
+	\node [label=left:{$t = T$}] at (-2,8) {};
+
+	% Numbers of extant ancestors and links, from top to bottom
+	\node[label=right:{CA \; RE}] at (7.5, 8.2) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 7.6) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 6.9) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 6.3) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 5.7) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 4.95) {};
+	\node[label=right:{$\binom{6}{2}$ \; $6 \rho$}] at (7.5, 4.15) {};
+	\node[label=right:{$\binom{5}{2}$ \; $5 \rho$}] at (7.5, 3.45) {};
+	\node[label=right:{$\binom{4}{2}$ \; $4 \rho$}] at (7.5, 2.75) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 2.05) {};
+	\node[label=right:{$\binom{2}{2}$ \; $2 \rho$}] at (7.5, 1.45) {};
+	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
+
+	% Gray dashed lines to visually separate holding times
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
+	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
+	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
+	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
+	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
+\end{tikzpicture}
+\end{tabular}
+}
+\caption{(A)
+A realisation of the graph traversed by Hudson's algorithm started from a
+sample of three chromosomes of length $m$ at time $t = 0$, and
+propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
+at event B, while that on $[0, v)$ is reached at event C.
+The non-ancestral segment $[v, w)$ above
+A contributes to the rate of effective recombinations because it
+is trapped between ancestral segments. The two columns titled CA and RE
+are the respective rates of mergers and recombinations when
+the recombination rate is $\rho$.
+(B) A corresponding realisation of a big ARG, which augments Hudson's algorithm
+by tracking nonancestral lineages. The result is a simpler state space and
+dynamics, at the cost of extra nodes and edges, highlighted in red, which do
+not affect the local tree at any site.}
+\label{hudson_vs_bigARG}
+\end{figure}
 
 The conditional sampling probability $p(G | D)$ of an ARG $G$ given an observed
 realization of genetic diversity $D$ at its sampled leaves is a central concept in
