@@ -295,15 +295,20 @@ def simplification():
             node_labels={n.id: n.metadata["name"] for n in ts.nodes()},
             x_label=None if i == 3 else "",
             style=(
-                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} '
-                '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}'
+                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
+                '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}' +
+                (f'.subfig{i} .background path:nth-child(5) {{fill: #FFFF30; fill-opacity: .5}}' if i==0 else '')
             ),
         )
         svg.append(
             f'<text font-size="2em" font-family="serif" transform="translate(0, {200 * i + 30})">' +
             f'({string.ascii_lowercase[i]})</text>'
         )
-        svg.append(f'<g transform="translate(250 {205 * i}) scale(0.83)">' + tree_svg + "</g>")
+        svg.append(
+            f'<g class="subfig{i}" transform="translate(250 {205 * i}) scale(0.83)">' +
+            tree_svg +
+            "</g>"
+        )
     svg.append("</svg>")
 
 
