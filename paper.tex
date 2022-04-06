@@ -1077,7 +1077,7 @@ help to visualise the relative importance of different transmission pathways.
 }
 \end{figure}
 
-Given a GARG $E$ and the set of samples $S$ we can \emph{resolve} its
+Given a gARG $E$ and the set of samples $S$ we can \emph{resolve} its
 ancestry by noting that the resolved interval $Ir$ on an edge $(c,p,I)$
 is given by [Rough notes]
 
@@ -1087,7 +1087,7 @@ all $R_{u, v}$ for all the children $v$ of $u$. (this isn't quite right)
 \item The resolved interval is then the intersection of $A_u$ and the
 original inheritance interval $I_v$ on the edge.
 \item It would be good of if differentiate between the inheritance intervals
- from the GARG and the ancestry intervals of the resolved GARG.
+ from the gARG and the ancestry intervals of the resolved gARG.
 \end{itemize}
 
 This process is illustrated in Fig~\ref{fig-ancestry-resolution}.
@@ -1099,7 +1099,7 @@ genomes of the samples, there are intrinsic limits on what can
 be known about more ancient nodes, determined by the graph topology
 and the flow ancestral material through it.
 \emph{Simplification}~\citep{kelleher2018efficient} is the process
-of removing nodes and re-writing edges in a GARG to remove
+of removing nodes and re-writing edges in a gARG to remove
 various types of redundancy, while maintaining the crucial properties
 that the meaningful topology in the local trees is not affected,
 and the relationship between nodes in adjacent trees is maintained.
@@ -1109,84 +1109,109 @@ and the relationship between nodes in adjacent trees is maintained.
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
-ARG simplification. (A) An ARG simulated from a diploid Wright-Fisher
-model. Note the complex full-sib relationship between B and C; this
-could not be directly represented in a Griffiths-like EARG encoding
-(see section XXX).
+ARG simplification. In all cases the graph visualization is shown on the left
+and the equivalent marginal trees on the right.
+(A) A gARG simulated from a diploid Wright-Fisher
+model. Note that the genome \textsf{K} has three children, and the genomes
+\textsf{E} and \textsf{G} simultaneously have multiple parents and multiple children;
+neither could be directly represented in a Griffiths-like eARG encoding
+(see section XXX). The penultimate local tree is highlighted to aid discussion (see section YYY).
 (B) Simplified to remove all
 % trying out this terminology - can define in the text
-1-connected graph components (e.g., diamonds).
-(C) Remove nodes that are unary in all local trees.
-(D) Rewrite edges to skip any unary nodes in local trees.
-(E) The local trees for ARG (A).
-(F) The local trees for ARG (D).
+1-connected graph components (e.g., diamonds such as \textsf{JLMN}).
+(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
+that have only one child (e.g. \textsf{N}) and nodes that have more
+than one child (i.e. are ``common ancestors'') but never represent coalescences
+in the local trees (e.g. \textsf{R}).
+(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
+information such as the fact that \textsf{K} is connected to \textsf{A} via \textsf{E}.
 }
 \end{figure}
 
-% Q: would it help to talk about ``tree vertice'' here or would it
+% Q: would it help to talk about ``tree vertices'' here or would it
 % just be more confusing? I worry that people would think that
 % they are two different things then, and it's really important
 % that they get that a node-is-a-node
+
+
 The ideas of ``meaningful'' local tree topologies revolve around the
 presence of ``unary'' nodes: a node in the tree that has exactly
-one child. For example, Fig.~\ref{fig-simplification}E shows the
-local trees along the genome for a simulated ARG
-(Fig.~\ref{fig-simplification}A). Consider the right-most tree,
-and the path above node $D$. Before $D$ meets its common ancestor
-over the interval $(93, 100]$ with the other samples it passes through
-nodes $H, K, N, R$ and $S$, reflecting the corresponding
-traversal through the ARG (see section XXX). Such unary nodes
-in a local tree are not usually considered significant,
+one child. Fig.~\ref{fig-simplification} show a series of successive steps of
+simplification, starting with a complete gARG simulated under a Wright-Fisher
+model, shown both as a graph on the left, and the equivalent set of 6
+local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
+\textsf{A} in the penultimate tree, highlighted in yellow and covering genomic positions
+60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
+node \textsf{Q}, it passes through  \textsf{E},  \textsf{J},  \textsf{M},  \textsf{N} and 
+\textsf{P}, which in this region of the genome are all unary nodes. This reflects the
+passage of this span of genome through the ARG towards the root (see section XXX).
+Such unary nodes in a local tree are not usually considered important,
 because they provide very little information and are not
 detectable by information from the tree. % weak
 The nodes in a tree usually mark the points where samples find a
-\emph{common} ancestor, rather than focusing on specific
-ancestors. For most purposes, we would consider an edge
-directly joining sample $D$ to the node $T$ to be more
-useful and informative. Simplification is the process of removing
-these uninformative and (for most computational purposes)
-inefficient unary paths.
+ \emph{common} ancestor, such as node \textsf{Q} in the highlighted
+tree. For many purposes, we would therefore consider a path directly
+joining sample \textsf{A} to node \textsf{Q} to be of equivalent status to the path
+containing the intermediate unary nodes. Simplification is the process of removing
+these less informative and (for most computational purposes) inefficient nodes
+from the local trees and the corresponding annotated graph.
 
 The first type of simplification that we can perform is to remove
 graph topology that is invisible to the samples. The most well
 known example of such topology is a so-called
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
-join again into a common ancestor (e.g. $K,N,O$ and $R$ in
-Fig.~\ref{fig-simplification}A).
+join again into a common ancestor (e.g. \textsf{J}, \textsf{L}, \textsf{M}
+and  \textsf{N} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
 interested in the recombination event or ancestral genomes,
-there is no information in this topology and the diamond can b
-e replaced by a single edge. More generally, any
+there is no information in this topology and the diamond can be
+replaced by a single edge. More generally, any
 subgraph which is singly-connected in both the leafward and
 rootward direction (a ``super-diamond'') is non-identifiable and can be
 replaced by a single edge. This definition includes the case
-of a single node that has one inbound and one outbound edge.
+of a single node that has one inbound and one outbound edge, such as
+nodes \textsf{F} and \textsf{H}.
 Fig.~\ref{fig-simplification}B shows the result of this type of
 graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
-local trees, there can still be nodes that are unary in all
-of the local trees. For example, node $H$ is one of the
-parents of the recombinant node $D$ is still present in
-Fig.~\ref{fig-simplification}B after diamond removal, but
-it is unary in all of the local trees since it has an
-in-degree of $1$.
-Fig.~\ref{fig-simplification}C shows the resulting graph
-after removing these nodes.
+local trees, but there can still be nodes that are unary in all
+of the local trees. In particular, a node can represent a recombinant
+with multiple parents in the graph but only a single child (e.g. node \textsf{N}
+in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
+multiple children in the graph but in which no local coalescence takes place
+(node \textsf{R} in Fig.~\ref{fig-simplification}B).
+% point out that this is why Hudson refers to CA nodes, not coalescence nodes
+Such nodes are not singly connected in the graph, but are nevertheless unary in
+all of the local trees in Fig.~\ref{fig-simplification}B. The operation to remove them,
+the results of which are shown in Fig.~\ref{fig-simplification}C,
+therefore requires knowledge not just of the graph topology, but also of the
+edge annotations. Removal of recombinant nodes can produce graph nodes with
+more than 2 parents (e.g. node \textsf{E}); likewise, removal of
+common ancestor but non-coalescent nodes can produce graph nodes with
+more than 2 children (e.g. node \textsf{S}). These represent a ``stacking up'' of multiple
+often indistinguishable events into a single node, something which is impossible
+to encode in an eARG.
 
 The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
-local tree. For example, node $E$ is unary in the first tree
-of Fig.~\ref{fig-simplification}E, but is either binary
-or ternary in the other trees (recall this is a Wright-Fisher
-simulation).
-
-The final level of simplification is to remove \emph{all}
-unary nodes from the local trees (Fig.~\ref{fig-simplification}D
-and E). [And continue]
+local tree. For example, node  \textsf{K} is unary in the second tree
+of Fig.~\ref{fig-simplification}C, but is either binary
+or ternary in all subsequent trees (recall this is a Wright-Fisher
+simulation). The final level of simplification is to alter the edge annotations
+such that, although no nodes are removed from the graph, \emph{all}
+unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
+It is common for this operation to remove nodes above the top MRCA node
+in the tree, resulting in many more root nodes (here, \textsf{Q} and \textsf{K}
+become roots). [And continue]
+% Note that although this last stage produces much simpler local trees, by
+% removing information about the exact paths taken by lineages through
+% the graph, it loses potentially important information about shared edges
+% between trees. It is not clear whether (c) or (d) leads to a more compact
+% representation of the ARG in terms of number of edges.
 
 \section*{ARGs and SPRs}
 \citet{wiuf1999ancestry,wiuf1999recombination} recast

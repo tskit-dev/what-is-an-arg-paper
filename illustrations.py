@@ -217,40 +217,24 @@ def simplification():
     """
     Sequentially simplifying a WF simulation.
     """
-    seed = 372
+    seed = 4517  # Chosen to give a diamond, 2 parents + 1 child node and a CA/noncoal
     t_x = {
-        4: 15,
-        12: -5,
-        9: 3,
-        6: -15,
-        18: 15,
-        17: 5,
-        13: 30,
-        14: -20,
-        10: -10,
-        15: 3,
-        16: -13,
-        7: -5,
-        11: 5,
-        8: 10,
+        2: -30, 3: 30, 4: 15, 7: 10, 8: 4, 9: 20, 10: 10,
+        11: 3, 12: 14, 13: 8, 15: 8, 16: 3.5, 17: 15, 18: 20,
     }
 
     ts = argutils.sim_wright_fisher(2, 10, 100, recomb_proba=0.1, seed=seed)
     tables = ts.dump_tables()
     rank_times = scipy.stats.rankdata(tables.nodes.time, method="dense")
     # tweak rank times here for nicer viz
-    rank_times = np.where(rank_times == 1, 0, rank_times)
+    rank_times = np.where(rank_times == 1, 0.5, rank_times)
     tables.nodes.time = rank_times
-    node_order = np.arange(tables.nodes.num_rows)
-    # NB this isn't quite right
-    node_order[[0, 1, 2, 3]] = [2, 1, 3, 0]
-    tables.subset(node_order)
     tables.sort()
     ts=tables.tree_sequence()
 
     labels = {i: string.ascii_uppercase[i] for i in range(len(string.ascii_uppercase))}
     # relabel the nodes to get samples reading A B C D
-    labels.update({0: "B", 2: "A", 3: "C", 1: "D", 4: "F", 5: "E", 13: "O", 14: "N", 7: "I", 8: "H", 10: "L", 11: "K"})
+    labels.update({6: "E", 4: "G", 10: "J", 9: "K", 12: "L", 11: "M", 15: "O", 14: "P"})
     #labels = {i: i for i in range(26)}
     ts1 = argutils.viz.label_nodes(ts, labels)
 
@@ -311,15 +295,20 @@ def simplification():
             node_labels={n.id: n.metadata["name"] for n in ts.nodes()},
             x_label=None if i == 3 else "",
             style=(
-                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} '
-                '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}'
+                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
+                '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}' +
+                (f'.subfig{i} .background path:nth-child(5) {{fill: #FFFF30; fill-opacity: .5}}' if i==0 else '')
             ),
         )
         svg.append(
             f'<text font-size="2em" font-family="serif" transform="translate(0, {200 * i + 30})">' +
             f'({string.ascii_lowercase[i]})</text>'
         )
-        svg.append(f'<g transform="translate(250 {205 * i}) scale(0.83)">' + tree_svg + "</g>")
+        svg.append(
+            f'<g class="subfig{i}" transform="translate(250 {205 * i}) scale(0.83)">' +
+            tree_svg +
+            "</g>"
+        )
     svg.append("</svg>")
 
 
