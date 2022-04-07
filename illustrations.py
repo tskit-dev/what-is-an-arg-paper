@@ -81,7 +81,7 @@ def ancestry_resolution():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 12), sharey=True)
     fig.tight_layout()
 
-    ax1.set_title("(a)", fontsize=32, family="serif")
+    ax1.set_title("A", fontsize=32, family="serif", loc="left")
     ts = argutils.viz.label_nodes(argutils.wh99_example())
     pos, G = argutils.viz.draw(
         ts,
@@ -115,7 +115,7 @@ def ancestry_resolution():
     )
     add_edge_labels(ax1, ts, G, pos)
 
-    ax2.set_title("(b)", fontsize=32, family="serif")
+    ax2.set_title("B", fontsize=32, family="serif", loc="left")
     ts2 = argutils.simplify_keeping_all_nodes(ts)
     pos, G = argutils.viz.draw(
         ts2,
@@ -135,7 +135,7 @@ def ancestry_resolution():
         "genome_empty_hamburger": "illustrations/assets/genome_empty_hamburger.png",
         "genome_full": "illustrations/assets/genome_full.png",
     }
-    for letter in list(string.ascii_uppercase[3 : G.number_of_nodes()]):
+    for letter in list(string.ascii_lowercase[3 : G.number_of_nodes()]):
         icons["genome_" + letter] = "illustrations/assets/genome_" + letter + ".png"
     # Load images
     images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
@@ -155,7 +155,7 @@ def ancestry_resolution():
         a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2-0.0015])
         a.imshow(G.nodes[n]["image"], aspect='auto', interpolation='spline36')
         a.set_title(
-            string.ascii_uppercase[n],
+            string.ascii_lowercase[n],
             y=0,
             verticalalignment="bottom",
             loc="center",
@@ -173,7 +173,7 @@ def ancestry_resolution():
     for n in [0, 1, 2]:
         G.nodes[n]["image"] = images["genome_full"]
     for n in range(3, G.number_of_nodes()):
-        G.nodes[n]["image"] = images["genome_" + string.ascii_uppercase[n]]
+        G.nodes[n]["image"] = images["genome_" + string.ascii_lowercase[n]]
     G.nodes[9]["image"] = images["genome_empty_hamburger"]
     for n in G.nodes:
         xf, yf = tr_figure(pos[n])
@@ -185,7 +185,7 @@ def ancestry_resolution():
         else:
             n_loc = "center"
         a.set_title(
-            string.ascii_uppercase[n],
+            string.ascii_lowercase[n],
             verticalalignment="top",
             loc=n_loc,
             fontsize="x-large",
@@ -232,9 +232,9 @@ def simplification():
     tables.sort()
     ts=tables.tree_sequence()
 
-    labels = {i: string.ascii_uppercase[i] for i in range(len(string.ascii_uppercase))}
+    labels = {i: string.ascii_lowercase[i] for i in range(len(string.ascii_lowercase))}
     # relabel the nodes to get samples reading A B C D
-    labels.update({6: "E", 4: "G", 10: "J", 9: "K", 12: "L", 11: "M", 15: "O", 14: "P"})
+    labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
     #labels = {i: i for i in range(26)}
     ts1 = argutils.viz.label_nodes(ts, labels)
 
@@ -302,7 +302,7 @@ def simplification():
         )
         svg.append(
             f'<text font-size="2em" font-family="serif" transform="translate(0, {200 * i + 30})">' +
-            f'({string.ascii_lowercase[i]})</text>'
+            f'{string.ascii_uppercase[i]}</text>'
         )
         svg.append(
             f'<g class="subfig{i}" transform="translate(250 {205 * i}) scale(0.83)">' +
@@ -345,16 +345,16 @@ def arg_in_pedigree():
         full_edges = {k: v for k, v in edge_labels.items() if not argutils.is_recombinant(ts.node(k[0]).flags)}
         nx.draw_networkx_edge_labels(
             **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.E}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.a and k[1]==n.e}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.35)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.F}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.a and k[1]==n.f}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.3)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.E}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.c and k[1]==n.e}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.7)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.F}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.c and k[1]==n.f}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.55)
 
@@ -369,7 +369,7 @@ def arg_in_pedigree():
         for individual in range(2):
             i = tables.individuals.add_row()
             for genome in range(2):
-                label = string.ascii_uppercase[tables.nodes.num_rows]
+                label = string.ascii_lowercase[tables.nodes.num_rows]
                 metadata = {
                     "gender": "male" if individual == 0 else "female",
                     "name": label,
@@ -379,7 +379,7 @@ def arg_in_pedigree():
                 flags = 0
                 if gen == 0:
                     flags |= tskit.NODE_IS_SAMPLE
-                if label == "A" or label == "C":
+                if label == "a" or label == "c":
                     flags |= argutils.NODE_IS_RECOMB
                 tables.nodes.add_row(
                     flags=flags,
@@ -391,28 +391,28 @@ def arg_in_pedigree():
     bp = [2, 7]
     tables.edges.clear()
     tables.individuals[0] = tables.individuals[0].replace(parents=[2, 3])
-    tables.edges.add_row(child=n.A, parent=n.E, left=0, right=bp[0])
-    tables.edges.add_row(child=n.A, parent=n.F, left=bp[0], right=l)
-    tables.edges.add_row(child=n.B, parent=n.G, left=0, right=l)
+    tables.edges.add_row(child=n.a, parent=n.e, left=0, right=bp[0])
+    tables.edges.add_row(child=n.a, parent=n.f, left=bp[0], right=l)
+    tables.edges.add_row(child=n.b, parent=n.g, left=0, right=l)
 
     tables.individuals[1] = tables.individuals[1].replace(parents=[2, 3])
-    tables.edges.add_row(child=n.C, parent=n.F, left=0, right=bp[1])
-    tables.edges.add_row(child=n.C, parent=n.E, left=bp[1], right=l)
-    tables.edges.add_row(child=n.D, parent=n.H, left=0, right=l)
+    tables.edges.add_row(child=n.c, parent=n.f, left=0, right=bp[1])
+    tables.edges.add_row(child=n.c, parent=n.e, left=bp[1], right=l)
+    tables.edges.add_row(child=n.d, parent=n.h, left=0, right=l)
 
     tables.individuals[2] = tables.individuals[2].replace(parents=[4, 5])
-    tables.edges.add_row(child=n.E, parent=n.I, left=0, right=l)
-    tables.edges.add_row(child=n.F, parent=n.K, left=0, right=l)
+    tables.edges.add_row(child=n.e, parent=n.i, left=0, right=l)
+    tables.edges.add_row(child=n.f, parent=n.k, left=0, right=l)
 
     tables.individuals[3] = tables.individuals[3].replace(parents=[4, 5])
-    tables.edges.add_row(child=n.G, parent=n.I, left=0, right=l)
-    tables.edges.add_row(child=n.H, parent=n.K, left=0, right=l)
+    tables.edges.add_row(child=n.g, parent=n.i, left=0, right=l)
+    tables.edges.add_row(child=n.h, parent=n.k, left=0, right=l)
 
     tables.individuals[4] = tables.individuals[4].replace(parents=[6, 7])
-    tables.edges.add_row(child=n.I, parent=n.N, left=0, right=l)
+    tables.edges.add_row(child=n.i, parent=n.n, left=0, right=l)
 
     tables.individuals[5] = tables.individuals[5].replace(parents=[6, 7])
-    tables.edges.add_row(child=n.K, parent=n.N, left=0, right=l)
+    tables.edges.add_row(child=n.k, parent=n.n, left=0, right=l)
 
     tables.sort()
     ts = tables.tree_sequence()
@@ -444,12 +444,12 @@ def arg_in_pedigree():
         '<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
         "<style>.tree-sequence text {font-family: sans-serif}</style>"
-        '<text font-size="2em" font-family="serif" transform="translate(80, 30)">'
-        "(a)</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(380, 30)">'
-        "(b)</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(780, 30)">'
-        "(c)</text>",
+        '<text font-size="2em" font-family="serif" transform="translate(5, 30)">'
+        "A</text>",
+        '<text font-size="2em" font-family="serif" transform="translate(250, 30)">'
+        "B</text>",
+        '<text font-size="2em" font-family="serif" transform="translate(590, 30)">'
+        "C</text>",
         '<g transform="translate(10, 60)">',
     ]
     svg.append('<g transform="scale(0.36)">' + pedigree_svg + "</g>")
