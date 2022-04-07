@@ -80,6 +80,9 @@ methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
 quite different in recombining organisms, where the analysis of genetic data
 depends on summaries ultimately derived from the
 trees~\citep{tajima1983evolutionary,tavare1984line}
+% Do we mean "despite the fact that analysis of genetic data relies on methods
+% which ultimately derive from the inheritance paths defined by genetic trees
+% and the mutations upon them, analysis so far has focussed on summaries ...
 such as allele frequencies and site frequency
 spectra~\citep{achaz2009frequency,ralph2020efficiently},
 patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and principal
@@ -139,19 +142,21 @@ recombination
 and the model has proved to be an especially powerful basis for
 simulations~\citep{hudson2002generating,baumdicker2021efficient}.
 \cite{kelleher2016efficient} provide a description of his algorithm along with
-an efficient implementation, the details of which turn out to be highly relevant in 
+an efficient implementation, the details of which turn out to be highly relevant to 
 later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
-The Ancestral Recombination Graph (ARG) was later introduced by
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
-griffiths1997ancestral}, and is a
-closely related and complementary treatment of the same process. Where
-Hudson's algorithm is focused on the efficient \emph{simulation} of the
-process, the original ARG literature is focused on mathematical
-results about the stochastic process. Griffiths and colleagues used the word
+Although Hudson's algorithm was accompanied by a graph
+schematic~\citep[][Fig. 5]{hudson1983properties}, the term
+``Ancestral Recombination Graph'' or ARG, was introduced later by
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral, griffiths1997ancestral},
+who provided a closely related and complementary treatment.
+Where Hudson's algorithm focusses on efficient \emph{simulation}, the original
+ARG literature is focused on mathematical results about the underlying stochastic
+process. Griffiths and colleagues used the word
 ``ARG'' to refer to both a specific branching-coalescing stochastic process and
-the graph structure derived from this process. For clarity, we will refer to the
-process as the Griffiths process, or the coalescent with recombination (CwR)
+the graph structure derived from this process, but for clarity and following recent usage,
+we will use ARG to refer to a graph structure, and refer to the
+process as the Griffiths process or the coalescent with recombination
 \citep{minichiello2006mapping}.
 
 % NOTE: it might be helpful to have a drawing of the ARG process
@@ -171,18 +176,12 @@ node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
 Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. The graph structure and breakpoints associated with
+and coalescing. Later, we will show how the graph structure and breakpoints
+associated with
 recombination nodes provides sufficient information to later recover the marginal
-trees and calculate sampling probabilities (see the ``\nameref{probabilities}'' section).
-
-[Review of other work done on the ARG stochastic process here.
-Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
-clarified the relationship between Hudson's algorithm and the ARG.
-Explain that ARG simulation is inherently less efficient than Hudson's
-algorithm because we must track all lineages, even those that correspond
-to sections that have coalesced, or we won't have a complete ARG.
-This might be tricky to communicated without a figure, but is an
-esoteric point perhaps not worth spending a figure on.]
+trees and calculate sampling probabilities. However, this process traces out
+a larger graph than the Hudson algorithm (see the ``\nameref{Ancestry_resolution}'' section),
+and is consequently considerably less efficient \citep{wiuf1999ancestry}.
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
@@ -261,6 +260,10 @@ an ARG, without applying any of these restrictions.
 \section*{The Event ARG data structure}
 % When did we move from the ARG is a process to the ARG is a data structure?
 % What was the historical progression from one to the other?
+
+% NB: should this para go into the previous section? It would be
+% clean to start the section with the subsequent para
+% starting "The Griffiths ARG encoding is an elegant and mathematically economical description of the CwR"
 Early work on ARG inference focused on the problem of
 of inferring parameters of the
 stochastic process, where the ancestry is regarded as a
@@ -278,29 +281,28 @@ tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
-The distinction between the ARG as a stochastic process
-and the ARG as a \emph{data structure}~\citep{minichiello2006mapping}
-became important at this point,
+This highlighted the distinction between the ARG as a stochastic process
+and the ARG as a \emph{data structure}~\citep{minichiello2006mapping},
 since parsimonious ARGs have no immediate connection to
 the stochastic process. Indeed, the ARG instances produced by
 the coalescent with recombination are usually highly unparsimonious,
 since they contain many invisible recombinations
+% Do we need the following caveat?
 (although those produced under the SMC may be parsimonious, depending
 on the pattern of mutations that is present).
 
 % What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination,
-but it has significant drawbacks as the basis for a general purpose
-storage and interchange format. To avoid confusion, we will refer to this
-ARG encoding as an ``Event ARG'', or EARG.
-The fundamental units of an EARG are the \emph{events} that correspond directly
-to those that
-occur in the ARG stochastic process described in the previous section.
-Each event corresponds to a node in the graph, and there are therefore
-two types of node: common ancestor and recombination. As in the
-stochastic process, edges represent lineages, and those lineages
-are modified by the events that they pass through.
+economical description of the coalescent with recombination, whose
+fundamental units are the  \emph{events} that correspond directly
+to those that occur in the associated stochastic process. We will refer
+to this ARG encoding as an ``Event ARG'', or eARG: 
+an example is given in Fig.~\ref{fig-arg-data-structure}.
+Each node in the graph corresponds to an event: therefore the graph
+contains both recombination nodes (node \textsf{D}) and common ancestor
+nodes (nodes \textsf{E}, \textsf{F}, and \textsf{G}) corresponding to their
+respective event types. Edges represent lineages,
+and those lineages are modified by the events that they pass through.
 
 \begin{figure}
 \centering
@@ -401,10 +403,9 @@ $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints,
 such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \varnothing$ otherwise.
-(Note that this formulation is equivalent to stipulating two
-different ``types'' of node and only storing breakpoints
-with recombination nodes).
+$\sigma(u) = \varnothing$ otherwise. (This formulation is equivalent to stipulating that
+a recombination node is of a different ``type'' to other nodes,
+with breakpoints only associated with this specific node type).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
 For each recombination node $u$ we must
@@ -413,7 +414,7 @@ Note that this description captures only the
 graph topology: if we also wish to know the times of events we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
 which defines the time of each node.
-An example is given in Fig.~\ref{fig-arg-data-structure}.
+
 
 % % Not sure if we actually include this, but it's good to work it through
 % % to make sure the notation works. Maybe something to stick into
@@ -482,8 +483,8 @@ to resolve the problem~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
 % it's not reasonable to assume that one type of event happens
 % at a time any more.
-The Griffiths ARG encoding is also limited in the types of ancestral
-history that can be described. This ARG encoding is derived from the coalescent
+The eARG is also limited in the types of ancestral history that can
+be described. This ARG encoding is derived from the coalescent
 with recombination, which explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
@@ -491,15 +492,13 @@ model, assuming that the sample size $n$ is much less than the
 population size $N$, and that the genome is short enough that,
 with high probability, the number of concurrent lineages in the ARG remains
 much smaller than $N$ at each time. While these approximations are
-reasonable
-to make when studying the Kreitman \emph{Drosphila Melanogaster}
-dataset~\citep{kreitman1983nucleotide} ($n=11$, $N\approx 10^6$,
-at 43 variant sites over x Kb \textcolor{red}{details and citation
-for Ne estimate}) that is classically used for benchmarking
-ARG inference methods [cites],
+reasonable to make for small datasets, such as
+the classic \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster}
+ADH gene dataset (comprising 11 genomes over 2.7 kb of sequence with 43 SNPs,
+as used in the ``\nameref{ARG_inference_methods}'' section),
 they are highly questionable in modern datasets. % absurd really
-For example, there are now many
-human datasets consisting of hundreds of thousands of
+For example, many
+human datasets consist of hundreds of thousands of
 genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
 and thus our sample size is often much \emph{larger} than $N_e$
 (often assumed to be $10^4$ in humans).
@@ -524,8 +523,8 @@ occur at the same time in the same genomes, and we can be
 certain that this is also true in the incredibly rich
 datasets that are available today.
 
-Another limitation of the Griffiths ARG encoding illustrated in
-Fig.~\ref{fig-arg-data-structure}A is the inability to represent
+A final limitation of the eARG encoding illustrated in
+Fig.~\ref{fig-arg-data-structure} is the inability to represent
 multiple recombinations along a chromosome, gene conversion,
 or transmission of multiple chromosomes.
 [Sentence saying ``gene conversion is important, actually, cite, cite,
@@ -842,6 +841,13 @@ Nonoverlapping intervals of ancestry from the two lineages are included
 in the resulting lineage without changes. Eventually, as the process continues,
 we find resultant lineages in which all segments have fully coalescenced,
 and so the number of extant lineages gradually dwindles down to zero.
+
+% Potentially useful text from a previous iteration:
+% Wiuf and Hein's classical pair of papers
+% clarified the relationship between Hudson's algorithm and the ARG.
+% ARG simulation is inherently less efficient than Hudson's
+% algorithm because we must track all lineages, even those that correspond
+% to sections that have coalesced, or we won't have a complete ARG.
 
 The state-space of the Griffiths process is much simpler than Hudson's algorithm,
 which greatly facilitates mathematical reasoning. This simplicity comes at a
