@@ -80,6 +80,9 @@ methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
 quite different in recombining organisms, where the analysis of genetic data
 depends on summaries ultimately derived from the
 trees~\citep{tajima1983evolutionary,tavare1984line}
+% Do we mean "despite the fact that analysis of genetic data relies on methods
+% which ultimately derive from the inheritance paths defined by genetic trees
+% and the mutations upon them, analysis so far has focussed on summaries ...
 such as allele frequencies and site frequency
 spectra~\citep{achaz2009frequency,ralph2020efficiently},
 patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and principal
@@ -139,26 +142,28 @@ recombination
 and the model has proved to be an especially powerful basis for
 simulations~\citep{hudson2002generating,baumdicker2021efficient}.
 \cite{kelleher2016efficient} provide a description of his algorithm along with
-an efficient implementation, the details of which turn out to be highly relevant in 
+an efficient implementation, the details of which turn out to be highly relevant to 
 later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
-The Ancestral Recombination Graph (ARG) was later introduced by
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,
-griffiths1997ancestral}, and is a
-closely related and complementary treatment of the same process. Where
-Hudson's algorithm is focused on the efficient \emph{simulation} of the
-process, the original ARG literature is focused on mathematical
-results about the stochastic process. Griffiths and colleagues used the word
+Although Hudson's algorithm was accompanied by a graph
+schematic~\citep[][Fig. 5]{hudson1983properties}, the term
+``Ancestral Recombination Graph'' or ARG, was introduced later by
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral, griffiths1997ancestral},
+who provided a closely related and complementary treatment.
+Where Hudson's algorithm focusses on efficient \emph{simulation}, the original
+ARG literature is focused on mathematical results about the underlying stochastic
+process. Griffiths and colleagues used the word
 ``ARG'' to refer to both a specific branching-coalescing stochastic process and
-the graph structure derived from this process. For clarity, we will refer to the
-process as the Griffiths process, or the coalescent with recombination (CwR)
+the graph structure derived from this process, but for clarity and following recent usage,
+we will use ARG to refer to a graph structure, and refer to the
+process as the Griffiths process or the coalescent with recombination
 \citep{minichiello2006mapping}.
 
 % NOTE: it might be helpful to have a drawing of the ARG process
 % in-progress here to help us talk about it. What is the full state
 % that is remembered as we go through the process? It does help to think
 % about the process as choosing edges to merge, not nodes.
-% We could also refer to Fig.~\ref{fig-arg-data-structure} if we want a simple picture
+% We could also refer to Fig.~\ref{fig-arg-data-structure}B if we want a simple picture
 % to go with this
 In the Griffiths formulation, each edge in the graph corresponds to an extant
 lineage and nodes are events in the process (the initial $n$ leaf nodes are
@@ -171,18 +176,12 @@ node, record the breakpoint and start two new edges from this node. The process
 then continues until there is only one lineage left (the Grand Most Recent
 Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. The graph structure and breakpoints associated with
+and coalescing. Later, we will show how the graph structure and breakpoints
+associated with
 recombination nodes provides sufficient information to later recover the marginal
-trees and calculate sampling probabilities (see the ``\nameref{probabilities}'' section).
-
-[Review of other work done on the ARG stochastic process here.
-Discuss \citet{wiuf1999ancestry}. Wiuf and Hein's classical pair of papers
-clarified the relationship between Hudson's algorithm and the ARG.
-Explain that ARG simulation is inherently less efficient than Hudson's
-algorithm because we must track all lineages, even those that correspond
-to sections that have coalesced, or we won't have a complete ARG.
-This might be tricky to communicated without a figure, but is an
-esoteric point perhaps not worth spending a figure on.]
+trees and calculate sampling probabilities. However, this process traces out
+a larger graph than the Hudson algorithm (see the ``\nameref{Ancestry_resolution}'' section),
+and is consequently considerably less efficient \citep{wiuf1999ancestry}.
 
 Similar graph encodings have also been introduced to model other mechanisms
 which change the local ancestral tree along the genome, such as gene
@@ -258,9 +257,13 @@ an ARG, without applying any of these restrictions.
 % AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
 % Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
 
-\section*{The Event ARG data structure}
+\section*{The Event ARG data structure}\label{eARG}
 % When did we move from the ARG is a process to the ARG is a data structure?
 % What was the historical progression from one to the other?
+
+% NB: should this para go into the previous section? It would be
+% clean to start the section with the subsequent para
+% starting "The Griffiths ARG encoding is an elegant and mathematically economical description of the CwR"
 Early work on ARG inference focused on the problem of
 of inferring parameters of the
 stochastic process, where the ancestry is regarded as a
@@ -278,29 +281,28 @@ tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
 to explain an input dataset [CITATIONS], and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
-The distinction between the ARG as a stochastic process
-and the ARG as a \emph{data structure}~\citep{minichiello2006mapping}
-became important at this point,
+This highlighted the distinction between the ARG as a stochastic process
+and the ARG as a \emph{data structure}~\citep{minichiello2006mapping},
 since parsimonious ARGs have no immediate connection to
 the stochastic process. Indeed, the ARG instances produced by
 the coalescent with recombination are usually highly unparsimonious,
 since they contain many invisible recombinations
+% Do we need the following caveat?
 (although those produced under the SMC may be parsimonious, depending
 on the pattern of mutations that is present).
 
 % What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination,
-but it has significant drawbacks as the basis for a general purpose
-storage and interchange format. To avoid confusion, we will refer to this
-ARG encoding as an ``Event ARG'', or EARG.
-The fundamental units of an EARG are the \emph{events} that correspond directly
-to those that
-occur in the ARG stochastic process described in the previous section.
-Each event corresponds to a node in the graph, and there are therefore
-two types of node: common ancestor and recombination. As in the
-stochastic process, edges represent lineages, and those lineages
-are modified by the events that they pass through.
+economical description of the coalescent with recombination, whose
+fundamental units are the  \emph{events} that correspond directly
+to those that occur in the associated stochastic process. We will refer
+to this ARG encoding as an ``Event ARG'', or eARG: 
+an example is given in Fig.~\ref{fig-arg-data-structure}B.
+Each node in the graph corresponds to an event: therefore the graph
+contains both recombination nodes (node \textsf{d}) and common ancestor
+nodes (nodes \textsf{e}, \textsf{f}, and \textsf{g}) corresponding to their
+respective event types. Edges represent lineages,
+and those lineages are modified by the events that they pass through.
 
 \begin{figure}
 \centering
@@ -317,11 +319,12 @@ nodelabel/.style={font=\footnotesize}}
 \node (s5) [greynode] at (5, 3) {};
 \node (s6) [greynode] at (3, 4) {};
 
+\node [anchor=north west] at (-1.5,6) {B};
 \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/$\textsf{A}$, s1/$\textsf{B}$, s2/$\textsf{C}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/$\textsf{E}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/$\textsf{F}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\textsf{D}$, s6/$\textsf{G}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
 
 %% Edges
 \draw (s1) -- (s3);
@@ -332,45 +335,47 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [nodelabel,anchor=north west] at ($(-10,5)$) {
+\node [anchor=north west] at (-14,6) {A};
+\node [nodelabel,anchor=north west] at ($(-13,5)$) {
 \begin{tabular}{c|c}
 % \multicolumn{2}{c}{Breakpoint}\\
 node & breakpoint\\
 \hline
-$\textsf{A}$ & $\varnothing$ \\
-$\textsf{B}$ & $\varnothing$ \\
-$\textsf{C}$ & $\varnothing$ \\
-$\textsf{D}$ & $x$ \\
-$\textsf{E}$ & $\varnothing$ \\
-$\textsf{F}$ & $\varnothing$ \\
-$\textsf{G}$ & $\varnothing$ \\
+$\textsf{a}$ & $\varnothing$ \\
+$\textsf{b}$ & $\varnothing$ \\
+$\textsf{c}$ & $\varnothing$ \\
+$\textsf{d}$ & $x$ \\
+$\textsf{e}$ & $\varnothing$ \\
+$\textsf{f}$ & $\varnothing$ \\
+$\textsf{g}$ & $\varnothing$ \\
 \end{tabular}};
 
-\node [nodelabel,anchor=north west] at ($(-4,5)$) {
+\node [nodelabel,anchor=north west] at ($(-7,5)$) {
 \begin{tabular}{l}
 Edges\\
 \hline
-$(\textsf{A}, \textsf{E})$ \\
-$(\textsf{B}, \textsf{D})$ \\
-$(\textsf{C}, \textsf{F})$ \\
-$(\textsf{D}, \textsf{E})$ \\
-$(\textsf{D}, \textsf{F})$ \\
-$(\textsf{E}, \textsf{G})$ \\
-$(\textsf{F}, \textsf{G})$ \\
+$(\textsf{a}, \textsf{e})$ \\
+$(\textsf{b}, \textsf{d})$ \\
+$(\textsf{c}, \textsf{f})$ \\
+$(\textsf{d}, \textsf{e})$ \\
+$(\textsf{d}, \textsf{f})$ \\
+$(\textsf{e}, \textsf{g})$ \\
+$(\textsf{f}, \textsf{g})$ \\
 \end{tabular}};
 
 
-\node [nodelabel,anchor=north west] at ($(7,5)$) {
+\node [anchor=north west] at (9,6) {C};
+\node [nodelabel,anchor=north west] at ($(10,5)$) {
 \begin{tabular}{ll}
 Edges\\
 \hline
-$(\textsf{A}, \textsf{E})$ & $(0, L]$ \\
-$(\textsf{B}, \textsf{D})$ & $(0, L]$ \\
-$(\textsf{C}, \textsf{F})$ & $(0, L]$ \\
-$(\textsf{D}, \textsf{E})$ & $(0, x]$ \\
-$(\textsf{D}, \textsf{F})$ & $(x, L]$ \\
-$(\textsf{E}, \textsf{G})$ & $(0, L]$ \\
-$(\textsf{F}, \textsf{G})$ & $(0, L]$ \\
+$(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+$(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+$(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+$(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+$(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+$(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+$(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
 \end{tabular}};
 
 
@@ -392,19 +397,16 @@ not require edges to be ordered.
 }
 \end{figure}
 
-% What do we mean by an EARG, formally?
-% NOTE we're using the natural numbers but are using 0 as a node in the
-% examples. Probably want to clear this up a bit.
+% What do we mean by an eARG, formally?
 Formally, we can define an eARG as a tuple $(e, \sigma)$, where $e$
 is an ordered list of edges defining a directed acyclic graph and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints,
 such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \varnothing$ otherwise.
-(Note that this formulation is equivalent to stipulating two
-different ``types'' of node and only storing breakpoints
-with recombination nodes).
+$\sigma(u) = \varnothing$ otherwise. (This formulation is equivalent to stipulating that
+a recombination node is of a different ``type'' to other nodes,
+with breakpoints only associated with this specific node type).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
 For each recombination node $u$ we must
@@ -413,7 +415,7 @@ Note that this description captures only the
 graph topology: if we also wish to know the times of events we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
 which defines the time of each node.
-An example is given in Fig.~\ref{fig-arg-data-structure}.
+
 
 % % Not sure if we actually include this, but it's good to work it through
 % % to make sure the notation works. Maybe something to stick into
@@ -482,8 +484,8 @@ to resolve the problem~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
 % it's not reasonable to assume that one type of event happens
 % at a time any more.
-The Griffiths ARG encoding is also limited in the types of ancestral
-history that can be described. This ARG encoding is derived from the coalescent
+The eARG is also limited in the types of ancestral history that can
+be described. This ARG encoding is derived from the coalescent
 with recombination, which explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
@@ -491,15 +493,13 @@ model, assuming that the sample size $n$ is much less than the
 population size $N$, and that the genome is short enough that,
 with high probability, the number of concurrent lineages in the ARG remains
 much smaller than $N$ at each time. While these approximations are
-reasonable
-to make when studying the Kreitman \emph{Drosphila Melanogaster}
-dataset~\citep{kreitman1983nucleotide} ($n=11$, $N\approx 10^6$,
-at 43 variant sites over x Kb \textcolor{red}{details and citation
-for Ne estimate}) that is classically used for benchmarking
-ARG inference methods [cites],
+reasonable to make for small datasets, such as
+the classic \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster}
+ADH gene dataset (comprising 11 genomes over 2.7 kb of sequence with 43 SNPs,
+as used in the ``\nameref{ARG_inference_methods}'' section),
 they are highly questionable in modern datasets. % absurd really
-For example, there are now many
-human datasets consisting of hundreds of thousands of
+For example, many
+human datasets consist of hundreds of thousands of
 genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
 and thus our sample size is often much \emph{larger} than $N_e$
 (often assumed to be $10^4$ in humans).
@@ -524,7 +524,7 @@ occur at the same time in the same genomes, and we can be
 certain that this is also true in the incredibly rich
 datasets that are available today.
 
-Another limitation of the Griffiths ARG encoding illustrated in
+A final limitation of the eARG encoding illustrated in
 Fig.~\ref{fig-arg-data-structure}A is the inability to represent
 multiple recombinations along a chromosome, gene conversion,
 or transmission of multiple chromosomes.
@@ -543,7 +543,7 @@ possible pattern of genetic inheritance.
 The only change that we require is to associate
 the details of inheritance intervals with \emph{edges} rather than
 as breakpoints associated with recombination events and
-edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}B
+edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}C
 where this alternative edge annotation formulation is
 shown. By associating the interval $(0, x)$ with edge $(3,4)$
 and the interval $(x, L)$ with $(3, 5)$ we make the encoding
@@ -594,22 +594,22 @@ present in modern datasets.
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
 The Ancestral Recombination Graph defined in terms of genomes embedded
-in a pedigree. (a) Diploid individuals, visualised in a highly inbred pedigree and
-labelled $i_1$ to $i_8$, contain both paternal (left) and maternal (right) genomes
-labelled \textsf{A} to \textsf{P}. Black lines show transmission paths connecting
-genomes in the current generation (\textsf{A} to \textsf{D}) with their ancestors.
-Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{A}
-and \textsf{C} are independent recombinants of the paternal genomes \textsf{E}
-and \textsf{F}: in these cases the edge annotations have been shown, indicating the
+in a pedigree. (A) Diploid individuals, visualised in a highly inbred pedigree and
+labelled $I_1$ to $I_8$, contain both paternal (left) and maternal (right) genomes
+labelled \textsf{a} to \textsf{p}. Black lines show transmission paths connecting
+genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
+Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{a}
+and \textsf{c} are independent recombinants of the paternal genomes \textsf{e}
+and \textsf{f}: in these cases the edge annotations have been shown, indicating the
 region of genome transmitted. Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker; this shows that all
-genomic regions are fully coalesced in genome \textsf{N} in the oldest generation.
-(b) The equivalent genome ARG, where there is a single type of node (representing
+genomic regions are fully coalesced in genome \textsf{n} in the oldest generation.
+(B) The equivalent genome ARG, where there is a single type of node (representing
 a genome) along with annotations on all edges; annotations showing partial
 transmission are highlighted in bold. Recombination, such as that causing the
-breakpoint at position 7, is associated with two parent genomes (\textsf{E} and
-\textsf{F}) and a child genome (the recombinant, \textsf{C}).
-(c) The edge-annotated genome ARG in (b) fully defines the
+breakpoint at position 7, is associated with two parent genomes (\textsf{e} and
+\textsf{f}) and a child genome (the recombinant, \textsf{c}).
+(C) The edge-annotated genome ARG in (B) fully defines the
 local relationships along the genome, as shown in the local
 or ``marginal'' trees.
 }
@@ -619,26 +619,26 @@ To distinguish from the classical event-based encodings,
 we call this encoding of an ARG data
 structure a ``Genome ARG'', or gARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG.
-Fig.~\ref{fig-arg-in-pedigree}a shows the genomes
+Fig.~\ref{fig-arg-in-pedigree}A shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
 discrete generations and carry two genomes. Each individual (labelled
-$i_1$ to $i_8$) therefore has a paternal genome (on the right) and a maternal one
+$I_1$ to $I_8$) therefore has a paternal genome (on the right) and a maternal one
 (on the left), although the pedigree is only shown for concreteness, and
 there is no inherent limitation on mating system, ploidy, or age structure.
 A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
-For example, individual $i_1$ has two genomes \textsf{A} and \textsf{B},
-inherited from parents $i_3$ and $i_4$. Genome \textsf{A} is the product of
-recombining $i_3$'s two genomes \textsf{E} and \textsf{F} at position 2,
-whereas \textsf{B} was inherited directly from $i_4$'s genome \textsf{G} without
-recombination. Fig.~\ref{fig-arg-in-pedigree}b shows the bare gARG, illustrating
+For example, individual $I_1$ has two genomes \textsf{a} and \textsf{b},
+inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
+recombining $I_3$'s two genomes \textsf{e} and \textsf{e} at position 2,
+whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
+recombination. Fig.~\ref{fig-arg-in-pedigree}B shows the bare gARG, illustrating
 that the patterns of
 transmission between genomes can be followed without necessarily knowing
 how they are combined within individuals. This ``genome-perspective''
-simply depicts the ancestry of the sample genomes $A$--$D$. The graph
+simply depicts the ancestry of the sample genomes \textsf{a}--\textsf{d}. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
-along the genome (Fig.~\ref{fig-arg-in-pedigree}c).
+along the genome (Fig.~\ref{fig-arg-in-pedigree}C).
 
 Formally, we can define a gARG as a set of edges $E$, where each
 element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
@@ -656,10 +656,10 @@ exists) and move to the next node $p$.
 The focus on genomes rather than events has some interesting
 and important ramifications. Firstly, a gARG may contain nodes that
 do not correspond to any particular event in the ancestry of the samples.
-For example, node \textsf{H} is the direct ancestor of \textsf{D} in
+For example, node \textsf{h} is the direct ancestor of \textsf{d} in
 Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
 coalescence or a recombination. Such nodes would usually be removed
-from the graph so that \textsf{D} descends directly from \textsf{K} (see
+from the graph so that \textsf{d} descends directly from \textsf{k} (see
 the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
 a representational perspective. This ability can be useful in practice and could be
 % Do we need to spell this out?
@@ -673,11 +673,11 @@ required if, for example, we have a deeply sequenced pedigree of haplodiploids.
 Secondly, unlike in an eARG, nodes in a gARG are not classified into different
 types. Indeed a single node can have both multiple children
 and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
-for instance, node \textsf{A} were to have two children.
+for instance, node \textsf{a} were to have two children.
 % It is a shame that this is not actually shown in fig 3, but I don't think
 % we can do this unless we have 5 generations
 Moreover, a single node can have more than 2 children, and (as we shall see in
-the ``\nameref{ARG_simplification}'' section, more than 2 parents. Another way to
+the ``\nameref{ARG_simplification}'' section), more than 2 parents. Another way to
 state this is that transitions between nodes in a gARG can encapsulate multiple
 events in an eARG.
 
@@ -686,16 +686,16 @@ closely linked to which genomes are chosen as the nodes in a gARG.
 We could potentially choose genomes at any point in the life cycle: for instance,
 we could chose to represent gametes as ARG nodes. However, the most intuitive
 choice is where genomes represent diploid individuals in each generation, as in
-Fig~\ref{fig-arg-in-pedigree}a. In this case recombination
+Fig~\ref{fig-arg-in-pedigree}A. In this case recombination
 is not represented by a single ``recombination node'' (as in an eARG), but with
 two parent genomes between which recombination takes place (e.g.
-nodes \textsf{E} and \textsf{F}), and a
-single resulting ``recombinant'' genome (e.g. \textsf{C}). The
+nodes \textsf{e} and \textsf{f}), and a
+single resulting ``recombinant'' genome (e.g. \textsf{c}). The
 edges that link this recombinant with its two parents carry the information
 concerning breakpoint location that would normally be present on the
-``recombination nod'' in an eARG. For example, node \textsf{C} in
-Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{E}
-and positions 7 to 10 from \textsf{F}, indicating that the breakpoint is at position 7.
+recombination node in an eARG. For example, node \textsf{c} in
+Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{e}
+and positions 7 to 10 from \textsf{f}, indicating that the breakpoint is at position 7.
 
 This method for representing recombinations may seem wasteful,
 since more than one node is required for each recombination,
@@ -752,14 +752,14 @@ $c$ to some non-empty subset of $S$ through the local trees.
 \caption{\label{fig-ancestry-resolution}
 The \citet[][fig. 1]{wiuf1999recombination} example graph as a gARG, with contrasting
 edge annotation schemes.
-(a) Edge annotations that reflect immediate inheritance, i.e. transmission of all
+(A) Edge annotations that reflect immediate inheritance, i.e. transmission of all
 genetic material between parent and child. All edges span the full genome from position 0 to 7,
 apart from those linking a recombinant and its two parents (bold).
-(b) Sample-resolved edge annotations: the Hudson simplification algorithm has been used to
+(B) Sample-resolved edge annotations: the Hudson simplification algorithm has been used to
 shorten edge spans to reflect only the upwards transmission of genetic
-material from the samples \textsf{A}, \textsf{B}, and \textsf{C}. The depiction of the genome within
+material from the samples \textsf{a}, \textsf{b}, and \textsf{c}. The depiction of the genome within
 each node is shaded as in figure \ref{fig-arg-in-pedigree}a to show
-coalescing regions of genome back to the grand MRCA genome \textsf{W}.
+coalescing regions of genome back to the grand MRCA genome \textsf{w}.
 In this case, using line widths to reflect the genomic span of each edge can
 help to visualise the relative importance of different transmission pathways.
 }
@@ -843,6 +843,13 @@ in the resulting lineage without changes. Eventually, as the process continues,
 we find resultant lineages in which all segments have fully coalescenced,
 and so the number of extant lineages gradually dwindles down to zero.
 
+% Potentially useful text from a previous iteration:
+% Wiuf and Hein's classical pair of papers
+% clarified the relationship between Hudson's algorithm and the ARG.
+% ARG simulation is inherently less efficient than Hudson's
+% algorithm because we must track all lineages, even those that correspond
+% to sections that have coalesced, or we won't have a complete ARG.
+
 The state-space of the Griffiths process is much simpler than Hudson's algorithm,
 which greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
@@ -889,19 +896,19 @@ and the relationship between nodes in adjacent trees is maintained.
 ARG simplification. In all cases the graph visualization is shown on the left
 and the equivalent marginal trees on the right.
 (A) A gARG simulated from a diploid Wright-Fisher
-model. Note that the genome \textsf{K} has three children, and the genomes
-\textsf{E} and \textsf{G} simultaneously have multiple parents and multiple children;
+model. Note that the genome \textsf{k} has three children, and the genomes
+\textsf{e} and \textsf{g} simultaneously have multiple parents and multiple children;
 neither could be directly represented in a Griffiths-like eARG encoding
-(see section XXX). The penultimate local tree is highlighted to aid discussion (see section YYY).
+(see the ``\nameref{eARG}'' section). The penultimate local tree is highlighted to aid discussion.
 (B) Simplified to remove all
 % trying out this terminology - can define in the text
-1-connected graph components (e.g., diamonds such as \textsf{JLMN}).
+1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
 (C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
-that have only one child (e.g. \textsf{N}) and nodes that have more
+that have only one child (e.g. \textsf{n}) and nodes that have more
 than one child (i.e. are ``common ancestors'') but never represent coalescences
-in the local trees (e.g. \textsf{R}).
+in the local trees (e.g. \textsf{r}).
 (D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
-information such as the fact that \textsf{K} is connected to \textsf{A} via \textsf{E}.
+information such as the fact that \textsf{k} is connected to \textsf{a} via \textsf{e}.
 }
 \end{figure}
 
@@ -917,19 +924,19 @@ one child. Fig.~\ref{fig-simplification} show a series of successive steps of
 simplification, starting with a complete gARG simulated under a Wright-Fisher
 model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
-\textsf{A} in the penultimate tree, highlighted in yellow and covering genomic positions
+\textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
 60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
-node \textsf{Q}, it passes through  \textsf{E},  \textsf{J},  \textsf{M},  \textsf{N} and 
-\textsf{P}, which in this region of the genome are all unary nodes. This reflects the
+node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and 
+\textsf{p}, which in this region of the genome are all unary nodes. This reflects the
 passage of this span of genome through the ARG towards the root (see the
 ``\nameref{Ancestry_resolution}'' section).
 Such unary nodes in a local tree are not usually considered important,
 because they provide very little information and are not
 detectable by information from the tree. % weak
 The nodes in a tree usually mark the points where samples find a
- \emph{common} ancestor, such as node \textsf{Q} in the highlighted
+ \emph{common} ancestor, such as node \textsf{q} in the highlighted
 tree. For many purposes, we would therefore consider a path directly
-joining sample \textsf{A} to node \textsf{Q} to be of equivalent status to the path
+joining sample \textsf{a} to node \textsf{q} to be of equivalent status to the path
 containing the intermediate unary nodes. Simplification is the process of removing
 these less informative and (for most computational purposes) inefficient nodes
 from the local trees and the corresponding annotated graph.
@@ -939,8 +946,8 @@ graph topology that is invisible to the samples. The most well
 known example of such topology is a so-called
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
-join again into a common ancestor (e.g. \textsf{J}, \textsf{L}, \textsf{M}
-and  \textsf{N} in Fig.~\ref{fig-simplification}A).
+join again into a common ancestor (e.g. \textsf{j}, \textsf{l}, \textsf{m}
+and  \textsf{n} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
 interested in the recombination event or ancestral genomes,
 there is no information in this topology and the diamond can be
@@ -949,26 +956,26 @@ subgraph which is singly-connected in both the leafward and
 rootward direction (a ``super-diamond'') is non-identifiable and can be
 replaced by a single edge. This definition includes the case
 of a single node that has one inbound and one outbound edge, such as
-nodes \textsf{F} and \textsf{H}.
+nodes \textsf{f} and \textsf{h}.
 Fig.~\ref{fig-simplification}B shows the result of this type of
 graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
 local trees, but there can still be nodes that are unary in all
 of the local trees. In particular, a node can represent a recombinant
-with multiple parents in the graph but only a single child (e.g. node \textsf{N}
+with multiple parents in the graph but only a single child (e.g. node \textsf{n}
 in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
 multiple children in the graph but in which no local coalescence takes place
-(node \textsf{R} in Fig.~\ref{fig-simplification}B).
+(node \textsf{r} in Fig.~\ref{fig-simplification}B).
 % point out that this is why Hudson refers to CA nodes, not coalescence nodes
 Such nodes are not singly connected in the graph, but are nevertheless unary in
 all of the local trees in Fig.~\ref{fig-simplification}B. The operation to remove them,
 the results of which are shown in Fig.~\ref{fig-simplification}C,
 therefore requires knowledge not just of the graph topology, but also of the
 edge annotations. Removal of recombinant nodes can produce graph nodes with
-more than 2 parents (e.g. node \textsf{E}); likewise, removal of
+more than 2 parents (e.g. node \textsf{e}); likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than 2 children (e.g. node \textsf{S}). These represent a ``stacking up'' of multiple
+more than 2 children (e.g. node \textsf{s}). These represent a ``stacking up'' of multiple
 often indistinguishable events into a single node, something which is impossible
 to encode in an eARG.
 
@@ -976,14 +983,14 @@ The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
-local tree. For example, node  \textsf{K} is unary in the second tree
+local tree. For example, node  \textsf{k} is unary in the second tree
 of Fig.~\ref{fig-simplification}C, but is either binary
 or ternary in all subsequent trees (recall this is a Wright-Fisher
 simulation). The final level of simplification is to alter the edge annotations
 such that, although no nodes are removed from the graph, \emph{all}
 unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
 It is common for this operation to remove nodes above the top MRCA node
-in the tree, resulting in many more root nodes (here, \textsf{Q} and \textsf{K}
+in the tree, resulting in many more root nodes (here, \textsf{q} and \textsf{k}
 become roots). [And continue]
 % Note that although this last stage produces much simpler local trees, by
 % removing information about the exact paths taken by lineages through
@@ -1023,12 +1030,13 @@ compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 [Discussion of SPRs in an EARG]
 
 The effects of recombination as we move from left-to-right along
-the genome in an unsimplified GARG are easy to interpret.
-Consider the leftmost tree in Fig~\ref{fig-simplification}.
-In the first tree the parent of B is F, and in the second
-tree its parent is E. Since both parents are present as
+the genome in an unsimplified gARG are easy to interpret.
+Consider the highlighed tree in Fig~\ref{fig-simplification}A.
+In it the parent of \textsf{e} is \textsf{j}, whereas in the next tree
+its parent is \textsf{k}. Since both parents are present as
 unary nodes in the tree, we simply change one edge in
 order to effect the transition.
+% Need revising to fit new example
 A more complex transition occurs when we have a regraft operation
 that occurs above the current root (i.e., the current oldest
 non-unary node). For example, the transition between the
@@ -1084,6 +1092,7 @@ leaf-labelled binary trees.
 \scalebox{0.5}{
 \begin{tabular}{cc}
 \begin{tikzpicture}
+	\node [anchor=north west] at (-3.5,9.3) {\LARGE \textbf{A}};
 	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
 	\draw (-0.1, -0.1) -- (-0.1, -0.4);
 	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
@@ -1117,7 +1126,7 @@ leaf-labelled binary trees.
 	\draw (2.2, 2.85) -- (2.4, 2.85);
 
 	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\node [scale=0.2,label=above left:{\small A}] at (-0.5,4.5) {A};
+	\node [scale=0.2,label=above left:{\small \textsf{a}}] at (-0.5,4.5) {a};
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.3, 4.25);
 	\draw (-0.3, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.3, 4.2) -- (-0.3, 4.3);
@@ -1125,7 +1134,7 @@ leaf-labelled binary trees.
 	\node [label=below:{\small $y$}] at (-0.5, 4.3) {};
 
 	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\node [scale=0.2,label=above left:{\small B}] at (3,5.4) {B};
+	\node [scale=0.2,label=above left:{\small \textsf{b}}] at (3,5.4) {b};
 	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
 	\draw (2.9, 5.15) -- (3.4, 5.15);
 
@@ -1136,7 +1145,7 @@ leaf-labelled binary trees.
 	\draw (0.4, 5.75) -- (0.9, 5.75);
 
 	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
-	\node [scale=0.2,label=above:{\small C}] at (1.75,7.2) {C};
+	\node [scale=0.2,label=above:{\small \textsf{c}}] at (1.75,7.2) {c};
 	\draw (1.35, 6.95) -- (2.15, 6.95);
 
 	\draw (-1.5, 6) -- (-1.5, 8);
@@ -1188,6 +1197,7 @@ leaf-labelled binary trees.
 \end{tikzpicture}
 &
 \begin{tikzpicture}
+	\node [anchor=north west] at (-3.5,9.3) {\LARGE \textbf{B}};
 	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
 	\draw (-0.1, -0.1) -- (-0.1, -0.4);
 	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
@@ -1295,7 +1305,7 @@ leaf-labelled binary trees.
 A realisation of the graph traversed by Hudson's algorithm started from a
 sample of three chromosomes of length $m$ at time $t = 0$, and
 propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
-at event B, while that on $[0, v)$ is reached at event C.
+at event \textsf{b}, while that on $[0, v)$ is reached at event \textsf{c}.
 The non-ancestral segment $[v, w)$ above
 A contributes to the rate of effective recombinations because it
 is trapped between ancestral segments. The two columns titled CA and RE

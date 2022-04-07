@@ -266,7 +266,7 @@ def label_nodes(ts, labels=None):
     """
     Adds a metadata item called "name" to each node, whose value
     is given by the labels dictionary passed in. If labels is None (default),
-    use the dictionary {0: 'A', 1: 'B', 2: 'C', ... 26: 'Z'}.
+    use the dictionary {0: 'a', 1: 'b', 2: 'c', ... 26: 'z'}.
     Any nodes without a corresponding key in the labels dictionary will
     simply have their metadata value set to their node id.
 
@@ -274,7 +274,7 @@ def label_nodes(ts, labels=None):
     will be labelled with numbers rather than ascii uppercase letters.
     """
     if labels is None:
-        labels = {i: lab for i, lab in enumerate(string.ascii_uppercase)}
+        labels = {i: lab for i, lab in enumerate(string.ascii_lowercase)}
     tables = ts.dump_tables()
 
     tables.nodes.clear()
