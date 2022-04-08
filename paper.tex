@@ -338,8 +338,8 @@ nodelabel/.style={font=\footnotesize}}
 \node [anchor=north west] at (-14,6) {A};
 \node [nodelabel,anchor=north west] at ($(-13,5)$) {
 \begin{tabular}{c|c}
-% \multicolumn{2}{c}{Breakpoint}\\
-node & breakpoint\\
+% \multicolumn{2}{c}{Breakpoints}\\
+Nodes & Breakpoints\\
 \hline
 $\textsf{a}$ & $\varnothing$ \\
 $\textsf{b}$ & $\varnothing$ \\
@@ -367,7 +367,7 @@ $(\textsf{f}, \textsf{g})$ \\
 \node [anchor=north west] at (9,6) {C};
 \node [nodelabel,anchor=north west] at ($(10,5)$) {
 \begin{tabular}{ll}
-Edges\\
+Edges & Intervals\\
 \hline
 $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
 $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
@@ -389,12 +389,14 @@ described and requires that edges be ordered to avoid ambiguity.
 Associating the interval of genome inherited by the child node
 from the parent with the corresponding edge allows
 any pattern genetic inheritance to be described and does
-not require edges to be ordered.
+not require edges to be ordered. In this example, each edge is associated
+with a single interval, but more generally, multiple non-overlapping intervals
+can be associated with a single edge.
 }
 \end{figure}
 
 % What do we mean by an eARG, formally?
-Formally, we can define an eARG as a tuple $(e, \sigma)$, where $e$
+Formally, we can define the classical eARG as a tuple $(e, \sigma)$, where $e$
 is an ordered list of edges defining a directed acyclic graph and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints,
@@ -402,7 +404,7 @@ such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
 $\sigma(u) = \varnothing$ otherwise. (This formulation is equivalent to stipulating that
 a recombination node is of a different ``type'' to other nodes,
-with breakpoints only associated with this specific node type).
+with breakpoints only associated with that node type).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
 For each recombination node $u$ we must
@@ -488,11 +490,11 @@ time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
 population size $N$, and that the genome is short enough that,
 with high probability, the number of concurrent lineages in the ARG remains
-much smaller than $N$ at each time. While these approximations are
+much smaller than $N$ at each time. These approximations are
 reasonable to make for small datasets, such as
 the classic \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster}
 ADH gene dataset (comprising 11 genomes over 2.7 kb of sequence with 43 SNPs,
-as used in the ``\nameref{ARG_inference_methods}'' section),
+see the ``\nameref{ARG_inference_methods}'' section). However,
 they are highly questionable in modern datasets. % absurd really
 For example, many
 human datasets consist of hundreds of thousands of
