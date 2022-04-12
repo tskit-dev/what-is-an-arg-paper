@@ -136,7 +136,7 @@ def ancestry_resolution():
         "genome_full": "illustrations/assets/genome_full.png",
     }
     for letter in list(string.ascii_lowercase[3 : G.number_of_nodes()]):
-        icons["genome_" + letter] = "illustrations/assets/genome_" + letter + ".png"
+        icons["genome_" + letter] = f"illustrations/assets/genome_{letter.upper()}.png"
     # Load images
     images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
 
@@ -602,7 +602,7 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
-        
+
         ax.set_title(name + f"\n{ts.num_trees} trees")
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
@@ -664,7 +664,7 @@ def inference():
     top_svg += "\n".join(svg)
     with open(f"illustrations/inference.svg", "wt") as f:
         f.write(top_svg)
-     
+
 
 cli.add_command(arg_in_pedigree)
 cli.add_command(ancestry_resolution)
