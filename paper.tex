@@ -10,7 +10,7 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \begin{document}
 
@@ -142,22 +142,23 @@ recombination
 and the model has proved to be an especially powerful basis for
 simulations~\citep{hudson2002generating,baumdicker2021efficient}.
 \cite{kelleher2016efficient} provide a description of his algorithm along with
-an efficient implementation, the details of which turn out to be highly relevant to 
+an efficient implementation, the details of which turn out to be highly relevant to
 later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
 Although Hudson's algorithm was accompanied by a graph
 schematic~\citep[][Fig. 5]{hudson1983properties}, the term
 ``Ancestral Recombination Graph'' or ARG, was introduced later by
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral, griffiths1997ancestral},
+Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral},
 who provided a closely related and complementary treatment.
 Where Hudson's algorithm focusses on efficient \emph{simulation}, the original
 ARG literature is focused on mathematical results about the underlying stochastic
-process. Griffiths and colleagues used the word
-``ARG'' to refer to both a specific branching-coalescing stochastic process and
-the graph structure derived from this process, but for clarity and following recent usage,
-we will use ARG to refer to a graph structure, and refer to the
-process as the Griffiths process or the coalescent with recombination
-\citep{minichiello2006mapping}.
+process. Griffiths and colleagues used the term
+``ARG'' to refer to both a particular branching-coalescing stochastic process and
+the graph structure produced by this process.
+% but for clarity and following recent usage,
+% we will use ARG to refer to a graph structure, and refer to the
+% process as the Griffiths process or the coalescent with recombination
+% \citep{minichiello2006mapping}.
 
 % NOTE: it might be helpful to have a drawing of the ARG process
 % in-progress here to help us talk about it. What is the full state
@@ -265,17 +266,15 @@ an ARG, without applying any of these restrictions.
 % clean to start the section with the subsequent para
 % starting "The Griffiths ARG encoding is an elegant and mathematically economical description of the CwR"
 Early work on ARG inference focused on the problem of
-of inferring parameters of the
+inferring parameters of the
 stochastic process, where the ancestry is regarded as a
 latent parameter to be averaged out
 \citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
 fearnhead2001estimating}.
-% FIXME: need some proper statistical language here to describe why these
-% methods didn't work so well.
 These methods met with limited success
-due to the overwhelmingly large state space of ARGs, which also has
-no simple geometry or neighbourhood structure that an inference or
-sampling method could exploit.
+because the state space of ARGs is overwhelmingly large and
+lacks a simple geometry or neighbourhood structure for inference or
+sampling methods to  exploit.
 The focus subsequently shifted to the more
 tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
@@ -284,19 +283,14 @@ ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum
 This highlighted the distinction between the ARG as a stochastic process
 and the ARG as a \emph{data structure}~\citep{minichiello2006mapping},
 since parsimonious ARGs have no immediate connection to
-the stochastic process. Indeed, the ARG instances produced by
-the coalescent with recombination are usually highly unparsimonious,
-since they contain many invisible recombinations
-% Do we need the following caveat?
-(although those produced under the SMC may be parsimonious, depending
-on the pattern of mutations that is present).
+the stochastic process.
 
 % What do we mean by an EARG, informally?
 The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination, whose
 fundamental units are the  \emph{events} that correspond directly
 to those that occur in the associated stochastic process. We will refer
-to this ARG encoding as an ``Event ARG'', or eARG: 
+to this ARG encoding as an ``Event ARG'', or eARG:
 an example is given in Fig.~\ref{fig-arg-data-structure}B.
 Each node in the graph corresponds to an event: therefore the graph
 contains both recombination nodes (node \textsf{d}) and common ancestor
@@ -456,14 +450,14 @@ in terms of the process in which we extract the local trees
 along the genome from an eARG.
 To recover
 the tree at genome coordinate $x$,
-we traverse the graph upwards from the leaves. At a particular
+we traverse the graph rootwards from the leaves. At a particular
 node $u$, if it has one parent we are at a common ancestor
-node and we simply follow that parent. If we are at a
+node and we follow that parent. If we are at a
 recombination node, $u$ has two parents: if
 $x$ is less than the breakpoint $\sigma(u)$ we follow
 the edge to the first parent, and otherwise follow the edge
 to the second parent.
-This ordering requirement, which is straightforward
+This ordering requirement, while straightforward
 to describe, has some practical drawbacks. For example,
 % Surely the meaning is clear from the context here and we don't need
 % qualify the meaning of ``ARG''
@@ -471,7 +465,7 @@ simulating an ARG in this representation is
 complicated by the fact that the
 first event to occur may hit the lineage carrying the ancestry
 to the right of the breakpoint rather
-than the left (and so we cannot emit edges as they are generated).
+than the left, and so we cannot emit edges as they are generated.
 Such issues can be worked around, of course,
 but depending on the ordering of otherwise indistinguishable
 objects is generally problematic. In practice, several
@@ -488,9 +482,9 @@ with recombination, which explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
-population size $N$, and that the genome is short enough that,
-with high probability, the number of concurrent lineages in the ARG remains
-much smaller than $N$ at each time. These approximations are
+population size $N$, and that the genome is short enough
+that the number of extant lineages remains
+much smaller than $N$ at all times. These approximations are
 reasonable to make for small datasets, such as
 the classic \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster}
 ADH gene dataset (comprising 11 genomes over 2.7 kb of sequence with 43 SNPs,
@@ -543,17 +537,17 @@ the details of inheritance intervals with \emph{edges} rather than
 as breakpoints associated with recombination events and
 edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}C
 where this alternative edge annotation formulation is
-shown. By associating the interval $(0, x)$ with edge $(3,4)$
-and the interval $(x, L)$ with $(3, 5)$ we make the encoding
+shown. By associating the interval $(0, x)$ with edge $(d,e)$
+and the interval $(x, L)$ with $(d, f)$ we make the encoding
 unambiguous: we can list the edges in any order, and it
 will describe the same set of local genealogical trees.
 This approach is also more flexible, because any pattern
 of inheritance can be described by these intervals. For
 example, if a gene conversion event occurred where a segment
 between between positions $x$ and $y$ was inherited by
-node $3$ from $5$, we would state this by associating
-the intervals $\{(0, x], (y, L]\}$ with $(3,4)$ and
-$\{(x, y]\}$ with $(3,5)$.
+node $d$ from $e$, we would state this by associating
+the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
+$\{(x, y]\}$ with $(d,f)$.
 This change is straightforward, involves no loss of information
 and (as we see in later sections)
 greatly increases both the expressivity and computational
@@ -619,21 +613,19 @@ structure a ``Genome ARG'', or gARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG.
 Fig.~\ref{fig-arg-in-pedigree}A shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
-discrete generations and carry two genomes. Each individual (labelled
-$I_1$ to $I_8$) therefore has a paternal genome (on the right) and a maternal one
-(on the left), although the pedigree is only shown for concreteness, and
-there is no inherent limitation on mating system, ploidy, or age structure.
+discrete generations and carry two genomes.
+% Each individual (labelled
+% $I_1$ to $I_8$) therefore has a maternal and paternal genome,
+% although the pedigree is only shown for concreteness, and
+% there is no inherent limitation on mating system, ploidy, or age structure.
 A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
 For example, individual $I_1$ has two genomes \textsf{a} and \textsf{b},
 inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
 recombining $I_3$'s two genomes \textsf{e} and \textsf{e} at position 2,
 whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
-recombination. Fig.~\ref{fig-arg-in-pedigree}B shows the bare gARG, illustrating
-that the patterns of
-transmission between genomes can be followed without necessarily knowing
-how they are combined within individuals. This ``genome-perspective''
-simply depicts the ancestry of the sample genomes \textsf{a}--\textsf{d}. The graph
+recombination. Fig.~\ref{fig-arg-in-pedigree}B shows the resulting gARG,
+depicting the ancestry of the sample genomes \textsf{a}--\textsf{d}. The graph
 topology along with the genome coordinate annotations on the
 edges then uniquely defines the trees at every position
 along the genome (Fig.~\ref{fig-arg-in-pedigree}C).
@@ -647,9 +639,9 @@ the next section). Deriving the local tree at a point $x$
 follows largely the same pattern as for an eARG but is somewhat
 simpler because coordinate information is directly associated with
 edges. Starting with the sample nodes $S$ we traverse
-upwards through the graph from child to parent. At each node $u$, we find an
-edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$ (if it
-exists) and move to the next node $p$.
+rootwards through the graph from child to parent. At each node $u$, we find an
+edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
+and move to the next node $p$.
 
 The focus on genomes rather than events has some interesting
 and important ramifications. Firstly, a gARG may contain nodes that
@@ -695,22 +687,22 @@ recombination node in an eARG. For example, node \textsf{c} in
 Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{e}
 and positions 7 to 10 from \textsf{f}, indicating that the breakpoint is at position 7.
 
-This method for representing recombinations may seem wasteful,
-since more than one node is required for each recombination,
-and genomic interval information must be stored on every edge.
-However, asymptotically the amount of information stored is the
-same, and there is much simplicity to be gained by having
-a single type of node and by treating all edges in the same way.
-More importantly --- as we see in the next section --- we gain the
-ability to simplify the ARG by removing nodes without affecting the
-local tree topologies, and also the ability to record only the
-regions of genome relevant to the final, sample genomes. This last
-feature turns out to be the key to efficient processing of the ARG.
+% This method for representing recombinations may seem wasteful,
+% since more than one node is required for each recombination,
+% and genomic interval information must be stored on every edge.
+% However, asymptotically the amount of information stored is the
+% same, and there is much simplicity to be gained by having
+% a single type of node and by treating all edges in the same way.
+% More importantly --- as we see in the next section --- we gain the
+% ability to simplify the ARG by removing nodes without affecting the
+% local tree topologies, and also the ability to record only the
+% regions of genome relevant to the final, sample genomes. This last
+% feature turns out to be the key to efficient processing of the ARG.
 
-[Possibly more stuff here: clarify why we assign coordinates to edges
-rather than nodes. Basically lay out all the stuff that we can
-talk about \emph{without} going in to the details of
-ancestry resolution.]
+% [Possibly more stuff here: clarify why we assign coordinates to edges
+% rather than nodes. Basically lay out all the stuff that we can
+% talk about \emph{without} going in to the details of
+% ancestry resolution.]
 
 
 \section*{Ancestry resolution}\label{Ancestry_resolution}
@@ -781,10 +773,10 @@ original inheritance interval $I_v$ on the edge.
  from the gARG and the ancestry intervals of the resolved gARG.
 \end{itemize}
 
-This process is illustrated in Fig~\ref{fig-ancestry-resolution}. It is intimately linked to 
+This process is illustrated in Fig~\ref{fig-ancestry-resolution}. It is intimately linked to
 Hudson's algorithm which operates by
 tracking segments of ancestral material carried by ancestors as
-we go backwards in time. 
+we go backwards in time.
 
 % jk-note unclear here about the best choice of notation. We could have
 % lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
@@ -924,7 +916,7 @@ model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
 \textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
 60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
-node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and 
+node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
 \textsf{p}, which in this region of the genome are all unary nodes. This reflects the
 passage of this span of genome through the ARG towards the root (see the
 ``\nameref{Ancestry_resolution}'' section).
@@ -1331,7 +1323,7 @@ likelihood-based methods are  \cite{mahmoudi2022bayesian, guo2022recombination}.
 In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is the law of
 a Poisson process on the ancestral material on the edges of the ARG, which implies
 that mutation processes at two sites are conditionally independent given the
-underlying ancestral trees at those sites. A prototypical example is 
+underlying ancestral trees at those sites. A prototypical example is
 \citet[Eq.\ (2)]{mahmoudi2022bayesian}. Hence, $p(D | G)$ can be evaluated
 regardless of the precise data structure used to store $G$, provided that it encodes
 at least all marginal ancestral trees along the sampled sequences.  Choosing the
