@@ -10,7 +10,7 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \begin{document}
 
@@ -142,7 +142,7 @@ recombination
 and the model has proved to be an especially powerful basis for
 simulations~\citep{hudson2002generating,baumdicker2021efficient}.
 \cite{kelleher2016efficient} provide a description of his algorithm along with
-an efficient implementation, the details of which turn out to be highly relevant to 
+an efficient implementation, the details of which turn out to be highly relevant to
 later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
 Although Hudson's algorithm was accompanied by a graph
@@ -296,7 +296,7 @@ The Griffiths ARG encoding is an elegant and mathematically
 economical description of the coalescent with recombination, whose
 fundamental units are the  \emph{events} that correspond directly
 to those that occur in the associated stochastic process. We will refer
-to this ARG encoding as an ``Event ARG'', or eARG: 
+to this ARG encoding as an ``Event ARG'', or eARG:
 an example is given in Fig.~\ref{fig-arg-data-structure}B.
 Each node in the graph corresponds to an event: therefore the graph
 contains both recombination nodes (node \textsf{d}) and common ancestor
@@ -781,10 +781,10 @@ original inheritance interval $I_v$ on the edge.
  from the gARG and the ancestry intervals of the resolved gARG.
 \end{itemize}
 
-This process is illustrated in Fig~\ref{fig-ancestry-resolution}. It is intimately linked to 
+This process is illustrated in Fig~\ref{fig-ancestry-resolution}. It is intimately linked to
 Hudson's algorithm which operates by
 tracking segments of ancestral material carried by ancestors as
-we go backwards in time. 
+we go backwards in time.
 
 % jk-note unclear here about the best choice of notation. We could have
 % lists of tuples (l, r, a), or a tuple of vectors (l_j, r_j, a_j),
@@ -924,7 +924,7 @@ model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
 \textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
 60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
-node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and 
+node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
 \textsf{p}, which in this region of the genome are all unary nodes. This reflects the
 passage of this span of genome through the ARG towards the root (see the
 ``\nameref{Ancestry_resolution}'' section).
@@ -1331,7 +1331,7 @@ likelihood-based methods are  \cite{mahmoudi2022bayesian, guo2022recombination}.
 In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is the law of
 a Poisson process on the ancestral material on the edges of the ARG, which implies
 that mutation processes at two sites are conditionally independent given the
-underlying ancestral trees at those sites. A prototypical example is 
+underlying ancestral trees at those sites. A prototypical example is
 \citet[Eq.\ (2)]{mahmoudi2022bayesian}. Hence, $p(D | G)$ can be evaluated
 regardless of the precise data structure used to store $G$, provided that it encodes
 at least all marginal ancestral trees along the sampled sequences.  Choosing the
