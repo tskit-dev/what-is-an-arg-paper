@@ -1360,81 +1360,48 @@ may benefit from different ways to associate edges with lineages.
 Using the terminology developed here to classify ARGs, we now review methods developed
 to explicitly \emph{infer} ARGs from sequencing data.
 
-\subsection*{Parsimony and heuristics}
-The problem of reconstructing ARGs for samples of recombining sequences has been of significant
- interest essentially since the ARG was first defined. Early methods focussed on finding the most
- \emph{parsimonious} ARGs, i.e.\ those minimising the number of posited recombination events in
- the history of the sample \citep{hein1990reconstructing}. Two main approaches to explicitly reconstructing
- parsimonious ARGs then emerged: building the ARG either \emph{backwards-in-time} or \emph{along-the-genome}.
- The former approach, introduced by \citet{lyngso2005minimum} and implemented in the program
- \texttt{Beagle}, starts with the input data matrix and reduces it through row and column operations
- corresponding to coalescence, mutation and recombination events, until the empty matrix is reached;
- the corresponding sequence of events can then be used to construct an ARG from the bottom up. The
- latter approach, introduced by \citet{song2003parsimonious} and first implemented in the program
- \texttt{RecMinPath} \citep{song2005constructing}, starts with an initial local tree at some starting
- position, and refines the tree moving left and right along the genome, changing the topology of the
- tree when necessary through \emph{subtree prune and regraft} (SPR) operations (corresponding to
- recombination events).
+The problem of reconstructing ARGs for samples of recombining sequences has been of 
+interest since the ARG was first defined. Early methods focused on finding \emph{parsimonious} ARGs,
+i.e.\ those with a minimal number of recombination events \citep{hein1990reconstructing}.
+Two main approaches emerged: \emph{backwards-in-time} \citep{lyngso2005minimum} and
+\emph{along-the-genome} \citep{song2003parsimonious, song2005constructing}.
+The former starts with a data matrix and reduces it to an empty matrix through row and column operations
+corresponding to coalescence, mutation, and recombination events, which construct
+an ARG from the bottom up. The latter begins from an initial local tree at a single focal site. Moving the 
+focal site along the genome changes the local tree via a \emph{subtree prune and regraft} (SPR) operation
+whenever a recombination is traversed. Methods based the backwards-in-time approach are described by
+\citet{song2005efficient, wu2008association, thao2019hybrid, ignatieva2021kwarg},
+while \citet{hein1993heuristic, wu2011new, mirzaei2017rent} describe along-the-genome methods.
+\citet{rasmussen2022espalier} focuses on parsimonious fusion of local trees into an ARG, while
+\citet{camara2016inference} is based on topological data analysis.
 
 Reconstructing a most parsimonious ARG for a given data set is NP-hard \citep{wang2001perfect},
-and in order to allow for larger input datasets, subsequent parsimony-based methods have resorted
-to various relaxations and heuristics. Those utilising variants of the backwards-in-time approach
-include the programs \texttt{SHRUB} \citep{song2005efficient}, \texttt{GAMARG} \citep{thao2019hybrid},
-and \texttt{KwARG} \citep{ignatieva2021kwarg}, and the method described by \citet{wu2008association}.
-Tools constructing genealogies along-the-genome include \texttt{RecPars} \citep{hein1993heuristic},
-\texttt{RENT} \citep{wu2011new} and its sequel \texttt{RENT+} \citep{mirzaei2017rent}. Other approaches
-include \texttt{TARGet} \citep{camara2016inference}, which implements a method based on topological
-data analysis. The scalability of these methods varies substantially based on the heuristics in use
-and the underlying data structure, with the most efficient tools limited to analysing hundreds of
-sequences.
+so parsimony-based methods resort to heuristics and are limited to analysing hundreds of sequences.
+Hence, a number of methods aim to balance computational efficiency with reconstruction of ``reasonable",
+rather than parsimonious ARGs
+\citep{minichiello2006mapping, parida2008estimating, kelleher2019inferring,  speidel2019method, zhang2021biobank}.
+The latter three methods, as well as the parsimony-based method of \citet{rasmussen2022espalier},
+can be used on megabase scale data and hundreds of thousands of samples under human-like parameters.
 
-A number of heuristic methods have also been developed which do not (explicitly) focus on reconstructing
-the most parsimonious ARGs, but rather aim for computational efficiency while seeking to achieve good
-accuracy of the inferred genealogies. Such methods include \texttt{Margarita} \citep{minichiello2006mapping}
-and the approach of \citet{parida2008estimating}; the more recently developed \texttt{Relate}
-\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} use a combination of both
-backwards-in-time and along-the-genome approaches, and can be practically used on megabase scale data
-and tens to hundreds of thousands of samples under human-like parameters.
-Another class of methods has recently emerged that use a \emph{threading} approach, constructing ARGs
-by adding sequences to the graph one-by-one. Originally introduced by \citet{rasmussen2014genome} as a
-way of generating MCMC proposals for ARGs, a similar idea was leveraged in \texttt{ARGneedle}
-\citep{zhang2021biobank} to reconstruct ARGs for biobank-scale data.
 % AI: just to note, these papers do not all agree in their definition of an ARG.
 % I guess this is one of the points of the present paper, but should we mention this fact?
 % Should we also mention that most of these infer just the topology, but some also the times?
 
-
-Espalier~\citep{rasmussen2022espalier} uses Maximum Agreement Forests to
-minimise the differences between local trees estimated using other methods.
-
-\subsection*{Model-based methods}
-An alternative approach is to treat the ancestry as a latent parameter to be averaged out
+An alternative approach is to treat the ARG as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
 or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg}.
-These methods invariably operated on a representation of the ``little ARG'', typically
-generated until the grand MRCA. They are extremely computationally expensive,
-and applicable to at most hundreds of samples consisting of tens of kilobases with
-human-like parameters.
+These methods operate on representations of the ``little ARG'', and are extremely computationally
+expensive, being applicable to at most hundreds of samples consisting of tens of kilobases with
+human-like parameters. State-of-the-art methods rely on cheaper, approximate models
+\citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}. 
+The most scalable method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to dozens of mammal-like
+genomes \citep{hubisz2020inference}.
 
-Due to the computational expense of sampling ``little ARGs'', state-of-the-art
-Monte Carlo methods typically rely on cheaper, approximate models.
-The most prominent examples are
-\texttt{ARGWeaver}~\citep{rasmussen2014genome,hubisz2020mapping,hubisz2020inference}
-and \texttt{Arbores} \citep{heine2018bridging}. The former also utilises a time
-discretisation approximation, but scales to dozens of mammal-like genomes.
-The \texttt{ClonalOrigin} method \citep{didelot2010inference,
-medina2020speeding} uses the \texttt{ClonalFrame}
-model and data structure, though it is not as scalable as \texttt{ARGWeaver}.
-
-A very recent MCMC method called \texttt{ARGInfer} has resulted in the first
-improvement in the scalability of Monte Carlo methods for the exact ARG model
-by making use of the tree sequence representation of marginal trees, suitably enriched
-to facilitate the computations needed for MCMC sampling
-\citep{mahmoudi2022bayesian}.
-While not competitive with the scalability of \texttt{ARGWeaver}, \texttt{ARGInfer} extends
-the feasible range of sequence lengths by at least an order of magnitude when
-compared with methods which sample realisations of the exact ``little ARG''.
+Recently, \citet{mahmoudi2022bayesian} have improved the scalability of exact MCMC for ARGs by 
+leveraging the tree sequence representation of marginal trees, suitably enriched to facilitate the
+evaluation of sampling probabilities. While not competitive with \texttt{ARGWeaver}, their method extends
+the feasible range of sequence lengths by at least an order of magnitude.
 
 
 \begin{figure}
