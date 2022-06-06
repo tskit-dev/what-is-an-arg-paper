@@ -181,7 +181,7 @@ and coalescing. Later, we will show how the graph structure and breakpoints
 associated with
 recombination nodes provides sufficient information to later recover the marginal
 trees and calculate sampling probabilities. However, this process traces out
-a larger graph than the Hudson algorithm (see the ``\nameref{Ancestry_resolution}'' section),
+a larger graph (the ``big'' ARG) than the Hudson algorithm (the ``little'' ARG; see the ``\nameref{Ancestry_resolution}'' section),
 and is consequently considerably less efficient \citep{wiuf1999ancestry}.
 
 Similar graph encodings have also been introduced to model other mechanisms
@@ -201,7 +201,7 @@ true ancestry from the ensemble in a non-uniform way.
 There is no ASG analogue of the more computationally tractable ``little'' ARG,
 though some gains in tractability can be made by considering typed
 lineages~\citep{etheridge2009coalescent} or by leveraging perfect simulation
-techniques when recurrent mutation is present\citep{fearnhead2001perfect}.
+techniques when recurrent mutation is present \citep{fearnhead2001perfect}.
 Extensions of the ASG have been developed to frequency-dependent
 selection~\citep{neuhauser1999ancestral, gonzalezcasanova2018duality},
 unlinked chromosomes~\citep{fearnhead2003ancestral}, recombining
@@ -223,7 +223,7 @@ The term \emph{phylogenetic network} has been broadly accepted to describe the m
 type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
 represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
 that labels some of its nodes'' (although more narrow and context-dependent definitions can also
-be found in the literature). Explicit rooted phylogenetic networks are rooted DAGs,
+be found in the literature). Explicit rooted phylogenetic networks are rooted Directed Acyclic Graphs (DAGs),
 with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
 as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
 
@@ -495,26 +495,36 @@ human datasets consist of hundreds of thousands of
 genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
 and thus our sample size is often much \emph{larger} than $N_e$
 (often assumed to be $10^4$ in humans).
-% TODO make this better. Ask Gregor for some refs?
-% Basically, Ag datasets make the assumption of isolated
-% rare recombinations absurd.
-Agricultural datasets such as the 1000 bull genomes~\citep{hayes20191000}
-combine genome sequence data with detailed pedigrees, with
-sample data from multiple generations.
+The 1000 bull genomes project~\citep{hayes20191000}
+comprises close to 7000 genomes, which are part of multi-generation pedigrees
+with millions of animals and extensive SNP array genotype data. For example,
+the US dairy cattle database alone comprises more than 6 million animals with SNP array genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
+while the effective population size in modern dairy cattle breeds is less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
+This low effective population size is caused by intense selection and
+staggering use of a handful of bulls across the world. The current record
+holder is bull Toystory that has produced 2.4 million doses of semen
+for artificial insemination across 13 years\footnote{\url{https://www.dairyherd.com/news/world-renowned-toystory-bull-has-died}}.
+An extreme sign of these breeding practices is that there are only two ancestral
+Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
+Similar datasets are becoming available also in other livestock species.
+Notably, \citet{RosFreixedes2022} have combined genome
+and SNP array data to infer recombination of genomes for 440,610 pigs within
+7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
+Effective population size in pigs is also less than 100 with each female and male
+routinely producing respectively more than 10 and 5000 progeny each \citep{Hall2016,Porcnic2016}.
 Complete chromosome-level assemblies are now possible
 in humans~\citep{miga2020telomere},
 and projects are under way to obtain high-quality assemblies
 for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
 and ultimately worldwide~\citep{lewin2022earth}.
-While the coalescent model can be suprisingly robust to such
-basic violations to the underlying assumptions~\citep{
+While the coalescent model can be suprisingly robust
+basic violations of the underlying assumptions~\citep{
 wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
 it is not acceptable that our ability to \emph{represent}
 ancestral relationships should be limited by these assumptions.
 In a Wright-Fisher model, coalescence and recombination can
-occur at the same time in the same genomes, and we can be
-certain that this is also true in the incredibly rich
-datasets that are available today.
+occur at the same time in the same genomes, which is increasingly
+captured in the incredibly rich datasets that are available today.
 
 A final limitation of the eARG encoding illustrated in
 Fig.~\ref{fig-arg-data-structure}A is the inability to represent
@@ -522,7 +532,8 @@ multiple recombinations along a chromosome, gene conversion,
 or transmission of multiple chromosomes.
 [Sentence saying ``gene conversion is important, actually, cite, cite,
 so we should be hoping to infer it some day''. Presumably people
-already are in bacterial contexts?]
+already are in bacterial contexts? Gregor: I recall this paper from
+Arabidopsis https://www.pnas.org/doi/10.1073/pnas.1211827110]
 To allow us to encode data from these important processes we
 must either devise workarounds to the event based encoding
 (i.e., model gene conversion as two recombination events) or
@@ -592,10 +603,12 @@ labelled \textsf{a} to \textsf{p}. Black lines show transmission paths connectin
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
 Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{a}
 and \textsf{c} are independent recombinants of the paternal genomes \textsf{e}
+% Gregor: there is some overlap between a and c still (the middle region inherited
+% from f) so, a and c are not fully independent!
 and \textsf{f}: in these cases the edge annotations have been shown, indicating the
 region of genome transmitted. Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker; this shows that all
-genomic regions are fully coalesced in genome \textsf{n} in the oldest generation.
+genomic regions fully coalesce in genome \textsf{n} in the oldest generation.
 (B) The equivalent genome ARG, where there is a single type of node (representing
 a genome) along with annotations on all edges; annotations showing partial
 transmission are highlighted in bold. Recombination, such as that causing the
@@ -603,7 +616,7 @@ breakpoint at position 7, is associated with two parent genomes (\textsf{e} and
 \textsf{f}) and a child genome (the recombinant, \textsf{c}).
 (C) The edge-annotated genome ARG in (B) fully defines the
 local relationships along the genome, as shown in the local
-or ``marginal'' trees.
+(``marginal'') trees.
 }
 \end{figure}
 
@@ -613,16 +626,15 @@ structure a ``Genome ARG'', or gARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG.
 Fig.~\ref{fig-arg-in-pedigree}A shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
-discrete generations and carry two genomes.
-% Each individual (labelled
-% $I_1$ to $I_8$) therefore has a maternal and paternal genome,
-% although the pedigree is only shown for concreteness, and
-% there is no inherent limitation on mating system, ploidy, or age structure.
+discrete generations and carry two genomes. Each individual (labelled
+$I_1$ to $I_8$) therefore has a paternal genome (on the left) and a maternal one
+(on the right), although the pedigree is only shown for concreteness, and
+there is no inherent limitation on mating system, ploidy, or age structure.
 A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
 For example, individual $I_1$ has two genomes \textsf{a} and \textsf{b},
 inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
-recombining $I_3$'s two genomes \textsf{e} and \textsf{e} at position 2,
+recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
 whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
 recombination. Fig.~\ref{fig-arg-in-pedigree}B shows the resulting gARG,
 depicting the ancestry of the sample genomes \textsf{a}--\textsf{d}. The graph
@@ -652,13 +664,19 @@ coalescence or a recombination. Such nodes would usually be removed
 from the graph so that \textsf{d} descends directly from \textsf{k} (see
 the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
 a representational perspective. This ability can be useful in practice and could be
-% Do we need to spell this out?
-required if, for example, we have a deeply sequenced pedigree of haplodiploids.
+% Do we need to spell this out? Gregor: I think so - see below
+required if, for example, we have a deeply sequenced pedigree as in \cite{RosFreixedes2022}.
 % e.g. Honeybees? Be great to cite an example!
 % Note by Yan - if we actually have the sequence, then this turns into
 % a sample node, so would be normally included anyway. Perhaps, therefore
 % we should talk about these "pass though" nodes in the context
 % of internal samples.
+% Gregor: There are no good deeply sequenced pedigrees in honeybees, but sex
+% chromosome behaves like haplodiploid system, also any deep pedigree works here, so I cited our pig
+% work. Also, I think its important to not think of all genomes as current samples - we have many
+% generations of animals with genome or SNP array data and we know pedigree so we can't assume they
+% are all current samples - I believe you made this clear distinction also in the tsdate paper with
+% ancient human samples
 
 Secondly, unlike in an eARG, nodes in a gARG are not classified into different
 types. Indeed a single node can have both multiple children
@@ -684,8 +702,8 @@ single resulting ``recombinant'' genome (e.g. \textsf{c}). The
 edges that link this recombinant with its two parents carry the information
 concerning breakpoint location that would normally be present on the
 recombination node in an eARG. For example, node \textsf{c} in
-Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{e}
-and positions 7 to 10 from \textsf{f}, indicating that the breakpoint is at position 7.
+Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{f}
+and positions 7 to 10 from \textsf{e}, indicating that the breakpoint is at position 7.
 
 % This method for representing recombinations may seem wasteful,
 % since more than one node is required for each recombination,
@@ -723,7 +741,7 @@ The graph structure (the nodes and their connectivity through edges)
 captures a great deal of information about this ancestry,
 but on its own it cannot tell us about the precise relationships between
 the samples along the genome: do to this, we must construct the
-local (or ``marginal'') trees.
+local (``marginal'') trees.
 
 We can define a sample-resolved gARG as a tuple $(S, E)$
 where $S \subset \mathbb{N}$ is a set of sample nodes and
@@ -742,7 +760,7 @@ $c$ to some non-empty subset of $S$ through the local trees.
 \caption{\label{fig-ancestry-resolution}
 The \citet[][fig. 1]{wiuf1999recombination} example graph as a gARG, with contrasting
 edge annotation schemes.
-(A) Edge annotations that reflect immediate inheritance, i.e. transmission of all
+(A) Edge annotations that reflect immediate inheritance, i.e. transmission of
 genetic material between parent and child. All edges span the full genome from position 0 to 7,
 apart from those linking a recombinant and its two parents (bold).
 (B) Sample-resolved edge annotations: the Hudson simplification algorithm has been used to
@@ -845,7 +863,7 @@ which greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
 simulating recombinant ancestry. The big ARG is vast, and any realisation
 for even moderate levels of recombination is far too large to be of practical
-use. The number of events in the big ARG, all the way back to the GMRCA
+use. The number of events in the big ARG all the way back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
 of events required to simulate the little ARG is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
@@ -871,11 +889,11 @@ sequence descended from it.''
 Not all nodes in an ARG are equal. Assuming that we have sequenced the
 genomes of the samples, there are intrinsic limits on what can
 be known about more ancient nodes, determined by the graph topology
-and the flow ancestral material through it.
+and the flow of ancestral material through it.
 \emph{Simplification}~\citep{kelleher2018efficient} is the process
 of removing nodes and re-writing edges in a gARG to remove
 various types of redundancy, while maintaining the crucial properties
-that the meaningful topology in the local trees is not affected,
+that the ``meaningful'' topology in the local trees is not affected,
 and the relationship between nodes in adjacent trees is maintained.
 
 \begin{figure}
@@ -915,7 +933,7 @@ simplification, starting with a complete gARG simulated under a Wright-Fisher
 model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
 \textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
-60 to 70. On this path, before $A$ meets its common ancestor with the other samples at
+60 to 70. On this path, before \textsf{a} meets its common ancestor with the other samples at
 node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
 \textsf{p}, which in this region of the genome are all unary nodes. This reflects the
 passage of this span of genome through the ARG towards the root (see the
@@ -1001,7 +1019,7 @@ backwards in time approach, it has led to substantial
 insights into the process of recombination itself
 and to the sequentially Markov Coalescent (SMC)
 approximations~\citep{mcvean2005approximating,marjoram2006fast}
-which are central to many modern methods.
+that are central to many modern methods.
 
 Under the coalescent with recombination (or SMC) each local
 tree along the genome is transformed into the next by
@@ -1318,9 +1336,9 @@ and $p(G | D)$ as a regularized likelihood. In both cases, $p(G)$ is typically s
 as the sampling distribution of a stochastic process, such as the coalescent with
 recombination. Essentially all of the model-based inference methods surveyed below
 rely on evaluation of a likelihood and a prior. Two contemporary examples of
-likelihood-based methods are  \cite{mahmoudi2022bayesian, guo2022recombination}.
+likelihood-based methods are \cite{mahmoudi2022bayesian} and \cite{guo2022recombination}.
 
-In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is the law of
+In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is based on
 a Poisson process on the ancestral material on the edges of the ARG, which implies
 that mutation processes at two sites are conditionally independent given the
 underlying ancestral trees at those sites. A prototypical example is
@@ -1337,21 +1355,21 @@ would split ancestral material) at each time along the ARG
 \citep[Eq.\ (3)]{mahmoudi2022bayesian}. These cannot be uniquely determined
 from just the marginal trees at each site because branches at multiple trees can be
 contained in the same ancestral lineage. Instead, a richer data structure akin to the
-EARG or GARG is needed. Moreover, because EARG does not explicitly store the flow
+eARG or gARG is needed. Moreover, because eARG does not explicitly store the flow
 of ancestral material along its edges---a necessary piece of information for
 computing the number of effective recombination links at each time---evaluating
-$p(G)$ based on an EARG essentially requires turning it into a GARG at runtime.
+$p(G)$ based on an eARG essentially requires turning it into a gARG at runtime.
 
 The number of extant lineages at a given time is not explicitly represented even
-in a GARG, and needs to be calculated from the node and edge tables.
+in a gARG, and needs to be calculated from the node and edge tables.
 For example, any edges with the same child and parent nodes are contained within
 the same lineage. Under the coalescent with recombination, the two edges
 originating from a recombinant child are also contained within a single lineage
-until the time of their parent nodes, at which point they split. Nodes S, T, and U
+until the time of their parent nodes, at which point they split. Nodes \textsf{s}, \textsf{t}, and \textsf{u}
 in panel (a) of Figure \ref{fig-ancestry-resolution} provide a concrete example
-of the latter: the edges from S to T and S to U are distinct, but correspond to only
+of the latter: the edges from \textsf{s} to \textsf{t} and \textsf{s} to \textsf{u} are distinct, but correspond to only
 a single lineage in the time interval they span. We emphasize that these
-conventions grouping edges into lineages are not part of the GARG data structure.
+conventions grouping edges into lineages are not part of the gARG data structure.
 While they are convenient for analysis using the coalescent with recombination,
 other models, such as discrete time Wright--Fisher models with finite populations,
 may benefit from different ways to associate edges with lineages.
@@ -1359,15 +1377,16 @@ may benefit from different ways to associate edges with lineages.
 \section*{ARG inference methods}\label{ARG_inference_methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
 to explicitly \emph{infer} ARGs from sequencing data.
+% Gregor: I expected clear indication which method/tool works with eARGs and gARGs, but I can see this clearly
 
-The problem of reconstructing ARGs for samples of recombining sequences has been of 
+The problem of reconstructing ARGs for samples of recombining sequences has been of
 interest since the ARG was first defined. Early methods focused on finding \emph{parsimonious} ARGs,
 i.e.\ those with a minimal number of recombination events \citep{hein1990reconstructing}.
 Two main approaches emerged: \emph{backwards-in-time} \citep{lyngso2005minimum} and
 \emph{along-the-genome} \citep{song2003parsimonious, song2005constructing}.
 The former starts with a data matrix and reduces it to an empty matrix through row and column operations
 corresponding to coalescence, mutation, and recombination events, which construct
-an ARG from the bottom up. The latter begins from an initial local tree at a single focal site. Moving the 
+an ARG from the bottom up. The latter begins from an initial local tree at a single focal site. Moving the
 focal site along the genome changes the local tree via a \emph{subtree prune and regraft} (SPR) operation
 whenever a recombination is traversed. Methods based the backwards-in-time approach are described by
 \citet{song2005efficient, wu2008association, thao2019hybrid, ignatieva2021kwarg},
@@ -1394,15 +1413,14 @@ or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallo
 These methods operate on representations of the ``little ARG'', and are extremely computationally
 expensive, being applicable to at most hundreds of samples consisting of tens of kilobases with
 human-like parameters. State-of-the-art methods rely on cheaper, approximate models
-\citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}. 
+\citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}.
 The most scalable method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to dozens of mammal-like
 genomes \citep{hubisz2020inference}.
 
-Recently, \citet{mahmoudi2022bayesian} have improved the scalability of exact MCMC for ARGs by 
+Recently, \citet{mahmoudi2022bayesian} have improved the scalability of exact MCMC for ARGs by
 leveraging the tree sequence representation of marginal trees, suitably enriched to facilitate the
 evaluation of sampling probabilities. While not competitive with \texttt{ARGWeaver}, their method extends
 the feasible range of sequence lengths by at least an order of magnitude.
-
 
 \begin{figure}
 \begin{center}
@@ -1475,7 +1493,7 @@ of ancestral material the graph). Without position information
 we know that a particular node was an ancestor somewhere along the
 sequence, but not exactly where.
 
-\item We make the point about expressivity of the EARG pretty
+\item We make the point about expressivity of the eARG pretty
 hard, but we don't mention anything about indels and structural
 rearrangements etc. It's probably worth mentioning genome graphs
 somewhere just to fend off this criticism. The high-level point
@@ -1490,12 +1508,12 @@ using node annotations.
 It is difficult to imagine a practical calculation performed on an
 ARG that does not involve either the sequential generation of trees
 along the genome or the resolved ancestry segments.
-Knowing the resolved segments in an ancestry resolved GARG allows
+Knowing the resolved segments in an ancestry resolved gARG allows
 us to perform many calculations without explicitly generating
 the trees, and lets us work with the ancestry on a genome-by-genome
 basis. We give three examples here. Firstly, generating mutations
 on edges can be performed very quickly on an ancestry resolved
-GARG, since we only need to examine $O(|E|)$ edges rather than
+gARG, since we only need to examine $O(|E|)$ edges rather than
 $O(nt)$ tree branches (assuming $n$ samples and $t$ marginal trees)
 ~\citep{baumdicker2021efficient}. If the ancestry were not resolved,
 we would generate a large number of mutations on areas of the edge that
@@ -1512,7 +1530,7 @@ is also fundamental, and is necessary whenever we need to
 perform calculations that are contingent on more than just the
 isolated properties of an edge. \cite{kelleher2016efficient}
 showed how all trees can be sequentially generated in
-constant time per tree transition in a fully simplified GARG.
+constant time per tree transition in a fully simplified gARG.
 Furthermore, we can easily reason about how tree topologies
 change (and stay the same), leading to efficient algorithms
 for computing population genetic
