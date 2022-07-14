@@ -209,55 +209,6 @@ loci whereupon branching is due to both selection and
 recombination~\citep{donnelly1999genealogical}, and high fecundity
 reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
-\textcolor{red}{TODO: reduce the text below down to one paragraph, which
-defines the relationship between what we define as an ARG and
-what people mean by phylogenetic networks from the literature.
-We probably don't need to get into quite so much detail on
-the different types that people have studies. Essentially,
-we're ending the section with a brief review which situates
-our definition in the literature. I think pulling apart the
-idea of a ``reticulation'' vs what we call a recombinant
-is essential here.}
-
-The term \emph{phylogenetic network} has been broadly accepted to describe the most general
-type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
-represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
-that labels some of its nodes'' (although more narrow and context-dependent definitions can also
-be found in the literature). Explicit rooted phylogenetic networks are rooted Directed Acyclic Graphs (DAGs),
-with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
-as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
-
-Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
-reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
-model the evolution of viruses, reticulation nodes correspond to exchange of
-(non-recombining) genomic segments between viral particles inside a co-infected host.
-In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
-different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
-correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
-The ARG is a subtype of a recombination network under this definition (restricting to one crossover
-recombination per reticulation node).
-% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
-% conversion (seems implied above)?
-
-Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
-In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
-one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
-In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
-\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
-tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
-the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
-A reticulation loop that does not share any node with another reticulation loop is termed a gall
-\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
-called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
-by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
-of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
-and the tractability afforded by their relatively simple structure results in a number of attractive
-combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
-an ARG, without applying any of these restrictions.
-
-% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
-% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
-
 \section*{The Event ARG data structure}\label{eARG}
 % When did we move from the ARG is a process to the ARG is a data structure?
 % What was the historical progression from one to the other?
@@ -1476,6 +1427,57 @@ would be that it's unlikely to be easier to model this stuff
 using node annotations.
 
 \end{itemize}
+
+\textcolor{red}{Discussion below on phylogenetic networks: we need to
+reduce the text below down to one paragraph, which
+defines the relationship between what we define as an ARG and
+what people mean by phylogenetic networks from the literature.
+We probably don't need to get into quite so much detail on
+the different types that people have studies. Essentially,
+we're ending the section with a brief review which situates
+our definition in the literature. I think pulling apart the
+idea of a ``reticulation'' vs what we call a recombinant
+is essential here.}
+
+The term \emph{phylogenetic network} has been broadly accepted to describe the most general
+type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
+represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
+that labels some of its nodes'' (although more narrow and context-dependent definitions can also
+be found in the literature). Explicit rooted phylogenetic networks are rooted Directed Acyclic Graphs (DAGs),
+with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
+as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
+
+Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
+reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
+model the evolution of viruses, reticulation nodes correspond to exchange of
+(non-recombining) genomic segments between viral particles inside a co-infected host.
+In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
+different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
+correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
+The ARG is a subtype of a recombination network under this definition (restricting to one crossover
+recombination per reticulation node).
+% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
+% conversion (seems implied above)?
+
+Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
+one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
+In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
+\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
+tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
+the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
+A reticulation loop that does not share any node with another reticulation loop is termed a gall
+\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
+called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
+by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
+of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
+and the tractability afforded by their relatively simple structure results in a number of attractive
+combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
+an ARG, without applying any of these restrictions.
+
+% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
+% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
+
 
 % TODO not clear this belongs in the discussion, but we'll definitely
 % want to make some of these points, even if they are being repeated
