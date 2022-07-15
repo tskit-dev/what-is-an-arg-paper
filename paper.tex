@@ -1090,9 +1090,6 @@ leaf-labelled binary trees.
 % Clearly, we can only ever hope to infer the fraction of an ancestor's
 % genome that is ancestral to the sample.
 
-\section*{Evaluation of sampling probabilities}\label{probabilities}
-
-
 \begin{figure}[ht]
 \centering
 % FIXME this is a quick nasty hack to make the figure a bit smaller and
@@ -1326,54 +1323,6 @@ not affect the local tree at any site.}
 \label{hudson_vs_bigARG}
 \end{figure}
 
-The conditional sampling probability $p(G | D)$ of an ARG $G$ given an observed
-realization of genetic diversity $D$ at its sampled leaves is a central concept in
-model fitting and selection. Under the Bayesian paradigm, it defines the posterior
-distribution $p(G | D) \propto p(D | G) p(G)$, where $p(D | G)$ is the likelihood
-of the data $D$ given $G$, and $p(G)$ is a prior distribution for the underlying
-ARG $G$. Under the frequentist paradigm, $p(G)$ can be interpreted as a regularizer,
-and $p(G | D)$ as a regularized likelihood. In both cases, $p(G)$ is typically specified
-as the sampling distribution of a stochastic process, such as the coalescent with
-recombination. Essentially all of the model-based inference methods surveyed below
-rely on evaluation of a likelihood and a prior. Two contemporary examples of
-likelihood-based methods are \cite{mahmoudi2022bayesian} and \cite{guo2022recombination}.
-
-In essentially all neutral cases in practical use, the likelihood $p(D | G)$ is based on
-a Poisson process on the ancestral material on the edges of the ARG, which implies
-that mutation processes at two sites are conditionally independent given the
-underlying ancestral trees at those sites. A prototypical example is
-\citet[Eq.\ (2)]{mahmoudi2022bayesian}. Hence, $p(D | G)$ can be evaluated
-regardless of the precise data structure used to store $G$, provided that it encodes
-at least all marginal ancestral trees along the sampled sequences.  Choosing the
-right data structure can still have a dramatic effect on the efficiency with which
-$p(D | G)$ can be evaluated \citep{mahmoudi2022bayesian}.
-
-In contrast, evaluating $p(G)$ under the coalescent with recombination
-(or related models) requires knowledge of the number of extant lineages and
-the number of links available for recombination (i.e.\ ones at which a recombination
-would split ancestral material) at each time along the ARG
-\citep[Eq.\ (3)]{mahmoudi2022bayesian}. These cannot be uniquely determined
-from just the marginal trees at each site because branches at multiple trees can be
-contained in the same ancestral lineage. Instead, a richer data structure akin to the
-eARG or gARG is needed. Moreover, because eARG does not explicitly store the flow
-of ancestral material along its edges---a necessary piece of information for
-computing the number of effective recombination links at each time---evaluating
-$p(G)$ based on an eARG essentially requires turning it into a gARG at runtime.
-
-The number of extant lineages at a given time is not explicitly represented even
-in a gARG, and needs to be calculated from the node and edge tables.
-For example, any edges with the same child and parent nodes are contained within
-the same lineage. Under the coalescent with recombination, the two edges
-originating from a recombinant child are also contained within a single lineage
-until the time of their parent nodes, at which point they split. Nodes \textsf{s}, \textsf{t}, and \textsf{u}
-in panel (a) of Figure \ref{fig-ancestry-resolution} provide a concrete example
-of the latter: the edges from \textsf{s} to \textsf{t} and \textsf{s} to \textsf{u} are distinct, but correspond to only
-a single lineage in the time interval they span. We emphasize that these
-conventions grouping edges into lineages are not part of the gARG data structure.
-While they are convenient for analysis using the coalescent with recombination,
-other models, such as discrete time Wright--Fisher models with finite populations,
-may benefit from different ways to associate edges with lineages.
-
 \section*{ARG inference methods}\label{ARG_inference_methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
 to explicitly \emph{infer} ARGs from sequencing data.
@@ -1411,18 +1360,33 @@ can be used on megabase scale data and hundreds of thousands of samples under hu
 An alternative approach is to treat the ARG as a latent parameter to be averaged out
 by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
-or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg}.
+or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg, mahmoudi2022bayesian}.
 These methods operate on representations of the ``little ARG'', and are extremely computationally
-expensive, being applicable to at most hundreds of samples consisting of tens of kilobases with
+expensive, being applicable to at most hundreds of samples consisting of tens or hundreds of kilobases with
 human-like parameters. State-of-the-art methods rely on cheaper, approximate models
 \citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}.
 The most scalable method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to dozens of mammal-like
 genomes \citep{hubisz2020inference}.
+A central quantity in all of these sampling methods is the conditional sampling probability 
+$p(G | D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization
+of genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
+of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a 
+frequentist regularizer for the ARG $G$.
 
-Recently, \citet{mahmoudi2022bayesian} have improved the scalability of exact MCMC for ARGs by
-leveraging the tree sequence representation of marginal trees, suitably enriched to facilitate the
-evaluation of sampling probabilities. While not competitive with \texttt{ARGWeaver}, their method extends
-the feasible range of sequence lengths by at least an order of magnitude.
+The likelihood $p(D | G)$ is effectively always the distribution of
+a Poisson process on the ancestral material along the edges of $G$ \citep[Eq.\ (2)]{mahmoudi2022bayesian}.
+Hence it is typically straightforward to evaluate in principle, but choosing the
+right data structure can still have a dramatic effect on the efficiency of evaluation
+\citep{mahmoudi2022bayesian}. Especially in the Bayesian case, $p(G)$ is typically specified
+as the sampling distribution of a stochastic process, such as the coalescent with
+recombination. Two contemporary examples are
+\cite{mahmoudi2022bayesian, guo2022recombination}.
+Evaluating the distribution of the coalescent with recombination
+(or related models) requires knowledge of the number of extant lineages and
+number of links available for recombination (i.e.\ ones at which a recombination
+would split ancestral material) at each time \citep[Eq.\ (3)]{mahmoudi2022bayesian}.
+These require a data structure from which shared edges on different trees are easy to identify,
+and which encodes recombination events and times explicitly, e.g.\ using nodes.
 
 \subsection*{Differences in reconstructed ARGs}
 
@@ -1431,6 +1395,7 @@ There are a vast number of ARGs compatible with a given dataset, so ARG reconstr
 There is some consistency among the four inferred ARGs (such as the samples FR-F, WA-F and Af-F being grouped into the same clade), but also considerable differences in the order and number of events. \texttt{KwARG} \citep{ignatieva2021kwarg} produces a parsimonious ARG with seven recombination breakpoints, which has been shown to be the true minimum required to explain the dataset when disallowing recurrent mutation \citep{song2003parsimonious}; this is a lower bound that, in general, significantly underestimates the actual number of recombinations that might have occurred. An ARG drawn from the posterior sample produced by \texttt{ARGweaver} has 17 breakpoints. Both tools explicitly record the sequence undergoing each recombination event, and the precise location of the breakpoint along the genome. \texttt{Relate} \citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} do not place recombination events onto the ARG topology, therefore the transitions between local trees are not explicitly inferred in terms of SPR operations. \texttt{Relate} first infers local tree topologies and then identifies edges that persist from one tree to the next as a separate step, while \texttt{tsinfer} explicitly constructs nodes that are shared across local trees. The number of inferred trees also depends on the parameter settings; all four tools can allow for the presence of sequencing errors and recurrent mutations, reducing the number of inferred local trees (in this case, based on the input mutation and recombination rate \texttt{Relate} hence posits only two recombination breakpoints).
 
 Note that all four methods produce output which can be represented in the succinct tree sequence format, and which is consistent with our definition of an ARG as a data structure. The ARGs produced by \texttt{KwARG} and \texttt{ARGweaver} contain more nodes to record the recombination events (corresponding to Figure 4 stage `B'), while the ARGs output by \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly corresponding to Figure 4 stages `C' and 'D', respectively). 
+
 
 \begin{figure}
 \begin{center}
