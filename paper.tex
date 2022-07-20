@@ -133,29 +133,20 @@ koskela2019robust} and to idealised, continuous chromosomes, but addressing
 all these cases simultaneously would result in needlessly bulky notation.
 \end{enumerate}
 
-\section*{Ancestral graphs and stochastic processes}
-The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
-hudson1983testing, tajima1983evolutionary}
-provides the theoretical underpinning for much of contemporary population genetics.
-\citet{hudson1983properties,hudson1990gene} extended the coalescent to include
-recombination
-and the model has proved to be an especially powerful basis for
-simulations~\citep{hudson2002generating,baumdicker2021efficient}.
-\cite{kelleher2016efficient} provide a description of his algorithm along with
-an efficient implementation, the details of which turn out to be highly relevant to
-later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
+% \section*{Ancestral graphs and stochastic processes}
+% The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
+% hudson1983testing, tajima1983evolutionary}
+% provides the theoretical underpinning for much of contemporary population genetics.
+% \citet{hudson1983properties,hudson1990gene} extended the coalescent to include
+% recombination
+% and the model has proved to be an especially powerful basis for
+% simulations~\citep{hudson2002generating,baumdicker2021efficient}.
+% \cite{kelleher2016efficient} provide a description of his algorithm along with
+% an efficient implementation, the details of which turn out to be highly relevant to
+% later sections of the current paper (see the ``\nameref{Ancestry_resolution}'' section).
 
-Although Hudson's algorithm was accompanied by a graph
-schematic~\citep[][Fig. 5]{hudson1983properties}, the term
-``Ancestral Recombination Graph'' or ARG, was introduced later by
-Griffiths~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral},
-who provided a closely related and complementary treatment.
-Where Hudson's algorithm focusses on efficient \emph{simulation}, the original
-ARG literature is focused on mathematical results about the underlying stochastic
-process. Griffiths and colleagues used the term
-``ARG'' to refer to both a particular branching-coalescing stochastic process and
-the graph structure produced by this process.
-% but for clarity and following recent usage,
+% Although Hudson's algorithm was accompanied by a graph
+% schematic~\citep[][Fig. 5]{hudson1983properties}, % but for clarity and following recent usage,
 % we will use ARG to refer to a graph structure, and refer to the
 % process as the Griffiths process or the coalescent with recombination
 % \citep{minichiello2006mapping}.
@@ -166,133 +157,88 @@ the graph structure produced by this process.
 % about the process as choosing edges to merge, not nodes.
 % We could also refer to Fig.~\ref{fig-arg-data-structure}B if we want a simple picture
 % to go with this
-In the Griffiths formulation, each edge in the graph corresponds to an extant
-lineage and nodes are events in the process (the initial $n$ leaf nodes are
-``sampling'' events). Common ancestor events occur at rate $\binom{k}{2}$ when there
-are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
-into a common ancestor lineage. Recombination events happen at a rate of
-$k \rho$. Here, we choose a lineage (edge) uniformly, and a
-breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
-node, record the breakpoint and start two new edges from this node. The process
-then continues until there is only one lineage left (the Grand Most Recent
-Common Ancestor, GMRCA), which is guaranteed to
-happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. Later, we will show how the graph structure and breakpoints
-associated with
-recombination nodes provides sufficient information to later recover the marginal
-trees and calculate sampling probabilities. However, this process traces out
-a larger graph (the ``big'' ARG) than the Hudson algorithm (the ``little'' ARG; see the ``\nameref{Ancestry_resolution}'' section),
-and is consequently considerably less efficient \citep{wiuf1999ancestry}.
+% In the Griffiths formulation, each edge in the graph corresponds to an extant
+% lineage and nodes are events in the process (the initial $n$ leaf nodes are
+% ``sampling'' events). Common ancestor events occur at rate $\binom{k}{2}$ when there
+% are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
+% into a common ancestor lineage. Recombination events happen at a rate of
+% $k \rho$. Here, we choose a lineage (edge) uniformly, and a
+% breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
+% node, record the breakpoint and start two new edges from this node. The process
+% then continues until there is only one lineage left (the Grand Most Recent
+% Common Ancestor, GMRCA), which is guaranteed to
+% happen in finite time because of the linear vs quadratic rates of branching
+% and coalescing. Later, we will show how the graph structure and breakpoints
+% associated with
+% recombination nodes provides sufficient information to later recover the marginal
+% trees and calculate sampling probabilities. However, this process traces out
+% a larger graph (the ``big'' ARG) than the Hudson algorithm (the ``little'' ARG; see the ``\nameref{Ancestry_resolution}'' section),
+% and is consequently considerably less efficient \citep{wiuf1999ancestry}.
 
-Similar graph encodings have also been introduced to model other mechanisms
-which change the local ancestral tree along the genome, such as gene
-conversion~\citep{wiuf2000coalescent} and
-horizontal gene transfer~\citep{baumdicker2014infinitely}.
-[Mention the
-SMC~\citep{mcvean2005approximating,marjoram2006fast}
-and ClonalFrame~\citep{didelot2007inference} approximations somewhere.]
-
-The idea of using branching-coalescing stochastic processes
-to model genetic ancestral trees has also found application in natural selection.
-The Ancestral Selection Graph (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
-uses dynamics identical to the ``big'' ARG to simulate an ensemble of correlated
-potential ancestral trees. Weak genic selection is incorporated by sampling a
-true ancestry from the ensemble in a non-uniform way.
-There is no ASG analogue of the more computationally tractable ``little'' ARG,
-though some gains in tractability can be made by considering typed
-lineages~\citep{etheridge2009coalescent} or by leveraging perfect simulation
-techniques when recurrent mutation is present \citep{fearnhead2001perfect}.
-Extensions of the ASG have been developed to frequency-dependent
-selection~\citep{neuhauser1999ancestral, gonzalezcasanova2018duality},
-unlinked chromosomes~\citep{fearnhead2003ancestral}, recombining
-loci whereupon branching is due to both selection and
-recombination~\citep{donnelly1999genealogical}, and high fecundity
-reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
-
-\textcolor{red}{TODO: reduce the text below down to one paragraph, which
-defines the relationship between what we define as an ARG and
-what people mean by phylogenetic networks from the literature.
-We probably don't need to get into quite so much detail on
-the different types that people have studies. Essentially,
-we're ending the section with a brief review which situates
-our definition in the literature. I think pulling apart the
-idea of a ``reticulation'' vs what we call a recombinant
-is essential here.}
-
-The term \emph{phylogenetic network} has been broadly accepted to describe the most general
-type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
-represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
-that labels some of its nodes'' (although more narrow and context-dependent definitions can also
-be found in the literature). Explicit rooted phylogenetic networks are rooted Directed Acyclic Graphs (DAGs),
-with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
-as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
-
-Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
-reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
-model the evolution of viruses, reticulation nodes correspond to exchange of
-(non-recombining) genomic segments between viral particles inside a co-infected host.
-In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
-different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
-correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
-The ARG is a subtype of a recombination network under this definition (restricting to one crossover
-recombination per reticulation node).
-% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
-% conversion (seems implied above)?
-
-Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
-In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
-one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
-In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
-\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
-tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
-the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
-A reticulation loop that does not share any node with another reticulation loop is termed a gall
-\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
-called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
-by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
-of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
-and the tractability afforded by their relatively simple structure results in a number of attractive
-combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
-an ARG, without applying any of these restrictions.
-
-% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
-% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
+% Similar graph encodings have also been introduced to model other mechanisms
+% which change the local ancestral tree along the genome, such as gene
+% conversion~\citep{wiuf2000coalescent} and
+% horizontal gene transfer~\citep{baumdicker2014infinitely}.
+% [Mention the
+% SMC~\citep{mcvean2005approximating,marjoram2006fast}
+% and ClonalFrame~\citep{didelot2007inference} approximations somewhere.]
 
 \section*{The Event ARG data structure}\label{eARG}
+Initial work on \emph{simulating} ancestral graphs with recombination was undertaken by
+\citet{hudson1983properties,hudson1990gene}, who extended the classical coalescent 
+framework~\citep{kingman1982coalescent,kingman1982genealogy, hudson1983testing, tajima1983evolutionary}
+to include recombination. Hudson's algorithm has led to powerful simulation
+tools~\citep{hudson2002generating,kelleher2016efficient, baumdicker2021efficient}, and is
+also relevant to efficient analysis, as we shall see later in the
+``\nameref{Ancestry_resolution}'' section.
+
 % When did we move from the ARG is a process to the ARG is a data structure?
 % What was the historical progression from one to the other?
 
-% NB: should this para go into the previous section? It would be
-% clean to start the section with the subsequent para
-% starting "The Griffiths ARG encoding is an elegant and mathematically economical description of the CwR"
-Early work on ARG inference focused on the problem of
-inferring parameters of the
-stochastic process, where the ancestry is regarded as a
-latent parameter to be averaged out
-\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
-fearnhead2001estimating}.
-These methods met with limited success
-because the state space of ARGs is overwhelmingly large and
-lacks a simple geometry or neighbourhood structure for inference or
-sampling methods to  exploit.
-The focus subsequently shifted to the more
-tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
-the minimum number of recombinations required
-to explain an input dataset [CITATIONS], and inferring the corresponding
-ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
-This highlighted the distinction between the ARG as a stochastic process
-and the ARG as a \emph{data structure}~\citep{minichiello2006mapping},
-since parsimonious ARGs have no immediate connection to
-the stochastic process.
+The precise term ``Ancestral Recombination Graph'' or ARG, was subsequently introduced by
+Griffiths and colleagues~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
+Rather than simulation, their work focused on mathematical results about the underlying branching-coalescing
+stochastic process. However, some confusion has arisen from their use of the word ``ARG'' to refer to
+two distinct concepts: the process itself, and the graph structure it generates.
+
+%% NB: I (yan) have commented out the following section as the "latent parameter" quote is
+%% used again in the "ARG reconstruction" section, and may be more detail than is required here
+%% This also loses the description of ARG space being large etc.
+%Early work on ARG inference focused on the problem of
+%inferring parameters of the
+%stochastic process, where the ancestry is regarded as a
+%latent parameter to be averaged out
+%\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
+%fearnhead2001estimating}.
+%These methods met with limited success
+%because the state space of ARGs is overwhelmingly large and
+%lacks a simple geometry or neighbourhood structure for inference or
+%sampling methods to  exploit.
+%The focus subsequently shifted to the more
+%tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
+%the minimum number of recombinations required
+%to explain an input dataset [CITATIONS], and inferring the corresponding
+%ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
+%This highlighted the distinction between the ARG as a stochastic process
+%and the ARG as a \emph{data structure}~\citep{minichiello2006mapping},
+%since parsimonious ARGs have no immediate connection to
+%the stochastic process.
+
+The second concept, that of the ARG being a \emph{data structure} was adopted by later authors,
+when focussing on the problem of inferring an ARG-like structure (or a minimum number of
+recombinations [CITATIONS]) without assuming a specific stochastic
+model, for example using parsimony~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
+Following~\citet{minichiello2006mapping}, we adopt this convention, using ARG
+to mean an ancestral graph structure, without reference to the process that generated it.
 
 % What do we mean by an EARG, informally?
-The Griffiths ARG encoding is an elegant and mathematically
-economical description of the coalescent with recombination, whose
-fundamental units are the  \emph{events} that correspond directly
-to those that occur in the associated stochastic process. We will refer
-to this ARG encoding as an ``Event ARG'', or eARG:
+\citet{griffiths1996ancestral} introduced an encoding for the ARG structure, which
+is elegant and mathematically economical. In this encoding, the
+fundamental units correspond directly to \emph{events}
+that occur in the underlying stochastic process they were modelling.
+We will refer to this ARG encoding as an ``event ARG'', or eARG:
 an example is given in Fig.~\ref{fig-arg-data-structure}B.
-Each node in the graph corresponds to an event: therefore the graph
+Since each node in the graph corresponds to an event, the graph
 contains both recombination nodes (node \textsf{d}) and common ancestor
 nodes (nodes \textsf{e}, \textsf{f}, and \textsf{g}) corresponding to their
 respective event types. Edges represent lineages,
@@ -1476,6 +1422,75 @@ would be that it's unlikely to be easier to model this stuff
 using node annotations.
 
 \end{itemize}
+
+\textcolor{red}{Discussion below on phylogenetic networks: we need to
+reduce the text below down to one paragraph, which
+defines the relationship between what we define as an ARG and
+what people mean by phylogenetic networks from the literature.
+We probably don't need to get into quite so much detail on
+the different types that people have studies. Essentially,
+we're ending the section with a brief review which situates
+our definition in the literature. I think pulling apart the
+idea of a ``reticulation'' vs what we call a recombinant
+is essential here.}
+
+The term \emph{phylogenetic network} has been broadly accepted to describe the most general
+type of genealogical graph, defined by \citet{huson2010phylogenetic} as ``any graph used to
+represent evolutionary relationships (either abstractly or explicitly) between a set of taxa
+that labels some of its nodes'' (although more narrow and context-dependent definitions can also
+be found in the literature). Explicit rooted phylogenetic networks are rooted Directed Acyclic Graphs (DAGs),
+with leaves labelled by the taxa (species, groups, individuals or sequences), and nodes classed
+as either reticulation nodes (with in-degree $\geq 2$) or tree nodes.
+
+Some sub-classes of explicit rooted phylogenetic networks are defined based on the evolutionary event that the
+reticulation nodes capture \citep{huson2010phylogenetic}. In \emph{reassortment} networks, used to
+model the evolution of viruses, reticulation nodes correspond to exchange of
+(non-recombining) genomic segments between viral particles inside a co-infected host.
+In \emph{hybridisation} networks, reticulation nodes correspond to genetic material from two
+different species combining to create a hybrid. In \emph{recombination} networks, the reticulation nodes
+correspond to recombination events (with leaves labelled by sequences and edges labelled by mutations).
+The ARG is a subtype of a recombination network under this definition (restricting to one crossover
+recombination per reticulation node).
+% AI: Not sure about this - do ARGs also encompass multiple crossover recombinations and gene
+% conversion (seems implied above)?
+
+Sub-classes of explicit rooted phylogenetic networks can also be defined by restrictions on their topology.
+In \emph{binary networks}, all internal nodes must have either in-degree two and out-degree one or in-degree
+one and out-degree two (with the root having out-degree two and the leaves in-degree 1) \citep{steel2016phylogeny}.
+In \emph{tree-child networks}, every internal node must have at least one child that is a tree node;
+\emph{tree-sibling networks} are constrained by every reticulation node having at least one sibling that is a
+tree node \citep{cardona2008extended}. Further, sub-types can be defined by restrictions on
+the topology of subgraphs that contain the reticulation loops (cycles containing a reticulation node).
+A reticulation loop that does not share any node with another reticulation loop is termed a gall
+\citep[][p.\ 237]{gusfield2014recombinatorics}; a reticulation network containing only galls is
+called a \emph{galled tree}. Reticulation loops that are joined together in a reticulation network
+by at least one shared node form a blob; a \emph{level-$k$ network} is one where the maximal number
+of reticulation loops inside a blob is $k$ \citep{choy2005computing}. Galled trees are level-1 networks,
+and the tractability afforded by their relatively simple structure results in a number of attractive
+combinatorial properties \citep{wang2001perfect, gusfield2004optimal}. We consider the general case of
+an ARG, without applying any of these restrictions.
+
+% AI: have not mentioned any implicit or un-rooted networks (split, median, haplotype, reticulograms, etc).
+% Also: are we not defining ARGs as ``binary networks''? Might be good to specify this here.
+
+\textcolor{red}{Discussion on ASG ported from earlier (removed) ``stochastic processes'' section}
+
+The idea of using branching-coalescing stochastic processes
+to model genetic ancestral trees has also found application in natural selection.
+The Ancestral Selection Graph (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
+uses dynamics identical to the ``big'' ARG to simulate an ensemble of correlated
+potential ancestral trees. Weak genic selection is incorporated by sampling a
+true ancestry from the ensemble in a non-uniform way.
+There is no ASG analogue of the more computationally tractable ``little'' ARG,
+though some gains in tractability can be made by considering typed
+lineages~\citep{etheridge2009coalescent} or by leveraging perfect simulation
+techniques when recurrent mutation is present \citep{fearnhead2001perfect}.
+Extensions of the ASG have been developed to frequency-dependent
+selection~\citep{neuhauser1999ancestral, gonzalezcasanova2018duality},
+unlinked chromosomes~\citep{fearnhead2003ancestral}, recombining
+loci whereupon branching is due to both selection and
+recombination~\citep{donnelly1999genealogical}, and high fecundity
+reproduction~\citep{gonzalezcasanova2018duality, koskela2019robust}.
 
 % TODO not clear this belongs in the discussion, but we'll definitely
 % want to make some of these points, even if they are being repeated
