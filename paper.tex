@@ -185,7 +185,7 @@ all these cases simultaneously would result in needlessly bulky notation.
 
 \section*{The Event ARG data structure}\label{eARG}
 Initial work on \emph{simulating} ancestral graphs with recombination was undertaken by
-\citet{hudson1983properties,hudson1990gene}, who extended the classical coalescent 
+\citet{hudson1983properties,hudson1990gene}, who extended the classical coalescent
 framework~\citep{kingman1982coalescent,kingman1982genealogy, hudson1983testing, tajima1983evolutionary}
 to include recombination. Hudson's algorithm has led to powerful simulation
 tools~\citep{hudson2002generating,kelleher2016efficient, baumdicker2021efficient}, and is
@@ -386,7 +386,7 @@ which defines the time of each node.
 
 The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
-in associating recombination breakpoints with \emph{nodes}
+in associating recombination breakpoints with nodes
 rather than edges,
 and the only way we can break this symmetry is to assign
 some meaning to the order in which the parents are listed
@@ -430,39 +430,7 @@ time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
 population size $N$, and that the genome is short enough
 that the number of extant lineages remains
-much smaller than $N$ at all times. These approximations are
-reasonable to make for small datasets, such as
-the classic \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster}
-ADH gene dataset (comprising 11 genomes over 2.7 kb of sequence with 43 SNPs,
-see the ``\nameref{ARG_inference_methods}'' section). However,
-they are highly questionable in modern datasets. % absurd really
-For example, many
-human datasets consist of hundreds of thousands of
-genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-and thus our sample size is often much \emph{larger} than $N_e$
-(often assumed to be $10^4$ in humans).
-The 1000 bull genomes project~\citep{hayes20191000}
-comprises close to 7000 genomes, which are part of multi-generation pedigrees
-with millions of animals and extensive SNP array genotype and phenotype data \citep[e.g.][]{Cesarani2022}. For example,
-the US dairy cattle database alone comprises more than 6 million animals with SNP array genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-while the effective population size in modern dairy cattle breeds is less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-This low effective population size is caused by intense selection and
-staggering use of a handful of bulls across the world. The current record
-holder is the bull Toystory that has produced 2.4 million doses of semen
-for artificial insemination across 13 years\footnote{\url{https://www.dairyherd.com/news/world-renowned-toystory-bull-has-died}}.
-An extreme sign of these breeding practices is that there are only two ancestral
-Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
-Similar datasets are becoming available also in other livestock species.
-Notably, \citet{RosFreixedes2022} have combined genome
-and SNP array data to infer recombination of genomes for 440,610 pigs within
-7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
-Effective population size in modern pig breeds is also less than 100 due to
-intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-Complete chromosome-level assemblies are now possible
-in humans~\citep{miga2020telomere},
-and projects are under way to obtain high-quality assemblies
-for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-and ultimately worldwide~\citep{lewin2022earth}.
+much smaller than $N$ at all times.
 While the coalescent model can be suprisingly robust to
 basic violations of the underlying assumptions~\citep{
 wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
@@ -471,6 +439,46 @@ ancestral relationships should be limited by these assumptions.
 In a Wright-Fisher model, coalescence and recombination can
 occur at the same time in the same genomes, which is increasingly
 captured in the incredibly rich datasets that are available today.
+
+Firstly, complete chromosome-level assemblies are now possible
+in humans~\citep{miga2020telomere},
+and projects are under way to obtain high-quality assemblies
+for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
+and ultimately worldwide~\citep{lewin2022earth}. Thus, we can
+expect datasets to span the full continuum from non-recombining
+short genomes to very long genomes with high-levels of recombination
+[rephrase, and some cites?],
+all of which have high-quality whole genome data.
+
+Secondly, the scale of modern datasets presents a major challenge
+to the assumption that $n \ll N_e$.
+Several human datasets now consist of hundreds of thousands of
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+and thus our sample size can be substantially \emph{larger} than $N_e$
+(often assumed to be $10^4$ in humans).
+The 1000 bull genomes project~\citep{hayes20191000}
+comprises close to 7000 genomes, which are part of multi-generation pedigrees
+with millions of animals and extensive SNP array genotype and phenotype
+data \citep[e.g.][]{Cesarani2022}.
+For example,
+the US dairy cattle database alone comprises more than 6 million
+animals with SNP array
+genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
+while the effective population size in modern dairy cattle breeds is
+less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
+This low effective population size is caused by intense selection and
+staggering use of a handful of bulls across the world. The current record
+holder is the bull Toystory that has produced 2.4 million doses of semen
+for artificial insemination across
+13 years\footnote{\url{https://www.dairyherd.com/news/world-renowned-toystory-bull-has-died}}.
+An extreme sign of these breeding practices is that there are only two ancestral
+Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
+Similar datasets are becoming available also in other livestock species.
+Notably, \citet{RosFreixedes2022} have combined genome
+and SNP array data to infer recombination of genomes for 440,610 pigs within
+7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
+Effective population size in modern pig breeds is also less than 100 due to
+intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
 
 A final limitation of the eARG encoding illustrated in
 Fig.~\ref{fig-arg-data-structure}A is the inability to represent
@@ -501,7 +509,7 @@ will describe the same set of local genealogical trees.
 This approach is also more flexible, because any pattern
 of inheritance can be described by these intervals. For
 example, if a gene conversion event occurred where a segment
-between between positions $x$ and $y$ was inherited by
+between positions $x$ and $y$ was inherited by
 node $d$ from $e$, we would state this by associating
 the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
 $\{(x, y]\}$ with $(d,f)$.
@@ -514,7 +522,7 @@ power of ancestral recombination graph data structures.
 % We're not the first to talk about ARGs and pedigrees, and we're
 % not doing anything controversial.
 The deep connection between ARGs and pedigrees is
-well known
+well understood
 \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
 speed2015naturereviewsgenetics}
 and recent discussions have illustrated the
@@ -522,9 +530,9 @@ relationship~\citep{mathieson2020ancestry,brandt2021evaluation}, % more??
 showing how the coalescence and recombination events in an ARG
 correspond to particular genomes in the pedigree.
 As discussed in the previous section, the definition of an ARG
-as a \emph{data structure} in terms of these two events is problematic,
+as a data structure in terms of these two \emph{events} is problematic,
 fundamentally limiting the patterns of ancestry that can be described.
-Following \cite{mathieson2020ancestry} instead of focussing on events,
+Following \cite{mathieson2020ancestry}, instead of focussing on events,
 we define the ARG data structure in terms of \emph{genomes} and the
 patterns of transmission between them.
 % Bit of duplication here, but good to make the point about being
@@ -542,7 +550,7 @@ present in modern datasets.
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
-The Ancestral Recombination Graph defined in terms of genomes embedded
+An Ancestral Recombination Graph defined in terms of genomes embedded
 in a pedigree. (A) Diploid individuals, visualised in a highly inbred pedigree and
 labelled $I_1$ to $I_8$, contain both paternal (left) and maternal (right) genomes
 labelled \textsf{a} to \textsf{p}. Black lines show transmission paths connecting
@@ -572,10 +580,10 @@ structure a ``Genome ARG'', or gARG.
 Fig~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG.
 Fig.~\ref{fig-arg-in-pedigree}A shows the genomes
 embedded in an inbred diploid pedigree, in which individuals occur at
-discrete generations and carry two genomes. Each individual (labelled
-$I_1$ to $I_8$) therefore has a paternal genome (on the left) and a maternal one
-(on the right), although the pedigree is only shown for concreteness, and
-there is no inherent limitation on mating system, ploidy, or age structure.
+discrete generations and carry two genomes (maternal and paternal).
+The pedigree is shown here for concreteness, and
+there is no inherent limitation on mating system, ploidy, or age structure
+in the gARG encoding.
 A genome is inherited from one of the individual's parents,
 and may be the recombined product of that parent's two genomes.
 For example, individual $I_1$ has two genomes \textsf{a} and \textsf{b},
@@ -642,11 +650,11 @@ we could chose to represent gametes as ARG nodes. However, the most intuitive
 choice is where genomes represent diploid individuals in each generation, as in
 Fig~\ref{fig-arg-in-pedigree}A. In this case recombination
 is not represented by a single ``recombination node'' (as in an eARG), but with
-two parent genomes between which recombination takes place (e.g.
-nodes \textsf{e} and \textsf{f}), and a
-single resulting ``recombinant'' genome (e.g. \textsf{c}). The
+two parent genomes between which recombination takes place
+(e.g.\ nodes \textsf{e} and \textsf{f}), and a
+single resulting ``recombinant'' genome (e.g.\ \textsf{c}). The
 edges that link this recombinant with its two parents carry the information
-concerning breakpoint location that would normally be present on the
+concerning breakpoint location that would be associated with a
 recombination node in an eARG. For example, node \textsf{c} in
 Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{f}
 and positions 7 to 10 from \textsf{e}, indicating that the breakpoint is at position 7.
@@ -780,7 +788,7 @@ The ARG traversal algorithm which implements this edge trimming and removal proc
 is a form of ``simplification'' (cite), and can be thought of as running Hudson's algorithm
 on a fixed tree topology (see appendix XXX).
 
-% NB: below is a discussion of the Hudson algorithm which we might want to 
+% NB: below is a discussion of the Hudson algorithm which we might want to
 % retain in an appendix
 % Each lineage consists of a list of
 % disjoint ancestry segments $(\ell, r, a)$, where
@@ -1364,10 +1372,10 @@ human-like parameters. State-of-the-art methods rely on cheaper, approximate mod
 \citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}.
 The most scalable method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to dozens of mammal-like
 genomes \citep{hubisz2020inference}.
-A central quantity in all of these sampling methods is the conditional sampling probability 
+A central quantity in all of these sampling methods is the conditional sampling probability
 $p(G | D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization
 of genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
-of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a 
+of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
 frequentist regularizer for the ARG $G$.
 
 The likelihood $p(D | G)$ is effectively always the distribution of
@@ -1391,7 +1399,7 @@ There are a vast number of ARGs compatible with a given dataset, so ARG reconstr
 
 There is some consistency among the four inferred ARGs (such as the samples FR-F, WA-F and Af-F being grouped into the same clade), but also considerable differences in the order and number of events. \texttt{KwARG} \citep{ignatieva2021kwarg} produces a parsimonious ARG with seven recombination breakpoints, which has been shown to be the true minimum required to explain the dataset when disallowing recurrent mutation \citep{song2003parsimonious}; this is a lower bound that, in general, significantly underestimates the actual number of recombinations that might have occurred. An ARG drawn from the posterior sample produced by \texttt{ARGweaver} has 17 breakpoints. Both tools explicitly record the sequence undergoing each recombination event, and the precise location of the breakpoint along the genome. \texttt{Relate} \citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} do not place recombination events onto the ARG topology, therefore the transitions between local trees are not explicitly inferred in terms of SPR operations. \texttt{Relate} first infers local tree topologies and then identifies edges that persist from one tree to the next as a separate step, while \texttt{tsinfer} explicitly constructs nodes that are shared across local trees. The number of inferred trees also depends on the parameter settings; all four tools can allow for the presence of sequencing errors and recurrent mutations, reducing the number of inferred local trees (in this case, based on the input mutation and recombination rate \texttt{Relate} hence posits only two recombination breakpoints).
 
-Note that all four methods produce output which can be represented in the succinct tree sequence format, and which is consistent with our definition of an ARG as a data structure. The ARGs produced by \texttt{KwARG} and \texttt{ARGweaver} contain more nodes to record the recombination events (corresponding to Figure 4 stage `B'), while the ARGs output by \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly corresponding to Figure 4 stages `C' and 'D', respectively). 
+Note that all four methods produce output which can be represented in the succinct tree sequence format, and which is consistent with our definition of an ARG as a data structure. The ARGs produced by \texttt{KwARG} and \texttt{ARGweaver} contain more nodes to record the recombination events (corresponding to Figure 4 stage `B'), while the ARGs output by \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly corresponding to Figure 4 stages `C' and 'D', respectively).
 
 
 \begin{figure}
