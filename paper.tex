@@ -231,6 +231,8 @@ model, for example using parsimony~\citep{song2003parsimonious,song2005efficient
 Following~\citet{minichiello2006mapping}, we adopt this convention, using ARG
 to mean an ancestral graph structure, without reference to the process that generated it.
 
+\subsection*{Node versus edge annotation}
+
 % What do we mean by an EARG, informally?
 \citet{griffiths1996ancestral} introduced an encoding for the ARG structure, which
 is elegant and mathematically economical. In this encoding, the
@@ -407,24 +409,62 @@ This ordering requirement, while straightforward
 to describe, has some practical drawbacks. For example,
 % Surely the meaning is clear from the context here and we don't need
 % qualify the meaning of ``ARG''
-simulating an ARG in this representation is
-complicated by the fact that the
-first event to occur may hit the lineage carrying the ancestry
-to the right of the breakpoint rather
+when using this representation and simulating an ARG backwards in time,
+the first event above a recombination may involve the lineage carrying the
+ancestry to the right of the breakpoint rather
 than the left, and so we cannot emit edges as they are generated.
-Such issues can be worked around, of course,
-but depending on the ordering of otherwise indistinguishable
-objects is generally problematic. In practice, several
-methods
-explicitly associate information with the outbound edges
+Such issues can be worked around, but depending on the ordering of
+otherwise indistinguishable objects is generally problematic. In practice,
+several methods explicitly associate information with the outbound edges
 of a recombination event
 to resolve the problem~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
+Another limitation of the eARG encoding illustrated in
+Fig.~\ref{fig-arg-data-structure}A is the inability to represent
+multiple recombinations along a chromosome, gene conversion,
+or transmission of multiple chromosomes.
+[Sentence saying ``gene conversion is important, actually, cite, cite,
+so we should be hoping to infer it some day''. Presumably people
+already are in bacterial contexts? Gregor: I recall this paper from
+Arabidopsis https://www.pnas.org/doi/10.1073/pnas.1211827110]
+To allow us to encode data from these important processes we
+must either devise workarounds to the event based encoding
+(i.e., model gene conversion as two recombination events) or
+generalise the model to more appropriately reflect the realities
+of modern datasets.
+
+Fortunately, it is straightforward to generalise the classical Griffiths
+eARG encoding to both simplify implementations and to encompass
+alternative patterns of genetic inheritance.
+The only change that we require is to associate
+the details of inheritance intervals with \emph{edges} rather than
+as breakpoints associated with recombination events and
+edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}C
+where this alternative edge annotation formulation is
+shown. By associating the interval $(0, x)$ with edge $(d,e)$
+and the interval $(x, L)$ with $(d, f)$ we make the encoding
+unambiguous: we can list the edges in any order, and it
+will describe the same set of local genealogical trees.
+This approach is also more flexible, because any pattern
+of inheritance can be described by these intervals. For
+example, if a gene conversion event occurred where a segment
+between positions $x$ and $y$ was inherited by
+node $d$ from $e$, we would state this by associating
+the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
+$\{(x, y]\}$ with $(d,f)$.
+This change is straightforward, involves no loss of information
+and (as we see in later sections)
+greatly increases both the expressivity and computational
+power of ancestral recombination graph data structures.
+
 % it's not reasonable to assume that one type of event happens
 % at a time any more.
-The eARG is also limited in the types of ancestral history that can
-be described. This ARG encoding is derived from the coalescent
-with recombination, which explicitly assumes that only one type
+\subsection*{Issues with event-based encoding}
+
+Even with the change to edge annotations, a focus on specific
+types of events can limit the types of ancestral history that can
+be described by an eARG. As it is derived from the coalescent
+with recombination, a standard eARG explicitly assumes that only one type
 of event can occur (i.e., common ancestry or recombination) at a
 time. This model is derived as an approximation to a Wright-Fisher
 model, assuming that the sample size $n$ is much less than the
@@ -480,43 +520,9 @@ and SNP array data to infer recombination of genomes for 440,610 pigs within
 Effective population size in modern pig breeds is also less than 100 due to
 intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
 
-A final limitation of the eARG encoding illustrated in
-Fig.~\ref{fig-arg-data-structure}A is the inability to represent
-multiple recombinations along a chromosome, gene conversion,
-or transmission of multiple chromosomes.
-[Sentence saying ``gene conversion is important, actually, cite, cite,
-so we should be hoping to infer it some day''. Presumably people
-already are in bacterial contexts? Gregor: I recall this paper from
-Arabidopsis https://www.pnas.org/doi/10.1073/pnas.1211827110]
-To allow us to encode data from these important processes we
-must either devise workarounds to the event based encoding
-(i.e., model gene conversion as two recombination events) or
-generalise the model to more appropriately reflect the realities
-of modern datasets.
-
-Fortunately, it is straightforward to generalise the classical Griffiths
-eARG encoding to both simplify implementations and to encompass any
-possible pattern of genetic inheritance.
-The only change that we require is to associate
-the details of inheritance intervals with \emph{edges} rather than
-as breakpoints associated with recombination events and
-edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}C
-where this alternative edge annotation formulation is
-shown. By associating the interval $(0, x)$ with edge $(d,e)$
-and the interval $(x, L)$ with $(d, f)$ we make the encoding
-unambiguous: we can list the edges in any order, and it
-will describe the same set of local genealogical trees.
-This approach is also more flexible, because any pattern
-of inheritance can be described by these intervals. For
-example, if a gene conversion event occurred where a segment
-between positions $x$ and $y$ was inherited by
-node $d$ from $e$, we would state this by associating
-the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
-$\{(x, y]\}$ with $(d,f)$.
-This change is straightforward, involves no loss of information
-and (as we see in later sections)
-greatly increases both the expressivity and computational
-power of ancestral recombination graph data structures.
+For these reasons, we suggest that instead of defining the nodes in an
+ARG as events, which limits us to certain models of inheritance,
+we use a more flexible interpretation where they are defined as genomes.
 
 \section*{Genome ARGs}
 % We're not the first to talk about ARGs and pedigrees, and we're
