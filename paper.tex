@@ -690,7 +690,8 @@ and positions 7 to 10 from \textsf{e}, indicating that the breakpoint is at posi
 
 The edge annotations in Figs~\ref{fig-arg-data-structure} and \ref{fig-arg-in-pedigree}
 describe the regions of genome that have been passed from a parent to its immediate children,
-hence edges either span the entire genome, or all the region to the left (or right) of a breakpoint
+hence edges either span the entire genome, or entire region to the left (or right)
+of a breakpoint
 (e.g. Fig~\ref{fig-arg-data-structure}C). In this form of edge annotation, which we call
 ``immediate edge annotation'',  % NB - perhaps we can think of a better term than this
 it is inefficient to extract the local trees from the ARG structure.
@@ -722,20 +723,22 @@ helps visualise the relative importance of different transmission pathways.
 }
 \end{figure}
 
-Fig~\ref{fig-ancestry-resolution} illustrates the two different edge annotation schemes.
-To obtain the sample-resolved annotation in Fig~\ref{fig-ancestry-resolution}B we must
-traverse backwards in time from sample nodes \textsf{a}, \textsf{b}, and \textsf{c}, using the
-edge intervals to record regions of sample genome that have passed through each route.
-When edges join into a parent node, the parent is allocated the union of the intervals.
-When a child node is connected to two parents, one parent is allocated the edge
-intervals of the child, truncated to include only genomic material to the left of the breakpoint.
-Similarly the other parent is allocated the child's intervals truncated such that they contain
-only regions to the right of the breakpoint (a natural extension exists for multiple
-chromosomal breakpoints).
+Fig~\ref{fig-ancestry-resolution} illustrates the two different edge annotation
+schemes. To obtain the sample-resolved annotation in
+Fig~\ref{fig-ancestry-resolution}B we must traverse backwards in time from
+sample nodes \textsf{a}, \textsf{b}, and \textsf{c}, using the edge intervals
+to record regions of sample genomes that have passed through each route. When
+edges join into a parent node, the parent is associated with the union of the
+child intervals. When a child node is connected to two parents, one parent is
+allocated the edge intervals of the child, truncated to include only genomic
+material to the left of the breakpoint. Similarly the other parent is allocated
+the child's intervals truncated such that they contain only regions to the
+right of the breakpoint (a natural extension exists for multiple chromosomal
+breakpoints).
 
 For example, in Fig~\ref{fig-ancestry-resolution}A the edge between child node \textsf{g} and
 parent node \textsf{r} spans the entire genome from 0..7, reflecting the material
-transmitted immediately between parent and child: i.e. local to those two nodes in the tree.
+transmitted immediately between parent and child.
 However, in Fig~\ref{fig-ancestry-resolution}B the edge has been reduced in extent so that
 it now spans 0..2, the region that eventually ends up in
 sample node \textsf{c}. This sample-resolved edge annotation scheme cannot be
@@ -840,14 +843,16 @@ on a fixed tree topology (see appendix XXX).
 Several features of Fig 3B are worthy of note. First, since node \textsf{j} is not on
 the ancestral path from the samples it (and its associated edges) can be removed.
 For larger ARGs, the absence of these nodes makes sample-resolved edge annotation
-substantially more efficient than immediate edge annotation. Second, by the time we reach
+substantially more efficient than immediate edge annotation.
+Second, by the time we reach
 nodes \textsf{t} and \textsf{v}, all regions of the genome have fully coalesced, and so
 \textsf{w}, the ``grand MRCA'' can be omitted from the graph, at the cost of having
-multiple root nodes in different regions of the genome. Third, there exist nodes such as
+multiple root nodes in different regions of the genome.
+Third, there exist nodes such as
 \textsf{k} with two children (i.e. ``common ancestor'' nodes in Hudson's terminology)
 but in which no ancestral coalescence occurs. Fourth, some breakpoint positions occur
 within regions of genome that are not ancestral (e.g. the breakpoint at position 3 in
-node \textsf{k}). in this case sample-resolved edge annotations lose the exact position of
+node \textsf{k}). In this case sample-resolved edge annotations lose the exact position of
 the breakpoint, although they retain the information that a breakpoint occurred between
 positions 2 and 4 (which is sufficient for calculating the likelihood, see appendix XXX).
 
@@ -951,7 +956,7 @@ passage of this span of genome through the ARG towards the root (see the
 ``\nameref{Ancestry_resolution}'' section).
 Such unary nodes in a local tree are not usually considered important,
 because they provide very little information and are not
-detectable by information from the tree. % weak
+detectable by information from any given individual tree.
 The nodes in a tree usually mark the points where samples find a
  \emph{common} ancestor, such as node \textsf{q} in the highlighted
 tree. For many purposes, we would therefore consider a path directly
@@ -961,11 +966,11 @@ these less informative and (for most computational purposes) inefficient nodes
 from the local trees and the corresponding annotated graph.
 
 The first type of simplification that we can perform is to remove
-graph topology that is invisible to the samples. The most well
+graph topology that is invisible to the samples. The best
 known example of such topology is a so-called
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
-join again into a common ancestor (e.g. \textsf{j}, \textsf{l}, \textsf{m}
+join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
 and  \textsf{n} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
 interested in the recombination event or ancestral genomes,
@@ -982,7 +987,7 @@ graph topology simplification.
 Simplifying away diamonds will remove many unary nodes from the
 local trees, but there can still be nodes that are unary in all
 of the local trees. In particular, a node can represent a recombinant
-with multiple parents in the graph but only a single child (e.g. node \textsf{n}
+with multiple parents in the graph but only a single child (e.g.\ node \textsf{n}
 in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
 multiple children in the graph but in which no local coalescence takes place
 (node \textsf{r} in Fig.~\ref{fig-simplification}B).
@@ -992,11 +997,11 @@ all of the local trees in Fig.~\ref{fig-simplification}B. The operation to remov
 the results of which are shown in Fig.~\ref{fig-simplification}C,
 therefore requires knowledge not just of the graph topology, but also of the
 edge annotations. Removal of recombinant nodes can produce graph nodes with
-more than 2 parents (e.g. node \textsf{e}); likewise, removal of
+more than 2 parents (e.g.~node \textsf{e}); likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than 2 children (e.g. node \textsf{s}). These represent a ``stacking up'' of multiple
-often indistinguishable events into a single node, something which is impossible
-to encode in an eARG.
+more than 2 children (e.g.~node \textsf{s}). These represent a ``stacking up'' of
+multiple---often indistinguishable---events into a single node,
+something which is impossible to encode in an eARG.
 
 The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
