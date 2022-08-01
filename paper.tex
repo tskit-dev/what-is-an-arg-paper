@@ -194,12 +194,18 @@ tractable---but still NP-hard~\citep{wang2001perfect}---problem of computing
 the minimum number of recombinations required
 to explain an input dataset~\citep{myers2003bounds}, and inferring the corresponding
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
+It is important to note that such recombination-parsimony ARGs
+have quite different properties from realisations of the
+(previously synonymous) ARG \emph{process}. Firstly, branch lengths are
+not typically estimated, and node times are required
+order to compute a likelihood under the coalescent with recombination
+(see section XXX). Secondly, even if branch lengths were estimated,
+the realisations would have a very small likelihood since
+the coalescent with recombination is often highly \emph{un}parsimonious
+in terms of recombination events for non-trivial scaled recombination rate.
 The previously close correspondance
 between the ARG as a mathematical representation of the coalescent process
-and as concrete realisations of ancestry was now broken,
-since such parsimonious ARGs are extremely unlikely under the
-% JK: I assume this is true; any citations to back it up I wonder?
-coalescent with recombination.
+and as concrete realisations of ancestry was now therefore broken.
 \cite{minichiello2006mapping} made this separation of the ARG as a
 stochastic process vs the ARG as a data structure explicit, and
 argued for using the term to mean specific realised ancestral histories.
