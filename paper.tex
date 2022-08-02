@@ -223,15 +223,22 @@ networks~\citep{huson2010phylogenetic}.
 % JK: This paragraph is weak, and needs some work. Basically want to
 % illustrate the mathematical literature which views ancestral
 % graphs very much as *processes*.
-However, in parallel with this tendancy to decouple the term
-Ancestral Recombination graph from its original defining stochastic process,
+% Jere: ASG section redrafted, gene transfer left as TODO (because I
+% know essentially nothing about it).
+In parallel with this tendancy to decouple the term
+Ancestral Recombination Graph from its original defining stochastic process,
 an extensive mathematical literature has developed in
 studying other related stochastic processes encoded via a graph.
 In particular, the Ancestral Selection Graph
 (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
-uses a similar approach to model an ensemble of correlated
-potential ancestral trees and has been of considerable
-and ongoing theoretical interest~\citep[e.g.][]{
+uses a similar approach to model natural selection.
+Unlike the ARG process, the ASG imposes a hard distinction between the stochastic process,
+which constructs a random ARG-like graph, and an observable realisation,
+which is a single tree sampled from the graph in a non-uniform way to encode desired
+patterns of natural selection. 
+Constructions of ASG-like stochastic processes encoding various
+forms of selection, often in parallel with recombination or other genetic forces,
+are an area of considerable and ongoing theoretical interest~\citep[e.g.][]{
 neuhauser1999ancestral,
 donnelly1999genealogical,
 fearnhead2001perfect,
@@ -239,13 +246,9 @@ fearnhead2003ancestral,
 etheridge2009coalescent,
 gonzalezcasanova2018duality,
 koskela2019robust}.
-A vital distinction between the ARG (process) and ASG, however,
-is that there is a hard distinction between the stochastic process
-(the graph) and an observable realisation (a single tree) in the ASG
-because the it encodes \emph{potential} ancestral trees.
 Similarly, the Ancestral Gene Transfer Graph
 models horizontal gene transfer~\citep{baumdicker2014infinitely}
-by [FINISH ME. Also, any other ASG-like \emph{processes} to mention?].
+by [FINISH ME.
 
 The point of this historical overview is to illustrate that the term
 Ancestral Recombination Graph has different meanings in different
