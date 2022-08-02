@@ -10,7 +10,14 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning}
-\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+% JK: turning this off for the moment as I keep clicking through on links
+% to the bibliography while reading the text and it's intensely annoying.
+% Can reinstate when we're ready to preprint
+% \usepackage[hidelinks]{hyperref}
+
+\newcommand{\noderef}[1]{\textsf{#1}}
+% \newcommand{\msprime}[0]{\texttt{msprime}}
 
 \begin{document}
 
@@ -130,6 +137,11 @@ with some examples.
 % Perhaps we should also mention something about simplification and unknowable
 % nodes, e.g. ``show how some of the nodes are not required for useful interpretation
 % of ancestry''.
+\item Despite its status as ``the ideal data structure for
+population genomic analysis''~\citep{rasmussen2014genome}, there has been
+little discussion of its computational properties. We discuss the
+relationship between the classical concept of an ARG and the
+recently introduced succinct tree sequence data structure.
 \end{enumerate}
 
 \section*{Ancestral graphs: a brief history}
@@ -247,6 +259,7 @@ etheridge2009coalescent,
 gonzalezcasanova2018duality,
 koskela2019robust}.
 Similarly, the Ancestral Gene Transfer Graph
+
 models horizontal gene transfer~\citep{baumdicker2014infinitely}
 by [FINISH ME.
 
@@ -268,20 +281,28 @@ interpretation for the remainder of this paper.
 
 \section*{The Event ARG data structure}\label{eARG}
 
-\subsection*{Node versus edge annotation}
-
-% What do we mean by an EARG, informally?
-\citet{griffiths1996ancestral} introduced an encoding for the ARG structure, which
-is elegant and mathematically economical. In this encoding, the
-fundamental units correspond directly to \emph{events}
-that occur in the underlying stochastic process they were modelling.
-We will refer to this ARG encoding as an ``event ARG'', or eARG:
-an example is given in Fig.~\ref{fig-arg-data-structure}B.
-Since each node in the graph corresponds to an event, the graph
-contains both recombination nodes (node \textsf{d}) and common ancestor
-nodes (nodes \textsf{e}, \textsf{f}, and \textsf{g}) corresponding to their
-respective event types. Edges represent lineages,
-and those lineages are modified by the events that they pass through.
+In keeping with its original derivation in terms of a stochastic
+process, the classical definition of an ARG data structure is
+in terms of \emph{events}. Nodes represent
+common ancestor or recombination events that occured in the
+history of some set of sample genomes, and edges represent ancestral
+lineages~\citep{griffiths1996ancestral}.
+In order to distinguish this form of ARG from what we will be discussing
+in later sections we call it an ``event ARG``, or eARG for brevity.
+An example of this form of an eARG
+is given in Fig.~\ref{fig-arg-data-structure}B.
+In a common ancestor event the inbound lineages are merged into a
+single ancestral lineage (e.g., node \noderef{e}
+in Fig.~\ref{fig-arg-data-structure}), and in a recombination
+event a lineage is split into two independent
+ancestral lineages (e.g., node \noderef{d}
+in Fig.~\ref{fig-arg-data-structure}). The final vital
+detail---which distinguishes an arbitrary graph with the required topological
+properties from an ARG---is that we associate a breakpoint with each recombination
+event. This information is sufficient to uniquely
+define the local genealogical trees at every position along the genome,
+which is the basic requirement for a data structure encoding
+genome-wide genetic ancestry.
 
 \begin{figure}
 \centering
@@ -375,53 +396,30 @@ can be associated with a single edge.
 \end{figure}
 
 % What do we mean by an eARG, formally?
-Formally, we can define the classical eARG as a tuple $(e, \sigma)$, where $e$
+To be concrete, we can formally define the
+classical Griffiths eARG as a tuple $(e, \sigma)$, where $e$
 is an ordered list of edges defining a directed acyclic graph and
 $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
 is a function mapping nodes to recombination breakpoints,
 such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \varnothing$ otherwise. (This formulation is equivalent to stipulating that
-a recombination node is of a different ``type'' to other nodes,
-with breakpoints only associated with that node type).
+$\sigma(u) = \varnothing$ otherwise.
+(This formulation is equivalent to having different ``types''
+of node, and that breakpoints are associated with recombination
+nodes only).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
 For each recombination node $u$ we must
 have exactly two edges in $e$ such that $u$ is the child.
-Note that this description captures only the
-graph topology: if we also wish to know the times of events we need
+This encoding of an eARG is equivalent to the output
+produced by programs such as
+\texttt{ARGweaver}~\citep{rasmussen2014genome}
+and \texttt{KwARG}~\citep{ignatieva2021kwarg},
+and example is given in Fig.~\ref{fig-arg-data-structure}A.
+Note that the description above captures only the
+graph topology: if we also wish to know the branch lengths we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
 which defines the time of each node.
-
-
-% % Not sure if we actually include this, but it's good to work it through
-% % to make sure the notation works. Maybe something to stick into
-% % an appendix
-% The most fundamental operation that we need to perform on an ARG
-% data structure is extracting the local tree topology at a particular
-% position along the genome. The basic strategy is to traverse
-% the graph upwards, building the tree as we visit each node.
-% At a recombination node, when we have a choice of two parents,
-% we follow the path that corresponds to the position that we
-% are building the tree for. More precisely, let $S$ be the set
-% of sample nodes (usually the leaves of the graph)
-% and $0 \leq x < L$ be a position along the genome, and suppose
-% we are building a mapping $p_u$ that defines the parent of node
-% $u$ at $x$.
-% Let $N$ be a set of
-% nodes we are currently constructing the tree at,
-% and initialise $N \leftarrow S$.
-% Then, while $|N| > 0$, we add branches to the
-% tree as follows. Let $u$ be an arbitrary element of $N$ (which
-% we remove).
-% % This isn't right: we're not handling the case where there's
-% % no edges in E where the child is $u$.
-% Then, if $\sigma(u) < x$ we let $j$ be the
-% smallest value such that $e_{j,1} = u$, and otherwise
-% let $j$ be the largest value such that $e_{j,1} = u$.
-% Then, set $v \leftarrow e_{j, 2}$,
-% $p_u \leftarrow v$
-% and $N \leftarrow N \cup \{v\}$.
 
 The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
@@ -432,10 +430,11 @@ some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
 parents of a recombination event). This is usually described
 in terms of the process in which we extract the local trees
-along the genome from an eARG.
-To recover
-the tree at genome coordinate $x$,
-we traverse the graph rootwards from the leaves. At a particular
+along the genome from an eARG (the most basic downstream
+operation for an ARG data structure).
+To recover the tree at genome coordinate $x$,
+we traverse the graph rootwards from the leaves.
+At a particular
 node $u$, if it has one parent we are at a common ancestor
 node and we follow that parent. If we are at a
 recombination node, $u$ has two parents: if
@@ -450,27 +449,102 @@ when using this representation and simulating an ARG backwards in time,
 the first event above a recombination may involve the lineage carrying the
 ancestry to the right of the breakpoint rather
 than the left, and so we cannot emit edges as they are generated.
-Such issues can be worked around, but depending on the ordering of
+Such issues can be worked around, of course, but depending on the ordering of
 otherwise indistinguishable objects is generally problematic. In practice,
 several methods explicitly associate information with the outbound edges
 of a recombination event
-to resolve the problem~\citep{lyngso2005minimum,ignatieva2021kwarg}.
+to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
-Another limitation of the eARG encoding illustrated in
-Fig.~\ref{fig-arg-data-structure}A is the inability to represent
-multiple recombinations along a chromosome, gene conversion,
-or transmission of multiple chromosomes.
-[Sentence saying ``gene conversion is important, actually, cite, cite,
-so we should be hoping to infer it some day''.
-Cite~\citep{wiuf2000coalescent}.
-Presumably people
-already are in bacterial contexts? Gregor: I recall this paper from
-Arabidopsis https://www.pnas.org/doi/10.1073/pnas.1211827110]
-To allow us to encode data from these important processes we
-must either devise workarounds to the event based encoding
-(i.e., model gene conversion as two recombination events) or
-generalise the model to more appropriately reflect the realities
-of modern datasets.
+% TODO update this when then later sections have been drafted.
+As we see in sections XXX and YYY there are substantial limitations
+of expressivity and computational performance when using this eARG
+encoding. More fundamentally, however, the general approach
+of classifying nodes according to a discrete set of events
+and associating genome information with those nodes is intrinsically
+limiting. As we saw in the previous section, the original ARG
+definitions were derived directly from the coalescent with recombination
+stochastic process, and the types of ancestry that can be
+described are therefore limited by the assumptions of that
+model. While the coalescent as a model can be suprisingly robust to
+basic violations of the underlying assumptions~\citep{
+wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
+it is not acceptable that our ability to \emph{represent}
+ancestral relationships should be limited by these assumptions.
+
+% n << Ne is a silly assumption in today's datasets
+A core assumption of the coalescent is that the sample size $n$
+is much less than the effective population size, $N_e$. This
+assumption ensures that multiple events (i.e., simultaneous
+coalescence and recombination) don't occur at the same
+time, which is reflected in the eARG definitions.
+This once-reasonable assumption has been overtaken by
+the data we have available.
+% This can be tightened up a bit, I think. We may need to drop a
+% few references.
+Several human datasets now consist of hundreds of thousands of
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+and so sample size is substantially \emph{larger} than $N_e$
+(often assumed to be $10^4$ in humans).
+Agricultural datasets are even more extreme.
+For example,
+the US dairy cattle database alone currently comprises more than 6 million
+animals with SNP array
+genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
+while the effective population size in modern dairy cattle breeds is
+less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
+An extreme sign of these breeding practices is that there are only two ancestral
+Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
+Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
+comprises close to 7000 genomes, which are part of multi-generation pedigrees
+with millions of animals and extensive SNP array genotype and phenotype
+data \citep[e.g.][]{Cesarani2022}.
+Such datasets are also available for other species,
+for example, \citet{RosFreixedes2022} have combined genome
+and SNP array data to infer recombination of genomes for 440,610 pigs within
+7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
+Effective population size in modern pig breeds is also less than 100 due to
+intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
+
+Another assumption of the coalescent with recombination which prevents complex
+combinations of events occuring simultaneously, is that the genome (or
+at least the region under study) is short enough that the number of extant
+lineages remains much smaller than $N_e$ at all times. Whole
+genome sequences have been available for model organisms
+for over a decade now, % True? Citation?
+and indeed complete chromosome-level assemblies are possible
+in humans~\citep{miga2020telomere}.
+Projects are under way to obtain high-quality assemblies
+for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
+and ultimately worldwide~\citep{lewin2022earth}.
+Clearly multiple recombinations (and other complex events) will
+occur in the ancestry of such datasets, and we should not be
+limited in what we can infer by the data structure that we
+use to represent the results.
+
+The eARG encoding consists of two types of event
+(common ancestor and recombination) but nature is not so parsimonious
+and there are many other processes that will affect the
+ancestry of samples.
+For example, gene conversion between homologous
+chromosomes~\citep{wiuf2000coalescent,chen2007gene} is an important
+evolutionary force in many species~\cite[e.g.][]{yang2012great}.
+% Some refs for where people are inferring ancestry in the
+% presence of GC? Isn't this what ClonalFrame etc are all about?
+Similarly, the eARG encoding cannot easily represent multiple
+recombinations on a chromosome, or the transmission of multiple
+chromosomes.
+What we can infer about ancestral histories and
+processes should not be limited by the data structure that we
+use to represent such ancestry. The eARG is simply one way
+to \emph{encode} such history, and, as we have shown,
+one that has significant limitations of expressivity
+derived from its historical origins in the idealised
+coalescent with recombination model.
+
+
+\section*{Node annotations}
+[FIXME: this is not the intended transition or next step, just putting this
+content here for now.]
 
 Fortunately, it is straightforward to generalise the classical Griffiths
 eARG encoding to both simplify implementations and to encompass
@@ -496,72 +570,6 @@ and (as we see in later sections)
 greatly increases both the expressivity and computational
 power of ancestral recombination graph data structures.
 
-% it's not reasonable to assume that one type of event happens
-% at a time any more.
-\subsection*{Issues with event-based encoding}
-
-Even with the change to edge annotations, a focus on specific
-types of events can limit the types of ancestral history that can
-be described by an eARG. As it is derived from the coalescent
-with recombination, a standard eARG explicitly assumes that only one type
-of event can occur (i.e., common ancestry or recombination) at a
-time. This model is derived as an approximation to a Wright-Fisher
-model, assuming that the sample size $n$ is much less than the
-population size $N$, and that the genome is short enough
-that the number of extant lineages remains
-much smaller than $N$ at all times.
-While the coalescent model can be suprisingly robust to
-basic violations of the underlying assumptions~\citep{
-wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
-it is not acceptable that our ability to \emph{represent}
-ancestral relationships should be limited by these assumptions.
-In a Wright-Fisher model, coalescence and recombination can
-occur at the same time in the same genomes, which is increasingly
-captured in the incredibly rich datasets that are available today.
-
-Firstly, complete chromosome-level assemblies are now possible
-in humans~\citep{miga2020telomere},
-and projects are under way to obtain high-quality assemblies
-for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-and ultimately worldwide~\citep{lewin2022earth}. Thus, we can
-expect datasets to span the full continuum from non-recombining
-short genomes to very long genomes with high-levels of recombination
-[rephrase, and some cites?],
-all of which have high-quality whole genome data.
-
-Secondly, the scale of modern datasets presents a major challenge
-to the assumption that $n \ll N_e$.
-Several human datasets now consist of hundreds of thousands of
-genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-and thus our sample size can be substantially \emph{larger} than $N_e$
-(often assumed to be $10^4$ in humans).
-The 1000 bull genomes project~\citep{hayes20191000}
-comprises close to 7000 genomes, which are part of multi-generation pedigrees
-with millions of animals and extensive SNP array genotype and phenotype
-data \citep[e.g.][]{Cesarani2022}.
-For example,
-the US dairy cattle database alone comprises more than 6 million
-animals with SNP array
-genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-while the effective population size in modern dairy cattle breeds is
-less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-This low effective population size is caused by intense selection and
-staggering use of a handful of bulls across the world. The current record
-holder is the bull Toystory that has produced 2.4 million doses of semen
-for artificial insemination across
-13 years\footnote{\url{https://www.dairyherd.com/news/world-renowned-toystory-bull-has-died}}.
-An extreme sign of these breeding practices is that there are only two ancestral
-Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
-Similar datasets are becoming available also in other livestock species.
-Notably, \citet{RosFreixedes2022} have combined genome
-and SNP array data to infer recombination of genomes for 440,610 pigs within
-7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
-Effective population size in modern pig breeds is also less than 100 due to
-intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-
-For these reasons, we suggest that instead of defining the nodes in an
-ARG as events, which limits us to certain models of inheritance,
-we use a more flexible interpretation where they are defined as genomes.
 
 \section*{Genome ARGs}
 % We're not the first to talk about ARGs and pedigrees, and we're
