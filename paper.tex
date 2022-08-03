@@ -190,6 +190,7 @@ requires exponential time to simulate
 to describe recombinant ancestry as single object that
 could be inferred in a way
 that was missing from Hudson's treatments.
+An overview of the Hudson and Griffiths stochastic processes is provided in the appendix.
 
 Early work on ARG inference focused on the problem of
 inferring parameters of the
@@ -1155,6 +1156,7 @@ number of links available for recombination (i.e.\ ones at which a recombination
 would split ancestral material) at each time \citep[Eq.\ (3)]{mahmoudi2022bayesian}.
 These require a data structure from which shared edges on different trees are easy to identify,
 and which encodes recombination events and times explicitly, e.g.\ using nodes.
+We will provide a more detailed discussion on sampling probability evaluation in the appendix.
 
 \subsection*{Differences in reconstructed ARGs}
 
@@ -1299,11 +1301,110 @@ and likely many more.
 \subsection*{The Big and Little ARG}
 \label{app-big-and-little-arg}
 
+Here we review the two predominant stochastic processes which construct ARGs:
+the ``big" ARG process of \cite{griffiths1997ancestral}, and the ``little" ARG process of
+ \cite{hudson1983properties}. The big ARG process is mathematically simpler
+ but is computationally intractable due to generating a vast number of ancestors
+ which contribute no genetic material to the initial sample.
+The little ARG process avoids non-genetic ancestors at the cost of more complex
+dynamics and state space. We also demonstrate that evaluating the sampling probability
+of either process---a key quantity in many statistical approaches---requires that the
+gARG (or eARG) data structure be interpreted in a model-specific way.
+
+A generic state of the little ARG process consists of a finite collection of lineages $L$,
+each of which is a list of disjoint ancestry segments $(\ell, r, a)$, where
+$[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
+tracking the number of samples to which the lineage is ancestral over that interval.
+We also usually track the node associated with each segment, but
+that is not important for our purposes here so we omit it to lighten notation.
+The initial condition for a sample of $n$ genomes of length $m$ consists of $n$ lineages 
+of the form $\{(0, m, 1)\}$. The process traverses a series of common ancestor and 
+recombination events backwards in time.
+Recombination events happen at rate $\rho \nu / (m - 1)$,
+where $\rho \geq 0$ is a per-genome recombination rate and
+ \[
+ \nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
+     - \min_{(\ell, r, a) \in x}\ell - 1 \right)
+ \]
+ is the number of available ``links" surrounded by ancestral material.
+ At a recombination event we choose one of these links uniformly and break it,
+ replacing the original lineage in $L$ with two new lineages containing the ancestral material
+ to the left and right of the break point, respectively.
+
+Common ancestor events occur at rate $\binom{|L|}{2}$.
+In a common ancestor event, two uniformly sampled lineages have their segments
+merged into a single ancestor lineage, which is added to $L$.
+If the lineages have overlapping intervals of ancestry,
+say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
+\emph{coalescence} occurs. The result is a segment
+$(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
+ancestor lineage. Otherwise, if $a_1 + a_2 = n$, we have found
+the most recent common ancestor of all samples in the interval$[\ell, r)$
+and do not need to simulate its history any further.
+Non-overlapping intervals from the two lineages are included
+ in the ancestor lineage without changes. Eventually,
+we find resultant lineages in which all segments have fully coalesced,
+and so the number of extant lineages gradually falls to zero.
+
+In the Griffiths formulation (the big ARG process), each edge in the graph corresponds to an extant
+lineage and nodes are events in the process. The $n$ initial leaf nodes are
+sampling events. Common ancestor events occur at rate $\binom{|L|}{2}$.
+When a common ancestor event happens, two uniformly chosen lineages
+merge into a common ancestor lineage.
+Recombination events happen at rate $|L| \rho$. Here, we choose a lineage (i.e.\ edge) uniformly,
+and a breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
+node, record the breakpoint, and start two new edges from this node. The process
+then continues until there is only one lineage left (the Grand Most Recent
+Common Ancestor, GMRCA), which is guaranteed to
+happen in finite time because of the linear rate of coalescing vs.\ quadratic rate of branching.
+
+The state-space of the big ARG process is much simpler than that of the little ARG process,
+which greatly facilitates mathematical reasoning. This simplicity comes at a
+substantial cost, however, if we wish to use it as a practical means of
+simulating recombinant ancestries. 
+The number of events in the big ARG all the way back to the GMRCA
+is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
+of events required to simulate the little ARG is
+$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
+This disparity arises because the majority of the events in the big ARG are 
+recombination events which occur outside of ancestral material,
+and this do not have any bearing on the ancestry of the initial sample.
+Because we don't keep track of the distribution of ancestral material during the process,
+we generate a vastly larger graph.
+
+Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
+of the little ARG process, as well as the extra events which occur in the big ARG process.
+Moreover, it depicts the rates of common ancestors and recombination events in each
+interval of time of the realisations.
+In order to evaluate these rates, and hence the sampling probability
+(see e.g.\ \cite[Equation (3)]{mahmoudi2022bayesian}),
+it is necessary to know the number of lineages and number of extant links
+available for recombination in each time interval.
+This information cannot be recovered from the gARG encoding depicted in
+e.g.\ Figure \ref{fig-ancestry-resolution}.
+For example, it is clear that a recombination takes place between nodes \textsf{b} and
+\textsf{d} as well as \textsf{e}, but the exact time of the event is ambiguous,
+and thus so is the number of lineages during the time interval.
+Conventions can be introduced to resolve such ambiguities;
+for the likelihood-based inference algorithms for the coalescent with recombination,
+the two parent nodes are typically created at the time of the recombination event.
+See the appendix of \cite{baumdicker2021efficient} for details of evaluating
+coalescent with recombination likelihoods using this convention.
+This is also the interpretation depicted in
+Figure \ref{hudson_vs_bigARG}, but it means that the two edges above node \textsf{b}
+in Figure \ref{fig-ancestry-resolution} should correspond to only one lineage,
+along which all $m-1$ links are available for recombination.
+The lineage then splits into two at the time of nodes \textsf{d} and \textsf{e}.
+Nodes \textsf{k}, \textsf{l}, and \textsf{m} in Figure \ref{fig-ancestry-resolution}
+demonstrate that the same issue can affect the number of links available for recombination:
+without an external convention, the exact time at which the trapped ancestral material on
+node \textsf{k} ceases to be available for an effective recombination in the little ARG process.
+
 \begin{figure}[ht]
 \centering
 % FIXME this is a quick nasty hack to make the figure a bit smaller and
 % prevent flushing all the other figures to the end of the document.
-\scalebox{0.5}{
+\scalebox{0.54}{
 \begin{tabular}{cc}
 \begin{tikzpicture}
 	\node [anchor=north west] at (-3.5,9.3) {\LARGE \textbf{A}};
@@ -1382,9 +1483,9 @@ and likely many more.
 	\node [label=right:{\small$\{(0,v,1)\}$}] at (0.3,6.4) {};
 
 	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11.1, 0);
+	\draw[dashed] (-2, 0) -- (11, 0);
 	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11.1, 8);
+	\draw[dashed] (-2, 8) -- (11, 8);
 	\node [label=left:{$t = T$}] at (-2,8) {};
 
 	% Numbers of extant ancestors and links, from top to bottom
@@ -1400,14 +1501,14 @@ and likely many more.
 	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11.1, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.7) -- (11.1, 1.7);
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11.1, 2.4);
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11.1, 3.1);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11.1, 4.5);
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11.1, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11.1, 6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11.1, 7.2);
+	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
+	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
+	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
+	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
+	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
 \end{tikzpicture}
 &
 \begin{tikzpicture}
@@ -1482,9 +1583,9 @@ and likely many more.
 	\draw (7, 3.8) -- (7, 8);
 
 	% Dashed lines for start and end times
-	\draw[dashed] (-2, 0) -- (11, 0);
+	\draw[dashed] (-2, 0) -- (9.1, 0);
 	\node [label=left:{$t = 0$}] at (-2,0) {};
-	\draw[dashed] (-2, 8) -- (11, 8);
+	\draw[dashed] (-2, 8) -- (9.1, 8);
 	\node [label=left:{$t = T$}] at (-2,8) {};
 
 	% Numbers of extant ancestors and links, from top to bottom
@@ -1502,16 +1603,16 @@ and likely many more.
 	\node[label=right:{$\binom{3}{2}$ \; $3 \rho$}] at (7.5, 0.6) {};
 
 	% Gray dashed lines to visually separate holding times
-	\draw[color=gray, dashed] (7.5, 1.2) -- (11, 1.2);
-	\draw[color=gray, dashed] (7.5, 1.7) -- (11, 1.7);
-	\draw[color=gray, dashed] (7.5, 2.4) -- (11, 2.4);
-	\draw[color=gray, dashed] (7.5, 3.1) -- (11, 3.1);
-	\draw[color=gray, dashed] (7.5, 3.8) -- (11, 3.8);
-	\draw[color=gray, dashed] (7.5, 4.5) -- (11, 4.5);
-	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
-	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
-	\draw[color=gray, dashed] (7.5, 6.6) -- (11, 6.6);
-	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
+	\draw[color=gray, dashed] (7.5, 1.2) -- (9.1, 1.2);
+	\draw[color=gray, dashed] (7.5, 1.7) -- (9.1, 1.7);
+	\draw[color=gray, dashed] (7.5, 2.4) -- (9.1, 2.4);
+	\draw[color=gray, dashed] (7.5, 3.1) -- (9.1, 3.1);
+	\draw[color=gray, dashed] (7.5, 3.8) -- (9.1, 3.8);
+	\draw[color=gray, dashed] (7.5, 4.5) -- (9.1, 4.5);
+	\draw[color=gray, dashed] (7.5, 5.4) -- (9.1, 5.4);
+	\draw[color=gray, dashed] (7.5, 6) -- (9.1, 6);
+	\draw[color=gray, dashed] (7.5, 6.6) -- (9.1, 6.6);
+	\draw[color=gray, dashed] (7.5, 7.2) -- (9.1, 7.2);
 \end{tikzpicture}
 \end{tabular}
 }
@@ -1532,46 +1633,6 @@ not affect the local tree at any site.}
 \label{hudson_vs_bigARG}
 \end{figure}
 
-[JK: this is text roughly related to big vs little ARG taken from various
-iterations]
-
-In the Griffiths formulation, each edge in the graph corresponds to an extant
-lineage and nodes are events in the process (the initial $n$ leaf nodes are
-``sampling'' events). Common ancestor events occur at rate $\binom{k}{2}$ when there
-are $k$ lineages present. We choose two lineages (edges) uniformly, and merge them
-into a common ancestor lineage. Recombination events happen at a rate of
-$k \rho$. Here, we choose a lineage (edge) uniformly, and a
-breakpoint $0 < x < m$ uniformly on its genome. We terminate the edge at a
-node, record the breakpoint and start two new edges from this node. The process
-then continues until there is only one lineage left (the Grand Most Recent
-Common Ancestor, GMRCA), which is guaranteed to
-happen in finite time because of the linear vs quadratic rates of branching
-and coalescing. Later, we will show how the graph structure and breakpoints
-associated with
-recombination nodes provides sufficient information to later recover the marginal
-trees and calculate sampling probabilities. However, this process traces out
-a larger graph (the ``big'' ARG) than the Hudson algorithm (the ``little'' ARG; see the ``\nameref{Ancestry_resolution}'' section),
-and is consequently considerably less efficient \citep{wiuf1999ancestry}.
-
-The state-space of the Griffiths process is much simpler than Hudson's algorithm,
-which greatly facilitates mathematical reasoning. This simplicity comes at a
-substantial cost, however, if we wish to use it as a practical means of
-simulating recombinant ancestry. The big ARG is vast, and any realisation
-for even moderate levels of recombination is far too large to be of practical
-use. The number of events in the big ARG all the way back to the GMRCA
-is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
-of events required to simulate the little ARG is
-$O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
-This disparity in the number of events in the two formulations is
-because the majority of the events that occur in the big ARG do
-not affect the genetic ancestry of the sample in any way. Recombination
-events that occur outside of ancestral material do not have any bearing
-on the ancestry of the sample, and so the structure is hugely redundant.
-As~\cite{wiuf1999recombination} note,
-``an `ancestral' sequence in the birth and death process
-need not have any genetic material in common with a
-sequence descended from it.''
-
 % Full quote:
 % This process simplifies mathematics on the account that the notion of an
 % ancestor will have a less restrictive meaning than usual:
@@ -1579,49 +1640,5 @@ sequence descended from it.''
 % need not have any genetic material in common with a
 % sequence descended from it.
 
-
-% % This is a discussion of Hudson's alg left over from earlier version. We
-% % might wish to adapt some of this when defining the Little ARG.
-
-% Each lineage consists of a list of
-% disjoint ancestry segments $(\ell, r, a)$, where
-% $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
-% tracking the number of samples to which the lineage is ancestral over that interval.
-% (We also usually track the tree node associated with each segment, but
-% that is not important for our purposes here so we omit it.)
-% If we have $n$ samples and a genome of length $m$, the process begins with $n$ lineages
-% of the form $\{(0, m, 1)\}$. The process then works backwards in time from
-% the present day as a series of random common ancestor or recombination events.
-% Recombination events occur at a rate determined by the amount of ancestral material and
-% the way in which it is distributed along a chromosome.
-% Let $L$ be the set of ancestors at a given time $t$. Recombination events
-% happen at rate $\rho \nu / (m - 1)$ where
-% \[
-% \nu = \sum_{x \in L}\left( \max_{(\ell, r, a) \in x}r
-%     - \min_{(\ell, r, a) \in x}\ell - 1 \right)
-% \]
-% is the number of available `links' that may be broken. Thus, the rate of
-% recombination is determined by the left- and right-most extent of the
-% ancestral material carried by each lineage. At a recombination
-% event we choose one of these links uniformly and break it. Given a lineage
-% $x = [(\ell_j, r_j, a_j)]$ and a breakpoint $k$, we have two lineages
-% $x_1$ and $x_2$ such that FILL IN DETAILS
-
-% When $k = |L|$ lineages are present, common ancestor events
-% occur at rate $\binom{k}{2}$. In a common ancestor event, two lineages
-% are chosen uniformly at random and their ancestry segments merged.
-% If we have overlapping intervals of ancestry from the two lineages,
-% say, $(\ell, r, a_1)$ and $(\ell, r, a_2)$, a
-% \emph{coalescence} occurs and ancestor represented by the current event
-% will be present as a node (at least) in the marginal trees covering
-% the interval $[\ell, r)$. The result of this coalescence is a segment
-% $(\ell, r, a_1 + a_2)$, and if $a_1 + a_2 < n$ it is included in the
-% ancestry for the new lineage. Otherwise, if $a_1 + a_2 = n$ we know that
-% we have found the most recent common ancestor of all samples in
-% the interval $[\ell, r)$ and so we do not need to simulate its history any further.
-% Nonoverlapping intervals of ancestry from the two lineages are included
-% in the resulting lineage without changes. Eventually, as the process continues,
-% we find resultant lineages in which all segments have fully coalescenced,
-% and so the number of extant lineages gradually dwindles down to zero.
 
 \end{document}
