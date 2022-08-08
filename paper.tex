@@ -248,7 +248,7 @@ uses a similar approach to model natural selection.
 Unlike the ARG process, the ASG imposes a hard distinction between the stochastic process,
 which constructs a random ARG-like graph, and an observable realisation,
 which is a single tree sampled from the graph in a non-uniform way to encode desired
-patterns of natural selection. 
+patterns of natural selection.
 Constructions of ASG-like stochastic processes encoding various
 forms of selection, often in parallel with recombination or other genetic forces,
 are an area of considerable and ongoing theoretical interest~\citep[e.g.][]{
@@ -280,8 +280,7 @@ of recombination events.
 Unless otherwise stated, we will use the ARG-as-a-data-structure
 interpretation for the remainder of this paper.
 
-\section*{The Event ARG data structure}\label{eARG}
-
+\section*{Event ARGs}\label{eARG}
 In keeping with its original derivation in terms of a stochastic
 process, the classical definition of an ARG data structure is
 in terms of \emph{events}. Nodes represent
@@ -542,18 +541,37 @@ one that has significant limitations of expressivity
 derived from its historical origins in the idealised
 coalescent with recombination model.
 
+\section*{Node vs edge annotations}
+Another aspect of the classical description of an ARG data structure that
+derives from its historical origins as a stochastic
+process is how we encode information about genetic
+inheritance in the graph. The approach taken by Griffiths to
+doing this is concise, elegant: all we need to do is store
+the location of the breakpoint at each recombination event.
+Storing a breakpoint for each recombinatin event is a very
+natural and straightforward thing to do when simulating
+a (``Big''; see Appendix XXX) ARG process.
+Given the graph topology and these breakpoints, we can then
+recover the
+local trees at every point in the genome
+by tracing rootwards from the leaves and choosing the
+appropiate outbound path at recombination nodes.
+However, there are several significant disadvantages
+to this approach: [TODO be concrete here later
+and give pointers to the section where we discuss the
+alternative.]
 
-\section*{Node annotations}
-[FIXME: this is not the intended transition or next step, just putting this
-content here for now.]
-
-Fortunately, it is straightforward to generalise the classical Griffiths
-eARG encoding to both simplify implementations and to encompass
-alternative patterns of genetic inheritance.
-The only change that we require is to associate
-the details of inheritance intervals with \emph{edges} rather than
+Fortunately, there is a straightforward change to the
+classical eARG encoding that simplifies
+implementations and greatly increases the flexibility
+of both the types and granularity of inheritance information
+that we can represent.
+The main change that we need to make is to
+associate the
+the details of inheritance with \emph{edges} rather than
 as breakpoints associated with recombination events and
-edge ordering rules. This is illustrated in Fig~\ref{fig-arg-data-structure}C
+edge ordering rules.
+This is illustrated in Fig~\ref{fig-arg-data-structure}C
 where this alternative edge annotation formulation is
 shown. By associating the interval $(0, x)$ with edge $(d,e)$
 and the interval $(x, L)$ with $(d, f)$ we make the encoding
@@ -570,7 +588,6 @@ This change is straightforward, involves no loss of information
 and (as we see in later sections)
 greatly increases both the expressivity and computational
 power of ancestral recombination graph data structures.
-
 
 \section*{Genome ARGs}
 % We're not the first to talk about ARGs and pedigrees, and we're
@@ -713,23 +730,14 @@ recombination node in an eARG. For example, node \textsf{c} in
 Fig~\ref{fig-arg-in-pedigree} inherits genome positions 0 to 7 from \textsf{f}
 and positions 7 to 10 from \textsf{e}, indicating that the breakpoint is at position 7.
 
-% This method for representing recombinations may seem wasteful,
-% since more than one node is required for each recombination,
-% and genomic interval information must be stored on every edge.
-% However, asymptotically the amount of information stored is the
-% same, and there is much simplicity to be gained by having
-% a single type of node and by treating all edges in the same way.
-% More importantly --- as we see in the next section --- we gain the
-% ability to simplify the ARG by removing nodes without affecting the
-% local tree topologies, and also the ability to record only the
-% regions of genome relevant to the final, sample genomes. This last
-% feature turns out to be the key to efficient processing of the ARG.
-
-% [Possibly more stuff here: clarify why we assign coordinates to edges
-% rather than nodes. Basically lay out all the stuff that we can
-% talk about \emph{without} going in to the details of
-% ancestry resolution.]
-
+For simplicity, throughout the rest of the paper we will contrast the
+classical eARG (as defined in the XXX section) with the gARG definition
+here. However, it is important to note that many of the benefits of the
+gARG encoding that we discuss are due to the encoding of inheritance via
+edges rather than nodes (see section XXX).
+Whether one regards nodes as genomes or events
+is something of a philosophical question, and mostly unimportant
+from a computational perspective.
 
 \section*{Ancestry resolution}\label{Ancestry_resolution}
 % Need to introduce Hudson's algorithm as concerned with simulating the process of
@@ -1317,8 +1325,8 @@ $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
 tracking the number of samples to which the lineage is ancestral over that interval.
 We also usually track the node associated with each segment, but
 that is not important for our purposes here so we omit it to lighten notation.
-The initial condition for a sample of $n$ genomes of length $m$ consists of $n$ lineages 
-of the form $\{(0, m, 1)\}$. The process traverses a series of common ancestor and 
+The initial condition for a sample of $n$ genomes of length $m$ consists of $n$ lineages
+of the form $\{(0, m, 1)\}$. The process traverses a series of common ancestor and
 recombination events backwards in time.
 Recombination events happen at rate $\rho \nu / (m - 1)$,
 where $\rho \geq 0$ is a per-genome recombination rate and
@@ -1361,12 +1369,12 @@ happen in finite time because of the linear rate of coalescing vs.\ quadratic ra
 The state-space of the big ARG process is much simpler than that of the little ARG process,
 which greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
-simulating recombinant ancestries. 
+simulating recombinant ancestries.
 The number of events in the big ARG all the way back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
 of events required to simulate the little ARG is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
-This disparity arises because the majority of the events in the big ARG are 
+This disparity arises because the majority of the events in the big ARG are
 recombination events which occur outside of ancestral material,
 and this do not have any bearing on the ancestry of the initial sample.
 Because we don't keep track of the distribution of ancestral material during the process,
