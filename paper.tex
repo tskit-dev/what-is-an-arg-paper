@@ -995,28 +995,16 @@ become roots). [And continue]
 % between trees. It is not clear whether (c) or (d) leads to a more compact
 % representation of the ARG in terms of number of edges.
 
+\section*{Relationship between ARGs and trees}
 
-\section*{ARGs and SPRs}
-\citet{wiuf1999ancestry,wiuf1999recombination} recast
-the coalescent with recombination
-as a stochastic process along the genome rather than backwards in time.
-In this formulation we begin at one end of a chromosome by
-sampling a tree under the standard coalescent, and then reason
-about how this tree is modified by recombination events
-as we move along the genome. Although this algorithm is
-significantly more complicated to simulate than Hudson's
-backwards in time approach, it has led to substantial
-insights into the process of recombination itself
-and to the sequentially Markov Coalescent (SMC)
-approximations~\citep{mcvean2005approximating,marjoram2006fast}
-that are central to many modern methods.
-
-[Mention the
-and ClonalFrame~\citep{didelot2007inference} approximation somewhere.]
-
-Under the coalescent with recombination (or SMC) each local
-tree along the genome is transformed into the next by
-a ``subtree prune-and-regraft'' (SPR)
+We have seen that the local tree for a given position on
+the genome can be extracted from an ARG by starting at the
+leaves and following the appropriate paths through the graph.
+However, this tells us little about the relationship \emph{between}
+adjacent trees, and what properties the overall emsemble of
+local trees might have.
+A recombination between two adjacent trees causes them to
+differ by a ``subtree prune-and-regraft'' (SPR)
 % Hein et al call it the ``subtree transfer'' operation but it's
 % the same thing.
 operation~\citep{hein1990reconstructing,song2003on,song2006properties}.
@@ -1027,8 +1015,6 @@ into another is known as the SPR distance
 % yes, actually it is NP hard.
 and is NP-hard to
 compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
-
-[Discussion of SPRs in an EARG]
 
 The effects of recombination as we move from left-to-right along
 the genome in an unsimplified gARG are easy to interpret.
@@ -1063,25 +1049,55 @@ assign node identity. Without the internal unary nodes marking
 recombinations, we must infer their existence. In
 general, there will not be a unique solution to this problem,
 and so there can be many possible ARGs compatible with
-a given list of
-% want to say "standard phylogenetic" trees here or something, but
-% and they don't have to be binary (just arity > 1), but thought
-% this would be familiar to readers?
-% Jere: Could just say leaf-labelled "marginal trees", "ancestral trees",
-% "local trees", or something like that.
-leaf-labelled binary trees.
+a given list of leaf-labelled binary trees.
+This is the approach taken by the Espalier inference
+method~\citep{rasmussen2022espalier}, which finds a
+set of SPRs that reconcile independently inferred
+trees from different regions of the genome
+using.
 
-[ Cite \citep{deng2021distribution} somewhere here.]
+\section*{Precision of recombination information}
 
-% This text might go somewhere
-% We may have nodes corresponding to genomes that are ancestral to
-% the sample along their entire span
-% (e.g.\ node $H$ in Fig.~\ref{fig-ancestry-resolution}),
-% genomes that carry no genetic material ancestral to the sample at all
-% (e.g.\ node $J$ in Fig.~\ref{fig-ancestry-resolution}),
-% and every possibility along the continuum between these extremes.
-% Clearly, we can only ever hope to infer the fraction of an ancestor's
-% genome that is ancestral to the sample.
+% Not sure where this goes, but there are some critical points
+% that we want to explain and not just throw out there in the
+% discussion.
+A critical distinction between the eARG and gARG encodings
+is the level of precision about the time and location of
+recombination events that is required. In an eARG, we are
+required to be absolutely precise about every recombination
+[explain and contrast with gARG, referring to examples]
+
+For example, \citep{deng2021distribution} state that
+``[the ARG] provides
+all the information about the genealogical history of a sample,
+including the locations of recombination events.''
+
+% JK: This is very rough, just jotting down the basic ideas,
+% will need substantial revision.
+It is not clear that such complete information will always
+(or indeed ever) be available from inferences. We may be
+able to precisely identify the location and timing
+of recent recombinations (particularly if detailed pedigree
+information is available) but beyond this, the information
+required simply isn't present. When sampling from a
+process such as the Sequentially Markov
+Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
+like ARGweaver~\citep{rasmussen2014genome}, it is true that
+we do obtain a fully resolved ARG with precise
+information about recombination, but it is reasonable
+to question how much information from the data is used
+to support older recombinations, in particular.
+
+At the very least, it is not reasonable for the \emph{data
+structure} to require complete precision in order to
+represent some less precise. This is a fundamental
+advantage of the gARG encoding over the classical eARG
+method: we are not forced to posit a precise cause (recombination
+event) for every effect (difference between adjacent trees).
+These differences in precision of recombination
+information are illustrated in the ARGs estimated by different
+methods, as we see in the next section.
+
 
 \section*{ARG inference methods}\label{ARG_inference_methods}
 Using the terminology developed here to classify ARGs, we now review methods developed
@@ -1172,16 +1188,32 @@ a direct measure of time. Additional notes about these ARGs.
 }
 \end{figure}
 
+\section*{Efficiency of computation on ARGs}
+The succinct tree sequence data structure (usually known as a ``tree sequence''
+for brevity, but see later comment on confusion around this point)
+is a concrete encoding of a gARG, as discussed in this article.
+It was originally developed as part of the \texttt{msprime}
+simulator~\cite{kelleher2016efficient} and subsequently ...
+
+[The tree sequence encoding is very efficient for lots of things. Examples]
+
+In retrospect, the choice of terminology was unfortunate, and has led to
+significant confusion. [More]
+
+
+
 \section*{Discussion}
 
 Discussion points (may or may not be used, certainly would be heavily revised)
 
 \begin{itemize}
-\item [Recap quickly distinction bewtween aARG and gARG. Then]
+
+\item Recap quickly distinction bewtween aARG and gARG.Then:
     This, coupled with
     the explicit association of genome coordinates with edges, allows
     us to represent even the bewilderingly complex patterns of relatedness
     present in modern datasets.
+
 
 \item It is unfortunate that we are adding yet another meaning to the
 term ARG here, but all we're really doing is making the implicit
