@@ -1097,15 +1097,23 @@ These differences in precision of recombination
 information are illustrated in the ARGs estimated by different
 methods, as we see in the next section.
 
+\section*{Differences in reconstructed ARGs}
+ARGs inferred by different methods vary greatly in their properties.
+To illustrate this, we examine the inferences made by four
+recent methods on the classical \citet{kreitman1983nucleotide}.
+\emph{Drosophila melanogaster} dataset.
 
 
-\subsection*{Differences in reconstructed ARGs}
-
-There are a vast number of ARGs compatible with a given dataset, so ARG
-reconstruction tools generally produce different outputs for the same input.
-Figure \ref{fig-inferred-args} shows examples of the ARG topologies produced by
-four of the tools mentioned above, applied to the classical dataset of 11
-\emph{Drosophila melanogaster} sequences of \citet{kreitman1983nucleotide}.
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
+\caption{\label{fig-inferred-args} ARGs inferred by different methods from a
+2.7kb region of the \textit{Drosophila melanogaster} ADH locus for 11
+samples~\citep{kreitman1983nucleotide}. Note that the position of points on the
+Y axis is that chosen for graphical clarity by the graphviz \texttt{dot}
+algorithm,  rather than being
+a direct measure of time. Additional notes about these ARGs.
+}
+\end{figure}
 
 There is some consistency among the four inferred ARGs (such as the samples
 FR-F, WA-F and Af-F being grouped into the same clade), but also considerable
@@ -1137,18 +1145,6 @@ an ARG as a data structure. The ARGs produced by \texttt{KwARG} and
 (corresponding to Figure 4 stage `B'), while the ARGs output by
 \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly
 corresponding to Figure 4 stages `C' and 'D', respectively).
-
-
-\begin{figure} \begin{center}
-\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} ARGs inferred by different methods from a
-2.7kb region of the \textit{Drosophila melanogaster} ADH locus for 11
-samples~\citep{kreitman1983nucleotide}. Note that the position of points on the
-Y axis is that chosen for graphical clarity by the graphviz \texttt{dot}
-algorithm,  rather than being
-a direct measure of time. Additional notes about these ARGs.
-}
-\end{figure}
 
 \section*{Efficiency of computation on ARGs}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
