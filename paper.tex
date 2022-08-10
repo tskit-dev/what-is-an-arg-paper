@@ -116,8 +116,7 @@ follow~\citep{harris2019database}. This vibrant research area, however,
 has a significant difficulty, which, if not addressed, will substantially hamper
 progress. We currently lack a well-defined data-model and shared terminology
 to discuss recombining genealogies, leading to basic errors in statements
-about what different inference methods produce as output (see the
-``\nameref{ARG_inference_methods}'' section), as well as presenting serious
+about what different inference methods produce as output, as well as presenting serious
 difficulties in either comparing the outputs of different methods or
 (from a user's perspective) using multiple inference methods in an analysis.
 
@@ -1099,91 +1098,54 @@ information are illustrated in the ARGs estimated by different
 methods, as we see in the next section.
 
 
-\section*{ARG inference methods}\label{ARG_inference_methods}
-Using the terminology developed here to classify ARGs, we now review methods developed
-to explicitly \emph{infer} ARGs from sequencing data.
-% Gregor: I expected clear indication which method/tool works with eARGs and gARGs, but I can see this clearly
-
-\subsection*{ARG reconstruction}
-
-The problem of reconstructing ARGs for samples of recombining sequences has been of
-interest since the ARG was first defined. Early methods focused on finding \emph{parsimonious} ARGs,
-i.e.\ those with a minimal number of recombination events \citep{hein1990reconstructing}.
-Two main approaches emerged: \emph{backwards-in-time} \citep{lyngso2005minimum} and
-\emph{along-the-genome} \citep{song2003parsimonious, song2005constructing}.
-The former starts with a data matrix and reduces it to an empty matrix through row and column operations
-corresponding to coalescence, mutation, and recombination events, which construct
-an ARG from the bottom up. The latter begins from an initial local tree at a single focal site. Moving the
-focal site along the genome changes the local tree via a \emph{subtree prune and regraft} (SPR) operation
-whenever a recombination is encountered. Methods based the backwards-in-time approach are described by
-\citet{song2005efficient, wu2008association, thao2019hybrid, ignatieva2021kwarg},
-while \citet{hein1993heuristic, wu2011new, mirzaei2017rent} describe along-the-genome methods.
-\citet{rasmussen2022espalier} focuses on parsimonious fusion of local trees into an ARG, while
-\citet{camara2016inference} is based on topological data analysis.
-
-Reconstructing a most parsimonious ARG for a given data set is NP-hard \citep{wang2001perfect},
-so parsimony-based methods resort to heuristics and are limited to analysing at most hundreds of sequences.
-Hence, a number of methods aim to balance computational efficiency with reconstruction of ``reasonable",
-rather than parsimonious ARGs
-\citep{minichiello2006mapping, parida2008estimating, kelleher2019inferring,  speidel2019method, zhang2021biobank}.
-The latter three methods, as well as the parsimony-based method of \citet{rasmussen2022espalier},
-can be used on megabase scale data and hundreds of thousands of samples under human-like parameters.
-
-TODO mention \citep{schaefer2021ancestral} somewhere.
-
-% AI: just to note, these papers do not all agree in their definition of an ARG.
-% I guess this is one of the points of the present paper, but should we mention this fact?
-% Should we also mention that most of these infer just the topology, but some also the times?
-
-An alternative approach is to treat the ARG as a latent parameter to be averaged out
-by Monte Carlo methods, based either on importance sampling
-\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
-or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian, fallon2013acg, mahmoudi2022bayesian}.
-These methods operate on representations of the ``little ARG'', and are extremely computationally
-expensive, being applicable to at most hundreds of samples consisting of tens or hundreds of kilobases with
-human-like parameters. State-of-the-art methods rely on cheaper, approximate models
-\citep{didelot2010inference, heine2018bridging, hubisz2020mapping,hubisz2020inference, medina2020speeding}.
-The most scalable method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to dozens of mammal-like
-genomes \citep{hubisz2020inference}.
-A central quantity in all of these sampling methods is the conditional sampling probability
-$p(G | D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization
-of genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
-of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
-frequentist regularizer for the ARG $G$.
-
-The likelihood $p(D | G)$ is effectively always the distribution of
-a Poisson process on the ancestral material along the edges of $G$ \citep[Eq.\ (2)]{mahmoudi2022bayesian}.
-Hence it is typically straightforward to evaluate in principle, but choosing the
-right data structure can still have a dramatic effect on the efficiency of evaluation
-\citep{mahmoudi2022bayesian}. Especially in the Bayesian case, $p(G)$ is typically specified
-as the sampling distribution of a stochastic process, such as the coalescent with
-recombination. Two contemporary examples are
-\cite{mahmoudi2022bayesian, guo2022recombination}.
-Evaluating the distribution of the coalescent with recombination
-(or related models) requires knowledge of the number of extant lineages and
-number of links available for recombination (i.e.\ ones at which a recombination
-would split ancestral material) at each time \citep[Eq.\ (3)]{mahmoudi2022bayesian}.
-These require a data structure from which shared edges on different trees are easy to identify,
-and which encodes recombination events and times explicitly, e.g.\ using nodes.
-We will provide a more detailed discussion on sampling probability evaluation in the appendix.
 
 \subsection*{Differences in reconstructed ARGs}
 
-There are a vast number of ARGs compatible with a given dataset, so ARG reconstruction tools generally produce different outputs for the same input. Figure \ref{fig-inferred-args} shows examples of the ARG topologies produced by four of the tools mentioned above, applied to the classical dataset of 11 \emph{Drosophila melanogaster} sequences of \citet{kreitman1983nucleotide}.
+There are a vast number of ARGs compatible with a given dataset, so ARG
+reconstruction tools generally produce different outputs for the same input.
+Figure \ref{fig-inferred-args} shows examples of the ARG topologies produced by
+four of the tools mentioned above, applied to the classical dataset of 11
+\emph{Drosophila melanogaster} sequences of \citet{kreitman1983nucleotide}.
 
-There is some consistency among the four inferred ARGs (such as the samples FR-F, WA-F and Af-F being grouped into the same clade), but also considerable differences in the order and number of events. \texttt{KwARG} \citep{ignatieva2021kwarg} produces a parsimonious ARG with seven recombination breakpoints, which has been shown to be the true minimum required to explain the dataset when disallowing recurrent mutation \citep{song2003parsimonious}; this is a lower bound that, in general, significantly underestimates the actual number of recombinations that might have occurred. An ARG drawn from the posterior sample produced by \texttt{ARGweaver} has 17 breakpoints. Both tools explicitly record the sequence undergoing each recombination event, and the precise location of the breakpoint along the genome. \texttt{Relate} \citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} do not place recombination events onto the ARG topology, therefore the transitions between local trees are not explicitly inferred in terms of SPR operations. \texttt{Relate} first infers local tree topologies and then identifies edges that persist from one tree to the next as a separate step, while \texttt{tsinfer} explicitly constructs nodes that are shared across local trees. The number of inferred trees also depends on the parameter settings; all four tools can allow for the presence of sequencing errors and recurrent mutations, reducing the number of inferred local trees (in this case, based on the input mutation and recombination rate \texttt{Relate} hence posits only two recombination breakpoints).
+There is some consistency among the four inferred ARGs (such as the samples
+FR-F, WA-F and Af-F being grouped into the same clade), but also considerable
+differences in the order and number of events. \texttt{KwARG}
+\citep{ignatieva2021kwarg} produces a parsimonious ARG with seven recombination
+breakpoints, which has been shown to be the true minimum required to explain
+the dataset when disallowing recurrent mutation \citep{song2003parsimonious};
+this is a lower bound that, in general, significantly underestimates the actual
+number of recombinations that might have occurred. An ARG drawn from the
+posterior sample produced by \texttt{ARGweaver} has 17 breakpoints. Both tools
+explicitly record the sequence undergoing each recombination event, and the
+precise location of the breakpoint along the genome. \texttt{Relate}
+\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} do
+not place recombination events onto the ARG topology, therefore the transitions
+between local trees are not explicitly inferred in terms of SPR operations.
+\texttt{Relate} first infers local tree topologies and then identifies edges
+that persist from one tree to the next as a separate step, while
+\texttt{tsinfer} explicitly constructs nodes that are shared across local
+trees. The number of inferred trees also depends on the parameter settings; all
+four tools can allow for the presence of sequencing errors and recurrent
+mutations, reducing the number of inferred local trees (in this case, based on
+the input mutation and recombination rate \texttt{Relate} hence posits only two
+recombination breakpoints).
 
-Note that all four methods produce output which can be represented in the succinct tree sequence format, and which is consistent with our definition of an ARG as a data structure. The ARGs produced by \texttt{KwARG} and \texttt{ARGweaver} contain more nodes to record the recombination events (corresponding to Figure 4 stage `B'), while the ARGs output by \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly corresponding to Figure 4 stages `C' and 'D', respectively).
+Note that all four methods produce output which can be represented in the
+succinct tree sequence format, and which is consistent with our definition of
+an ARG as a data structure. The ARGs produced by \texttt{KwARG} and
+\texttt{ARGweaver} contain more nodes to record the recombination events
+(corresponding to Figure 4 stage `B'), while the ARGs output by
+\texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly
+corresponding to Figure 4 stages `C' and 'D', respectively).
 
 
-\begin{figure}
-\begin{center}
-    \includegraphics[width=\textwidth]{illustrations/inference.pdf}
-\end{center}
-\caption{\label{fig-inferred-args}
-ARGs inferred by different methods from a 2.7kb region of the \textit{Drosophila melanogaster}
-ADH locus for 11 samples~\citep{kreitman1983nucleotide}. Note that the position of points on the
-Y axis is that chosen for graphical clarity by the graphviz \texttt{dot} algorithm,  rather than being
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
+\caption{\label{fig-inferred-args} ARGs inferred by different methods from a
+2.7kb region of the \textit{Drosophila melanogaster} ADH locus for 11
+samples~\citep{kreitman1983nucleotide}. Note that the position of points on the
+Y axis is that chosen for graphical clarity by the graphviz \texttt{dot}
+algorithm,  rather than being
 a direct measure of time. Additional notes about these ARGs.
 }
 \end{figure}
@@ -1671,5 +1633,76 @@ not affect the local tree at any site.}
 % need not have any genetic material in common with a
 % sequence descended from it.
 
+\subsection*{Survey of ARG inference methods}
 
+The problem of reconstructing ARGs for samples of recombining sequences has
+been of interest since the ARG was first defined. Early methods focused on
+finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
+recombination events \citep{hein1990reconstructing}. Two main approaches
+emerged: \emph{backwards-in-time} \citep{lyngso2005minimum} and
+\emph{along-the-genome} \citep{song2003parsimonious, song2005constructing}. The
+former starts with a data matrix and reduces it to an empty matrix through row
+and column operations corresponding to coalescence, mutation, and recombination
+events, which construct an ARG from the bottom up. The latter begins from an
+initial local tree at a single focal site. Moving the focal site along the
+genome changes the local tree via a \emph{subtree prune and regraft} (SPR)
+operation whenever a recombination is encountered. Methods based the
+backwards-in-time approach are described by \citet{song2005efficient,
+wu2008association, thao2019hybrid, ignatieva2021kwarg}, while
+\citet{hein1993heuristic, wu2011new, mirzaei2017rent} describe along-the-genome
+methods. \citet{rasmussen2022espalier} focuses on parsimonious fusion of local
+trees into an ARG, while \citet{camara2016inference} is based on topological
+data analysis.
+
+Reconstructing a most parsimonious ARG for a given data set is NP-hard
+\citep{wang2001perfect}, so parsimony-based methods resort to heuristics and
+are limited to analysing at most hundreds of sequences. Hence, a number of
+methods aim to balance computational efficiency with reconstruction of
+``reasonable", rather than parsimonious ARGs \citep{minichiello2006mapping,
+parida2008estimating, kelleher2019inferring,  speidel2019method,
+zhang2021biobank}. The latter three methods, as well as the parsimony-based
+method of \citet{rasmussen2022espalier}, can be used on megabase scale data and
+hundreds of thousands of samples under human-like parameters.
+
+TODO mention \citep{schaefer2021ancestral} somewhere.
+
+% AI: just to note, these papers do not all agree in their definition of an
+% ARG. I guess this is one of the points of the present paper, but should we
+% mention this fact? Should we also mention that most of these infer just the
+% topology, but some also the times?
+
+An alternative approach is to treat the ARG as a latent parameter to be
+averaged out by Monte Carlo methods, based either on importance sampling
+\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
+or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian,
+fallon2013acg, mahmoudi2022bayesian}. These methods operate on representations
+of the ``little ARG'', and are extremely computationally expensive, being
+applicable to at most hundreds of samples consisting of tens or hundreds of
+kilobases with human-like parameters. State-of-the-art methods rely on cheaper,
+approximate models \citep{didelot2010inference, heine2018bridging,
+hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
+method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
+dozens of mammal-like genomes \citep{hubisz2020inference}. A central quantity
+in all of these sampling methods is the conditional sampling probability $p(G |
+D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization of
+genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
+of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
+frequentist regularizer for the ARG $G$.
+
+The likelihood $p(D | G)$ is effectively always the distribution of a Poisson
+process on the ancestral material along the edges of $G$ \citep[Eq.\
+(2)]{mahmoudi2022bayesian}. Hence it is typically straightforward to evaluate
+in principle, but choosing the right data structure can still have a dramatic
+effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
+in the Bayesian case, $p(G)$ is typically specified as the sampling
+distribution of a stochastic process, such as the coalescent with
+recombination. Two contemporary examples are \cite{mahmoudi2022bayesian,
+guo2022recombination}. Evaluating the distribution of the coalescent with
+recombination (or related models) requires knowledge of the number of extant
+lineages and number of links available for recombination (i.e.\ ones at which a
+recombination would split ancestral material) at each time \citep[Eq.\
+(3)]{mahmoudi2022bayesian}. These require a data structure from which shared
+edges on different trees are easy to identify, and which encodes recombination
+events and times explicitly, e.g.\ using nodes.
+We will provide a more detailed discussion on sampling probability evaluation in the appendix.
 \end{document}
