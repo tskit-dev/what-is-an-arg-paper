@@ -1076,6 +1076,19 @@ trees from different regions of the genome
 using.
 
 \section*{Precision of recombination information}
+Ancestral recombination graphs are often characterised
+as consisting of a complete record of the genealogical history
+of a sample. For example,
+\cite{rasmussen2014genome} state that an ``ARG provides a record of all
+coalescence and recombination events since the divergence of the sequences
+under study'' and
+according to \cite{deng2021distribution} an ARG
+``provides all the information about the genealogical history of a sample,
+including the locations of recombination events.'' It is worth
+questioning, however, whether such complete and precise information is
+realistically available, and in particular whether our
+\emph{representation} of genealogical history should require
+such precision.
 
 % Not sure where this goes, but there are some critical points
 % that we want to explain and not just throw out there in the
@@ -1085,11 +1098,6 @@ is the level of precision about the time and location of
 recombination events that is required. In an eARG, we are
 required to be absolutely precise about every recombination
 [explain and contrast with gARG, referring to examples]
-
-For example, \citep{deng2021distribution} state that
-``[the ARG] provides
-all the information about the genealogical history of a sample,
-including the locations of recombination events.''
 
 % JK: This is very rough, just jotting down the basic ideas,
 % will need substantial revision.
@@ -1107,6 +1115,14 @@ information about recombination, but it is reasonable
 to question how much information from the data is used
 to support older recombinations, in particular.
 
+It is helpful to consider the difference between fully
+resolved binary trees and those that contain polytomies.
+
+The situation is in fact directly analogous: an ARG that
+contains fully resolved recombination information must have
+at most parents per node.
+
+
 At the very least, it is not reasonable for the \emph{data
 structure} to require complete precision in order to
 represent some less precise. This is a fundamental
@@ -1116,12 +1132,6 @@ event) for every effect (difference between adjacent trees).
 These differences in precision of recombination
 information are illustrated in the ARGs estimated by different
 methods, as we see in the next section.
-
-\section*{Differences in reconstructed ARGs}
-ARGs inferred by different methods vary greatly in their properties.
-To illustrate this, we examine the inferences made by four
-recent methods on the classical \citet{kreitman1983nucleotide}.
-\emph{Drosophila melanogaster} dataset.
 
 
 \begin{figure} \begin{center}
@@ -1134,6 +1144,12 @@ algorithm,  rather than being
 a direct measure of time. Additional notes about these ARGs.
 }
 \end{figure}
+
+To illustrate this critical point, we inferred ARGs for the
+the \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster} dataset
+(classically used as a benchmark for ARG inference),
+using four recent inference methods and show the results in
+Fig~\ref{fig-inferred-args}).
 
 There is some consistency among the four inferred ARGs (such as the samples
 FR-F, WA-F and Af-F being grouped into the same clade), but also considerable
@@ -1158,15 +1174,15 @@ mutations, reducing the number of inferred local trees (in this case, based on
 the input mutation and recombination rate \texttt{Relate} hence posits only two
 recombination breakpoints).
 
-Note that all four methods produce output which can be represented in the
-succinct tree sequence format, and which is consistent with our definition of
-an ARG as a data structure. The ARGs produced by \texttt{KwARG} and
-\texttt{ARGweaver} contain more nodes to record the recombination events
-(corresponding to Figure 4 stage `B'), while the ARGs output by
-\texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly
-corresponding to Figure 4 stages `C' and 'D', respectively).
+% Note that all four methods produce output which can be represented in the
+% succinct tree sequence format, and which is consistent with our definition of
+% an ARG as a data structure. The ARGs produced by \texttt{KwARG} and
+% \texttt{ARGweaver} contain more nodes to record the recombination events
+% (corresponding to Figure 4 stage `B'), while the ARGs output by
+% \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly
+% corresponding to Figure 4 stages `C' and 'D', respectively).
 
-\section*{Efficiency of computation on ARGs}
+\section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
 for brevity, but see later comment on confusion around this point)
 is a concrete encoding of a gARG, as discussed in this article.
