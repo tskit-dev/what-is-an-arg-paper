@@ -17,7 +17,11 @@
 % \usepackage[hidelinks]{hyperref}
 
 \newcommand{\noderef}[1]{\textsf{#1}}
-% \newcommand{\msprime}[0]{\texttt{msprime}}
+\newcommand{\tsinfer}[0]{\texttt{tsinfer}}
+\newcommand{\kwarg}[0]{\texttt{KwARG}}
+\newcommand{\argweaver}[0]{\texttt{ARGweaver}}
+\newcommand{\relate}[0]{\texttt{Relate}}
+\newcommand{\espalier}[0]{\texttt{Espalier}}
 
 \begin{document}
 
@@ -75,7 +79,7 @@ concrete realisation of a recombinant genetic ancestry.
 We show that the standard description of an ARG
 in terms of common ancestor and recombination events
 (inherited from the original stochastic process definition) is
-ambiguous, 
+ambiguous,
 % is it ambiguous? How? Can we simply delete this?
 fundamentally limited and an unsuitable basis for data interchange.
 We provide a simple alternative definition of an ARG in which a node
@@ -443,7 +447,7 @@ which defines the time of each node.
 The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
 in associating recombination breakpoints with nodes
-rather than edges: we need to know from which parent the 
+rather than edges: we need to know from which parent the
 and the only way we can break this symmetry is to assign
 some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
@@ -1075,7 +1079,7 @@ set of SPRs that reconcile independently inferred
 trees from different regions of the genome
 using.
 
-\section*{Precision of recombination information}
+\section*{Precision of ancestry information}
 Ancestral recombination graphs are often characterised
 as consisting of a complete record of the genealogical history
 of a sample. For example,
@@ -1085,9 +1089,9 @@ under study'' and
 according to \cite{deng2021distribution} an ARG
 ``provides all the information about the genealogical history of a sample,
 including the locations of recombination events.'' It is worth
-questioning, however, whether such complete and precise information is
+questioning, however, whether such comprehensive information is
 realistically available, and in particular whether our
-\emph{representation} of genealogical history should require
+representation of genealogical history should \emph{require}
 such precision.
 
 % Not sure where this goes, but there are some critical points
@@ -1136,9 +1140,15 @@ methods, as we see in the next section.
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} ARGs inferred by different methods from a
-2.7kb region of the \textit{Drosophila melanogaster} ADH locus for 11
-samples~\citep{kreitman1983nucleotide}. Note that the position of points on the
+\caption{\label{fig-inferred-args} ARGs inferred by
+(A) \kwarg~\citep{ignatieva2021kwarg},
+(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
+(C) \tsinfer~\citep{kelleher2019inferring},
+and (D) \relate~\citep{speidel2019method}
+for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
+locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
+is a sample from the inferred posterior distribution.
+Note that the position of points on the
 Y axis is that chosen for graphical clarity by the graphviz \texttt{dot}
 algorithm,  rather than being
 a direct measure of time. Additional notes about these ARGs.
@@ -1146,41 +1156,44 @@ a direct measure of time. Additional notes about these ARGs.
 \end{figure}
 
 To illustrate this critical point, we inferred ARGs for the
-the \citet{kreitman1983nucleotide} \emph{Drosophila melanogaster} dataset
-(classically used as a benchmark for ARG inference),
+the classical \citet{kreitman1983nucleotide} benchmark dataset
 using four recent inference methods and show the results in
-Fig~\ref{fig-inferred-args}).
-
-There is some consistency among the four inferred ARGs (such as the samples
-FR-F, WA-F and Af-F being grouped into the same clade), but also considerable
-differences in the order and number of events. \texttt{KwARG}
-\citep{ignatieva2021kwarg} produces a parsimonious ARG with seven recombination
-breakpoints, which has been shown to be the true minimum required to explain
-the dataset when disallowing recurrent mutation \citep{song2003parsimonious};
-this is a lower bound that, in general, significantly underestimates the actual
-number of recombinations that might have occurred. An ARG drawn from the
-posterior sample produced by \texttt{ARGweaver} has 17 breakpoints. Both tools
-explicitly record the sequence undergoing each recombination event, and the
-precise location of the breakpoint along the genome. \texttt{Relate}
-\citep{speidel2019method} and \texttt{tsinfer} \citep{kelleher2019inferring} do
-not place recombination events onto the ARG topology, therefore the transitions
-between local trees are not explicitly inferred in terms of SPR operations.
-\texttt{Relate} first infers local tree topologies and then identifies edges
-that persist from one tree to the next as a separate step, while
+Fig~\ref{fig-inferred-args}.
+While there is some consistency among the inferred ARGs (such as the samples
+FR-F, WA-F and Af-F being grouped into the same clade), there
+are also considerable differences. For this dataset, the minimum number
+of recombination breakpoints required in the absence of recurrent mutation
+is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
+under the input mutation and recombination rates
+varies from 2 (\relate) to 17 (\argweaver).
+The ARGs inferred by the different methods also have major differences
+in how recombination information is represented. Essentially,
+\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
+for each breakpoint, and those events are fully
+described in the output graph. On the other hand, \tsinfer\ and
+\relate\ do not infer causal events but instead focus on
+representing the inferred \emph{effect}: breakpoints between the
+trees. It is important to note that this does not imply that
+the methods must then necessarily infer only a sequence of
+unrelated local trees
+% More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+% for discussion. I'm sure there were other examples of people saying
+% that
+(as claimed by e.g.~\citep{hejase2020summary}),
+and information about recombination and the correlation structure
+between trees is not ``all or nothing''.
+Both methods capture correlation structure between trees:
+\relate\ first infers local tree topologies and then identifies edges
+that persist from one tree to the next as a separate step
+(in a similar manner to \espalier~\citep{rasmussen2022espalier}), while
 \texttt{tsinfer} explicitly constructs nodes that are shared across local
-trees. The number of inferred trees also depends on the parameter settings; all
-four tools can allow for the presence of sequencing errors and recurrent
-mutations, reducing the number of inferred local trees (in this case, based on
-the input mutation and recombination rate \texttt{Relate} hence posits only two
-recombination breakpoints).
+trees.
 
-% Note that all four methods produce output which can be represented in the
-% succinct tree sequence format, and which is consistent with our definition of
-% an ARG as a data structure. The ARGs produced by \texttt{KwARG} and
-% \texttt{ARGweaver} contain more nodes to record the recombination events
-% (corresponding to Figure 4 stage `B'), while the ARGs output by
-% \texttt{tsinfer} and \texttt{Relate} being, in essence, simplified (roughly
-% corresponding to Figure 4 stages `C' and 'D', respectively).
+Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
+explicit recombination events we cannot compute a likelihood
+under the coalescent with recombination (see appendix XXX).
+[Some stuff about whether we should see this as necessary or not,
+but maybe we should keep this for the conclusion?]
 
 \section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
