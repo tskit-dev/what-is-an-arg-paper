@@ -62,10 +62,10 @@ referred to as an Ancestral Recombination Graph, or ARG.
 There are now multiple methods that can infer ARGs at a practical scale
 and it is therefore vital that these methods can be systematically evaluated
 and compared to determine their strengths and weaknesses.
-Unfortunately, however, there is substantial confusion over
-terminology and little agreement on shared standards for data interchange,
-significantly hampering progress in this important area.
-This confusion and lack of agreement on basic issues such as what does and
+Unfortunately confusion exists over terminology and there is
+little agreement on shared standards for data interchange,
+significantly hampering progress in the field.
+This lack of clarity and agreement on basic issues such as what does and
 does not constitute an ARG is partly attributable to the historical
 development of the term.
 Originally rigorously defined as
@@ -75,13 +75,14 @@ concrete realisation of a recombinant genetic ancestry.
 We show that the standard description of an ARG
 in terms of common ancestor and recombination events
 (inherited from the original stochastic process definition) is
-ambiguous, fundamentally limited and an unsuitable basis for data interchange.
+ambiguous, 
+% is it ambiguous? How? Can we simply delete this?
+fundamentally limited and an unsuitable basis for data interchange.
 We provide a simple alternative definition of an ARG in which a node
-corresponds to one of an individual's monoploid genomes, an edge
-% jk-note: this is clumsy
-defines a genetic ancestry relationship between two nodes,
-and annotations on those edges define the patterns of
-inheritance in intervals along the genome.
+corresponds to one of an individual's monoploid genomes and an edge
+defines genetic inheritance between two nodes, with annotations on
+each edge specifying which regions of the genome have
+been inherited via that route.
 We show how this definition can be used to generalise the encoding to
 cover both the standard and several simplified versions of ARGs, as well as
 enabling efficient access to local trees along the genome. Additionally, we
@@ -97,46 +98,44 @@ developed ancestral inference methods.
 
 \section*{Introduction}
 Inferring the genetic relationships between sampled genomes in the form of an
-evolutionary tree is a necessary prerequisite for many analyses of
+evolutionary or phylogenetic tree is a necessary prerequisite for many analyses of
 species~\citep{rannala2003genetics}, non-recombining sections of
 DNA~\citep{cann1987mitochondrial,underhill2001annalsofhumangenetics}
 and viruses~\citep{grenfell2004science}.
-A genealogical tree captures what is known and
-knowable about the genetic ancestry of the sample in an elegant and concise
-way, by postulating a set of nodes that are ancestors common to the samples,
-and the ancestral relationships between those nodes. A rich literature exists
+A phylogenetic tree captures information about the genealogy
+of the sample in an elegant and concise
+way, by postulating a set of ancestors common to the samples
+together with paths of inheritance between them. A rich literature exists
 on analysing the mathematical properties of these
 trees~\citep{steel2016phylogeny}, and numerous
-methods exist to infer them~\citep{felsenstein2004inferring}. The situation is
-quite different in recombining organisms, where the analysis of genetic data
-depends on summaries ultimately derived from the
-trees~\citep{tajima1983evolutionary,tavare1984line}
-% Do we mean "despite the fact that analysis of genetic data relies on methods
-% which ultimately derive from the inheritance paths defined by genetic trees
-% and the mutations upon them, analysis so far has focussed on summaries ...
-such as allele frequencies and site frequency
+methods exist to infer them~\citep{felsenstein2004inferring}.
+However, the genetic genealogy of a recombining organism
+cannot be described as a single evolutionary tree: instead,
+the inheritance of each local section of the genome may be described
+by a (slightly) different tree~\citet{hudson1983properties}. Inferring complex
+genealogies of this nature
+presents profound technical difficulties, meaning tree-based approaches are
+rarely used in population and statistical genetics. Therefore until recently, analysis of
+population genetic data has primarily focussed on summaries derived
+from the local trees~\citep{tajima1983evolutionary,tavare1984line}
+rather than using the underlying genealogy itself. Such
+derived measures include allele frequencies and site frequency
 spectra~\citep{achaz2009frequency,ralph2020efficiently},
-patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and principal
-components~\citep{mcvean2009genealogical}. Genealogical analysis is equally
-fundamental to the study of recombining organisms, but profound technical
-difficulties have made the routine inference of recombinant genealogies
-impossible, and therefore tree-based analysis methods have been largely
-unavailable to the fields of population and statistical
-genetics.
+patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
+principal components~\citep{mcvean2009genealogical}.
 
 Recent breakthroughs in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,wohns2022unified}
 and data representation~\citep{kelleher2016efficient}
 have raised the realistic prospect of genealogical analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
-Applications using these inferred ancestries as input have
-begun to
+Applications using these inferred ancestries as input have begun to
 appear~\citep{osmond2021estimating,zhang2021biobank,fan2022genealogical}
 and many more are sure to
 follow~\citep{harris2019database}. This vibrant research area, however,
-has a significant difficulty, which, if not addressed, will substantially hamper
-progress. We currently lack a well-defined data-model and shared terminology
-to discuss recombining genealogies, leading to basic errors in statements
+has a significant difficulty, which risks hampering
+progress: we currently lack a well-defined data-model and shared terminology
+to discuss recombining genealogies. This leads to basic errors in statements
 about what different inference methods produce as output, as well as presenting serious
 difficulties in either comparing the outputs of different methods or
 (from a user's perspective) using multiple inference methods in an analysis.
@@ -169,16 +168,14 @@ The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
 hudson1983testing, tajima1983evolutionary} models the ancestry of a sample of
 genomes under an idealised population model, and provides the theoretical
 underpinning for much of contemporary population genetics.
-The coalescent is a stochastic process, where each random realisation
-is a genealogical tree describing the genetic
-ancestors of the samples and their inheritance relationships.
-A great strength of the coalescent as a modelling framework
-is its flexibility, and numerous elaborations have been
-incorporated~\citep{hudson1990gene,hein2004gene,wakely2008coalescent}.
-In the first extension to the basic process, \cite{hudson1983properties}
+It is a stochastic process, where each random realisation
+is a genealogical tree describing the genetic ancestry of the samples.
+Numerous elaborations have been incorporated into the
+basic process~\citep{hudson1990gene,hein2004gene,wakely2008coalescent};
+in particular, early work by \citet{hudson1983properties}
 analysed the effects of recombination on the random genealogical
-trees generated by the coalescent,
-producing several fundamental analytical results
+trees generated by the coalescent. This
+generated several fundamental analytical results
 as well as describing the elegant algorithm
 at the heart of simulation
 programs~\citep{hudson2002generating,kelleher2016efficient,baumdicker2021efficient}
@@ -187,7 +184,7 @@ In its original formulation, Hudson's algorithm produced a
 sequence of genealogical trees along the genome.
 Critically, although the correlation structure among these
 local trees was analysed analytically, those correlations
-were not captured explicitly: the ancestry of the sample
+were not captured explicitly: the ancestry
 was viewed as a series of disconnected local trees rather than
 as a single cohesive object.
 
@@ -214,7 +211,7 @@ An overview of the Hudson and Griffiths stochastic processes is provided in the 
 
 Early work on ARG inference focused on the problem of
 inferring parameters of the
-stochastic process, where the ancestry is regarded as a
+stochastic process, where the ancestry was regarded as a
 latent parameter to be averaged out
 \citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
 fearnhead2001estimating}.
@@ -229,18 +226,20 @@ to explain an input dataset~\citep{myers2003bounds}, and inferring the correspon
 ARG realisations~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
 It is important to note that such recombination-parsimony ARGs
 have quite different properties from realisations of the
-(previously synonymous) ARG \emph{process}. Firstly, branch lengths are
-not typically estimated, and node times are required
-order to compute a likelihood under the coalescent with recombination
-(see section XXX). Secondly, even if branch lengths were estimated,
+ARG \emph{process} as modelled by Hudson, Griffiths, and colleagues.
+Firstly, branch lengths are not typically estimated,
+% why do we need the following two lines
+and node times are required in order to compute a likelihood under the
+coalescent with recombination (see section XXX).
+Secondly, even if branch lengths were estimated,
 the realisations would have a very small likelihood since
 the coalescent with recombination is often highly \emph{un}parsimonious
 in terms of recombination events for non-trivial scaled recombination rate.
 The previously close correspondance
 between the ARG as a mathematical representation of the coalescent process
 and as concrete realisations of ancestry was now therefore broken.
-\cite{minichiello2006mapping} made this separation of the ARG as a
-stochastic process vs the ARG as a data structure explicit, and
+\cite{minichiello2006mapping} explicitly distinguished the ARG as a
+stochastic process from the ARG as a data structure, and
 argued for using the term to mean specific realised ancestral histories.
 This has become a common
 usage~\citep{mathieson2020ancestry,brandt2021evaluation}
@@ -258,7 +257,7 @@ networks~\citep{huson2010phylogenetic}.
 % graphs very much as *processes*.
 % Jere: ASG section redrafted, gene transfer left as TODO (because I
 % know essentially nothing about it).
-In parallel with this tendancy to decouple the term
+In parallel with this tendency to decouple the term
 Ancestral Recombination Graph from its original defining stochastic process,
 an extensive mathematical literature has developed in
 studying other related stochastic processes encoded via a graph.
@@ -296,7 +295,7 @@ in the types of genetic inheritance that can be described,
 computationally inefficient, and
 forces complete (and potentially spurious) precision about
 the location and timing
-of recombination events.
+of recombination events. % (and coalescent events?)
 Unless otherwise stated, we will use the ARG-as-a-data-structure
 interpretation for the remainder of this paper.
 
@@ -304,7 +303,7 @@ interpretation for the remainder of this paper.
 In keeping with its original derivation in terms of a stochastic
 process, the classical definition of an ARG data structure is
 in terms of \emph{events}. Nodes represent
-common ancestor or recombination events that occured in the
+common ancestor or recombination events that occurred in the
 history of some set of sample genomes, and edges represent ancestral
 lineages~\citep{griffiths1996ancestral}.
 In order to distinguish this form of ARG from what we will be discussing
@@ -425,7 +424,7 @@ such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
 $\sigma(u) = \varnothing$ otherwise.
 (This formulation is equivalent to having different ``types''
-of node, and that breakpoints are associated with recombination
+of node, with breakpoints are associated with recombination
 nodes only).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
@@ -434,8 +433,8 @@ have exactly two edges in $e$ such that $u$ is the child.
 This encoding of an eARG is equivalent to the output
 produced by programs such as
 \texttt{ARGweaver}~\citep{rasmussen2014genome}
-and \texttt{KwARG}~\citep{ignatieva2021kwarg},
-and example is given in Fig.~\ref{fig-arg-data-structure}A.
+and \texttt{KwARG}~\citep{ignatieva2021kwarg}:
+an example is given in Fig.~\ref{fig-arg-data-structure}A.
 Note that the description above captures only the
 graph topology: if we also wish to know the branch lengths we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
@@ -444,7 +443,7 @@ which defines the time of each node.
 The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
 in associating recombination breakpoints with nodes
-rather than edges,
+rather than edges: we need to know from which parent the 
 and the only way we can break this symmetry is to assign
 some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
@@ -475,7 +474,7 @@ several methods explicitly associate information with the outbound edges
 of a recombination event
 to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
-% TODO update this when then later sections have been drafted.
+% TODO update this when later sections have been drafted.
 As we see in sections XXX and YYY there are substantial limitations
 of expressivity and computational performance when using this eARG
 encoding. More fundamentally, however, the general approach
@@ -526,7 +525,7 @@ Effective population size in modern pig breeds is also less than 100 due to
 intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
 
 Another assumption of the coalescent with recombination which prevents complex
-combinations of events occuring simultaneously, is that the genome (or
+combinations of events occurring simultaneously, is that the genome (or
 at least the region under study) is short enough that the number of extant
 lineages remains much smaller than $N_e$ at all times. Whole
 genome sequences have been available for model organisms
