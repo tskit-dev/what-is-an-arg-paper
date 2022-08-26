@@ -996,6 +996,48 @@ the graph, it removes potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
 and utilised is an interesting open question.
 
+% Needs another pass
+An important consequence of simplifying local trees to remove
+unary nodes is that we may lose the ability to identify
+the ``subtree prune-and-regraft'' (SPR) operations
+by which they differ~\citep{hein1990reconstructing,song2003on,song2006properties}.
+% The effects of recombination as we move from left-to-right along
+% the genome in the complete simulated gARG
+% of Fig~\ref{fig-simplification}A are easy to interpret,
+% but as more redundancy is removed from the graph
+% the
+As explained above, we can have multiple recombination and
+common ancestor events stacking up, and therefore
+many possible SPR operations. Deducing the SPRs between
+trees is NP-hard in
+general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
+but effective heuristics have been proposed~\citep{rasmussen2022espalier}.
+
+% The equivalence between an ARG and a set of local trees
+% separated by SPRs is often mentioned [e.g. x y z], but
+% it is important to note that while extracting local
+% trees from an ARG is straightforward, the converse
+% process of reconstructing precisely the same ARG from
+% these trees is more problematic. If the internal
+% nodes are consistently labelled and unary nodes are
+% included in the local trees (e.g., Fig~\ref{fig-simplification})
+% then it is easy to exactly reconstruct the ARG.
+% Otherwise, the problem is much more difficult and it
+% may not be possible to uniquely reconstruct the original ARG.
+% Without labels for the internal nodes, we are forced to
+% to reason about which subtrees remain the same and which
+% differ due to the SPR separating adjacent trees in order to
+% assign node identity. Without the internal unary nodes marking
+% recombinations, we must infer their existence. In
+% general, there will not be a unique solution to this problem,
+% and so there can be many possible ARGs compatible with
+% a given list of leaf-labelled binary trees.
+% This is the approach taken by the Espalier inference
+% method~\citep{rasmussen2022espalier}, which finds a
+% set of SPRs that reconcile independently inferred
+% trees from different regions of the genome.
+
+
 \section*{Precision of ancestry information}
 % Not all nodes in an ARG are equal. Assuming that we have sequenced the
 % genomes of the samples, there are intrinsic limits on what can
@@ -1119,65 +1161,29 @@ under the coalescent with recombination (see appendix XXX).
 [Some stuff about whether we should see this as necessary or not,
 but maybe we should keep this for the conclusion?]
 
-\section*{Relationship between ARGs and trees}
-
-We have seen that the local tree for a given position on
-the genome can be extracted from an ARG by starting at the
-leaves and following the appropriate paths through the graph.
-However, this tells us little about the relationship between
-adjacent trees, and what the properties of overall ensemble of
-local trees are.
-A recombination between two adjacent trees causes them to
-differ by a ``subtree prune-and-regraft'' (SPR)
-% Hein et al call it the ``subtree transfer'' operation but it's
-% the same thing.
-operation~\citep{hein1990reconstructing,song2003on,song2006properties}.
-The number of SPRs required to transform one leaf-labelled tree
-into another is known as the SPR distance
-% Hein 1996 say that SPR distance is NP-hard, but Allen 2001
-% say this is wrong. But then Bordewich went ahead and said
-% yes, actually it is NP hard.
-and is NP-hard to
-compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
-
-The effects of recombination as we move from left-to-right along
-the genome in an unsimplified gARG are easy to interpret.
-Consider the highlighted tree in Fig~\ref{fig-simplification}A.
-In it the parent of \textsf{e} is \textsf{j}, whereas in the next tree
-its parent is \textsf{k}. Since both parents are present as
-unary nodes in the tree, we simply change one edge in
-order to effect the transition.
-% Need revising to fit new example
-A more complex transition occurs when we have a regraft operation
-that occurs above the current root (i.e., the current oldest
-non-unary node). For example, the transition between the
-second and third trees corresponds to node D switching
-from the path through I to H, and we then must add branches
-corresponding to passing through L and meeting at M.
-
-The equivalence between an ARG and a set of local trees
-separated by SPRs is often mentioned [e.g. x y z], but
-it is important to note that while extracting local
-trees from an ARG is straightforward, the converse
-process of reconstructing precisely the same ARG from
-these trees is more problematic. If the internal
-nodes are consistently labelled and unary nodes are
-included in the local trees (e.g., Fig~\ref{fig-simplification})
-then it is easy to exactly reconstruct the ARG.
-Otherwise, the problem is much more difficult and it
-may not be possible to uniquely reconstruct the original ARG.
-Without labels for the internal nodes, we are forced to
-to reason about which subtrees remain the same and which
-differ due to the SPR separating adjacent trees in order to
-assign node identity. Without the internal unary nodes marking
-recombinations, we must infer their existence. In
-general, there will not be a unique solution to this problem,
-and so there can be many possible ARGs compatible with
-a given list of leaf-labelled binary trees.
-This is the approach taken by the Espalier inference
-method~\citep{rasmussen2022espalier}, which finds a
-set of SPRs that reconcile independently inferred
-trees from different regions of the genome.
+% The equivalence between an ARG and a set of local trees
+% separated by SPRs is often mentioned [e.g. x y z], but
+% it is important to note that while extracting local
+% trees from an ARG is straightforward, the converse
+% process of reconstructing precisely the same ARG from
+% these trees is more problematic. If the internal
+% nodes are consistently labelled and unary nodes are
+% included in the local trees (e.g., Fig~\ref{fig-simplification})
+% then it is easy to exactly reconstruct the ARG.
+% Otherwise, the problem is much more difficult and it
+% may not be possible to uniquely reconstruct the original ARG.
+% Without labels for the internal nodes, we are forced to
+% to reason about which subtrees remain the same and which
+% differ due to the SPR separating adjacent trees in order to
+% assign node identity. Without the internal unary nodes marking
+% recombinations, we must infer their existence. In
+% general, there will not be a unique solution to this problem,
+% and so there can be many possible ARGs compatible with
+% a given list of leaf-labelled binary trees.
+% This is the approach taken by the Espalier inference
+% method~\citep{rasmussen2022espalier}, which finds a
+% set of SPRs that reconcile independently inferred
+% trees from different regions of the genome.
 
 \section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
