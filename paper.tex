@@ -882,7 +882,7 @@ sequences~\citep{kelleher2018efficient,haller2018tree}.
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
 ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent marginal trees on the right.
+and the equivalent local trees on the right.
 (A) A gARG simulated from a diploid Wright-Fisher
 model. Note that the genome \textsf{k} has three children, and the genomes
 \textsf{e} and \textsf{g} simultaneously have multiple parents and multiple
@@ -1012,6 +1012,11 @@ many possible SPR operations. Deducing the SPRs between
 trees is NP-hard in
 general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but effective heuristics have been proposed~\citep{rasmussen2022espalier}.
+
+% JK TODO: finish up this section with a quick version of the
+% para here. Basically say, people often say an ARG is a
+% set of local trees cite cite, but it's not as simple as that as we
+% can see from the example (probably).
 
 % The equivalence between an ARG and a set of local trees
 % separated by SPRs is often mentioned [e.g. x y z], but
@@ -1161,29 +1166,6 @@ under the coalescent with recombination (see appendix XXX).
 [Some stuff about whether we should see this as necessary or not,
 but maybe we should keep this for the conclusion?]
 
-% The equivalence between an ARG and a set of local trees
-% separated by SPRs is often mentioned [e.g. x y z], but
-% it is important to note that while extracting local
-% trees from an ARG is straightforward, the converse
-% process of reconstructing precisely the same ARG from
-% these trees is more problematic. If the internal
-% nodes are consistently labelled and unary nodes are
-% included in the local trees (e.g., Fig~\ref{fig-simplification})
-% then it is easy to exactly reconstruct the ARG.
-% Otherwise, the problem is much more difficult and it
-% may not be possible to uniquely reconstruct the original ARG.
-% Without labels for the internal nodes, we are forced to
-% to reason about which subtrees remain the same and which
-% differ due to the SPR separating adjacent trees in order to
-% assign node identity. Without the internal unary nodes marking
-% recombinations, we must infer their existence. In
-% general, there will not be a unique solution to this problem,
-% and so there can be many possible ARGs compatible with
-% a given list of leaf-labelled binary trees.
-% This is the approach taken by the Espalier inference
-% method~\citep{rasmussen2022espalier}, which finds a
-% set of SPRs that reconcile independently inferred
-% trees from different regions of the genome.
 
 \section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
