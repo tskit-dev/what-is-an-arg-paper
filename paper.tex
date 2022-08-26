@@ -258,15 +258,10 @@ wilton2015smc,griffiths2016coalescent}.
 % as well as describing algorithms for more general phylogenetic
 % networks~\citep{huson2010phylogenetic}.
 
-% JK: This paragraph is weak, and needs some work. Basically want to
-% illustrate the mathematical literature which views ancestral
-% graphs very much as *processes*.
-% Jere: ASG section redrafted, gene transfer left as TODO (because I
-% know essentially nothing about it).
 In parallel with this tendency to decouple the term
 Ancestral Recombination Graph from the stochastic process,
 an extensive mathematical literature has developed in
-studying other related stochastic processes encoded via a graph.
+studying other related stochastic processes described as a graph.
 In particular, the Ancestral Selection Graph
 (ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
 uses a similar approach to model natural selection.
@@ -284,6 +279,10 @@ fearnhead2003ancestral,
 etheridge2009coalescent,
 gonzalezcasanova2018duality,
 koskela2019robust}.
+% Could mention the Ancestral Gene Transfer graph here too, within
+% something like "Similarly the Ancestral Gene Transfer Graph [cite]
+% and [other ancestral graphs, if they exist?] model genealogical
+% processes in bacteria as a graph.
 
 The point of this historical overview is to illustrate that the term
 Ancestral Recombination Graph has different meanings in different
@@ -310,7 +309,7 @@ history of some set of sample genomes, and edges represent ancestral
 lineages~\citep{griffiths1996ancestral}.
 In order to distinguish this form of ARG from what we will be discussing
 in later sections we refer to it as an ``event ARG``, or eARG for brevity.
-An example of this form of an eARG
+An example of an eARG
 is given in Fig.~\ref{fig-arg-data-structure}B.
 In a common ancestor event the inbound lineages are merged into a
 single ancestral lineage (e.g., node \noderef{e}
@@ -319,7 +318,7 @@ event a lineage is split into two independent
 ancestral lineages (e.g., node \noderef{d}
 in Fig.~\ref{fig-arg-data-structure}). The final vital
 detail---which distinguishes an arbitrary graph with the required topological
-properties from an ARG---is that we associate a breakpoint with each recombination
+properties from an eARG---is that we associate a breakpoint with each recombination
 event. This information is sufficient to uniquely
 define the local genealogical trees at every position along the genome,
 which is the basic requirement for a data structure encoding
@@ -425,18 +424,18 @@ is a function mapping nodes to recombination breakpoints,
 such that $\sigma(u) = x$
 if $u$ is a recombination event with breakpoint $x$ and
 $\sigma(u) = \varnothing$ otherwise.
-(This formulation is equivalent to having different ``types''
-of node, with breakpoints are associated with recombination
+(This is equivalent to having different ``types''
+of node, where breakpoints are associated with recombination
 nodes only).
 Each edge $e_j = (c, p)$ describes an edge between
 child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
-For each recombination node $u$ we must
-have exactly two edges in $e$ such that $u$ is the child.
+% For each recombination node $u$ we must
+% have exactly two edges in $e$ such that $u$ is the child.
 This encoding of an eARG is equivalent to the output
-produced by programs such as
+of programs such as
 \texttt{ARGweaver}~\citep{rasmussen2014genome}
-and \texttt{KwARG}~\citep{ignatieva2021kwarg}:
-an example is given in Fig.~\ref{fig-arg-data-structure}A.
+and \texttt{KwARG}~\citep{ignatieva2021kwarg},
+and an example is given in Fig.~\ref{fig-arg-data-structure}A.
 Note that the description above captures only the
 graph topology: if we also wish to know the branch lengths we need
 an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
@@ -444,9 +443,10 @@ which defines the time of each node.
 
 The ordering of edges is a vital element of the eARG encoding.
 This is because there is a fundamental ambiguity involved
-in associating recombination breakpoints with nodes
-rather than edges: we need to know from which parent the
-and the only way we can break this symmetry is to assign
+in associating recombination breakpoints with nodes:
+we need to know from which parent the node inherited
+the segments of genome to the left and right of the breakpoint.
+The simplest way to break this symmetry is to assign
 some meaning to the order in which the parents are listed
 (\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
 parents of a recombination event). This is usually described
@@ -519,10 +519,9 @@ Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
 comprises close to 7000 genomes, which are part of multi-generation pedigrees
 with millions of animals and extensive SNP array genotype and phenotype
 data \citep[e.g.][]{Cesarani2022}.
-Such datasets are also available for other species,
-for example, \citet{RosFreixedes2022} have combined genome
-and SNP array data to infer recombination of genomes for 440,610 pigs within
-7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}.
+In another example, genome and SNP array data for 440,610 individuals within
+7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
+were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
 Effective population size in modern pig breeds is also less than 100 due to
 intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
 
