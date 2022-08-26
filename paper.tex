@@ -561,59 +561,58 @@ one that has significant limitations of expressivity
 derived from its historical origins in the idealised
 coalescent with recombination model.
 
-\section*{Node vs edge annotations}
-Another aspect of the classical description of an ARG data structure that
-derives from its historical origins as a stochastic
-process is how we encode information about genetic
-inheritance in the graph. The approach taken by Griffiths to
-doing this is concise, elegant: all we need to do is store
-the location of the breakpoint at each recombination event.
-Storing a breakpoint for each recombinatin event is a very
-natural and straightforward thing to do when simulating
-a (``Big''; see Appendix XXX) ARG process.
-Given the graph topology and these breakpoints, we can then
-recover the
-local trees at every point in the genome
-by tracing rootwards from the leaves and choosing the
-appropiate outbound path at recombination nodes.
-However, there are several significant disadvantages
-to this approach: [TODO be concrete here later
-and give pointers to the section where we discuss the
-alternative.]
+% \section*{Node vs edge annotations}
+% Another aspect of the classical description of an ARG data structure that
+% derives from its historical origins as a stochastic
+% process is how we encode information about genetic
+% inheritance in the graph. The approach taken by Griffiths to
+% doing this is elegant: all we need to do is store
+% the location of the breakpoint at each recombination event.
+% % Storing a breakpoint for each recombinatin event is a very
+% % natural and straightforward thing to do when simulating
+% % an  ARG process.
+% Given the graph topology and these breakpoints, we can then
+% recover the
+% local trees at every point in the genome
+% by tracing rootwards from the leaves and choosing the
+% appropriate outbound path at recombination nodes.
+% However, there are several significant disadvantages
+% to this approach: [TODO be concrete here later
+% and give pointers to the section where we discuss the
+% alternative.]
 
-Fortunately, there is a straightforward change to the
-classical eARG encoding that simplifies
-implementations and greatly increases the flexibility
-of both the types and granularity of inheritance information
-that we can represent.
-The main change that we need to make is to
-associate the
-the details of inheritance with \emph{edges} rather than
-as breakpoints associated with recombination events and
-edge ordering rules.
-This is illustrated in Fig~\ref{fig-arg-data-structure}C
-where this alternative edge annotation formulation is
-shown. By associating the interval $(0, x)$ with edge $(d,e)$
-and the interval $(x, L)$ with $(d, f)$ we make the encoding
-unambiguous: we can list the edges in any order, and it
-will describe the same set of local genealogical trees.
-This approach is also more flexible, because any pattern
-of inheritance can be described by these intervals. For
-example, if a gene conversion event occurred where a segment
-between positions $x$ and $y$ was inherited by
-node $d$ from $e$, we would state this by associating
-the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
-$\{(x, y]\}$ with $(d,f)$.
-This change is straightforward, involves no loss of information
-and (as we see in later sections)
-greatly increases both the expressivity and computational
-power of ancestral recombination graph data structures.
+% Fortunately, there is a straightforward change to the
+% classical eARG encoding that simplifies
+% implementations and greatly increases the flexibility
+% of both the types and granularity of inheritance information
+% that we can represent.
+% The main change that we need to make is to associate
+% the details of inheritance with \emph{edges} rather than
+% as breakpoints associated with recombination events and
+% edge ordering rules.
+% This is illustrated in Fig~\ref{fig-arg-data-structure}C
+% where this alternative edge annotation formulation is
+% shown. By associating the interval $(0, x)$ with edge $(d,e)$
+% and the interval $(x, L)$ with $(d, f)$ we make the encoding
+% unambiguous: we can list the edges in any order, and it
+% will describe the same set of local genealogical trees.
+% This approach is also more flexible, because any pattern
+% of inheritance can be described by these intervals. For
+% example, if a gene conversion event occurred where a segment
+% between positions $x$ and $y$ was inherited by
+% node $d$ from $e$, we would state this by associating
+% the intervals $\{(0, x], (y, L]\}$ with $(d,e)$ and
+% $\{(x, y]\}$ with $(d,f)$.
+% This change is straightforward, involves no loss of information
+% and (as we see in later sections)
+% greatly increases both the expressivity and computational
+% power of ancestral recombination graph data structures.
 
 \section*{Genome ARGs}
-As we have seen in previous sections, the focus
+As we have seen in the previous section, the focus
 on a limited palette of events makes describing currently-available
 datasets and known patterns of genetic inheritance as an eARG
-quite cumbersome.
+cumbersome at best.
 There is no fundamental reason that the patterns of genetic inheritance
 that we wish to describe via an ARG must be in terms
 of discrete \emph{events}, however. Recent discussions have illustrated the
@@ -628,7 +627,7 @@ rather defining the inheritance
 of genetic material in terms of \emph{events} as we do in an eARG,
 we can instead define an ARG data structure in terms of
 \emph{genomes} and intervals of genetic inheritance
-along the edges (see the previous section).
+along the edges.
 To distinguish from the classical Griffiths eARG,
 we refer to this encoding of an ARG data structure
 as a ``Genome ARG'', or gARG.
@@ -673,7 +672,7 @@ local relationships along the genome, as shown in the local
 A gARG is a graph in which nodes represent monoploid genomes (i.e.,
 haploids have one genome, diploids two, etc.) and edges represent
 genetic inheritance between an ancestor and a descendant.
-Each edge is annotated (see the previous section) with the coordinates
+Each edge is annotated with the coordinates
 of the genomic intervals over which genetic inheritance occurs
 (the next section explores the subtleties of what we mean by
 genetic inheritance).
@@ -732,13 +731,11 @@ coalescence or a recombination. Such nodes would usually be removed
 from the graph so that \textsf{d} descends directly from \textsf{k} (see
 the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
 a representational perspective.
-
 Secondly, because we do not classify nodes by event type
 (common ancestor or recombination) there is no limitation
 on the complexity what can be modelled---multiple recombinations
 and coalescences can happen simultaneously in the same genome.
 In large deeply sequenced pedigrees such complexities are commonplace.
-
 Finally, there is a subtle and important point about how recombination
 is represented: which genome in the organismal lifecycle
 do nodes represent?
@@ -765,7 +762,7 @@ For simplicity, throughout the rest of the paper we will contrast the
 classical eARG (as defined in the XXX section) with the gARG definition
 here. However, it is important to note that many of the benefits of the
 gARG encoding that we discuss are due to the encoding of inheritance via
-edges rather than nodes (see section XXX).
+edges rather than nodes.
 Whether one regards nodes as genomes or events is orthogonal,
 and something of a philosophical question which makes little
 difference from a computational perspective.
@@ -773,12 +770,12 @@ difference from a computational perspective.
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
 parent to child (and ultimately from cell to cell) through some
-number of generations. The edges are ``annotated'' (see section XXX)
-with the coordinates over which inheritance occurs. There are
+number of generations. The edges are ``annotated''
+with the genome coordinates over which inheritance occurs. There are
 two ways in which we can interpret these annotations, and the
 distinction is subtle and important.
-The first interpretation is to define the annotations as
-the genetic intervals inherited by the descendant node from the
+The first interpretation is to regard the annotations as describing
+the complete set of genomic intervals inherited by the descendant node from the
 ancestor node. The second is to view the edge annotations as representing
 the ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
 of the sample that is propagated through
@@ -826,9 +823,9 @@ how a classical eARG can be described as a gARG with local edge annotations
 then derive the ancestry resolved edge annotations.
 It is important to note, however, that the example is a sample from
 the so-called ``big'' ARG \emph{process} (see Appendix XXX)
-and has several features that we are unlikely to infer in practice.
+and has several features that we are unlikely to simulate or infer in practice.
 For example, by definition the samples contain no genetic information about
-node \textsf{j} and so it is unlike to be inferred.
+node \textsf{j} and so it is unlikey to be inferred.
 Likewise, is is unlikely we would have information to infer the ``grand MRCA''
 \textsf{w} as all regions of the genome have already reached a
 common ancestor separately
@@ -879,8 +876,132 @@ the full genetic ancestry of the population in this way is orders of magnitude f
 than the alternative of tracking
 sequences~\citep{kelleher2018efficient,haller2018tree}.
 
+\begin{figure}
+\centering
+\vspace{5em}
+\includegraphics[width=\linewidth]{illustrations/simplification}
+\caption{\label{fig-simplification}
+ARG simplification. In all cases the graph visualization is shown on the left
+and the equivalent marginal trees on the right.
+(A) A gARG simulated from a diploid Wright-Fisher
+model. Note that the genome \textsf{k} has three children, and the genomes
+\textsf{e} and \textsf{g} simultaneously have multiple parents and multiple
+children.
+The penultimate local tree is highlighted to aid discussion.
+(B) Simplified to remove all
+% trying out this terminology - can define in the text
+1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
+(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
+that have only one child (e.g. \textsf{n}) and nodes that have more
+than one child (i.e. are ``common ancestors'') but never represent coalescences
+in the local trees (e.g. \textsf{r}).
+(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
+information such as the fact that \textsf{k} is connected to \textsf{a} via \textsf{e}.
+}
+\end{figure}
+
+\section*{Simplification}\label{ARG_simplification}
+ARG simplification~\citep{kelleher2018efficient} is the process
+of removing nodes and re-writing edges in a gARG to remove
+various types of redundancy, while maintaining the crucial properties
+that the ``meaningful'' topology in the local trees is not affected,
+and the relationship between nodes in adjacent trees is maintained.
+The idea of meaningful local tree topologies is based on the
+presence of ``unary'' nodes: a node in the tree that has exactly
+one child. Fig.~\ref{fig-simplification} show a series of successive steps of
+simplification, starting with a complete gARG simulated under a
+(backwards-time) Wright-Fisher
+model, shown both as a graph on the left, and the equivalent set of 6
+local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
+\textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
+60 to 70. On this path, before \textsf{a} meets its common ancestor with the other samples at
+node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
+\textsf{p}, which in this region of the genome are all unary nodes. This reflects the
+passage of this span of genome through the ARG towards the root.
+Such unary nodes in a local tree are not usually considered important;
+% because they provide little information and are not
+% detectable by information from any given individual tree.
+nodes usually mark the points where samples find a
+ \emph{common} ancestor, such as node \textsf{q} in the highlighted
+tree. For many purposes, we would therefore consider a path directly
+joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
+containing the intermediate unary nodes. Simplification is the process of removing
+these less informative nodes from the local trees by modifying the gARG.
+
+The first type of simplification that we can perform is to remove
+graph topology that is invisible to the samples. The best
+known example of such topology is a so-called
+``diamond''~\citep{rasmussen2014genome}
+in which the two parent nodes of a recombination immediately
+join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
+and  \textsf{n} in Fig.~\ref{fig-simplification}A).
+Unless we are specifically
+interested in the recombination event or ancestral genomes,
+there is no information in this topology and the diamond can be
+replaced by a single edge. More generally, any
+subgraph that is singly-connected in both the leafward and
+rootward direction (a ``super-diamond'') is non-identifiable and can be
+replaced by one edge. This definition includes the case
+of a node that has one inbound and one outbound edge, such as
+nodes \textsf{f} and \textsf{h}.
+Fig.~\ref{fig-simplification}B shows the result of this type of
+graph topology simplification.
+
+Simplifying away diamonds will remove many unary nodes from the
+local trees, but there can still be nodes that are unary in all
+of the local trees. In particular, a node can represent a recombinant
+with multiple parents in the graph but only a single child (e.g.\ node \textsf{n}
+in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
+multiple children in the graph but in which no local coalescence takes place
+(node \textsf{r} in Fig.~\ref{fig-simplification}B).
+% point out that this is why Hudson refers to CA nodes, not coalescence nodes
+Such nodes are not singly connected in the graph, but are nevertheless unary in
+all of the local trees.
+The operation to remove them
+therefore requires knowledge not just of the graph topology but also of the
+edge annotations.
+As we see in Fig.~\ref{fig-simplification}C,
+removal of recombinant nodes can produce graph nodes with
+more than two parents (e.g.~node \textsf{e}); and likewise, removal of
+common ancestor but non-coalescent nodes can produce graph nodes with
+more than two children (e.g.~node \textsf{s}). These represent a ``stacking up'' of
+multiple---often indistinguishable---events into a single node,
+something which is impossible to encode in an eARG.
+
+% JK: Text moved from an earlier section. See if we want to reuse this here
+% if not already said.
+% Indeed a single node can have both multiple children
+% and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
+% for instance, node \textsf{a} were to have two children.
+% % It is a shame that this is not actually shown in fig 3, but I don't think
+% % we can do this unless we have 5 generations
+% Moreover, a single node can have more than 2 children, and (as we shall see in
+% the ``\nameref{ARG_simplification}'' section), more than 2 parents. Another way to
+% state this is that transitions between nodes in a gARG can encapsulate multiple
+% events in an eARG.
+
+The remaining nodes are MRCAs of some subset of the samples
+at \emph{some} positions along the genome. We still have
+some unary nodes in the local trees, but these nodes will
+correspond to a coalescence in at least one other
+local tree. For example, node  \textsf{k} is unary in the second tree
+of Fig.~\ref{fig-simplification}C, but is either binary
+or ternary in all subsequent trees (recall this is a Wright-Fisher
+simulation). The final level of simplification is to alter the edge annotations
+such that, although no nodes are removed from the graph, \emph{all}
+unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
+Note that although this last stage produces simpler local trees, by
+removing information about the exact paths taken by lineages through
+the graph, it removes potentially useful information about shared edges
+between trees. The extent to which this information can be inferred
+and utilised is an interesting open question.
 
 \section*{Precision of ancestry information}
+% Not all nodes in an ARG are equal. Assuming that we have sequenced the
+% genomes of the samples, there are intrinsic limits on what can
+% be known about more ancient nodes, determined by the graph topology
+% and the flow of ancestral material through it.
+
 Ancestral recombination graphs are often characterised
 as consisting of a complete record of the genetic history
 of a sample. For example,
@@ -982,7 +1103,7 @@ unrelated local trees
 % More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
 % for discussion. I'm sure there were other examples of people saying
 % that
-(as claimed by e.g.~\citep{hejase2020summary}),
+(as claimed by e.g.~\citet{hejase2020summary}),
 and information about recombination and the correlation structure
 between trees is not ``all or nothing''.
 Both methods capture correlation structure between trees:
@@ -997,142 +1118,6 @@ explicit recombination events we cannot compute a likelihood
 under the coalescent with recombination (see appendix XXX).
 [Some stuff about whether we should see this as necessary or not,
 but maybe we should keep this for the conclusion?]
-
-\section*{ARG simplification}\label{ARG_simplification}
-
-Not all nodes in an ARG are equal. Assuming that we have sequenced the
-genomes of the samples, there are intrinsic limits on what can
-be known about more ancient nodes, determined by the graph topology
-and the flow of ancestral material through it.
-\emph{Simplification}~\citep{kelleher2018efficient} is the process
-of removing nodes and re-writing edges in a gARG to remove
-various types of redundancy, while maintaining the crucial properties
-that the ``meaningful'' topology in the local trees is not affected,
-and the relationship between nodes in adjacent trees is maintained.
-
-\begin{figure}
-\centering
-\vspace{5em}
-\includegraphics[width=\linewidth]{illustrations/simplification}
-\caption{\label{fig-simplification}
-ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent marginal trees on the right.
-(A) A gARG simulated from a diploid Wright-Fisher
-model. Note that the genome \textsf{k} has three children, and the genomes
-\textsf{e} and \textsf{g} simultaneously have multiple parents and multiple children;
-neither could be directly represented in a Griffiths-like eARG encoding
-(see the ``\nameref{eARG}'' section). The penultimate local tree is highlighted to aid discussion.
-(B) Simplified to remove all
-% trying out this terminology - can define in the text
-1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
-(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
-that have only one child (e.g. \textsf{n}) and nodes that have more
-than one child (i.e. are ``common ancestors'') but never represent coalescences
-in the local trees (e.g. \textsf{r}).
-(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
-information such as the fact that \textsf{k} is connected to \textsf{a} via \textsf{e}.
-}
-\end{figure}
-
-% Q: would it help to talk about ``tree vertices'' here or would it
-% just be more confusing? I worry that people would think that
-% they are two different things then, and it's really important
-% that they get that a node-is-a-node
-
-
-The ideas of ``meaningful'' local tree topologies revolve around the
-presence of ``unary'' nodes: a node in the tree that has exactly
-one child. Fig.~\ref{fig-simplification} show a series of successive steps of
-simplification, starting with a complete gARG simulated under a
-(backwards-time) Wright-Fisher
-model, shown both as a graph on the left, and the equivalent set of 6
-local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
-\textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
-60 to 70. On this path, before \textsf{a} meets its common ancestor with the other samples at
-node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
-\textsf{p}, which in this region of the genome are all unary nodes. This reflects the
-passage of this span of genome through the ARG towards the root (see the
-``\nameref{Ancestry_resolution}'' section).
-Such unary nodes in a local tree are not usually considered important;
-% because they provide little information and are not
-% detectable by information from any given individual tree.
-nodes usually mark the points where samples find a
- \emph{common} ancestor, such as node \textsf{q} in the highlighted
-tree. For many purposes, we would therefore consider a path directly
-joining sample \textsf{a} to node \textsf{q} to be of equivalent status to the path
-containing the intermediate unary nodes. Simplification is the process of removing
-these less informative and (for most computational purposes) inefficient nodes
-from the local trees and the corresponding annotated graph.
-
-The first type of simplification that we can perform is to remove
-graph topology that is invisible to the samples. The best
-known example of such topology is a so-called
-``diamond''~\citep{rasmussen2014genome}
-in which the two parent nodes of a recombination immediately
-join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
-and  \textsf{n} in Fig.~\ref{fig-simplification}A).
-Unless we are specifically
-interested in the recombination event or ancestral genomes,
-there is no information in this topology and the diamond can be
-replaced by a single edge. More generally, any
-subgraph which is singly-connected in both the leafward and
-rootward direction (a ``super-diamond'') is non-identifiable and can be
-replaced by one edge. This definition includes the case
-of a node that has one inbound and one outbound edge, such as
-nodes \textsf{f} and \textsf{h}.
-Fig.~\ref{fig-simplification}B shows the result of this type of
-graph topology simplification.
-
-Simplifying away diamonds will remove many unary nodes from the
-local trees, but there can still be nodes that are unary in all
-of the local trees. In particular, a node can represent a recombinant
-with multiple parents in the graph but only a single child (e.g.\ node \textsf{n}
-in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
-multiple children in the graph but in which no local coalescence takes place
-(node \textsf{r} in Fig.~\ref{fig-simplification}B).
-% point out that this is why Hudson refers to CA nodes, not coalescence nodes
-Such nodes are not singly connected in the graph, but are nevertheless unary in
-all of the local trees. The operation to remove them,
-the results of which are shown in Fig.~\ref{fig-simplification}C,
-therefore requires knowledge not just of the graph topology, but also of the
-edge annotations. Removal of recombinant nodes can produce graph nodes with
-more than 2 parents (e.g.~node \textsf{e}); likewise, removal of
-common ancestor but non-coalescent nodes can produce graph nodes with
-more than 2 children (e.g.~node \textsf{s}). These represent a ``stacking up'' of
-multiple---often indistinguishable---events into a single node,
-something which is impossible to encode in an eARG.
-
-% JK: Text moved from an earlier section. See if we want to reuse this here
-% if not already said.
-% Indeed a single node can have both multiple children
-% and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
-% for instance, node \textsf{a} were to have two children.
-% % It is a shame that this is not actually shown in fig 3, but I don't think
-% % we can do this unless we have 5 generations
-% Moreover, a single node can have more than 2 children, and (as we shall see in
-% the ``\nameref{ARG_simplification}'' section), more than 2 parents. Another way to
-% state this is that transitions between nodes in a gARG can encapsulate multiple
-% events in an eARG.
-
-
-The remaining nodes are MRCAs of some subset of the samples
-at \emph{some} positions along the genome. We still have
-some unary nodes in the local trees, but these nodes will
-correspond to a coalescence in at least one other
-local tree. For example, node  \textsf{k} is unary in the second tree
-of Fig.~\ref{fig-simplification}C, but is either binary
-or ternary in all subsequent trees (recall this is a Wright-Fisher
-simulation). The final level of simplification is to alter the edge annotations
-such that, although no nodes are removed from the graph, \emph{all}
-unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
-It is common for this operation to remove nodes above the top MRCA node
-in the tree, resulting in many more root nodes (here, \textsf{q} and \textsf{k}
-become roots). [And continue]
-% Note that although this last stage produces much simpler local trees, by
-% removing information about the exact paths taken by lineages through
-% the graph, it loses potentially important information about shared edges
-% between trees. It is not clear whether (c) or (d) leads to a more compact
-% representation of the ARG in terms of number of edges.
 
 \section*{Relationship between ARGs and trees}
 
