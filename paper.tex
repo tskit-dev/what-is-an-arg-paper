@@ -976,7 +976,7 @@ multiple children in the graph but in which no local coalescence takes place
 (node \textsf{r} in Fig.~\ref{fig-simplification}B).
 % point out that this is why Hudson refers to CA nodes, not coalescence nodes
 Such nodes are not singly connected in the graph, but are nevertheless unary in
-all of the local trees in Fig.~\ref{fig-simplification}B. The operation to remove them,
+all of the local trees. The operation to remove them,
 the results of which are shown in Fig.~\ref{fig-simplification}C,
 therefore requires knowledge not just of the graph topology, but also of the
 edge annotations. Removal of recombinant nodes can produce graph nodes with
@@ -1023,9 +1023,9 @@ become roots). [And continue]
 We have seen that the local tree for a given position on
 the genome can be extracted from an ARG by starting at the
 leaves and following the appropriate paths through the graph.
-However, this tells us little about the relationship \emph{between}
-adjacent trees, and what properties the overall emsemble of
-local trees might have.
+However, this tells us little about the relationship between
+adjacent trees, and what the properties of overall ensemble of
+local trees are.
 A recombination between two adjacent trees causes them to
 differ by a ``subtree prune-and-regraft'' (SPR)
 % Hein et al call it the ``subtree transfer'' operation but it's
@@ -1041,7 +1041,7 @@ compute~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 
 The effects of recombination as we move from left-to-right along
 the genome in an unsimplified gARG are easy to interpret.
-Consider the highlighed tree in Fig~\ref{fig-simplification}A.
+Consider the highlighted tree in Fig~\ref{fig-simplification}A.
 In it the parent of \textsf{e} is \textsf{j}, whereas in the next tree
 its parent is \textsf{k}. Since both parents are present as
 unary nodes in the tree, we simply change one edge in
@@ -1076,12 +1076,12 @@ a given list of leaf-labelled binary trees.
 This is the approach taken by the Espalier inference
 method~\citep{rasmussen2022espalier}, which finds a
 set of SPRs that reconcile independently inferred
-trees from different regions of the genome
-using.
+trees from different regions of the genome.
+
 
 \section*{Precision of ancestry information}
 Ancestral recombination graphs are often characterised
-as consisting of a complete record of the genealogical history
+as consisting of a complete record of the genetic history
 of a sample. For example,
 \cite{rasmussen2014genome} state that an ``ARG provides a record of all
 coalescence and recombination events since the divergence of the sequences
@@ -1089,10 +1089,12 @@ under study'' and
 according to \cite{deng2021distribution} an ARG
 ``provides all the information about the genealogical history of a sample,
 including the locations of recombination events.'' It is worth
-questioning, however, whether such comprehensive information is
-realistically available, and in particular whether our
+questioning, however, whether such comprehensive information
+will always be available, and in particular whether our
 representation of genealogical history should \emph{require}
-such precision.
+such precision. Simulations will usually generate complete
+information about the history of a sample, of course, but
+we may not have sufficient information to infer such detail.
 
 % Not sure where this goes, but there are some critical points
 % that we want to explain and not just throw out there in the
@@ -1103,39 +1105,39 @@ recombination events that is required. In an eARG, we are
 required to be absolutely precise about every recombination
 [explain and contrast with gARG, referring to examples]
 
-% JK: This is very rough, just jotting down the basic ideas,
-% will need substantial revision.
-It is not clear that such complete information will always
-(or indeed ever) be available from inferences. We may be
-able to precisely identify the location and timing
-of recent recombinations (particularly if detailed pedigree
-information is available) but beyond this, the information
-required simply isn't present. When sampling from a
-process such as the Sequentially Markov
-Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
-like ARGweaver~\citep{rasmussen2014genome}, it is true that
-we do obtain a fully resolved ARG with precise
-information about recombination, but it is reasonable
-to question how much information from the data is used
-to support older recombinations, in particular.
+% % JK: This is very rough, just jotting down the basic ideas,
+% % will need substantial revision.
+% It is not clear that such complete information will always
+% (or indeed ever) be available from inferences. We may be
+% able to precisely identify the location and timing
+% of recent recombinations (particularly if detailed pedigree
+% information is available) but beyond this, the information
+% required simply isn't present. When sampling from a
+% process such as the Sequentially Markov
+% Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
+% like ARGweaver~\citep{rasmussen2014genome}, it is true that
+% we do obtain a fully resolved ARG with precise
+% information about recombination, but it is reasonable
+% to question how much information from the data is used
+% to support older recombinations, in particular.
 
-It is helpful to consider the difference between fully
-resolved binary trees and those that contain polytomies.
+% It is helpful to consider the difference between fully
+% resolved binary trees and those that contain polytomies.
 
-The situation is in fact directly analogous: an ARG that
-contains fully resolved recombination information must have
-at most parents per node.
+% The situation is in fact directly analogous: an ARG that
+% contains fully resolved recombination information must have
+% at most parents per node.
 
 
-At the very least, it is not reasonable for the \emph{data
-structure} to require complete precision in order to
-represent some less precise. This is a fundamental
-advantage of the gARG encoding over the classical eARG
-method: we are not forced to posit a precise cause (recombination
-event) for every effect (difference between adjacent trees).
-These differences in precision of recombination
-information are illustrated in the ARGs estimated by different
-methods, as we see in the next section.
+% At the very least, it is not reasonable for the \emph{data
+% structure} to require complete precision in order to
+% represent some less precise. This is a fundamental
+% advantage of the gARG encoding over the classical eARG
+% method: we are not forced to posit a precise cause (recombination
+% event) for every effect (difference between adjacent trees).
+% These differences in precision of recombination
+% information are illustrated in the ARGs estimated by different
+% methods, as we see in the next section.
 
 
 \begin{figure} \begin{center}
