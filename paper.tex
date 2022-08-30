@@ -495,69 +495,17 @@ of a recombination event
 to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
 % TODO update this when later sections have been drafted.
-As we see in sections XXX and YYY there are substantial limitations
-of expressivity and computational performance when using this eARG
-encoding. More fundamentally, however, the general approach
-of classifying nodes according to a discrete set of events
-and associating genome information with those nodes is intrinsically
-limiting. As we saw in the previous section, the original ARG
-definitions were derived directly from the coalescent with recombination
-stochastic process, and the types of ancestry that can be
-described are therefore limited by the assumptions of that
-model. While the coalescent as a model can be suprisingly robust to
-basic violations of the underlying assumptions~\citep{
-wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
-it is not acceptable that our ability to \emph{represent}
-ancestral relationships should be limited by these assumptions.
+% As we see in sections XXX and YYY there are substantial limitations
+% of expressivity and computational performance when using this eARG
+% encoding. More fundamentally, however, the general approach
+% of classifying nodes according to a discrete set of events
+% and associating genome information with those nodes is intrinsically
+% limiting. As we saw in the previous section, the original ARG
+% definitions were derived directly from the coalescent with recombination
+% stochastic process, and the types of ancestry that can be
+% described are therefore limited by the assumptions of that
+% model.
 
-% n << Ne is a silly assumption in today's datasets
-A core assumption of the coalescent is that the sample size $n$
-is much less than the effective population size, $N_e$. This
-assumption ensures that multiple events (i.e., simultaneous
-coalescence and recombination) don't occur at the same
-time, which is reflected in the eARG definitions.
-This once-reasonable assumption has been overtaken by
-the data we have available.
-% This can be tightened up a bit, I think. We may need to drop a
-% few references.
-Several human datasets now consist of hundreds of thousands of
-genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-and so sample size is substantially \emph{larger} than $N_e$
-(often assumed to be $10^4$ in humans).
-Agricultural datasets are even more extreme.
-For example,
-the US dairy cattle database alone currently comprises more than 6 million
-animals with SNP array
-genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-while the effective population size in modern dairy cattle breeds is
-less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-An extreme sign of these breeding practices is that there are only two ancestral
-Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
-Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
-comprises close to 7000 genomes, which are part of multi-generation pedigrees
-with millions of animals and extensive SNP array genotype and phenotype
-data \citep[e.g.][]{Cesarani2022}.
-In another example, genome and SNP array data for 440,610 individuals within
-7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
-were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
-Effective population size in modern pig breeds is also less than 100 due to
-intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-
-Another assumption of the coalescent with recombination which prevents complex
-combinations of events occurring simultaneously, is that the genome (or
-at least the region under study) is short enough that the number of extant
-lineages remains much smaller than $N_e$ at all times. Whole
-genome sequences have been available for model organisms
-for over a decade now, % True? Citation?
-and indeed complete chromosome-level assemblies are possible
-in humans~\citep{miga2020telomere}.
-Projects are under way to obtain high-quality assemblies
-for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-and ultimately worldwide~\citep{lewin2022earth}.
-Clearly multiple recombinations (and other complex events) will
-occur in the ancestry of such datasets, and we should not be
-limited in what we can infer by the data structure that we
-use to represent the results.
 
 The eARG encoding consists of two types of event
 (common ancestor and recombination) but nature is not so parsimonious
@@ -1187,6 +1135,90 @@ under the coalescent with recombination (see appendix XXX).
 [Some stuff about whether we should see this as necessary or not,
 but maybe we should keep this for the conclusion?]
 
+\section*{When do we need ``full'' ARGs?}
+% The full ancestral recombination graph (ARG) is a structure that encodes all
+% coalescence and recombination events resulting from the stochastic process of
+% the coalescent with recombination.
+\citet{brandt2021evaluation} define a ``full'' ARG as
+``a structure that encodes all
+coalescence and recombination events resulting from the stochastic process of
+the coalescent with recombination'' (thus going against the general
+historial trend discussed in the XXX section).
+\citet{rasmussen2022espalier} have a less restrictive definition, in
+which a ``full'' ARG is one that contains complete information about
+recombination events, without necessarily being tied to a particular
+stochastic process.
+While [something positive], it is important to be clear on
+what the overall goal of such precise inferences are, and
+on the realistic limitations are on when they can be made.
+
+The main reasons for wanting precise estimates of all recombination
+events are to either compute a likelihood of the inferred ARG
+under a statistic model, or to study the recombinants in
+detail~\citet{rasmussen2022espalier}.
+% Explain that we're really interested in the details of recombination
+% itself with a small number of samples.
+In the latter case, we might
+have a small number of samples~\citep{guo2022recombination}.
+
+% If we want to use the coalescent, then really the assumptions
+% need to make sense.
+While the coalescent as a model can be suprisingly robust to
+basic violations of the underlying assumptions~\citep{
+wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
+% n << Ne is a silly assumption in today's datasets
+A core assumption of the coalescent is that the sample size $n$
+is much less than the effective population size, $N_e$. This
+assumption ensures that multiple events (i.e., simultaneous
+coalescence and recombination) don't occur at the same
+time, which is reflected in the eARG definitions.
+This once-reasonable assumption has been overtaken by
+the data we have available.
+% This can be tightened up a bit, I think. We may need to drop a
+% few references.
+Several human datasets now consist of hundreds of thousands of
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+and so sample size is substantially \emph{larger} than $N_e$
+(often assumed to be $10^4$ in humans).
+Agricultural datasets are even more extreme.
+For example,
+the US dairy cattle database alone currently comprises more than 6 million
+animals with SNP array
+genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
+while the effective population size in modern dairy cattle breeds is
+less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
+An extreme sign of these breeding practices is that there are only two ancestral
+Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
+Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
+comprises close to 7000 genomes, which are part of multi-generation pedigrees
+with millions of animals and extensive SNP array genotype and phenotype
+data \citep[e.g.][]{Cesarani2022}.
+In another example, genome and SNP array data for 440,610 individuals within
+7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
+were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
+Effective population size in modern pig breeds is also less than 100 due to
+intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
+
+Another assumption of the coalescent with recombination which prevents complex
+combinations of events occurring simultaneously, is that the genome (or
+at least the region under study) is short enough that the number of extant
+lineages remains much smaller than $N_e$ at all times. Whole
+genome sequences have been available for model organisms
+for over a decade now, % True? Citation?
+and indeed complete chromosome-level assemblies are possible
+in humans~\citep{miga2020telomere}.
+Projects are under way to obtain high-quality assemblies
+for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
+and ultimately worldwide~\citep{lewin2022earth}.
+% Clearly multiple recombinations (and other complex events) will
+% occur in the ancestry of such datasets, and we should not be
+% limited in what we can infer by the data structure that we
+% use to represent the results.
+
+Such datasets cannot be reasonably be described by
+the coalescent as a statical model, and so more non-parametric
+methods like \tsinfer\ and \relate\ would seem more appropriate.
+[More]
 
 \section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
@@ -1214,6 +1246,16 @@ Discussion points (may or may not be used, certainly would be heavily revised)
     us to represent even the bewilderingly complex patterns of relatedness
     present in modern datasets.
 
+\item In general, discussions tend to contrast an ARG
+on one hand as holding \emph{complete} information about recombination
+(and therefore between-tree correlation structure)
+and a sequence of local trees on the other (with, by implication,
+no direct information about between-tree correlations).
+A key goal of this article is to show that this is a false dichotomy:
+a \emph{continuum} of information about recombination and between-tree
+correlation structure can be represented and inferred, and all
+such levels of information are useful, even if only for computational
+efficiency.
 
 \item It is unfortunate that we are adding yet another meaning to the
 term ARG here, but all we're really doing is making the implicit
@@ -1255,7 +1297,8 @@ recombination nodes discussed by Gusfield [Ana?]
 
 \item Comparison metrics are a problem. All evaluations has essentially
 looked at either some form of pairwise comparison of trees along the genome
-using tree metrics, or looked at the distributions of TMRCAs. No
+using tree metrics as proposed by \citet{kuhner2015assessing},
+or looked at the distributions of TMRCAs. No
 one has succeeded in performing any comparisons of ARGs beyond
 regarding them as a sequence of independent trees. If we genuinely believe
 that ARGs are more than this, then we need to devise some metrics that
@@ -1703,6 +1746,7 @@ method of \citet{rasmussen2022espalier}, can be used on megabase scale data and
 hundreds of thousands of samples under human-like parameters.
 
 TODO mention \citep{schaefer2021ancestral} somewhere.
+Also \citep{kuhner2017consensus}.
 
 % AI: just to note, these papers do not all agree in their definition of an
 % ARG. I guess this is one of the points of the present paper, but should we
