@@ -921,27 +921,30 @@ information such as the fact that \textsf{k} is connected to \textsf{a} via \tex
 \section*{Simplification}\label{ARG_simplification}
 ARG simplification~\citep{kelleher2018efficient} is the process
 of removing nodes and re-writing edges in a gARG to remove
-various types of redundancy, while maintaining the crucial properties
-that the ``meaningful'' topology in the local trees is not affected,
-and the relationship between nodes in adjacent trees is maintained.
+various types of redundancy,
+retaining the ``meaningful'' topology within local trees
+and maintaining the identity of nodes across different trees.
 The idea of meaningful local tree topologies is based on the
 presence of ``unary'' nodes: a node in the tree that has exactly
 one child. Fig.~\ref{fig-simplification} show a series of successive steps of
 simplification, starting with a complete gARG simulated under a
 (backwards-time) Wright-Fisher
 model, shown both as a graph on the left, and the equivalent set of 6
-local trees on the right (Fig.~\ref{fig-simplification}A). Consider the path above node
-\textsf{a} in the penultimate tree, highlighted in yellow and covering genomic positions
-60 to 70. On this path, before \textsf{a} meets its common ancestor with the other samples at
+local trees on the right.
+For example, consider the path above node
+\textsf{a} in the highlighted tree (covering positions 60 to 70)
+in Fig.~\ref{fig-simplification}A.
+Before \textsf{a} meets its common ancestor with the other samples at
 node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
-\textsf{p}, which in this region of the genome are all unary nodes. This reflects the
+\textsf{p}, which in this region of the genome are all unary nodes.
+This reflects the
 passage of this span of genome through the ARG towards the root.
 Such unary nodes in a local tree are not usually considered important;
 % because they provide little information and are not
 % detectable by information from any given individual tree.
 nodes usually mark the points where samples find a
  \emph{common} ancestor, such as node \textsf{q} in the highlighted
-tree. For many purposes, we would therefore consider a path directly
+tree. For most purposes, we would therefore consider a path directly
 joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
 containing the intermediate unary nodes. Simplification is the process of removing
 these less informative nodes from the local trees by modifying the gARG.
@@ -983,8 +986,8 @@ removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \textsf{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
 more than two children (e.g.~node \textsf{s}). These represent a ``stacking up'' of
-multiple---often indistinguishable---events into a single node,
-something which is impossible to encode in an eARG.
+multiple---often indistinguishable---events into a single node.
+% something which is impossible to encode in an eARG.
 
 % JK: Text moved from an earlier section. See if we want to reuse this here
 % if not already said.
@@ -1006,11 +1009,11 @@ local tree. For example, node  \textsf{k} is unary in the second tree
 of Fig.~\ref{fig-simplification}C, but is either binary
 or ternary in all subsequent trees (recall this is a Wright-Fisher
 simulation). The final level of simplification is to alter the edge annotations
-such that, although no nodes are removed from the graph, \emph{all}
+such that, although no nodes are removed from the graph, all
 unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
 Note that although this last stage produces simpler local trees, by
 removing information about the exact paths taken by lineages through
-the graph, it removes potentially useful information about shared edges
+the graph, we lose potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
 and utilised is an interesting open question.
 
