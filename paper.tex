@@ -1156,10 +1156,13 @@ what the overall goal of such precise inferences are,
 what the limitations on when they can be made are,
 and their downstream utility in applications.
 
+% What is the goal of having fully precise ARGs?
+% 1) studying the actual recombination events;
+% 2) evaluating the likelihoods
 The main reasons for wanting precise estimates of all recombination
 events are to either compute a likelihood of the inferred ARG
 under a statistical model, or to study the recombinants in
-detail~\citet{rasmussen2022espalier}.
+detail~\citep{rasmussen2022espalier}.
 % Explain that we're really interested in the details of recombination
 % itself with a small number of samples.
 In the latter case, we might
@@ -1181,14 +1184,6 @@ of the model.
 % n << Ne is a silly assumption in today's datasets
 A core assumption of the coalescent is that the sample size $n$
 is much less than the effective population size, $N_e$.
-% This
-% assumption ensures that multiple events (i.e., simultaneous
-% coalescence and recombination) don't occur at the same
-% time, which is reflected in the eARG definitions.
-This once-reasonable assumption has been overtaken by
-the data we have available.
-% This can be tightened up a bit, I think. We may need to drop a
-% few references.
 Several human datasets now consist of hundreds of thousands of
 genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
 and so sample size is substantially \emph{larger} than $N_e$
@@ -1221,23 +1216,22 @@ in humans~\citep{miga2020telomere}.
 Projects are under way to obtain high-quality assemblies
 for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
 and ultimately worldwide~\citep{lewin2022earth}.
-% Clearly multiple recombinations (and other complex events) will
-% occur in the ancestry of such datasets, and we should not be
-% limited in what we can infer by the data structure that we
-% use to represent the results.
 
 While the coalescent as a model can be suprisingly robust to
 basic violations of the underlying assumptions~\citep{
-wakeley2012gene,bhaskar2014distortion,nelson2020accounting}, [something
-something]
-
+wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
+it is reasonable to question the validity of the model in
+representing datasets such as UK Biobank.
+[Also mention somehow that $n\ll N_e$ is only one problem -
+we're also ignoring the myriad other evolutionary forces.]
 Such datasets cannot be reasonably be described by
 the coalescent as a statical model, and so more non-parametric
 methods like \tsinfer\ and \relate\ would seem more appropriate.
 [More]
 
 % Is it practical to estimate full ARGs?
-[Not particularly \citep{shipilina2022origin}]
+% [Not particularly \citep{shipilina2022origin} - but maybe ARGneedle
+% has done this for UKB? Need to check]
 
 % Do downstream applications actually make use of such full ARGs?
 Downstream applications using estimated ARGs to date rarely
