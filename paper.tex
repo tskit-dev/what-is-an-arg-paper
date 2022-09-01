@@ -1152,8 +1152,9 @@ which a ``full'' ARG is one that contains complete information about
 recombination events, without necessarily being tied to a particular
 stochastic process.
 While [something positive], it is important to be clear on
-what the overall goal of such precise inferences are, and
-on the realistic limitations are on when they can be made.
+what the overall goal of such precise inferences are,
+what the limitations on when they can be made are,
+and their downstream utility in applications.
 
 The main reasons for wanting precise estimates of all recombination
 events are to either compute a likelihood of the inferred ARG
@@ -1235,6 +1236,9 @@ the coalescent as a statical model, and so more non-parametric
 methods like \tsinfer\ and \relate\ would seem more appropriate.
 [More]
 
+% Is it practical to estimate full ARGs?
+[Not particularly \citep{shipilina2022origin}]
+
 % Do downstream applications actually make use of such full ARGs?
 Downstream applications using estimated ARGs to date rarely
 make use of such complete recombination information.
@@ -1304,6 +1308,17 @@ a \emph{continuum} of information about recombination and between-tree
 correlation structure can be represented and inferred, and all
 such levels of information are useful, even if only for computational
 efficiency.
+
+\item This idea of a continuum of information about recombination
+being inferrable and representable is consistent with the ideas
+discussed by~\cite{shipilina2022origin}. There a haplotype block
+is synonymous with coalescent nodes in the ARG, which we can generalise
+as nodes in a gARG with at least two children. In principle, these
+nodes are identifiable by the mutations that occur on the outbound
+edges of the node.
+Their definition of an ARG is interesting, as they emphasise that it
+is composed of events, but illustate the genomes. [Nice to mention
+this connection somehere if we can, see Fig B1]
 
 \item It is unfortunate that we are adding yet another meaning to the
 term ARG here, but all we're really doing is making the implicit
