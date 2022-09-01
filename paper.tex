@@ -1235,6 +1235,39 @@ the coalescent as a statical model, and so more non-parametric
 methods like \tsinfer\ and \relate\ would seem more appropriate.
 [More]
 
+% Do downstream applications actually make use of such full ARGs?
+Downstream applications using estimated ARGs to date rarely
+make use of such complete recombination information.
+The \relate\ selection statistic~\citep{speidel2019method}
+computes a $p$-value for selection [FIXME] for each
+local tree independently by comparing the rates of coalescence
+at various time-points. For cases like strong positive selection,
+where we expect there to be a clear signal in the local tree,
+such tree-by-tree methods can be simple and powerful.
+In their method
+for estimating dispersal rates and the locations of genetic
+ancestors,
+\citep{osmond2021estimating} downsample trees along the genome
+so that they can be regarded as approximately independent.
+The SIA method for detecting selection~\citep{hejase2022deep}
+encodes local trees as a set of lineage counts at discrete
+time intervals, and uses these as feature for a
+type of machine learning algorithm
+that takes ``temporal'' correlations into account. Thus,
+while SIA does use some of the information about local tree correlation,
+clearly much of the detail about recombination
+events in a ``full'' ARG is lost.
+The \texttt{tsdate} algorithm (and related naive estimator
+for ancestral location) uses much more between-tree
+information~\citep{wohns2022unified}, explicitly using the gARG
+encoding to reason about ancestral nodes.
+A major strength of this approach is that it can be used on
+any gARG, ranging from estimates containing relatively little
+information about recombination (e.g., as estimated by \relate)
+to ``full'' ARGs containing complete recombination information
+(e.g., as estimated by \kwarg), and will fully utilise
+any between-tree correlation information that is present.
+
 \section*{Computational efficiency}
 The succinct tree sequence data structure (usually known as a ``tree sequence''
 for brevity, but see later comment on confusion around this point)
