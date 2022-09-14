@@ -558,10 +558,14 @@ common ancestor events.
 % \section*{Genome ARGs}
 There is no fundamental reason, however, that the data structure we use
 to describe patterns of genetic inheritance must be in terms
-of specific causal events that generated those patterns.
-Let us define a genome as the complete set of genetic material that a child
+of specific causal events. As we demonstrate in subsequent sections,
+there are significant advantages to using
+a slightly different formulation, which
+we call a ``genome ARG'' (gARG) to distinguish it from the classical
+eARG described above.
+First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
-Then, a ``genome ARG'' (gARG) is a graph in which nodes represent
+Then, a gARG is a graph in which nodes represent
 monoploid genomes  and edges represent
 genetic inheritance between an ancestor and a descendant,
 where each edge is annotated with the coordinates
@@ -569,9 +573,8 @@ of the genomic intervals over which genetic inheritance occurs
 (the next section explores the subtleties of what we mean by
 genetic inheritance). To recover the local tree for a genomic
 position $x$, we traverse the graph rootwards from the leaves
-as in an eARG. At a particular node, we then follow the outbound
+(as in an eARG) and at a particular node, we follow the outbound
 edge associated with the genomic interval containing $x$.
-
 % Recent discussions have illustrated the
 % relationship between ARGs and
 % pedigrees~\citep{mathieson2020ancestry,brandt2021evaluation},
@@ -579,14 +582,14 @@ edge associated with the genomic interval containing $x$.
 % well understood
 % \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
 % speed2015naturereviewsgenetics}.
-Fig.~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG,
-showing how the genomes embedded in an example (highly inbred)
+Fig.~\ref{fig-arg-in-pedigree}
+shows how the genomes embedded in an example (highly inbred)
 pedigree correspond to the nodes in a gARG, along with the corresponding
 local trees.
-A diploid pedigree is shown here for concreteness, but
-there is no limitation on mating system, ploidy, or age structure
-in the gARG encoding.
-In the diploid setting, a genome is inherited from one
+In this diploid setting
+(there is no limitation on mating system, ploidy, or age structure
+in the gARG encoding),
+a genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
 For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
@@ -707,17 +710,22 @@ local relationships along the genome, as shown in the local
 % section where we talk about stacking up recombination events
 % and their identifiability.]
 
-The eARG and gARG definitions provided here are apparently very
-similar, but, as we shall see, there are many advantages to decoupling
-our representation of patterns of genetic inheritance
-from the events that generated them.
-For simplicity, throughout the rest of the paper we will contrast the
-classical eARG with the gARG definition here.
-However, it is important to note that many of the benefits of the
-gARG encoding that we discuss are due to the encoding of inheritance via
-edges rather than nodes.
-Whether one regards nodes as genomes or events is essentially
-a matter of interpretation, and unimportant for many purposes.
+% The reader may arrive at the end of this section going, er, so what?
+% Try to tackle this head on by getting to the heart of the distinction.
+The difference between eARGs and gARGs are subtle, and whether
+we choose to interpret nodes as events or genomes
+is often of little practical importance.
+However, as we show in the remainder of this article,
+there are substantial practical gains
+from using the gARG encoding, allowing differential
+levels of information about the recombination process to be
+represented in a computionally efficient way.
+The key to this is not in how we interpret nodes, but in how
+we represent the process of genetic inheritance.
+The critical distinction is that
+the gARG encoding allows us to associate
+genetic inheritance in non-contiguous chunks of genome
+between an ancestor and a descendant.
 
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
