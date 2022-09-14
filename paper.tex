@@ -318,29 +318,55 @@ argued for using the term to mean specific realised ancestral histories.
 Unless otherwise stated, we will use the ARG-as-a-data-structure
 interpretation for the remainder of this paper.
 
-\section*{Event ARGs}\label{eARG}
+\section*{Event vs Genome ARGs}\label{eARG}
 In keeping with its original derivation in terms of a stochastic
 process, the classical definition of an ARG data structure is
-in terms of \emph{events}. Nodes represent
+in terms of events.
+Nodes represent
 common ancestor or recombination events that occurred in the
 history of some set of sample genomes, and edges represent ancestral
 lineages~\citep{griffiths1996ancestral}.
-In order to distinguish this form of ARG from what we will be discussing
-in later sections we refer to it as an ``event ARG``, or eARG for brevity.
-An example of an eARG
-is given in Fig.~\ref{fig-arg-data-structure}B.
 In a common ancestor event the inbound lineages are merged into a
-single ancestral lineage (e.g., node \noderef{e}
-in Fig.~\ref{fig-arg-data-structure}), and in a recombination
+single ancestral lineage, and in a recombination
 event a lineage is split into two independent
-ancestral lineages (e.g., node \noderef{d}
-in Fig.~\ref{fig-arg-data-structure}). The final vital
-detail---which distinguishes an arbitrary graph with the required topological
-properties from an eARG---is that we associate a breakpoint with each recombination
-event. This information is sufficient to uniquely
-define the local genealogical trees at every position along the genome,
-which is the basic requirement for a data structure encoding
-genome-wide genetic ancestry.
+ancestral lineages.
+% The final vital
+% detail is that we associate a breakpoint with each recombination
+% event.
+% This information is sufficient to uniquely
+% define the local genealogical trees at every position along the genome,
+% which is the basic requirement for a data structure encoding
+% genome-wide genetic ancestry.
+As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+is usually concretely encoded by associating a recombination breakpoint
+(which is null for common ancestor events) and an ordered list of parents
+with each node. We refer to such a  data structure as an
+``event ARG'' (eARG).
+To recover the local tree at genome coordinate $x$ (the most
+fundamental operation required for an ARG data structure),
+we traverse the graph rootwards from the leaves.
+At a particular
+node $u$, if it has one parent we are at a common ancestor
+node and we follow that parent. If we are at a
+recombination node, $u$ has two parents: if
+$x$ is less than the breakpoint we follow
+the edge to the first parent, and otherwise follow the edge
+to the second parent.
+The order in which parents are listed at a recombination node is
+therefore significant, telling us
+from which parent the segments of genome to the left and right of the breakpoint
+were inherited.
+
+% This ordering requirement, while straightforward
+% to describe, has some practical drawbacks. For example,
+% % Surely the meaning is clear from the context here and we don't need
+% % qualify the meaning of ``ARG''
+% when using this representation and simulating an ARG backwards in time,
+% the first event older than a recombination may involve the lineage carrying the
+% ancestry to the right of the breakpoint rather
+% than the left, and so we cannot emit edges as they are generated.
+% Such issues can be worked around, of course, but depending on the ordering of
+% otherwise indistinguishable objects is generally problematic.
 
 \begin{figure}
 \centering
@@ -357,7 +383,7 @@ nodelabel/.style={font=\footnotesize}}
 \node (s5) [greynode] at (5, 3) {};
 \node (s6) [greynode] at (3, 4) {};
 
-\node [anchor=north west] at (-1.5,6) {B};
+% \node [anchor=north west] at (0,6) {A};
 \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
 \foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
 \foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
@@ -373,125 +399,77 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [anchor=north west] at (-14,6) {A};
-\node [nodelabel,anchor=north west] at ($(-13,5)$) {
-\begin{tabular}{c|c}
-% \multicolumn{2}{c}{Breakpoints}\\
-Nodes & Breakpoints\\
-\hline
-$\textsf{a}$ & $\varnothing$ \\
-$\textsf{b}$ & $\varnothing$ \\
-$\textsf{c}$ & $\varnothing$ \\
-$\textsf{d}$ & $x$ \\
-$\textsf{e}$ & $\varnothing$ \\
-$\textsf{f}$ & $\varnothing$ \\
-$\textsf{g}$ & $\varnothing$ \\
-\end{tabular}};
-
-\node [nodelabel,anchor=north west] at ($(-7,5)$) {
-\begin{tabular}{l}
-Edges\\
-\hline
-$(\textsf{a}, \textsf{e})$ \\
-$(\textsf{b}, \textsf{d})$ \\
-$(\textsf{c}, \textsf{f})$ \\
-$(\textsf{d}, \textsf{e})$ \\
-$(\textsf{d}, \textsf{f})$ \\
-$(\textsf{e}, \textsf{g})$ \\
-$(\textsf{f}, \textsf{g})$ \\
-\end{tabular}};
-
-
-\node [anchor=north west] at (9,6) {C};
+% \node [anchor=north west] at (9,6) {B};
 \node [nodelabel,anchor=north west] at ($(10,5)$) {
-\begin{tabular}{ll}
-Edges & Intervals\\
+\begin{tabular}{c|c|l}
+% \multicolumn{2}{c}{Breakpoints}\\
+Node & Breakpoint & Parents\\
 \hline
-$(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
-$(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
-$(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
-$(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
-$(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
-$(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
-$(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{g}$ & $\varnothing$ & []\\
 \end{tabular}};
+
+
+% \node [anchor=north west] at (9,6) {C};
+% \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% \begin{tabular}{ll}
+% Edges & Intervals\\
+% \hline
+% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% \end{tabular}};
 
 
 \end{tikzpicture}
 \caption{\label{fig-arg-data-structure}
-A classical ARG (subfigure B), contrasting node with edge breakpoint annotations.
-(A) recombination breakpoint information encoded on \emph{nodes}.
-This encoding is limited in the patterns of inheritance that can be
-described and requires that edges be ordered to avoid ambiguity.
-(C) breakpoint annotations associated with \emph{edges}.
-Associating the interval of genome inherited by the child node
-from the parent with the corresponding edge allows
-any pattern genetic inheritance to be described and does
-not require edges to be ordered. In this example, each edge is associated
-with a single interval, but more generally, multiple non-overlapping intervals
-can be associated with a single edge.
+A graphical depiction of a classical event ARG and a concrete
+encoding of the information. Node \noderef{d} is a recombination
+event as it is associated with a non-null breakpoint, and has
+two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+common ancestor events.
 }
 \end{figure}
 
-% What do we mean by an eARG, formally?
-To be concrete, we can formally define the
-classical Griffiths eARG as a tuple $(e, \sigma)$, where $e$
-is an ordered list of edges defining a directed acyclic graph and
-$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
-is a function mapping nodes to recombination breakpoints,
-such that $\sigma(u) = x$
-if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \varnothing$ otherwise.
-(This is equivalent to having different ``types''
-of node, where breakpoints are associated with recombination
-nodes only).
-Each edge $e_j = (c, p)$ describes an edge between
-child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
-% For each recombination node $u$ we must
-% have exactly two edges in $e$ such that $u$ is the child.
-This encoding of an eARG is equivalent to the output
-of programs such as
-\texttt{ARGweaver}~\citep{rasmussen2014genome}
-and \texttt{KwARG}~\citep{ignatieva2021kwarg},
-and an example is given in Fig.~\ref{fig-arg-data-structure}A.
-Note that the description above captures only the
-graph topology: if we also wish to know the branch lengths we need
-an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
-which defines the time of each node.
+% % What do we mean by an eARG, formally?
+% To be concrete, we can formally define the
+% classical Griffiths eARG as a tuple $(e, \sigma)$, where $e$
+% is an ordered list of edges defining a directed acyclic graph and
+% $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
+% is a function mapping nodes to recombination breakpoints,
+% such that $\sigma(u) = x$
+% if $u$ is a recombination event with breakpoint $x$ and
+% $\sigma(u) = \varnothing$ otherwise.
+% (This is equivalent to having different ``types''
+% of node, where breakpoints are associated with recombination
+% nodes only).
+% Each edge $e_j = (c, p)$ describes an edge between
+% child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
+% % For each recombination node $u$ we must
+% % have exactly two edges in $e$ such that $u$ is the child.
+% This encoding of an eARG is equivalent to the output
+% of programs such as
+% \texttt{ARGweaver}~\citep{rasmussen2014genome}
+% and \texttt{KwARG}~\citep{ignatieva2021kwarg},
+% and an example is given in Fig.~\ref{fig-arg-data-structure}A.
+% Note that the description above captures only the
+% graph topology: if we also wish to know the branch lengths we need
+% an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
+% which defines the time of each node.
 
-The ordering of edges is a vital element of the eARG encoding.
-This is because there is a fundamental ambiguity involved
-in associating recombination breakpoints with nodes:
-we need to know from which parent the node inherited
-the segments of genome to the left and right of the breakpoint.
-The simplest way to break this symmetry is to assign
-some meaning to the order in which the parents are listed
-(\cite{griffiths1997ancestral} refer to the ``left'' and ``right''
-parents of a recombination event). This is usually described
-in terms of the process in which we extract the local trees
-along the genome from an eARG.
-To recover the tree at genome coordinate $x$,
-we traverse the graph rootwards from the leaves.
-At a particular
-node $u$, if it has one parent we are at a common ancestor
-node and we follow that parent. If we are at a
-recombination node, $u$ has two parents: if
-$x$ is less than the breakpoint $\sigma(u)$ we follow
-the edge to the first parent, and otherwise follow the edge
-to the second parent.
-This ordering requirement, while straightforward
-to describe, has some practical drawbacks. For example,
-% Surely the meaning is clear from the context here and we don't need
-% qualify the meaning of ``ARG''
-when using this representation and simulating an ARG backwards in time,
-the first event older than a recombination may involve the lineage carrying the
-ancestry to the right of the breakpoint rather
-than the left, and so we cannot emit edges as they are generated.
-Such issues can be worked around, of course, but depending on the ordering of
-otherwise indistinguishable objects is generally problematic. In practice,
-several methods explicitly associate information with the outbound edges
-of a recombination event
-to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
+% In practice,
+% several methods explicitly associate information with the outbound edges
+% of a recombination event
+% to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 
 % TODO update this when later sections have been drafted.
 % As we see in sections XXX and YYY there are substantial limitations
@@ -505,26 +483,30 @@ to resolve the issue~\citep{lyngso2005minimum,ignatieva2021kwarg}.
 % described are therefore limited by the assumptions of that
 % model.
 
+% JK: Removing stuff about the limitations of the encoding here
+% because it's reasonably straightforward to see an extension in
+% which the number of breakpoints is in less than the number of
+% parents, and it starts muddying the waters a bit.
 
-The eARG encoding consists of two types of event
-(common ancestor and recombination) but nature is not so parsimonious
-and there are many other processes that will affect the
-ancestry of samples.
-For example, gene conversion between homologous
-chromosomes~\citep{wiuf2000coalescent,chen2007gene} is an important
-evolutionary force in many species~\cite[e.g.][]{yang2012great}.
-% Some refs for where people are inferring ancestry in the
-% presence of GC? Isn't this what ClonalFrame etc are all about?
-Similarly, the eARG encoding cannot easily represent multiple
-recombinations on a chromosome, or the transmission of multiple
-chromosomes.
-What we can infer about ancestral histories and
-processes should not be limited by the data structure that we
-use to represent such ancestry. The eARG is simply one way
-to \emph{encode} such history, and, as we have shown,
-one that has significant limitations of expressivity
-derived from its historical origins in the idealised
-coalescent with recombination model.
+% The eARG encoding consists of two types of event
+% (common ancestor and recombination) but nature is not so parsimonious
+% and there are many other processes that will affect the
+% ancestry of samples.
+% For example, gene conversion between homologous
+% chromosomes~\citep{wiuf2000coalescent,chen2007gene} is an important
+% evolutionary force in many species~\cite[e.g.][]{yang2012great}.
+% % Some refs for where people are inferring ancestry in the
+% % presence of GC? Isn't this what ClonalFrame etc are all about?
+% Similarly, the eARG encoding cannot easily represent multiple
+% recombinations on a chromosome, or the transmission of multiple
+% chromosomes.
+% What we can infer about ancestral histories and
+% processes should not be limited by the data structure that we
+% use to represent such ancestry. The eARG is simply one way
+% to \emph{encode} such history, and, as we have shown,
+% one that has significant limitations of expressivity
+% derived from its historical origins in the idealised
+% coalescent with recombination model.
 
 % \section*{Node vs edge annotations}
 % Another aspect of the classical description of an ARG data structure that
@@ -573,34 +555,50 @@ coalescent with recombination model.
 % greatly increases both the expressivity and computational
 % power of ancestral recombination graph data structures.
 
-\section*{Genome ARGs}
-As we have seen in the previous section, the focus
-on a limited palette of events makes describing currently-available
-datasets and known patterns of genetic inheritance as an eARG
-cumbersome at best.
-There is no fundamental reason that the patterns of genetic inheritance
-that we wish to describe via an ARG must be in terms
-of discrete \emph{events}, however. Recent discussions have illustrated the
-relationship between ARGs and
-the pedigree~\citep{mathieson2020ancestry,brandt2021evaluation},
-and the deep connections between the structures are
-well understood
-\citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
-speed2015naturereviewsgenetics}.
-Following \cite{mathieson2020ancestry},
-rather defining the inheritance
-of genetic material in terms of \emph{events} as we do in an eARG,
-we can instead define an ARG data structure in terms of
-\emph{genomes} and intervals of genetic inheritance
-along the edges.
-To distinguish from the classical Griffiths eARG,
-we refer to this encoding of an ARG data structure
-as a ``Genome ARG'', or gARG.
-The distinction between nodes representing events
-and genomes may seem pedantic at first, but as we
-see in later sections, we gain a great deal of flexibility
-and computational efficiency by decoupling our representation
-of genetic ancestry from the events that generated it.
+% \section*{Genome ARGs}
+There is no fundamental reason, however, that the data structure we use
+to describe patterns of genetic inheritance must be in terms
+of specific causal events. As we demonstrate in subsequent sections,
+there are significant advantages to using
+a slightly different formulation, which
+we call a ``genome ARG'' (gARG).
+First, let us define a genome as the complete set of genetic material that a child
+inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
+Then, a gARG is a graph in which nodes represent
+monoploid genomes  and edges represent
+genetic inheritance between an ancestor and a descendant,
+where each edge is annotated with the coordinates
+of the genomic intervals over which genetic inheritance occurs
+(the next section explores the subtleties of what we mean by
+genetic inheritance). To recover the local tree for a genomic
+position $x$, we traverse the graph rootwards from the leaves
+(as in an eARG) and at a particular node, we follow the outbound
+edge associated with the genomic interval containing $x$.
+% Recent discussions have illustrated the
+% relationship between ARGs and
+% pedigrees~\citep{mathieson2020ancestry,brandt2021evaluation},
+% and the deep connections between the structures are
+% well understood
+% \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
+% speed2015naturereviewsgenetics}.
+Fig.~\ref{fig-arg-in-pedigree}
+shows how the genomes embedded in an example (highly inbred)
+pedigree correspond to the nodes in a gARG, along with the corresponding
+local trees.
+In this diploid setting
+(there is no limitation on mating system, ploidy, or age structure
+in the gARG encoding),
+a genome is inherited from one
+of the individual's parents,
+and may be the recombined product of that parent's two genomes.
+For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
+has two genomes \textsf{a} and \textsf{b},
+inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
+recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
+whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
+recombination.
+Arbitrary patterns of genetic inheritance (gene conversions, multiple recombinations,
+etc) can be expressed without difficulty.
 
 \begin{figure}
 \begin{center}
@@ -634,112 +632,97 @@ local relationships along the genome, as shown in the local
 }
 \end{figure}
 
-A gARG is a graph in which nodes represent monoploid genomes (i.e.,
-haploids have one genome, diploids two, etc.) and edges represent
-genetic inheritance between an ancestor and a descendant.
-Each edge is annotated with the coordinates
-of the genomic intervals over which genetic inheritance occurs
-(the next section explores the subtleties of what we mean by
-genetic inheritance).
-Fig.~\ref{fig-arg-in-pedigree} illustrates the basic elements of a gARG,
-showing how the genomes embedded in an example (highly inbred)
-pedigree correspond to the nodes in a gARG, along with the corresponding
-local trees.
-A diploid pedigree is shown here for concreteness, but
-there is no limitation on mating system, ploidy, or age structure
-in the gARG encoding.
-In the diploid setting, a genome is inherited from one
-of the individual's parents,
-and may be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
-has two genomes \textsf{a} and \textsf{b},
-inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
-recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
-whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
-recombination.
-Arbitrary patterns of genetic inheritance (gene conversions, multiple recombinations,
-etc) can be expressed without difficulty.
-
-Formally, we can define a gARG as a set of edges $E$, where each
-element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-$c$ is the child node, $p$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
-also phrase this in terms of the ancestral material of a sample---see
-the next section).
-Deriving the local tree at a point $x$
-follows largely the same pattern as for an eARG but is somewhat
-simpler because coordinate information is directly associated with
-edges. Starting with the sample nodes $S$ we traverse
-rootwards through the graph from child to parent. At each node $u$, we find an
-edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
-and move to the next node $p$.
+% Formally, we can define a gARG as a set of edges $E$, where each
+% element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+% $c$ is the child node, $p$ is the parent node and $I$ is the set of
+% disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
+% also phrase this in terms of the ancestral material of a sample---see
+% the next section).
+% Deriving the local tree at a point $x$
+% follows largely the same pattern as for an eARG but is somewhat
+% simpler because coordinate information is directly associated with
+% edges. Starting with the sample nodes $S$ we traverse
+% rootwards through the graph from child to parent. At each node $u$, we find an
+% edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
+% and move to the next node $p$.
 
 % This paragraph is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
 % from the others. Is there a more direct way we can address these points ?
-There are some interesting and important consequences to this focus on genomes
-rather than events.
-Firstly, a gARG may contain nodes that are both samples \emph{and}
-internal nodes in the local trees.
-This ability is useful when we have pedigree information
-along with genetic data
-\cite[e.g.][]{hayes20191000,RosFreixedes2022,anderson2022genes},
-where we may have many generations of internal sample nodes
-whose genomes have been sequenced.
-Another situation in which it is important that
-we do not assume samples are all contemporary ``leaf'' nodes
-(or that all internal nodes are either coalescences or recombinations)
-is when we are incorporating ancient genomes into ARG
-inference~\citep{speidel2021inferring,wohns2022unified}.
-Similarly, a gARG may contain nodes that
-do not correspond to any particular event in the ancestry of the samples.
-For example, node \textsf{h} is the direct ancestor of \textsf{d} in
-Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
-coalescence or a recombination. Such nodes would usually be removed
-from the graph so that \textsf{d} descends directly from \textsf{k} (see
-the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
-a representational perspective.
-Secondly, because we do not classify nodes by event type
-(common ancestor or recombination) there is no limitation
-on the complexity that can be modelled---multiple recombinations
-and coalescences can happen simultaneously in the same genome,
-a common occurance in large deeply sequenced
-pedigrees~\citep{hayes20191000,RosFreixedes2022}.
-Finally, there is a subtle and important point about how recombination
-is represented: which genome in the organismal lifecycle
-do nodes represent?
-In principle, we can interpret nodes as representing genomes
-at any point in the life cycle [supplementary Figure ?]. Hudson
-views nodes as representing gametes~\citep{hudson1983properties}.
-However, we argue that the most intuitive
-approach is to let nodes represent the genomes present in diploid
-individuals in each generation, as in
-Fig~\ref{fig-arg-in-pedigree}A. In this case recombination
-is not represented by a single ``recombination node'' (as in an eARG), but with
-two parent genomes between which recombination takes place
-(e.g.\ nodes \textsf{e} and \textsf{f}), and a
-single resulting ``recombinant'' genome (e.g.\ \textsf{c}). The
-edges that link this recombinant with its two parents carry the information
-concerning breakpoint location that would be associated with a
-recombination node in an eARG. [TODO finish up here with more
-clarity on what this means in terms of the required specifity
-of recombination events, and put in a forward ref to the simplification
-section where we talk about stacking up recombination events
-and their identifiability.]
+% There are some interesting and important consequences to this focus on genomes
+% rather than events.
 
-For simplicity, throughout the rest of the paper we will contrast the
-classical eARG (as defined in the XXX section) with the gARG definition
-here. However, it is important to note that many of the benefits of the
-gARG encoding that we discuss are due to the encoding of inheritance via
-edges rather than nodes.
-Whether one regards nodes as genomes or events is orthogonal,
-and something of a philosophical question which makes little
-difference from a computational perspective.
+% Firstly, a gARG may contain nodes that are both samples \emph{and}
+% internal nodes in the local trees.
+% This ability is useful when we have pedigree information
+% along with genetic data
+% \cite[e.g.][]{hayes20191000,RosFreixedes2022,anderson2022genes},
+% where we may have many generations of internal sample nodes
+% whose genomes have been sequenced.
+% Another situation in which it is important that
+% we do not assume samples are all contemporary ``leaf'' nodes
+% (or that all internal nodes are either coalescences or recombinations)
+% is when we are incorporating ancient genomes into ARG
+% inference~\citep{speidel2021inferring,wohns2022unified}.
+% Similarly, a gARG may contain nodes that
+% do not correspond to any particular event in the ancestry of the samples.
+% For example, node \textsf{h} is the direct ancestor of \textsf{d} in
+% Fig~\ref{fig-arg-in-pedigree}, and is not the product of either a
+% coalescence or a recombination. Such nodes would usually be removed
+% from the graph so that \textsf{d} descends directly from \textsf{k} (see
+% the ``\nameref{ARG_simplification}'' section) but there is no necessity for this from
+% a representational perspective.
+% Secondly, because we do not classify nodes by event type
+% (common ancestor or recombination) there is no limitation
+% on the complexity that can be modelled---multiple recombinations
+% and coalescences can happen simultaneously in the same genome,
+% a common occurance in large deeply sequenced
+% pedigrees~\citep{hayes20191000,RosFreixedes2022}.
+% Finally, there is a subtle and important point about how recombination
+% is represented: which genome in the organismal lifecycle
+% do nodes represent?
+% In principle, we can interpret nodes as representing genomes
+% at any point in the life cycle [supplementary Figure ?]. Hudson
+% views nodes as representing gametes~\citep{hudson1983properties}.
+% However, we argue that the most intuitive
+% approach is to let nodes represent the genomes present in diploid
+% individuals in each generation, as in
+% Fig~\ref{fig-arg-in-pedigree}A. In this case recombination
+% is not represented by a single ``recombination node'' (as in an eARG), but with
+% two parent genomes between which recombination takes place
+% (e.g.\ nodes \textsf{e} and \textsf{f}), and a
+% single resulting ``recombinant'' genome (e.g.\ \textsf{c}). The
+% edges that link this recombinant with its two parents carry the information
+% concerning breakpoint location that would be associated with a
+% recombination node in an eARG. [TODO finish up here with more
+% clarity on what this means in terms of the required specifity
+% of recombination events, and put in a forward ref to the simplification
+% section where we talk about stacking up recombination events
+% and their identifiability.]
+
+% The reader may arrive at the end of this section going, er, so what?
+% Try to tackle this head on by getting to the heart of the distinction.
+The difference between eARGs and gARGs are subtle, and whether
+we choose to interpret nodes as events or genomes
+is often of little practical importance.
+However, as we show in the remainder of this article,
+there are substantial practical gains
+from using the gARG encoding, allowing differential
+levels of information about the recombination process to be
+represented in a computionally efficient way.
+The key to this is not so much in how we interpret nodes
+(see Appendix XXX), but specifically in how
+we represent the process of genetic inheritance.
+The critical distinction is that
+the gARG encoding allows us to directly describe
+genetic inheritance in multiple non-contiguous genome intervals
+between an ancestor and a descendant, something that
+cannot be done by storing recombination breakpoints.
 
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
-parent to child (and ultimately from cell to cell) through some
-number of generations. The edges are ``annotated''
+ancestor to descendant through some
+number of generations (ultimately from cell to cell). The edges are ``annotated''
 with the genome coordinates over which inheritance occurs. There are
 two ways in which we can interpret these annotations, and the
 distinction is subtle and important.
