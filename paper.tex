@@ -561,8 +561,7 @@ to describe patterns of genetic inheritance must be in terms
 of specific causal events. As we demonstrate in subsequent sections,
 there are significant advantages to using
 a slightly different formulation, which
-we call a ``genome ARG'' (gARG) to distinguish it from the classical
-eARG described above.
+we call a ``genome ARG'' (gARG).
 First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
 Then, a gARG is a graph in which nodes represent
@@ -600,15 +599,6 @@ whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
 recombination.
 Arbitrary patterns of genetic inheritance (gene conversions, multiple recombinations,
 etc) can be expressed without difficulty.
-
-% To distinguish from the classical Griffiths eARG,
-% we refer to this encoding of an ARG data structure
-% as a ``Genome ARG'', or gARG.
-% The distinction between nodes representing events
-% and genomes may seem pedantic at first, but as we
-% see in later sections, we gain a great deal of flexibility
-% and computational efficiency by decoupling our representation
-% of genetic ancestry from the events that generated it.
 
 \begin{figure}
 \begin{center}
@@ -720,12 +710,14 @@ there are substantial practical gains
 from using the gARG encoding, allowing differential
 levels of information about the recombination process to be
 represented in a computionally efficient way.
-The key to this is not in how we interpret nodes, but in how
+The key to this is not so much in how we interpret nodes
+(see Appendix XXX), but specifically in how
 we represent the process of genetic inheritance.
 The critical distinction is that
-the gARG encoding allows us to associate
-genetic inheritance in non-contiguous chunks of genome
-between an ancestor and a descendant.
+the gARG encoding allows us to directly describe
+genetic inheritance in multiple non-contiguous genome intervals
+between an ancestor and a descendant, something that
+cannot be done by storing recombination breakpoints.
 
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
