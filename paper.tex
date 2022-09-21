@@ -224,7 +224,7 @@ generating stochastic process, and studying its properties from a computational 
 algorithmic perspective.
 
 % Mathematical treatment of the CwR and ARGs (and ARG-like stochastic processes)
-An extensive body of work has developed in
+An extensive body of work has been developed from
 studying the coalescent with recombination
 % Can we add a couple of the most well known CwR examples here
 and other related
@@ -310,8 +310,8 @@ depends on the context in which it is used, and can mean both the
 stochastic process generating genealogies in the presence of
 recombination~\citep[e.g.][]{nordborg2000linkage,birkner2013ancestral,
 wilton2015smc,griffiths2016coalescent},
-as well as, more commonly, the concrete realisations of the
-ancestry~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
+as well as, more commonly, the concrete realisation of ancestry from a
+process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
 \cite{minichiello2006mapping} explicitly distinguished the ARG as a
 stochastic process from the ARG as a data structure, and
 argued for using the term to mean specific realised ancestral histories.
@@ -505,8 +505,8 @@ common ancestor events.
 % use to represent such ancestry. The eARG is simply one way
 % to \emph{encode} such history, and, as we have shown,
 % one that has significant limitations of expressivity
-% derived from its historical origins in the idealised
-% coalescent with recombination model.
+% derived from its historical origins in the idealised model of
+% coalescent with recombination.
 
 % \section*{Node vs edge annotations}
 % Another aspect of the classical description of an ARG data structure that
@@ -598,7 +598,7 @@ recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
 whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
 recombination.
 Arbitrary patterns of genetic inheritance (gene conversions, multiple recombinations,
-etc) can be expressed without difficulty.
+etc) can be expressed without difficulty using this encoding.
 
 \begin{figure}
 \begin{center}
@@ -704,7 +704,7 @@ local relationships along the genome, as shown in the local
 % Try to tackle this head on by getting to the heart of the distinction.
 The difference between eARGs and gARGs are subtle, and whether
 we choose to interpret nodes as events or genomes
-is often of little practical importance.
+might seem of little practical importance.
 However, as we show in the remainder of this article,
 there are substantial practical gains
 from using the gARG encoding, allowing differential
@@ -812,19 +812,19 @@ This process is directly analogous to Hudson's simulation algorithm
 
 These alternatives of recording the direct inheritance of genetic material from
 parent to child vs the propagation of genomic intervals ancestral to the sample
-are analogous to running forwards-time vs backwards-time simulations.
+are analogous to running forwards-in-time vs backwards-in-time simulations.
 Indeed, the process of taking a graph with edges annotated with direct parent-child
 inheritance (Fig~\ref{fig-ancestry-resolution}A) and producing the equivalent
 ``ancestry resolved'' graph in which only those genomic intervals that are
 ancestral to the sample are retained (Fig~\ref{fig-ancestry-resolution}B)
-is the same key algorithm underlying recent advances in forwards-time simulation.
-\cite{kelleher2018efficient} developed a method in which forwards-time
+is the same key algorithm underlying recent advances in forwards-in-time simulation.
+\cite{kelleher2018efficient} developed a method in which forwards-in-time
 simulations are performed by recording all parent-child genetic relationships
 (i.e.~annotating the edges in the simulated pedigree with the genomic
 intervals inherited by a child from a parent) and periodically ``simplifying''
 this structure to retain only ancestral relationships that are relevant
 to the ancestry of the current population. In many situations, recording
-the full genetic ancestry of the population in this way is orders of magnitude faster
+the full genetic ancestry of the current population in this way is orders of magnitude faster
 than the alternative of tracking
 sequences~\citep{kelleher2018efficient,haller2018tree}.
 
@@ -853,6 +853,9 @@ information such as the fact that \textsf{k} is connected to \textsf{a} via \tex
 \end{figure}
 
 \section*{Simplification}\label{ARG_simplification}
+% I think a sentence is needed here on why "so much" text is devoted to simplification.
+% How does simplification connect to eARG vs gARG and practical benefits of gARG over eARG
+% and why do you now talk about unary nodes and a bit polytomies? Hold my hand here please;)
 ARG simplification~\citep{kelleher2018efficient} is the process
 of removing nodes and re-writing edges in a gARG to remove
 various types of redundancy,
@@ -860,16 +863,17 @@ retaining the ``meaningful'' topology within local trees
 and maintaining the identity of nodes across different trees.
 The idea of meaningful local tree topologies is based on the
 presence of ``unary'' nodes: a tree node that has exactly
+% should presence above be absence?
 one child. Fig.~\ref{fig-simplification} show a series of successive steps of
 simplification, starting with a complete gARG simulated under a
-(backwards-time) Wright-Fisher
+(backwards-in-time) Wright-Fisher
 model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right.
 For example, consider the path above node
 \textsf{a} in the highlighted tree (covering positions 60 to 70)
 in Fig.~\ref{fig-simplification}A.
 Before \textsf{a} meets its common ancestor with the other samples at
-node \textsf{q}, it passes through  \textsf{e},  \textsf{j},  \textsf{m},  \textsf{n} and
+node \textsf{q}, it passes through \textsf{e}, \textsf{j}, \textsf{m}, \textsf{n} and
 \textsf{p}, which in this region of the genome are all unary nodes.
 This reflects the
 passage of this span of genome through the ARG towards the root.
@@ -889,7 +893,7 @@ An example of such topology is a
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
 join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
-and  \textsf{n} in Fig.~\ref{fig-simplification}A).
+and \textsf{n} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
 interested in the recombination event or ancestral genomes,
 there is no information in this topology and the diamond can be
@@ -1179,7 +1183,7 @@ genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
 while the effective population size in modern dairy cattle breeds is
 less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
 An extreme sign of these breeding practices is that there are only two ancestral
-Y-chromosome linages present in today's US Holstein dairy breed~\citep{Yue2015}.
+Y-chromosome lineages present in today's US Holstein dairy breed~\citep{Yue2015}.
 Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
 comprises close to 7000 genomes, which are part of multi-generation pedigrees
 with millions of animals and extensive SNP array genotype and phenotype
