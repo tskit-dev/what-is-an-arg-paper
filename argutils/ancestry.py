@@ -309,6 +309,46 @@ def remove_unused_nodes(ts):
     return ts.subset(used_nodes)
 
 
+def remove_edges_above_local_roots(ts):
+    # use simplify() to find the roots
+    ts_simp, node_map = ts.simplify(map_nodes=True)
+    inverted_node_map = {n: i for i, n in enumerate(node_map)}
+    edges_to_prune = {}
+    for intvl, orig_tree, tree in ts.coiterate(ts_simp):
+        for root in tree.roots:
+            orig_node = inverted_node_map[root]
+            if orig_tree.parent(orig_node) != tskit.NULL:
+                edge_above = orig_tree.edge(orig_node)
+                if edge_above in edges_to_prune:
+                    intervals = edges_to_prune[edge_above]
+                    if intervals[-1].right == intvl.left:
+                        intervals[-1] = tskit.Interval(intervals[-1].left, intvl.right)
+                    else:
+                        intervals.append(intvl)
+                else:
+                    edges_to_prune[edge_above] = [intvl]
+    # Now split the edges to prune by their intervals
+    tables = ts.dump_tables()
+    edges = tables.edges
+    for edge_id, intervals in edges_to_prune.items():
+        deleted_edge = tables.edges[edge_id]
+        if deleted_edge.left < intervals[0].left:
+            edges.append(deleted_edge.replace(right=intervals[0].left))
+        for i in range(len(intervals)):
+            try:
+                edges.append(deleted_edge.replace(
+                    left=intervals[i].right, right=intervals[i+1].left))
+            except IndexError:
+                # last interval to delete
+                if deleted_edge.right > intervals[i].right:
+                    edges.append(deleted_edge.replace(left=intervals[i].right))
+    keep = np.ones(edges.num_rows, dtype=bool)
+    keep[list(edges_to_prune.keys())] = False
+    tables.edges.replace_with(edges[keep])
+    tables.sort()
+    return tables.tree_sequence()        
+            
+   
 def simplify_keeping_all_nodes(ts):
     """
     Run the Hudson algorithm to convert from an implicit to an explicit edge encoding,
@@ -573,7 +613,7 @@ def wh99_example(one_node_recombination=None):
         nonlocal t
         t += 1
         if one_node_recombination:
-            parent = nodes.add_row(time=t)
+            parent = nodes.add_row(time=t, flags=NODE_IS_RECOMB)
             try:
                 child, left, right = child
             except TypeError:

@@ -293,8 +293,8 @@ def convert_nx(ts):
     edges = collections.defaultdict(list)
     for edge in ts.edges():
         edges[(edge.child, edge.parent)].append((edge.left, edge.right))
-    for node in ts.nodes():
-        G.add_node(node.id, time=node.time, flags=node.flags)
+    for n in ts.nodes():
+        G.add_node(n.id, time=n.time, flags=n.flags, label=n.metadata.get("name", None))
     for edge, intervals in edges.items():
         G.add_edge(*edge, intervals=intervals)
     return G

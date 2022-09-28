@@ -27,99 +27,139 @@ def ancestry_resolution():
     """
     Ancestry resolution on the WH99 graph.
     """
+    def plot_ellipse(ts, ax, xa, ya, burger_segments=None, trim_left=0):
+        # trim_left is a hack to not show stuff above the root
+        icon_size1 = (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.00029
+        icon_center1 = icon_size1 / 2.0
+        icon_size2 = icon_size1 * 0.9
+        icon_center2 = icon_size2 / 2.0
+        a = plt.axes([xa - icon_center1 - 0.005/2, ya - icon_center2+0.005/2, icon_size1 + 0.005, icon_size2-0.005])
+        icon = patches.Ellipse(
+            (0.5, 0.5),
+            0.96,
+            0.96,
+            linewidth=2,
+            edgecolor='k',
+            facecolor='white',
+        )
+        a.add_patch(icon)
+        a.axis("off")
+        if burger_segments is not None:
+            icon_size1 = icon_size1 * 0.83
+            icon_center1 = icon_size1 / 2.0
+            icon_size2 = icon_size1 * 0.4
+            icon_center2 = icon_size2 / 2.0
+            a2 = plt.axes([xa - icon_center1 - 0.005/2, ya - icon_center2+0.005/2, icon_size1 + 0.005, icon_size2-0.005])
+            for segment in burger_segments:
+                icon = patches.Rectangle(
+                    (segment[0].left/ts.sequence_length, 0),
+                    segment[0].right/ts.sequence_length,
+                    1,
+                    facecolor=str(1-segment[1]/ts.num_samples),
+                    )
+                a2.add_patch(icon)
+            a2.add_patch(patches.Rectangle(
+                (trim_left, 0),
+                1 - trim_left,
+                1,
+                edgecolor="k",
+                facecolor='none',
+                linewidth=2))
+            a2.axis("off")
+            
+        return a
+
+    def plot_rect(ax, xa, ya, scale=(1, 1), color="k"):
+        icon_size1 = (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.0002 * scale[0]
+        icon_center1 = icon_size1 / 2.0
+        icon_size2 = icon_size1 * 1.3 * scale[1]
+        icon_center2 = icon_size2 / 2.0
+        a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2])
+        icon = patches.Rectangle(
+            (0.02, 0.02),
+            0.96,
+            0.96,
+            linewidth=4,
+            edgecolor=color,
+            facecolor='white',
+        )
+        a.add_patch(icon)
+        a.axis("off")
+        return a
 
     def add_edge_labels(ax, ts, G, pos):
-        def edge_not_above_recombinant(edge):
-            return not argutils.is_recombinant(ts.node(edge.child).flags)
+        # Merge edge labels that have the same parent & child
+        label_format = "({0:.0f},{1:.0f}]"
+        full_edge = label_format.format(0, ts.sequence_length)
+        lab = {}
+        for e in ts.edges():
+            key = (e.child, e.parent)
+            if key in lab:
+                lab[key] += (" " + label_format.format(e.left, e.right))
+            else:
+                lab[key] = label_format.format(e.left, e.right)
 
-        def left_recombinant_edge(edge):
-            if not argutils.is_recombinant(ts.node(edge.child).flags):
-                return False
-            if edge.right == ts.sequence_length:
-                return False
-            return True
+        for full in [True, False]:
+            nx.draw_networkx_edge_labels(
+                G,
+                pos=pos,
+                ax=ax,
+                rotate=False,
+                font_weight="normal" if full else "bold",
+                alpha=0.5 if full else None,
+                font_size=16,
+                edge_labels={k: l for k, l in lab.items() if (l == full_edge) is full},
+                horizontalalignment="center",
+                bbox=dict(
+                    boxstyle="round,pad=0.05",
+                    ec=(1.0, 1.0, 1.0),
+                    fc=(1.0, 1.0, 1.0),
+                ),
+            )
 
-        def right_recombinant_edge(edge):
-            if not argutils.is_recombinant(ts.node(edge.child).flags):
-                return False
-            if edge.left == 0:
-                return False
-            if edge.left == 4 and edge.right == 6:  # Hack for this ts
-                return False
-            return True
-
-        for halign, func1 in {
-            "center": edge_not_above_recombinant,
-            "right": left_recombinant_edge,
-            "left": right_recombinant_edge,
-        }.items():
-            for full_edge, func2 in {
-                True: lambda e: e.left == 0 and e.right == 7,
-                False: lambda e: not (e.left == 0 and e.right == 7),
-            }.items():
-                nx.draw_networkx_edge_labels(
-                    G,
-                    pos=pos,
-                    ax=ax,
-                    rotate=False,
-                    font_weight="normal" if full_edge else "bold",
-                    alpha=0.5 if full_edge else None,
-                    font_size=16,
-                    edge_labels={
-                        (e.child, e.parent): f"({e.left:.0f},{e.right:.0f}]"
-                        for e in ts.edges()
-                        if func1(e) and func2(e)
-                    },
-                    horizontalalignment=halign,
-                    bbox=dict(
-                        boxstyle="round,pad=0.05",
-                        ec=(1.0, 1.0, 1.0),
-                        fc=(1.0, 1.0, 1.0),
-                    ),
-                )
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 12), sharey=True)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 15), sharey=True)
     fig.tight_layout()
 
     ax1.set_title("A", fontsize=32, family="serif", loc="left")
-    ts = argutils.viz.label_nodes(argutils.wh99_example())
+    ts = argutils.viz.label_nodes(argutils.wh99_example(one_node_recombination=True))
     pos, G = argutils.viz.draw(
         ts,
         ax1,
-        use_ranked_times=True,
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
         node_size=100,
         max_edge_width=2,
         font_size=14,
-        tweak_x={
-            0: 10,
-            3: 29,
-            4: 2.5,
-            7: 20,
-            11: 9,
-            12: -17,
-            20: -22.5,
-            19: 3.5,
-            21: -11,
-            17: -25,
-            13: -16,
-            8: 2,
-            9: -24,
-            5: -16,
-            6: -41,
-            15: 0.6,
-            16: -25.6,
-            2: -10,
-        },
-        tweak_y={22: 1, 17: 0.8},
     )
-    add_edge_labels(ax1, ts, G, pos)
 
     ax2.set_title("B", fontsize=32, family="serif", loc="left")
-    ts2 = argutils.simplify_keeping_all_nodes(ts)
     pos, G = argutils.viz.draw(
-        ts2,
+        ts,
         ax2,
+        pos=pos,
+        node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
+        node_size=100,
+        max_edge_width=2,
+        font_size=14,
+    )
+    add_edge_labels(ax2, ts, G, pos)
+
+    ax3.set_title("C", fontsize=32, family="serif", loc="left")
+    edges = nx.draw_networkx_edges(
+        G,
+        pos,
+        style=(0, (5, 10)),
+        edgelist=list(G.edges()),
+        arrowstyle="-",
+        ax=ax3,
+        node_size=200,
+        width=1,
+    )
+
+    ts_simp = argutils.simplify_keeping_all_nodes(
+        argutils.remove_edges_above_local_roots(ts))
+    pos, G = argutils.viz.draw(
+        ts_simp,
+        ax3,
         pos=pos,
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
         node_size=200,
@@ -127,71 +167,89 @@ def ancestry_resolution():
         # arrows=True,
         draw_edge_widths=True,
     )
-    add_edge_labels(ax2, ts2, G, pos)
+    add_edge_labels(ax3, ts_simp, G, pos)
 
-    # From https://networkx.org/documentation/stable/auto_examples/drawing/plot_custom_node_icons.html
-    icons = {
-        "genome_empty": "illustrations/assets/genome_empty.png",
-        "genome_empty_hamburger": "illustrations/assets/genome_empty_hamburger.png",
-        "genome_full": "illustrations/assets/genome_full.png",
-    }
-    for letter in list(string.ascii_lowercase[3 : G.number_of_nodes()]):
-        icons["genome_" + letter] = f"illustrations/assets/genome_{letter.upper()}.png"
-    # Load images
-    images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
 
     # Panel (a)
     tr_figure = ax1.transData.transform
     tr_axes = fig.transFigure.inverted().transform
-    icon_size1 = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.00029
-    icon_center1 = icon_size1 / 2.0
-    icon_size2 = icon_size1 * 0.9
-    icon_center2 = icon_size2 / 2.0
+    edges = ts.tables.edges    
     for n in G.nodes:
-        G.nodes[n]["image"] = images["genome_empty"]
-    for n in G.nodes:
+        if G.nodes[n]["flags"] & argutils.ancestry.NODE_IS_RECOMB:
+            col = 'r'
+            size = (1, 0.8)
+            breaks = (edges.left[edges.child == n], edges.right[edges.child == n])
+            breaks = np.unique(np.concatenate(breaks))
+            assert len(breaks == 3)
+            assert breaks[0] == 0
+            assert breaks[2] == ts.sequence_length
+            breakpoint = breaks[1]
+        else:
+            col = 'k' if ts.node(n).is_sample() else 'g'
+            size = (0.5, 1)
+            breakpoint = None
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
-        a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2-0.0015])
-        a.imshow(G.nodes[n]["image"], aspect='auto', interpolation='spline36')
-        a.set_title(
-            string.ascii_lowercase[n],
-            y=0,
-            verticalalignment="bottom",
-            loc="center",
-            fontsize="xx-large",
-        )
-        a.axis("off")
+        a = plot_rect(ax1, xa, ya, size, col)
+        if breakpoint is not None:
+            a.text(
+                0.3, 0.2,
+                str(int(breakpoint)),
+                fontname="Trebuchet MS",
+                fontsize=36,
+            )
 
     # Panel (b)
     tr_figure = ax2.transData.transform
     tr_axes = fig.transFigure.inverted().transform
-    icon_size1 = (ax1.get_xlim()[1] - ax1.get_xlim()[0]) * 0.00029
-    icon_center1 = icon_size1 / 2.0
-    icon_size2 = icon_size1 * 0.9
-    icon_center2 = icon_size2 / 2.0
-    for n in [0, 1, 2]:
-        G.nodes[n]["image"] = images["genome_full"]
-    for n in range(3, G.number_of_nodes()):
-        G.nodes[n]["image"] = images["genome_" + string.ascii_lowercase[n]]
-    G.nodes[9]["image"] = images["genome_empty_hamburger"]
     for n in G.nodes:
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
-        a = plt.axes([xa - icon_center1, ya - icon_center2, icon_size1, icon_size2-0.0015])
-        a.imshow(G.nodes[n]["image"], aspect='auto', interpolation='spline36')
-        if n in [2, 4, 6, 7, 13, 21]:
-            n_loc = "right"
-        else:
-            n_loc = "center"
+        a = plot_ellipse(ts, ax2, xa, ya)
         a.set_title(
-            string.ascii_lowercase[n],
-            verticalalignment="top",
-            loc=n_loc,
+            G.nodes[n]["label"],
+            y=0.2,
+            fontname="Trebuchet MS",
+            verticalalignment="bottom",
+            loc="center",
+            fontsize="xx-large",
+        )
+
+    # Panel (c)
+    # Find the number of samples under each region for each node
+    node_samples = {n.id:[] for n in ts.nodes()}
+    for tree in ts_simp.trees():
+        intvl = tree.interval
+        for u in tree.nodes():
+            n_samples = tree.num_samples(u)
+            s = node_samples[u]
+            if len(s) > 0 and s[-1][0].right == intvl.left and s[-1][1] == n_samples:
+                s[-1] = (tskit.Interval(s[-1][0].left, intvl.right), n_samples)
+            else:
+                s.append((intvl, n_samples))
+    
+    
+    tr_figure = ax3.transData.transform
+    tr_axes = fig.transFigure.inverted().transform
+    
+    for n in G.nodes:
+        xf, yf = tr_figure(pos[n])
+        xa, ya = tr_axes((xf, yf))
+        a = plot_ellipse(
+            ts_simp,
+            ax3,
+            xa,
+            ya,
+            None if n == 16 else node_samples[n],
+            2 if n in {13, 14, 15} else 0)
+        a.set_title(
+            G.nodes[n]["label"],
+            fontname="Trebuchet MS",
+            verticalalignment="bottom",
+            y=0.52,
+            loc="center",
             fontsize="x-large",
         )
-        a.axis("off")
-
     graph_io = io.StringIO()
     plt.savefig(graph_io, format="svg", bbox_inches="tight")
     graph_svg = graph_io.getvalue()
