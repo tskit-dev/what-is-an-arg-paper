@@ -709,7 +709,7 @@ However, as we show in the remainder of this article,
 there are substantial practical gains
 from using the gARG encoding, allowing differential
 levels of information about the recombination process to be
-represented in a computionally efficient way.
+represented in a computationally efficient way.
 The key to this is not so much in how we interpret nodes
 (see Appendix XXX), but specifically in how
 we represent the process of genetic inheritance.
@@ -736,6 +736,9 @@ node (Fig~\ref{fig-ancestry-resolution}B). The second is to use the edge annotat
 describe the ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
 of the sample that is propagated through
 the graph from descendant to ancestor (Fig~\ref{fig-ancestry-resolution}C).
+As we discuss in section XXX, this second scheme has many advantages
+in terms of efficiency.
+
 
 \begin{figure}
 \centering
@@ -744,8 +747,8 @@ the graph from descendant to ancestor (Fig~\ref{fig-ancestry-resolution}C).
 The \citet[][Fig.~1]{wiuf1999recombination} example graph as an eARG and
 two gARGs with alternative edge annotation schemes.
 (A) A conventional Griffiths eARG. Square nodes represent events, with
-recombinations (in red) annotated with the position of a single breakpoint
-along the 7-unit long chromosome.
+each recombination (red) annotated with the position of a single breakpoint
+along the 7-unit-long chromosome.
 (B) A gARG with direct-inheritance edge annotations. Oval nodes represent
 genomes and annotations reflect ``local'' transmission of all genetic material
 between parent and child. Edges that do not span the full genome are visually
@@ -753,34 +756,37 @@ highlighted, showing how breakpoint positions can be encoded.
 (C) A gARG with sample-resolved edge annotations. The Hudson-like simplification
 algorithm has been used to shorten edge spans to
 reflect only the upwards transmission of genetic material from the samples
-\textsf{a}, \textsf{b}, and \textsf{c}. The depiction of the genome within each
+\textsf{a}, \textsf{b}, and \textsf{c}; very few edges then span the entire genome.
+The depiction of the genome within each
 node is shaded as in Fig.~\ref{fig-arg-in-pedigree}A to show coalescing
 regions of genome back to the MRCA nodes \textsf{k} (regions 0 to 2) and \textsf{p}
 (regions 2 to 7). Line widths reflect the genomic span of each edge, highlighting
-the relative importance of different transmission pathways.
+the relative importance of different transmission pathways to the samples. Nodes
+\textsf{g},  \textsf{j}, \textsf{o} and \textsf{q} are redundant in that they correspond
+to events which have no impact on the genetic ancestry of the samples.
 }
 \end{figure}
 
-ARGs are inherently a retrospective structure defined in terms
-of a set of sample nodes (usually the leaves), and,
-as we discuss in section XXX, storing sample-resolved ancestry
-intervals (Fig~\ref{fig-ancestry-resolution}C) is generally much more
-useful than storing the parent-child intervals recording direct inheritance
-(Fig~\ref{fig-ancestry-resolution}B).
-Indeed, storing direct inheritance intervals for edges is really only of interest because of
-its correspondence with the classical approach of associating
-breakpoints with recombination nodes in an eARG (Fig~\ref{fig-ancestry-resolution}A).
-The eARG encoding is simply a more limited form, in which the only types of direct
-inheritance we can have are the entire genome, or the intervals
-at either side of a recombination breakpoint.
+%ARGs are inherently a retrospective structure defined in terms
+%of a set of sample nodes (usually the leaves), and,
+%as we discuss in section XXX, storing sample-resolved ancestry
+%intervals (Fig~\ref{fig-ancestry-resolution}C) is generally much more
+%useful than storing the parent-child intervals recording direct inheritance
+%(Fig~\ref{fig-ancestry-resolution}B).
+%Indeed, storing direct inheritance intervals for edges is really only of interest because of
+%its correspondence with the classical approach of associating
+%breakpoints with recombination nodes in an eARG (Fig~\ref{fig-ancestry-resolution}A).
+%The eARG encoding is simply a more limited form, in which the only types of direct
+%inheritance we can have are the entire genome, or the intervals
+%at either side of a recombination breakpoint.
 
-Note that this example is a sample from the so-called \emph{``big'' ARG process}
-(see Appendix XXX) and has several features that we are unlikely to simulate or
-infer in practice. For example, by definition the samples contain no genetic information about
-nodes \textsf{g} and nodes \textsf{j} and so neither of those nodes are likely to be inferred.
-Likewise, is is unlikely we would have information to infer the ``grand MRCA''
-\textsf{q} as all regions of the genome have already reached a
-common ancestor separately (in nodes \textsf{k} and \textsf{p}).
+%Note that this example is a sample from the so-called \emph{``big'' ARG process}
+%(see Appendix XXX) and has several features that we are unlikely to simulate or
+%infer in practice. For example, by definition the samples contain no genetic information about
+%nodes \textsf{g} and nodes \textsf{j} and so neither of those nodes are likely to be inferred.
+%Likewise, is is unlikely we would have information to infer the ``grand MRCA''
+%\textsf{q} as all regions of the genome have already reached a
+%common ancestor separately (in nodes \textsf{k} and \textsf{p}).
 
 % Third, there exist nodes such as
 % \textsf{k} with two children (i.e. ``common ancestor'' nodes in Hudson's terminology)
@@ -805,18 +811,30 @@ carries sample-resolved material on the intervals $(0, 2]$ and $(4, 7]$. The edg
 joining \textsf{i} to its ancestor \textsf{k} then carries
 material on $(0, 2]$ since although \textsf{i} directly inherits interval
 $(0, 3]$ from \textsf{k} (Fig~\ref{fig-ancestry-resolution}B), only $(0, 2]$ is
-ancestral to the sample. This process is directly analogous to Hudson's
-simulation algorithm
+ancestral to the sample. For each node, we also keep track of the number of
+descendant samples over each genomic interval, and stop tracking that
+interval once the lineages from all samples have coalesced. For example,
+the edge from \textsf{k} to \textsf{n} omits the region $(0,2]$ because it has
+already fully coalesced (indicated by a fully black genomic region).
+This process is directly analogous to Hudson's simulation algorithm
 (Appendix XXX).
 
-These alternatives of recording the direct inheritance of genetic material from
-parent to child vs the propagation of genomic intervals ancestral to the sample
-are analogous to running forwards-in-time vs backwards-in-time simulations.
-Indeed, the process of taking a graph with edges annotated with direct parent-child
-inheritance (Fig~\ref{fig-ancestry-resolution}B) and producing the equivalent
-``ancestry resolved'' graph in which only those genomic intervals that are
-ancestral to the sample are retained (Fig~\ref{fig-ancestry-resolution}C)
-is the same key algorithm underlying recent advances in forwards-in-time simulation.
+In practice, the backwards-in-time Griffiths process that produces
+ARGs such as that shown in Figs~{fig-ancestry-resolution}A~and~B
+is rarely simulated, because the resulting ``big ARG'' (Appendix XXX) is
+dominated by nodes such as \textsf{g} and \textsf{j} which contain information
+about inheritance in non-ancestral material, as well as nodes such as
+\textsf{o} and \textsf{q} which track details of ancestry even once the
+local genomic region has fully coalesced. Instead, simulating
+ARGs from the coalescent with recombination is usually done by
+running Hudson's algorithm to produce a sample-resolved ARG directly.
+Moreover, when inferring ARGs from genetic data, there is no information
+in the sample set that can be used to resolve these nodes, so that they
+are essentially unknowable.
+
+Nevertheless, there is a practical use for converting a direct-inheritance
+gARG to a sample resolved version. It is the key algorithm underlying recent
+advances in forwards-in-time simulation.
 \cite{kelleher2018efficient} developed a method in which forwards-in-time
 simulations are performed by recording all parent-child genetic relationships
 (i.e.~annotating the edges in the simulated pedigree with the genomic
@@ -824,8 +842,14 @@ intervals inherited by a child from a parent) and periodically ``simplifying''
 this structure to retain only ancestral relationships that are relevant
 to the ancestry of the current population. In many situations, using this approach to
 record the full genetic ancestry of the current population is orders of magnitude faster
-than the alternative of tracking
-sequences~\citep{kelleher2018efficient,haller2018tree}.
+than the alternative of tracking neutral genetic variation directly~\citep{kelleher2018efficient,haller2018tree}.
+
+It is worth noting the process of sample resolution can reveal that certain ARG
+nodes are \emph{redundant}: if they are removed and the edges adjusted to
+pas directly from the node's child to the node's parent, it does not reduce our
+knowledge of the samples' genetic ancestry. Removing nodes,
+both redundant ones and others, is part of a process we call
+``simplification''.
 
 \begin{figure}
 \centering
