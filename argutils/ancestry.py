@@ -309,6 +309,46 @@ def remove_unused_nodes(ts):
     return ts.subset(used_nodes)
 
 
+def remove_edges_above_local_roots(ts):
+    # use simplify() to find the roots
+    ts_simp, node_map = ts.simplify(map_nodes=True)
+    inverted_node_map = {n: i for i, n in enumerate(node_map)}
+    edges_to_prune = {}
+    for intvl, orig_tree, tree in ts.coiterate(ts_simp):
+        for root in tree.roots:
+            orig_node = inverted_node_map[root]
+            if orig_tree.parent(orig_node) != tskit.NULL:
+                edge_above = orig_tree.edge(orig_node)
+                if edge_above in edges_to_prune:
+                    intervals = edges_to_prune[edge_above]
+                    if intervals[-1].right == intvl.left:
+                        intervals[-1] = tskit.Interval(intervals[-1].left, intvl.right)
+                    else:
+                        intervals.append(intvl)
+                else:
+                    edges_to_prune[edge_above] = [intvl]
+    # Now split the edges to prune by their intervals
+    tables = ts.dump_tables()
+    edges = tables.edges
+    for edge_id, intervals in edges_to_prune.items():
+        deleted_edge = tables.edges[edge_id]
+        if deleted_edge.left < intervals[0].left:
+            edges.append(deleted_edge.replace(right=intervals[0].left))
+        for i in range(len(intervals)):
+            try:
+                edges.append(deleted_edge.replace(
+                    left=intervals[i].right, right=intervals[i+1].left))
+            except IndexError:
+                # last interval to delete
+                if deleted_edge.right > intervals[i].right:
+                    edges.append(deleted_edge.replace(left=intervals[i].right))
+    keep = np.ones(edges.num_rows, dtype=bool)
+    keep[list(edges_to_prune.keys())] = False
+    tables.edges.replace_with(edges[keep])
+    tables.sort()
+    return tables.tree_sequence()        
+            
+   
 def simplify_keeping_all_nodes(ts):
     """
     Run the Hudson algorithm to convert from an implicit to an explicit edge encoding,
@@ -540,12 +580,27 @@ def sim_wright_fisher(n, N, L, recomb_proba=1, seed=None):
     return tables.tree_sequence()
 
 
-def wh99_example():
+def wh99_example(one_node_recombination=None):
     """
     The example ARG from figure 1 of Wiuf and Hein 99, Recombination as a Point Process
     along Sequences. Each event is given a time increment of 1.
     """
+    if one_node_recombination is None:
+        one_node_recombination = False
     L = 7
+    class SingleRENode:
+        def __init__(self, node_id, breakpoint):
+            self.id = node_id
+            self.breakpoint = breakpoint
+        @property
+        def l(self):
+            return self.id, 0, self.breakpoint
+        @property
+        def r(self):
+            return self.id, self.breakpoint, L
+
+    DoubleRENode = collections.namedtuple("DoubleRENode", "l, r")
+
     tables = tskit.TableCollection(L)
     nodes = tables.nodes
     edges = tables.edges
@@ -557,33 +612,54 @@ def wh99_example():
     def re(child, x):
         nonlocal t
         t += 1
-        left_parent = nodes.add_row(time=t)
-        right_parent = nodes.add_row(time=t)
-        edges.add_row(0, x, left_parent, child)
-        edges.add_row(x, L, right_parent, child)
-        nodes[child] = nodes[child].replace(flags=nodes[child].flags | NODE_IS_RECOMB)
+        if one_node_recombination:
+            parent = nodes.add_row(time=t, flags=NODE_IS_RECOMB)
+            try:
+                child, left, right = child
+            except TypeError:
+                left = 0
+                right = L
+            edges.add_row(left, right, parent, child)
+            return SingleRENode(parent, x)
+        else:
+            left_parent = nodes.add_row(time=t)
+            right_parent = nodes.add_row(time=t)
+            edges.add_row(0, x, left_parent, child)
+            edges.add_row(x, L, right_parent, child)
+            nodes[child] = nodes[child].replace(flags=nodes[child].flags | NODE_IS_RECOMB)
+            return DoubleRENode(left_parent, right_parent)
 
     def ca(*args):
         nonlocal t
         t += 1
         parent = nodes.add_row(time=t)
         for child in args:
-            edges.add_row(0, L, parent, child)
+            try:
+                child, left, right = child
+            except TypeError:
+                left = 0
+                right = L
+            edges.add_row(left, right, parent, child)
+        return parent
 
-    re(1, x=4)
-    re(2, x=2)
-    ca(0, 3)
-    re(5, x=5)
-    ca(4, 8)
-    re(10, x=3)
-    ca(12, 9)
-    ca(7, 11)
-    re(13, x=6)
-    ca(16, 6)
-    ca(14, 15)
-    re(18, x=1)
-    ca(20, 17)
-    ca(19, 21)
+    spl0 = 0
+    spl1 = 1
+    spl2 = 2
+
+    wh_4 = re(spl1, x=4)
+    wh_2 = re(spl2, x=2)
+    wh_a = ca(spl0, wh_4.l)
+    wh_5 = re(wh_2.l, x=5)
+    wh_b = ca(wh_4.r, wh_5.l)
+    wh_3 = re(wh_b, x=3)
+    wh_c = ca(wh_3.r, wh_5.r)
+    wh_A = ca(wh_3.l, wh_a)
+    wh_6 = re(wh_c, x=6)
+    wh_d = ca(wh_6.r, wh_2.r)
+    wh_e = ca(wh_A, wh_6.l)
+    wh_1 = re(wh_e, x=1)
+    wh_B = ca(wh_1.r, wh_d)
+    root = ca(wh_1.l, wh_B)
 
     tables.sort()
     return tables.tree_sequence()
