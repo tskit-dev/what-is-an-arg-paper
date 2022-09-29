@@ -709,7 +709,7 @@ However, as we show in the remainder of this article,
 there are substantial practical gains
 from using the gARG encoding, allowing differential
 levels of information about the recombination process to be
-represented in a computionally efficient way.
+represented in a computationally efficient way.
 The key to this is not so much in how we interpret nodes
 (see Appendix XXX), but specifically in how
 we represent the process of genetic inheritance.
@@ -761,7 +761,9 @@ The depiction of the genome within each
 node is shaded as in Fig.~\ref{fig-arg-in-pedigree}A to show coalescing
 regions of genome back to the MRCA nodes \textsf{k} (regions 0 to 2) and \textsf{p}
 (regions 2 to 7). Line widths reflect the genomic span of each edge, highlighting
-the relative importance of different transmission pathways to the samples.
+the relative importance of different transmission pathways to the samples. Nodes
+\textsf{g},  \textsf{j}, \textsf{o} and \textsf{q} are redundant in that they correspond
+to events which have no impact on the genetic ancestry of the samples.
 }
 \end{figure}
 
@@ -842,10 +844,10 @@ to the ancestry of the current population. In many situations, using this approa
 record the full genetic ancestry of the current population is orders of magnitude faster
 than the alternative of tracking neutral genetic variation directly~\citep{kelleher2018efficient,haller2018tree}.
 
-It is worth noting that nodes \textsf{g},  \textsf{j}, \textsf{o} and \textsf{q}
-in Fig~\ref{fig-ancestry-resolution}C are redundant in that they can
-be removed without reducing our knowledge of the genetic
-ancestry of the samples. Removing nodes,
+It is worth noting the process of sample resolution can reveal that certain ARG
+nodes are \emph{redundant}: if they are removed and the edges adjusted to
+pas directly from the node's child to the node's parent, it does not reduce our
+knowledge of the samples' genetic ancestry. Removing nodes,
 both redundant ones and others, is part of a process we call
 ``simplification''.
 
