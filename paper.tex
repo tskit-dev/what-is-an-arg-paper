@@ -723,65 +723,66 @@ cannot be done by storing recombination breakpoints.
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
 number of generations (ultimately from cell to cell). The edges are ``annotated''
-with the genome coordinates over which inheritance occurs. There are
-two ways in which we can interpret these annotations, and the
+with the genome coordinates over which inheritance occurs.
+Fig~\ref{fig-ancestry-resolution} is an instructive example
+from the literature \citep{wiuf1999recombination} and illustrates
+how a classical eARG (Fig~\ref{fig-ancestry-resolution}A) can be described as
+a gARG with edge annotations (Figs~\ref{fig-ancestry-resolution}B~and~C).
+
+There are two distinct annotation schemes possible, and the
 distinction is subtle and important.
-The first interpretation is to regard the annotations as describing
+The first scheme is to use the annotations to describe
 the complete set of genomic intervals inherited by the descendant node from the
-ancestor node. The second is to view the edge annotations as representing
+ancestor node (Fig~\ref{fig-ancestry-resolution}B). The second is to use the edge annotations to describe
 the ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
 of the sample that is propagated through
-the graph from descendant to ancestor.
-These alternatives are illustrated in Fig~\ref{fig-ancestry-resolution}.
+the graph from descendant to ancestor (Fig~\ref{fig-ancestry-resolution}C).
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
-The \citet[][Fig.~1]{wiuf1999recombination} example graph as a gARG,
-with contrasting
-edge annotation schemes. (A) Immediate edge annotation, reflecting ``local''
-transmission of all genetic material between parent and child. All edges span
-the full genome from position 0 to 7, apart from those linking a recombinant
-and its two parents (bold). (B) Sample-resolved edge annotation: the
-Hudson-like simplification algorithm has been used to shorten edge spans to
+The \citet[][Fig.~1]{wiuf1999recombination} example graph as an eARG and
+two gARGs with alternative edge annotation schemes.
+(A) A conventional Griffiths eARG. Square nodes represent events, with
+recombinations (in red) annotated with the position of a single breakpoint
+along the 7-unit long chromosome.
+(B) A gARG with direct-inheritance edge annotations. Oval nodes represent
+genomes and annotations reflect ``local'' transmission of all genetic material
+between parent and child. Edges that do not span the full genome are visually
+highlighted, showing how breakpoint positions can be encoded.
+(C) A gARG with sample-resolved edge annotations. The Hudson-like simplification
+algorithm has been used to shorten edge spans to
 reflect only the upwards transmission of genetic material from the samples
 \textsf{a}, \textsf{b}, and \textsf{c}. The depiction of the genome within each
 node is shaded as in Fig.~\ref{fig-arg-in-pedigree}A to show coalescing
-regions of genome back to the grand MRCA \textsf{w}. Line widths reflect
-the genomic span of each edge, which helps visualise the relative importance of
-different transmission pathways.
+regions of genome back to the MRCA nodes \textsf{k} (regions 0 to 2) and \textsf{p}
+(regions 2 to 7). Line widths reflect the genomic span of each edge, highlighting
+the relative importance of different transmission pathways.
 }
 \end{figure}
 
 ARGs are inherently a retrospective structure defined in terms
 of a set of sample nodes (usually the leaves), and,
 as we discuss in section XXX, storing sample-resolved ancestry
-intervals (Fig~\ref{fig-ancestry-resolution}B) is generally much more
+intervals (Fig~\ref{fig-ancestry-resolution}C) is generally much more
 useful than storing the local parent-child intervals of inheritance
-(Fig~\ref{fig-ancestry-resolution}A).
+(Fig~\ref{fig-ancestry-resolution}B).
 Indeed, storing local parent-child
 inheritance intervals for edges is really only of interest because of
 its direct correspondence with the classical approach of associating
-breakpoints with recombination nodes in an eARG. The eARG encoding
-is simply a more limited form, in which the only types of direct
+breakpoints with recombination nodes in an eARG (Fig~\ref{fig-ancestry-resolution}A).
+The eARG encoding is simply a more limited form, in which the only types of direct
 inheritance we can have are the entire genome, or the intervals
 at either side of a recombination breakpoint.
 
-Fig~\ref{fig-ancestry-resolution}A is an instructive example
-from the literature \citep{wiuf1999recombination} and illustrates
-how a classical eARG can be described as a gARG with local edge annotations
-(directly corresponding to the eARG description), and how we can
-then derive the ancestry resolved edge annotations.
-It is important to note, however, that the example is a sample from
-the so-called ``big'' ARG \emph{process} (see Appendix XXX)
-and has several features that we are unlikely to simulate or infer in practice.
-For example, by definition the samples contain no genetic information about
-node \textsf{j} and so it is unlikey to be inferred.
+Note that this example is a sample from the so-called \emph{``big'' ARG process}
+(see Appendix XXX) and has several features that we are unlikely to simulate or
+infer in practice. For example, by definition the samples contain no genetic information about
+nodes \textsf{g} and nodes \textsf{j} and so neither of those nodes are likely to be inferred.
 Likewise, is is unlikely we would have information to infer the ``grand MRCA''
-\textsf{w} as all regions of the genome have already reached a
-common ancestor separately
-(in nodes \textsf{o} and \textsf{v}).
+\textsf{q} as all regions of the genome have already reached a
+common ancestor separately (in nodes \textsf{k} and \textsf{p}).
 
 % Third, there exist nodes such as
 % \textsf{k} with two children (i.e. ``common ancestor'' nodes in Hudson's terminology)
@@ -792,39 +793,39 @@ common ancestor separately
 % positions 2 and 4 (which is sufficient for calculating the likelihood, see appendix XXX).
 
 Given the local inheritance edge annotations
-(Fig~\ref{fig-ancestry-resolution}A),
+(Fig~\ref{fig-ancestry-resolution}B),
  we obtain the sample-resolved edge annotation
-(Fig~\ref{fig-ancestry-resolution}B) by traversing the graph backwards in time
+(Fig~\ref{fig-ancestry-resolution}C) by traversing the graph backwards in time
 from sample nodes (\textsf{a}, \textsf{b}, \textsf{c}).
 Proceeding in topological order (such that an ancestor node is visited
 after all of its descendants) the ancestral material for a node is the
 union of the ancestral intervals on its inbound edges. We then annotate
-the outbound edges with the intersection of their local inheritance and
-just-computed ancestral intervals for the node.
-For example, node \textsf{d} in Fig~\ref{fig-ancestry-resolution}
-carries ancestral material on the interval $(0, 4]$, since it
-is the left-hand parent of the recombinant \textsf{b}. The edge
-joining \textsf{d} to its ancestor \textsf{h} then carries ancestral
-material on $(0, 4]$ since although \textsf{d} inherits the entire interval
-$(0, 7]$ from \textsf{h}, only $(0, 4]$ is ancestral to the sample.
-This process is directly analogous to Hudson's simulation algorithm
+the outbound edges with the intersection of their local inheritance intervals
+and the just-computed ancestral intervals for the node.
+For example, node \textsf{i} in Fig~\ref{fig-ancestry-resolution}C
+carries ancestral material on the intervals $(0, 2]$ and $(4, 7]$. The edge
+joining \textsf{i} to its ancestor \textsf{k} then carries ancestral
+material on $(0, 2]$ since although \textsf{i} directly inherits interval
+$(0, 3]$ from \textsf{k} (Fig~\ref{fig-ancestry-resolution}B), only $(0, 2]$ is
+ancestral to the sample. This process is directly analogous to Hudson's
+simulation algorithm
 (Appendix XXX).
 
 These alternatives of recording the direct inheritance of genetic material from
 parent to child vs the propagation of genomic intervals ancestral to the sample
 are analogous to running forwards-in-time vs backwards-in-time simulations.
 Indeed, the process of taking a graph with edges annotated with direct parent-child
-inheritance (Fig~\ref{fig-ancestry-resolution}A) and producing the equivalent
+inheritance (Fig~\ref{fig-ancestry-resolution}B) and producing the equivalent
 ``ancestry resolved'' graph in which only those genomic intervals that are
-ancestral to the sample are retained (Fig~\ref{fig-ancestry-resolution}B)
+ancestral to the sample are retained (Fig~\ref{fig-ancestry-resolution}C)
 is the same key algorithm underlying recent advances in forwards-in-time simulation.
 \cite{kelleher2018efficient} developed a method in which forwards-in-time
 simulations are performed by recording all parent-child genetic relationships
 (i.e.~annotating the edges in the simulated pedigree with the genomic
 intervals inherited by a child from a parent) and periodically ``simplifying''
 this structure to retain only ancestral relationships that are relevant
-to the ancestry of the current population. In many situations, recording
-the full genetic ancestry of the current population in this way is orders of magnitude faster
+to the ancestry of the current population. In many situations, using this approach to
+record the full genetic ancestry of the current population is orders of magnitude faster
 than the alternative of tracking
 sequences~\citep{kelleher2018efficient,haller2018tree}.
 
