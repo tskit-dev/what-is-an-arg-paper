@@ -17,12 +17,12 @@ import scipy.stats
 def arity_colors(n_parents):
     assert n_parents >= 0
     if n_parents == 0:
-        return colorcet.cm.CET_I1(255)  # Red
+        return colorcet.cm.CET_I1(0)  # Blue
     if n_parents == 1:
-        return colorcet.cm.CET_I1(200)  # Yellow
+        return colorcet.cm.CET_I1(100)  # Green
     # Max out at full blue if 6 or more parents; use log scale
     multiple_parents_val = (min(np.log2(n_parents), np.log2(6)) - 1) / (np.log2(6) - 1)
-    return colorcet.cm.CET_I1(100 - int(multiple_parents_val * 100))
+    return colorcet.cm.CET_I1(200 + int(multiple_parents_val * 100))
 
 
 def make_color(rgb, lighten=0):

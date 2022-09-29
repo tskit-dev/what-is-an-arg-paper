@@ -39,7 +39,7 @@ def ancestry_resolution():
             0.96,
             0.96,
             linewidth=2,
-            edgecolor='k',
+            edgecolor='tab:green',
             facecolor='white',
         )
         a.add_patch(icon)
@@ -176,7 +176,7 @@ def ancestry_resolution():
     edges = ts.tables.edges    
     for n in G.nodes:
         if G.nodes[n]["flags"] & argutils.ancestry.NODE_IS_RECOMB:
-            col = 'r'
+            col = 'tab:red'
             size = (1, 0.8)
             breaks = (edges.left[edges.child == n], edges.right[edges.child == n])
             breaks = np.unique(np.concatenate(breaks))
@@ -185,7 +185,7 @@ def ancestry_resolution():
             assert breaks[2] == ts.sequence_length
             breakpoint = breaks[1]
         else:
-            col = 'k' if ts.node(n).is_sample() else 'g'
+            col = 'k' if ts.node(n).is_sample() else 'tab:blue'
             size = (0.5, 1)
             breakpoint = None
         xf, yf = tr_figure(pos[n])
