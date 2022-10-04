@@ -857,12 +857,13 @@ both redundant ones and others, is part of a process we call
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
 ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent local trees on the right.
+and the equivalent local trees on the right. Since multiple parents are indicative of
+recombination(s), nodes are coloured by the number of parents. and shaded
+according to the proportion of their span over which they are coalescent.
 (A) A gARG simulated from a diploid Wright-Fisher
 model. Note that the genome \textsf{k} has three children, and the genomes
 \textsf{e} and \textsf{g} simultaneously have multiple parents and multiple
 children.
-The penultimate local tree is highlighted to aid discussion.
 (B) Simplified to remove all
 % trying out this terminology - can define in the text
 1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
@@ -893,19 +894,17 @@ simplification, starting with a complete gARG simulated under a
 model, shown both as a graph on the left, and the equivalent set of 6
 local trees on the right.
 For example, consider the path above node
-\textsf{a} in the highlighted tree (covering positions 60 to 70)
+\textsf{a} in the first tree (covering positions 30 to 40)
 in Fig.~\ref{fig-simplification}A.
 Before \textsf{a} meets its common ancestor with the other samples at
 node \textsf{q}, it passes through \textsf{e}, \textsf{j}, \textsf{m}, \textsf{n} and
 \textsf{p}, which in this region of the genome are all unary nodes.
-This reflects the
-passage of this span of genome through the ARG towards the root.
+This reflects the passage of this span of genome through the ARG towards the root.
 Such unary nodes in a local tree are not usually considered important;
 % because they provide little information and are not
 % detectable by information from any given individual tree.
-nodes usually mark the points where samples find a
- \emph{common} ancestor, such as node \textsf{q} in the highlighted
-tree. For most purposes, we would therefore consider a path directly
+nodes usually mark the points where samples coalesce in a
+ \emph{common} ancestor. For most purposes, we would therefore consider a path directly
 joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
 containing the intermediate unary nodes. Simplification is the process of removing
 these less informative nodes from the local trees by modifying the gARG.

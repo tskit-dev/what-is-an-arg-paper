@@ -20,9 +20,12 @@ def arity_colors(n_parents):
         return colorcet.cm.CET_I1(0)  # Blue
     if n_parents == 1:
         return colorcet.cm.CET_I1(100)  # Green
-    # Max out at full blue if 6 or more parents; use log scale
-    multiple_parents_val = (min(np.log2(n_parents), np.log2(6)) - 1) / (np.log2(6) - 1)
-    return colorcet.cm.CET_I1(200 + int(multiple_parents_val * 100))
+    if n_parents == 2:
+        return colorcet.cm.CET_I1(190)  # Orange
+    if n_parents == 3:
+        return colorcet.cm.CET_I1(220)  # orange-red
+    if n_parents == 4:
+        return colorcet.cm.CET_I1(255)  # "Red"
 
 
 def make_color(rgb, lighten=0):
@@ -120,7 +123,7 @@ def draw(
 
     """
     if node_size is None:
-        node_size = 200
+        node_size = 180
     if nonsample_node_shrink is not None:
         # Shrink the nonsample label size
         node_size_array = np.full(ts.num_nodes, node_size / nonsample_node_shrink)
@@ -216,6 +219,7 @@ def draw(
         node_shape="o",
         node_size=node_size,
         font_size=font_size,
+        linewidths=2,
         ax=ax,
         edgelist=[],
     )
