@@ -8,7 +8,7 @@ pandas
 pydot
 scipy
 tsinfer>=0.2.1
-tskit>=0.3.4
+tskit>=0.5.1
 tsdate>=0.1.4
 click
 # Extra non-python requirements: graphviz, inkscape
