@@ -1090,7 +1090,6 @@ required to be absolutely precise about every recombination
 % information are illustrated in the ARGs estimated by different
 % methods, as we see in the next section.
 
-
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} ARGs inferred by
@@ -1100,11 +1099,25 @@ required to be absolutely precise about every recombination
 and (D) \relate~\citep{speidel2019method}
 for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
 locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
-is a sample from the inferred posterior distribution.
+is a sample from the inferred posterior distribution. In each ARG,
+colours are assigned to edges based on the time of the edge's child node: 
+lighter colours are assigned to edges with older child
+nodes, darker colours are assigned to edges with younger child nodes
 Note that the position of points on the
-Y axis is that chosen for graphical clarity by the graphviz \texttt{dot}
-algorithm,  rather than being
-a direct measure of time. Additional notes about these ARGs.
+Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
+algorithm, rather than as a direct measure of time.
+Line width corresponds to the genomic span of the edge. Node colour
+refers to the number of parents of the node: red is zero, brown is one, 
+green to blue are two to N parents. The brightness
+of the node is determined by the genomic span over which
+the node has two or more children divided by the span where it has any
+children. The genomic intervals associated with edges are visualised below
+each ARG, where each row is an edge 
+and the x axis reflects genomic position. The width of edges
+thus corresponds to their genomic span. Edges
+are ordered by the age of their child node, from oldest to youngest
+moving down the page, with colours matching the edge colours in the ARG. 
+Vertical lines indicate breakpoints between local trees.
 }
 \end{figure}
 
