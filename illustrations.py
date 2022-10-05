@@ -270,6 +270,77 @@ def ancestry_resolution():
         f.write(top_svg)
 
 
+def legend_svg():
+    # Save legend as a separate SVG
+    marker_params = dict(marker='o', linestyle=':', markersize=15, markeredgewidth=4)
+
+    fig, ax = plt.subplots(figsize=(4.3,3))
+    label_sep=0.6
+    ax.text(2.5, 0.9, "Number of\nparents", fontsize=18, ha="center", linespacing=0.8)
+    ax.text(8, 0.9, "Coalescent\nspan", fontsize=18, ha="center", linespacing=0.8)
+    
+    for parents in range(5):
+        ax.plot(
+            [1],
+            [-parents],
+            markeredgecolor=argutils.viz.arity_colors(parents),
+            markerfacecolor='none',
+            **marker_params
+        )
+        ax.text(
+            1+label_sep,
+            -parents,
+            str(parents) + (" parents" if parents in (0, 4) else ""),
+            va="center_baseline",
+            fontsize=15,
+        )
+    # not quite right, but good enough
+    mean_rgb = np.mean(np.array([argutils.viz.arity_colors(p)[:3] for p in range(5)]))
+    
+    for span in [100, 50, 0]:
+        shade = 1-(span/100) * (1-mean_rgb)
+        y = (span-100)/35
+        ax.plot(
+            [7],
+            [y],
+            markeredgecolor=[mean_rgb]*3,
+            markerfacecolor=[shade] * 3,
+            **marker_params,
+        )
+        ax.text(7+label_sep, y, str(span) + "%", va="center_baseline", fontsize=15)
+        if span:
+            ax.text(7+label_sep, y-0.5, "...", va="center_baseline", fontsize=15)
+            
+        
+    ax.plot(
+        [6],
+        [-4],
+        markeredgecolor=[mean_rgb]*3,
+        markerfacecolor=[0] * 3,
+        **marker_params,
+    )
+    ax.text(6+label_sep, -4, "sample", va="center_baseline", fontsize=15)
+    
+    ax.set_ylabel("Node key", fontsize=20, bbox=dict(facecolor='white'))
+    ax.yaxis.set_label_coords(0.035, 0.5)
+    ax.set_axisbelow(False)
+    ax.set_xlim(-0.5,10.5)
+    ax.set_ylim(-4.7,2.5)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for axis in ['top','bottom','left','right']:
+        ax.spines[axis].set_linewidth(3)
+
+    ax.patch.set_facecolor('white')
+    fig.patch.set_alpha(0)
+    legend_io = io.StringIO()
+    plt.savefig(legend_io, format="svg", bbox_inches="tight")
+    plt.close()
+    legend_svg = legend_io.getvalue()
+    return legend_svg[legend_svg.find("<svg") :]
+
+
+
 @click.command()
 def simplification():
     """
@@ -287,6 +358,10 @@ def simplification():
     # tweak rank times here for nicer viz
     rank_times = np.where(rank_times == 1, 0.5, rank_times)
     tables.nodes.time = rank_times
+    # reverse coordinates to give space for the key on the plot
+    left = tables.edges.left
+    tables.edges.left = tables.sequence_length - tables.edges.right
+    tables.edges.right = tables.sequence_length - left
     tables.sort()
     ts=tables.tree_sequence()
 
@@ -337,7 +412,7 @@ def simplification():
     plt.savefig(graph1_io, format="svg", bbox_inches="tight")
     plt.close()
     graph1_svg = graph1_io.getvalue()
-    graph1_svg = graph1_svg[graph1_svg.find("<svg") :]
+    graph1_svg = graph1_svg[graph1_svg.find("<svg") :]    
 
     svg = [
         '<svg width="900" height="900" xmlns="http://www.w3.org/2000/svg" '
@@ -355,7 +430,7 @@ def simplification():
             style=(
                 '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
                 '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}' +
-                (f'.subfig{i} .background path:nth-child(5) {{fill: #FFFF30; fill-opacity: .5}}' if i==0 else '')
+                '.subfig3 .x-axis .tick .lab {visibility: visible}'
             ),
         )
         svg.append(
@@ -367,6 +442,7 @@ def simplification():
             tree_svg +
             "</g>"
         )
+    svg.append('<g transform="translate(190, 580) scale(0.5)">' + legend_svg() + "</g>")
     svg.append("</svg>")
 
 
@@ -708,13 +784,14 @@ def inference():
     graph_svg = graph_io.getvalue()
     plt.close()
 
+    
     svg = [
-        # Could concatenate more SVG stuff here in <g> tags, e.g.
-        # if we wanted to draw the 2 plots as 2 separate svg plots
-        # rather than using plt.subplots
-        graph_svg[graph_svg.find("<svg"):]
+        '<svg width="1000" height="600" xmlns="http://www.w3.org/2000/svg" '
+        'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
-
+    svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
+    svg.append('<g transform="translate(130, 60) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
         '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
