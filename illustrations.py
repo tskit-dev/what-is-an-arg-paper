@@ -641,7 +641,7 @@ def inference():
     # ARGweaver
     ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
-    tree_seqs["ARGweaver example"] = argutils.viz.label_nodes(ts, labels=labels)
+    tree_seqs["ARGweaver"] = argutils.viz.label_nodes(ts, labels=labels)
 
     # Tsinfer
     ts = tskit.load("examples/Kreitman_SNP_tsinfer.trees")
@@ -686,6 +686,7 @@ def inference():
     tree_seq_positions = []
     max_rank_by_ts = {}
     for ax, ax_edges, (name, ts) in zip(axes[0], axes[1], tree_seqs.items()):
+        subtitle = f"{ts.num_trees} trees"
         params = dict(
             # some of these can get overwritten
             node_size=30,
@@ -702,9 +703,11 @@ def inference():
                 21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
                 23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
             }
-        if name == "ARGweaver example":
+        if name == "ARGweaver":
+            subtitle = "(typical MCMC result) " + subtitle
             params["tweak_x"] = {
-                54: -10
+                54: 10, 48: 7, 49: 10, 26: 5, 30: 10, 32: -5, 31: 12, 15: -7, 40: 2,
+                44: -5, 39: -2, 45: -3, 52: -2, 51: -5, 42: 5,
             }
         if name == "KwARG":
             params["tweak_x"] = {
@@ -737,7 +740,7 @@ def inference():
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
 
-        ax.set_title(name + f"\n{ts.num_trees} trees")
+        ax.set_title(name + "\n" + subtitle)
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
         ax_edges.axis("off")
@@ -790,7 +793,7 @@ def inference():
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(130, 60) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(145, 60) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
