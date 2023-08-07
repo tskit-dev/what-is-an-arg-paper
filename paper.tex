@@ -422,7 +422,7 @@ common ancestor events.
 % \section*{Genome ARGs}
 There is no fundamental reason, however, that the data structure we use
 to describe patterns of genetic inheritance must be in terms
-of specific causal events. As we demonstrate in subsequent sections,
+of specific causal events. As demonstrated in subsequent sections,
 there are significant advantages to using
 a slightly different formulation, which
 we call a ``genome ARG'' (gARG).
@@ -455,6 +455,9 @@ in the gARG encoding),
 a genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
+% NOTE: does this example really help? Rather than spelling out what
+% we can already see, perhaps we should point out the non-obvious
+% thing that we have decoupled from "events"
 For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
 has two genomes \textsf{a} and \textsf{b},
 inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
@@ -569,8 +572,7 @@ local relationships along the genome, as shown in the local
 The difference between eARGs and gARGs are subtle, and whether
 we choose to interpret nodes as events or genomes
 might seem of little practical importance.
-However, as we show in the remainder of this article,
-there are substantial practical gains
+However, there are substantial practical benefits
 from using the gARG encoding, allowing differential
 levels of information about the recombination process to be
 represented in a computationally efficient way.
@@ -684,7 +686,7 @@ This process is directly analogous to Hudson's simulation algorithm
 (Appendix XXX).
 
 In practice, the backwards-in-time Griffiths process that produces
-ARGs such as that shown in Figs~{fig-ancestry-resolution}A~and~B
+ARGs such as that shown in Figs~\ref{fig-ancestry-resolution}A~and~B
 is rarely simulated, because the resulting ``big ARG'' (Appendix XXX) is
 dominated by nodes such as \textsf{g} and \textsf{j} which contain information
 about inheritance in non-ancestral material, as well as nodes such as
@@ -708,12 +710,12 @@ to the ancestry of the current population. In many situations, using this approa
 record the full genetic ancestry of the current population is orders of magnitude faster
 than the alternative of tracking neutral genetic variation directly~\citep{kelleher2018efficient,haller2018tree}.
 
-It is worth noting the process of sample resolution can reveal that certain ARG
-nodes are \emph{redundant}: if they are removed and the edges adjusted to
-pas directly from the node's child to the node's parent, it does not reduce our
-knowledge of the samples' genetic ancestry. Removing nodes,
-both redundant ones and others, is part of a process we call
-``simplification''.
+% It is worth noting the process of sample resolution can reveal that certain ARG
+% nodes are \emph{redundant}: if they are removed and the edges adjusted to
+% pas directly from the node's child to the node's parent, it does not reduce our
+% knowledge of the samples' genetic ancestry. Removing nodes,
+% both redundant ones and others, is part of a process we call
+% ``simplification''.
 
 \begin{figure}
 \centering
@@ -1018,11 +1020,11 @@ that persist from one tree to the next as a separate step
 \texttt{tsinfer} explicitly constructs nodes that are shared across local
 trees.
 
-Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
-explicit recombination events we cannot compute a likelihood
-under the coalescent with recombination (see appendix XXX).
-[Some stuff about whether we should see this as necessary or not,
-but maybe we should keep this for the conclusion?]
+% Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
+% explicit recombination events we cannot compute a likelihood
+% under the coalescent with recombination (see appendix XXX).
+% [Some stuff about whether we should see this as necessary or not,
+% but maybe we should keep this for the conclusion?]
 
 \section*{When do we need ``full'' ARGs?}
 % The full ancestral recombination graph (ARG) is a structure that encodes all
