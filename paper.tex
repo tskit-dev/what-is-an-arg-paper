@@ -180,145 +180,11 @@ relationship between the classical concept of an ARG and the
 recently introduced succinct tree sequence data structure.
 \end{enumerate}
 
-\section*{Ancestral graphs: a brief history}
-The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
-hudson1983testing, tajima1983evolutionary} models the ancestry of a sample of
-genomes under an idealised population model, and provides the theoretical
-underpinning for much of contemporary population genetics.
-It is a stochastic process, where each random realisation
-is a genealogical tree describing the genetic ancestry of the sample.
-Numerous extensions to the model have been
-proposed~\citep{hudson1990gene,hein2004gene,wakely2008coalescent},
-incorporating many evolutionary processes.
-\citet{hudson1983properties}
-first incorporated recombination into the coalescent process,
-providing several fundamental analytical results
-and describing the basic simulation algorithm, still in
-widespread use~\citep{hudson2002generating,kelleher2016efficient,
-baumdicker2021efficient}.
-In the 1990s, Griffiths and colleagues revisited the
-coalescent with recombination from a different perspective,
-formulating it as a stochastic process where each realisation
-is encoded as a graph~\citep{griffiths1991two,ethier1990two,
-griffiths1996ancestral,griffiths1997ancestral}.
-They referred to both the stochastic process and
-its random realisations as the Ancestral Recombination Graph (ARG).
-Although mathematically equivalent, it is
-important to note that the Griffiths and Hudson formulations of
-the coalescent with recombination are not identical;
-in particular, a direct implementation of the ARG process
-as originally described requires exponential time to simulate
-(see Appendix XXX for details). However, ARGs provided a way
-to reason about and infer recombinant ancestry as a single object,
-which was not possible within Hudson's framework, which emphasised
-the collection of local trees along the genome resulting from recombination.
-
-Subsequent work on ARGs proceeded in broadly three main directions: focussing on (1)
-exploring the mathematical properties of the coalescent with recombination and
-related stochastic processes, (2) inferring evolutionary parameters under
-(approximations to) this model, either with or without explicitly reconstructing the
-genealogy of the sample, and (3) treating the ARG as a discrete graph, ignoring the
-generating stochastic process, and studying its properties from a computational and
-algorithmic perspective.
-
-% Mathematical treatment of the CwR and ARGs (and ARG-like stochastic processes)
-An extensive body of work has been developed from
-studying the coalescent with recombination
-% Can we add a couple of the most well known CwR examples here
-and other related
-graph-valued stochastic processes from a mathematical perspective.
-In particular, the Ancestral Selection Graph
-(ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
-uses a similar approach to model natural selection instead of recombination.
-Unlike the ARG process, the ASG imposes a hard distinction between the stochastic process,
-which constructs a random ARG-like graph, and an observable realisation,
-which is a single tree sampled from the graph in a non-uniform way to encode
-desired patterns of natural selection.
-Constructions of ASG-like stochastic processes encoding various
-forms of selection, often in parallel with recombination or other genetic forces,
-are an area of considerable and ongoing theoretical interest~\citep[e.g.][]{
-neuhauser1999ancestral,
-donnelly1999genealogical,
-fearnhead2001perfect,
-fearnhead2003ancestral,
-etheridge2009coalescent,
-gonzalezcasanova2018duality,
-koskela2019robust}.
-% Could mention the Ancestral Gene Transfer graph here too, within
-% something like "Similarly the Ancestral Gene Transfer Graph [cite]
-% and [other ancestral graphs, if they exist?] model genealogical
-% processes in bacteria as a graph.
-
-% Inference of parameters and explicit ARG reconstruction
-Early work on inference under the coalescent with recombination
-focused on the problem of
-inferring the parameters of the
-stochastic process, where the ancestry was regarded as a
-latent parameter to be averaged out
-\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
-fearnhead2001estimating}.
-These methods met with limited success
-because the state space of ARGs is overwhelmingly large, and
-lacks a simple geometry or neighbourhood structure for inference or
-sampling methods to  exploit.
-Several breakthroughs in this direction were achieved through
-formulating simplified but more tractable approximations to the full
-model~\citep{mcvean2005approximating,marjoram2006fast,li2011inference,
-paul2011accurate,schiffels2014inferring}.
-The related problem of \emph{sampling} genealogies compatible with a given
-dataset under the coalescent with recombination also proved notoriously difficult
-computationally; progress in explicitly inferring genealogies at scale
-has similarly been achieved through resorting to principled
-approximations~\citep{rasmussen2014genome,mahmoudi2022bayesian},
-or moving away from the coalescent with recombination altogether and seeking
-to infer a single plausible ARG~\citep[e.g.][]{speidel2019method} or ARG
-topology~\citep[e.g.][]{minichiello2006mapping,kelleher2019inferring}.
-
-% Optimisation problems to do with ARGs and other phylogenetic networks
-There has also been substantial interest in formulating and answering
-fundamental questions about properties
-of the ARG as a discrete graph structure, abstracting away from the
-generating process and focussing on the ARG topology without considering
-branch lengths.
-The first prominent problem was calculating (lower bounds on) the minimum number of
-recombinations required to reconstruct a valid genealogy for a given
-sample~\citep{myers2003bounds}, and constructing the corresponding
-minimal (parsimonious)
-ARGs~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
-These problems are NP-hard in general~\citep{wang2001perfect}, and progress has
-been achieved through studying various constrained special cases of ARGs~\citep[e.g.][]{gusfield2004optimal} and
-other more general types of phylogenetic networks~\citep{huson2010phylogenetic}. The
-focus has been on algorithmic and combinatorial results, that largely do not
-have direct relevance to the inference problems described above.
-
-%It is important to note that parsimonious ARGs
-%have quite different properties from realisations of the
-%ARG \emph{process} as modelled by Hudson, Griffiths, and colleagues.
-%Firstly, branch lengths are not typically estimated,
-%% why do we need the following two lines
-%and node times are required in order to compute a likelihood under the
-%coalescent with recombination (see section XXX).
-%Secondly, even if branch lengths were estimated,
-%the realisations would have a very small likelihood since
-%the coalescent with recombination is often highly \emph{un}parsimonious
-%in terms of recombination events.
-
-The goal of this historical overview is to illustrate that the meaning of the term ``ARG" now strongly
-depends on the context in which it is used, and can mean both the
-stochastic process generating genealogies in the presence of
-recombination~\citep[e.g.][]{nordborg2000linkage,birkner2013ancestral,
-wilton2015smc,griffiths2016coalescent},
-as well as, more commonly, the concrete realisation of ancestry from a
-process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
-\cite{minichiello2006mapping} explicitly distinguished the ARG as a
-stochastic process from the ARG as a data structure, and
-argued for using the term to mean specific realised ancestral histories.
-Unless otherwise stated, we will use the ARG-as-a-data-structure
-interpretation for the remainder of this paper.
 
 \section*{Event vs Genome ARGs}\label{eARG}
 In keeping with its original derivation in terms of a stochastic
-process, the classical definition of an ARG data structure is
+process (see Appendix~\ref{sec-arg-history}), the classical definition of an
+ARG data structure is
 in terms of events.
 Nodes represent
 common ancestor or recombination events that occurred in the
@@ -1446,8 +1312,146 @@ and likely many more.
 
 \setcounter{secnumdepth}{2} % Print out appendix section numbers
 
-\appendix
+% TODO revisit number here
 \section*{Appendix}
+\appendix
+
+\section{Ancestral graphs: a brief history}
+\label{sec-arg-history}
+The coalescent~\citep{kingman1982coalescent,kingman1982genealogy,
+hudson1983testing, tajima1983evolutionary} models the ancestry of a sample of
+genomes under an idealised population model, and provides the theoretical
+underpinning for much of contemporary population genetics.
+It is a stochastic process, where each random realisation
+is a genealogical tree describing the genetic ancestry of the sample.
+Numerous extensions to the model have been
+proposed~\citep{hudson1990gene,hein2004gene,wakely2008coalescent},
+incorporating many evolutionary processes.
+\citet{hudson1983properties}
+first incorporated recombination into the coalescent process,
+providing several fundamental analytical results
+and describing the basic simulation algorithm, still in
+widespread use~\citep{hudson2002generating,kelleher2016efficient,
+baumdicker2021efficient}.
+In the 1990s, Griffiths and colleagues revisited the
+coalescent with recombination from a different perspective,
+formulating it as a stochastic process where each realisation
+is encoded as a graph~\citep{griffiths1991two,ethier1990two,
+griffiths1996ancestral,griffiths1997ancestral}.
+They referred to both the stochastic process and
+its random realisations as the Ancestral Recombination Graph (ARG).
+Although mathematically equivalent, it is
+important to note that the Griffiths and Hudson formulations of
+the coalescent with recombination are not identical;
+in particular, a direct implementation of the ARG process
+as originally described requires exponential time to simulate
+(see Appendix XXX for details). However, ARGs provided a way
+to reason about and infer recombinant ancestry as a single object,
+which was not possible within Hudson's framework, which emphasised
+the collection of local trees along the genome resulting from recombination.
+
+Subsequent work on ARGs proceeded in broadly three main directions: focussing on (1)
+exploring the mathematical properties of the coalescent with recombination and
+related stochastic processes, (2) inferring evolutionary parameters under
+(approximations to) this model, either with or without explicitly reconstructing the
+genealogy of the sample, and (3) treating the ARG as a discrete graph, ignoring the
+generating stochastic process, and studying its properties from a computational and
+algorithmic perspective.
+
+% Mathematical treatment of the CwR and ARGs (and ARG-like stochastic processes)
+An extensive body of work has been developed from
+studying the coalescent with recombination
+% Can we add a couple of the most well known CwR examples here
+and other related
+graph-valued stochastic processes from a mathematical perspective.
+In particular, the Ancestral Selection Graph
+(ASG)~\citep{krone1997ancestral,neuhauser1997genealogy}
+uses a similar approach to model natural selection instead of recombination.
+Unlike the ARG process, the ASG imposes a hard distinction between the stochastic process,
+which constructs a random ARG-like graph, and an observable realisation,
+which is a single tree sampled from the graph in a non-uniform way to encode
+desired patterns of natural selection.
+Constructions of ASG-like stochastic processes encoding various
+forms of selection, often in parallel with recombination or other genetic forces,
+are an area of considerable and ongoing theoretical interest~\citep[e.g.][]{
+neuhauser1999ancestral,
+donnelly1999genealogical,
+fearnhead2001perfect,
+fearnhead2003ancestral,
+etheridge2009coalescent,
+gonzalezcasanova2018duality,
+koskela2019robust}.
+% Could mention the Ancestral Gene Transfer graph here too, within
+% something like "Similarly the Ancestral Gene Transfer Graph [cite]
+% and [other ancestral graphs, if they exist?] model genealogical
+% processes in bacteria as a graph.
+
+% Inference of parameters and explicit ARG reconstruction
+Early work on inference under the coalescent with recombination
+focused on the problem of
+inferring the parameters of the
+stochastic process, where the ancestry was regarded as a
+latent parameter to be averaged out
+\citep[e.g.][]{griffiths1996ancestral,kuhner2000maximum, nielsen2000estimation,
+fearnhead2001estimating}.
+These methods met with limited success
+because the state space of ARGs is overwhelmingly large, and
+lacks a simple geometry or neighbourhood structure for inference or
+sampling methods to  exploit.
+Several breakthroughs in this direction were achieved through
+formulating simplified but more tractable approximations to the full
+model~\citep{mcvean2005approximating,marjoram2006fast,li2011inference,
+paul2011accurate,schiffels2014inferring}.
+The related problem of \emph{sampling} genealogies compatible with a given
+dataset under the coalescent with recombination also proved notoriously difficult
+computationally; progress in explicitly inferring genealogies at scale
+has similarly been achieved through resorting to principled
+approximations~\citep{rasmussen2014genome,mahmoudi2022bayesian},
+or moving away from the coalescent with recombination altogether and seeking
+to infer a single plausible ARG~\citep[e.g.][]{speidel2019method} or ARG
+topology~\citep[e.g.][]{minichiello2006mapping,kelleher2019inferring}.
+
+% Optimisation problems to do with ARGs and other phylogenetic networks
+There has also been substantial interest in formulating and answering
+fundamental questions about properties
+of the ARG as a discrete graph structure, abstracting away from the
+generating process and focussing on the ARG topology without considering
+branch lengths.
+The first prominent problem was calculating (lower bounds on) the minimum number of
+recombinations required to reconstruct a valid genealogy for a given
+sample~\citep{myers2003bounds}, and constructing the corresponding
+minimal (parsimonious)
+ARGs~\citep{song2003parsimonious,song2005efficient,lyngso2005minimum}.
+These problems are NP-hard in general~\citep{wang2001perfect}, and progress has
+been achieved through studying various constrained special cases of ARGs~\citep[e.g.][]{gusfield2004optimal} and
+other more general types of phylogenetic networks~\citep{huson2010phylogenetic}. The
+focus has been on algorithmic and combinatorial results, that largely do not
+have direct relevance to the inference problems described above.
+
+%It is important to note that parsimonious ARGs
+%have quite different properties from realisations of the
+%ARG \emph{process} as modelled by Hudson, Griffiths, and colleagues.
+%Firstly, branch lengths are not typically estimated,
+%% why do we need the following two lines
+%and node times are required in order to compute a likelihood under the
+%coalescent with recombination (see section XXX).
+%Secondly, even if branch lengths were estimated,
+%the realisations would have a very small likelihood since
+%the coalescent with recombination is often highly \emph{un}parsimonious
+%in terms of recombination events.
+
+The goal of this historical overview is to illustrate that the meaning of the term ``ARG" now strongly
+depends on the context in which it is used, and can mean both the
+stochastic process generating genealogies in the presence of
+recombination~\citep[e.g.][]{nordborg2000linkage,birkner2013ancestral,
+wilton2015smc,griffiths2016coalescent},
+as well as, more commonly, the concrete realisation of ancestry from a
+process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
+\cite{minichiello2006mapping} explicitly distinguished the ARG as a
+stochastic process from the ARG as a data structure, and
+argued for using the term to mean specific realised ancestral histories.
+Unless otherwise stated, we will use the ARG-as-a-data-structure
+interpretation for the remainder of this paper.
 
 \subsection*{The Big and Little ARG}
 \label{app-big-and-little-arg}
