@@ -54,49 +54,22 @@
 
 \maketitle
 
-% JK: this is a rough first pass for a slightly different paper. Needs
-% substantial revision.
-% https://www.overleaf.com/5594399339wckggzwhnfvv
+% FIXME this is weak, but gives the basic outline
 \begin{abstract}
-Recent breakthroughs have made it possible to infer genetic ancestry in
+Recent breakthroughs have made it possible to infer genetic genealogies in
 the presence of recombination at scale, enabling many
 downstream applications in population and statistical genetics.
-Such recombinant genetic ancestry is usually
-referred to as an Ancestral Recombination Graph, or ARG.
-% Note: slight repetition here with first sentence.
-There are now multiple methods that can infer ARGs at a practical scale
-and it is therefore vital that these methods can be systematically evaluated
-and compared to determine their strengths and weaknesses.
-Unfortunately confusion exists over terminology and there is
-little agreement on shared standards for data interchange,
-significantly hampering progress in the field.
-This lack of clarity and agreement on basic issues such as what does and
-does not constitute an ARG is partly attributable to the historical
-development of the term.
-Originally rigorously defined as
-a stochastic process (the coalescent with recombination) together with its
-representation, an ARG is now understood to refer to any
-concrete realisation of a recombinant genetic ancestry.
-We show that the standard description of an ARG
-in terms of common ancestor and recombination events
-(inherited from the original stochastic process definition) is
-ambiguous,
-% is it ambiguous? How? Can we simply delete this?
-fundamentally limited and an unsuitable basis for data interchange.
-We provide a simple alternative definition of an ARG in which a node
-corresponds to one of an individual's monoploid genomes and an edge
-defines genetic inheritance between two nodes, with annotations on
-each edge specifying which regions of the genome have
-been inherited via that route.
-We show how this definition can be used to generalise the encoding to
-cover both the standard and several simplified versions of ARGs, as well as
-enabling efficient access to local trees along the genome. Additionally, we
-define some classifications and metrics of ARG nodes. Finally, we relate
-these generalisations to the ARGs produced by a number of recently
-developed ancestral inference methods.
-% jk-note: this ends a bit flat - we should say other stuff like we clarify
-% how the ARG relates the pedigree, etc, etc. Let's go through again when
-% we have a reasonable draft.
+The structure representing such recombinant genetic ancestry
+is usually referred to as an Ancestral Recombination Graph (ARG),
+although there is some confusion about the interpretation and little
+agreement on the concrete details.
+We propose a concrete definition of ARGs that is suitable for modern
+datasets, in terms of genomes and their patterns of inheritance,
+and contrast this with the classical event-based definition which
+makes several limiting assumptions.
+We show that this new definition enables fine-grained
+levels of precision about ancestral processes to be represented,
+and forms the basis of an efficient computational framework.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral Recombination Graphs
