@@ -154,45 +154,45 @@ recently introduced succinct tree sequence data structure.
 \end{enumerate}
 
 
-\section*{Event vs Genome ARGs}\label{eARG}
-In keeping with its original derivation in terms of a stochastic
-process (see Appendix~\ref{sec-arg-history}), the classical definition of an
-ARG data structure is
-in terms of events.
-Nodes represent
-common ancestor or recombination events that occurred in the
-history of some set of sample genomes, and edges represent ancestral
-lineages~\citep{griffiths1996ancestral}.
-In a common ancestor event the inbound lineages are merged into a
-single ancestral lineage, and in a recombination
-event a lineage is split into two independent
-ancestral lineages.
-% The final vital
-% detail is that we associate a breakpoint with each recombination
-% event.
-% This information is sufficient to uniquely
-% define the local genealogical trees at every position along the genome,
-% which is the basic requirement for a data structure encoding
-% genome-wide genetic ancestry.
-As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
-is usually concretely encoded by associating a recombination breakpoint
-(which is null for common ancestor events) and an ordered list of parents
-with each node. We refer to such a  data structure as an
-``event ARG'' (eARG).
-To recover the local tree at genome coordinate $x$ (the most
-fundamental operation required for an ARG data structure),
-we traverse the graph rootwards from the leaves.
-At a particular
-node $u$, if it has one parent we are at a common ancestor
-node and we follow that parent. If we are at a
-recombination node, $u$ has two parents: if
-$x$ is less than the breakpoint we follow
-the edge to the first parent, and otherwise follow the edge
-to the second parent.
-The order in which parents are listed at a recombination node is
-therefore significant, telling us
-from which parent the segments of genome to the left and right of the breakpoint
-were inherited.
+% \section*{Genome ARGs}\label{eARG}
+% In keeping with its original derivation in terms of a stochastic
+% process (see Appendix~\ref{sec-arg-history}), the classical definition of an
+% ARG data structure is
+% in terms of events.
+% Nodes represent
+% common ancestor or recombination events that occurred in the
+% history of some set of sample genomes, and edges represent ancestral
+% lineages~\citep{griffiths1996ancestral}.
+% In a common ancestor event the inbound lineages are merged into a
+% single ancestral lineage, and in a recombination
+% event a lineage is split into two independent
+% ancestral lineages.
+% % The final vital
+% % detail is that we associate a breakpoint with each recombination
+% % event.
+% % This information is sufficient to uniquely
+% % define the local genealogical trees at every position along the genome,
+% % which is the basic requirement for a data structure encoding
+% % genome-wide genetic ancestry.
+% As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+% is usually concretely encoded by associating a recombination breakpoint
+% (which is null for common ancestor events) and an ordered list of parents
+% with each node. We refer to such a  data structure as an
+% ``event ARG'' (eARG).
+% To recover the local tree at genome coordinate $x$ (the most
+% fundamental operation required for an ARG data structure),
+% we traverse the graph rootwards from the leaves.
+% At a particular
+% node $u$, if it has one parent we are at a common ancestor
+% node and we follow that parent. If we are at a
+% recombination node, $u$ has two parents: if
+% $x$ is less than the breakpoint we follow
+% the edge to the first parent, and otherwise follow the edge
+% to the second parent.
+% The order in which parents are listed at a recombination node is
+% therefore significant, telling us
+% from which parent the segments of genome to the left and right of the breakpoint
+% were inherited.
 
 % This ordering requirement, while straightforward
 % to describe, has some practical drawbacks. For example,
@@ -205,77 +205,77 @@ were inherited.
 % Such issues can be worked around, of course, but depending on the ordering of
 % otherwise indistinguishable objects is generally problematic.
 
-\begin{figure}
-\centering
-% \begin{tabular}{cc}
-\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
-\tikzset{greynode/.style={circle,fill,inner sep=1},
-nodelabel/.style={font=\footnotesize}}
+% \begin{figure}
+% \centering
+% % \begin{tabular}{cc}
+% \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
+% \tikzset{greynode/.style={circle,fill,inner sep=1},
+% nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (3, 1) {};
-\node (s4) [greynode] at (1, 2) {};
-\node (s5) [greynode] at (5, 3) {};
-\node (s6) [greynode] at (3, 4) {};
+% \node (s0) [greynode] at (0, 0) {};
+% \node (s1) [greynode] at (3, 0) {};
+% \node (s2) [greynode] at (6, 0) {};
+% \node (s3) [greynode] at (3, 1) {};
+% \node (s4) [greynode] at (1, 2) {};
+% \node (s5) [greynode] at (5, 3) {};
+% \node (s6) [greynode] at (3, 4) {};
 
-% \node [anchor=north west] at (0,6) {A};
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+% % \node [anchor=north west] at (0,6) {A};
+% \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
+% \foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+% \foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+% \foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+% \foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
 
-%% Edges
-\draw (s1) -- (s3);
-\draw (s0) |- (s4);
-\draw (s4) -- (2,2) |- (s3);
-\draw (s4) |- (s6);
-\draw (s3) -- (4,1) |- (s5);
-\draw (s2) |- (s5);
-\draw (s5) |- (s6);
+% %% Edges
+% \draw (s1) -- (s3);
+% \draw (s0) |- (s4);
+% \draw (s4) -- (2,2) |- (s3);
+% \draw (s4) |- (s6);
+% \draw (s3) -- (4,1) |- (s5);
+% \draw (s2) |- (s5);
+% \draw (s5) |- (s6);
 
-% \node [anchor=north west] at (9,6) {B};
-\node [nodelabel,anchor=north west] at ($(10,5)$) {
-\begin{tabular}{c|c|l}
-% \multicolumn{2}{c}{Breakpoints}\\
-Node & Breakpoint & Parents\\
-\hline
-$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
-$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
-$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
-$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
-$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{g}$ & $\varnothing$ & []\\
-\end{tabular}};
-
-
-% \node [anchor=north west] at (9,6) {C};
+% % \node [anchor=north west] at (9,6) {B};
 % \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% \begin{tabular}{ll}
-% Edges & Intervals\\
+% \begin{tabular}{c|c|l}
+% % \multicolumn{2}{c}{Breakpoints}\\
+% Node & Breakpoint & Parents\\
 % \hline
-% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
-% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
-% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
-% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
-% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
-% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
-% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% $\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+% $\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+% $\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+% $\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+% $\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{g}$ & $\varnothing$ & []\\
 % \end{tabular}};
 
 
-\end{tikzpicture}
-\caption{\label{fig-arg-data-structure}
-A graphical depiction of a classical event ARG and a concrete
-encoding of the information. Node \noderef{d} is a recombination
-event as it is associated with a non-null breakpoint, and has
-two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
-common ancestor events.
-}
-\end{figure}
+% % \node [anchor=north west] at (9,6) {C};
+% % \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% % \begin{tabular}{ll}
+% % Edges & Intervals\\
+% % \hline
+% % $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% % $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% % $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% % $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% % $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% % $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% % $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% % \end{tabular}};
+
+
+% \end{tikzpicture}
+% \caption{\label{fig-arg-data-structure}
+% A graphical depiction of a classical event ARG and a concrete
+% encoding of the information. Node \noderef{d} is a recombination
+% event as it is associated with a non-null breakpoint, and has
+% two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+% common ancestor events.
+% }
+% \end{figure}
 
 % % What do we mean by an eARG, formally?
 % To be concrete, we can formally define the
@@ -392,13 +392,18 @@ common ancestor events.
 % greatly increases both the expressivity and computational
 % power of ancestral recombination graph data structures.
 
-% \section*{Genome ARGs}
-There is no fundamental reason, however, that the data structure we use
-to describe patterns of genetic inheritance must be in terms
-of specific causal events. As demonstrated in subsequent sections,
-there are significant advantages to using
-a slightly different formulation, which
-we call a ``genome ARG'' (gARG).
+\section*{Genome ARGs}
+% There is no fundamental reason, however, that the data structure we use
+% to describe patterns of genetic inheritance must be in terms
+% of specific causal events. As demonstrated in subsequent sections,
+% there are significant advantages to using
+% a slightly different formulation, which
+% we call a ``genome ARG'' (gARG).
+In this section we define a concrete definition of an ARG in terms
+of particular genomes and their patterns of inheritance, which
+to avoid confusion, we refer to as a ``genome ARG``, or gARG.
+(We contrast this with the classical definition derived from the
+coalescent process in later sections.)
 First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
 Then, a gARG is a graph in which nodes represent
@@ -407,10 +412,11 @@ genetic inheritance between an ancestor and a descendant,
 where each edge is annotated with the coordinates
 of the genomic intervals over which genetic inheritance occurs
 (the next section explores the subtleties of what we mean by
-genetic inheritance). To recover the local tree for a genomic
-position $x$, we traverse the graph rootwards from the leaves
-(as in an eARG) and at a particular node, we follow the outbound
-edge associated with the genomic interval containing $x$.
+genetic inheritance).
+% To recover the local tree for a genomic
+% position $x$, we traverse the graph rootwards from the leaves
+% (as in an eARG) and at a particular node, we follow the outbound
+% edge associated with the genomic interval containing $x$.
 % Recent discussions have illustrated the
 % relationship between ARGs and
 % pedigrees~\citep{mathieson2020ancestry,brandt2021evaluation},
@@ -423,8 +429,7 @@ shows how the genomes embedded in an example (highly inbred)
 pedigree correspond to the nodes in a gARG, along with the corresponding
 local trees.
 In this diploid setting
-(there is no limitation on mating system, ploidy, or age structure
-in the gARG encoding),
+(there is no limitation on mating system, ploidy, or age structure)
 a genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
@@ -472,19 +477,26 @@ local relationships along the genome, as shown in the local
 }
 \end{figure}
 
-% Formally, we can define a gARG as a set of edges $E$, where each
-% element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-% $c$ is the child node, $p$ is the parent node and $I$ is the set of
-% disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
-% also phrase this in terms of the ancestral material of a sample---see
-% the next section).
-% Deriving the local tree at a point $x$
-% follows largely the same pattern as for an eARG but is somewhat
-% simpler because coordinate information is directly associated with
-% edges. Starting with the sample nodes $S$ we traverse
-% rootwards through the graph from child to parent. At each node $u$, we find an
-% edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
-% and move to the next node $p$.
+Formally, we can define a gARG as a set of edges $E$, where each
+element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
+$c$ is the child node, $p$ is the parent node and $I$ is the set of
+disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
+also phrase this in terms of the ancestral material of a sample---see
+the next section).
+% To recover the local tree for a genomic
+% position $x$, we traverse the graph rootwards from the leaves
+% (as in an eARG) and at a particular node, we follow the outbound
+% edge associated with the genomic interval containing $x$.
+To recover the local tree at genome coordinate $x$ (the most
+fundamental operation required for an ARG data structure; see
+Section XXX),
+we traverse the graph rootwards from the leaves.
+Starting with the sample nodes $S$ we traverse
+rootwards through the graph from child to parent. At each node $u$, we find an
+edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
+and move to the next node $p$.
+
+[COMMENT ON FIG 1C, and unary nodes in the trees]
 
 % This paragraph is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
@@ -542,21 +554,21 @@ local relationships along the genome, as shown in the local
 
 % The reader may arrive at the end of this section going, er, so what?
 % Try to tackle this head on by getting to the heart of the distinction.
-The difference between eARGs and gARGs are subtle, and whether
-we choose to interpret nodes as events or genomes
-might seem of little practical importance.
-However, there are substantial practical benefits
-from using the gARG encoding, allowing differential
-levels of information about the recombination process to be
-represented in a computationally efficient way.
-The key to this is not so much in how we interpret nodes
-(see Appendix XXX), but specifically in how
-we represent the process of genetic inheritance.
-The critical distinction is that
-the gARG encoding allows us to directly describe
-genetic inheritance in multiple non-contiguous genome intervals
-between an ancestor and a descendant, something that
-cannot be done by storing recombination breakpoints.
+% The difference between eARGs and gARGs are subtle, and whether
+% we choose to interpret nodes as events or genomes
+% might seem of little practical importance.
+% However, there are substantial practical benefits
+% from using the gARG encoding, allowing differential
+% levels of information about the recombination process to be
+% represented in a computationally efficient way.
+% The key to this is not so much in how we interpret nodes
+% (see Appendix XXX), but specifically in how
+% we represent the process of genetic inheritance.
+% The critical distinction is that
+% the gARG encoding allows us to directly describe
+% genetic inheritance in multiple non-contiguous genome intervals
+% between an ancestor and a descendant, something that
+% cannot be done by storing recombination breakpoints.
 
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
