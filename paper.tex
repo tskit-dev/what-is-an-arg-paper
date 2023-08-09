@@ -428,8 +428,7 @@ Fig.~\ref{fig-arg-in-pedigree}
 shows how the genomes embedded in an example (highly inbred)
 pedigree correspond to the nodes in a gARG, along with the corresponding
 local trees.
-In this diploid setting
-(there is no limitation on mating system, ploidy, or age structure)
+In this diploid example
 a genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
@@ -442,8 +441,6 @@ inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
 recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
 whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
 recombination.
-Arbitrary patterns of genetic inheritance (gene conversions, multiple recombinations,
-etc) can be expressed without difficulty using this encoding.
 
 \begin{figure}
 \begin{center}
@@ -452,22 +449,21 @@ etc) can be expressed without difficulty using this encoding.
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
-An Ancestral Recombination Graph defined in terms of genomes embedded
-in a pedigree. (A) Diploid individuals, visualised in a highly inbred pedigree and
-labelled $I_1$ to $I_8$, contain both paternal (left) and maternal (right) genomes
+An example gARG embedded in a pedigree.
+(A) Diploid individuals, visualised in a highly inbred pedigree and
+labelled $I_1$ to $I_8$, contain both paternal  and maternal  genomes
 labelled \textsf{a} to \textsf{p}. Black lines show transmission paths connecting
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
-Two recombination breakpoints, at positions 2 and 7 mean that genomes \textsf{a}
-and \textsf{c} are independent recombinants of the paternal genomes \textsf{e}
+Genomes \textsf{a} and \textsf{c} are independent recombinants of
+the paternal genomes \textsf{e}
 % Gregor: there is some overlap between a and c still (the middle region inherited
 % from f) so, a and c are not fully independent!
-and \textsf{f}: in these cases the edge annotations have been shown, indicating the
-region of genome transmitted. Genomes are shaded such that where, backwards in time,
-they merge into a common ancestor, the merged region is darker; this shows that all
-genomic regions find a common ancestor in genome \textsf{n} in the oldest generation.
-(B) The corresponding genome ARG, where there is a single type of node (representing
-a genome) along with annotations on all edges; annotations showing partial
-transmission are highlighted in bold. Recombination (e.g.,
+and \textsf{f}, and regions of genome transmitted are shown.
+Genomes are shaded such that where, backwards in time,
+they merge into a common ancestor, the merged region is darker.
+(B) The corresponding genome ARG along with annotations on all edges;
+annotations showing partial
+genome transmission are highlighted in bold. Recombination (e.g.,
 the cause of the breakpoint at position 7)
 is associated with two parent genomes (\textsf{e} and
 \textsf{f}) and a child genome (the recombinant, \textsf{c}).
@@ -477,9 +473,9 @@ local relationships along the genome, as shown in the local
 }
 \end{figure}
 
-Formally, we can define a gARG as a set of edges $E$, where each
-element of the set is a tuple $(c, p, I)$ such that $c, p \in \mathbb{N}$,
-$c$ is the child node, $p$ is the parent node and $I$ is the set of
+Formally, we can define a gARG as a set of nodes $N$ and edges $E$, where each
+element of $E$ is a tuple $(c, p, I)$ such that
+$c\in N$ is the child node, $p\in N$ is the parent node and $I$ is the set of
 disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
 also phrase this in terms of the ancestral material of a sample---see
 the next section).
@@ -494,9 +490,36 @@ we traverse the graph rootwards from the leaves.
 Starting with the sample nodes $S$ we traverse
 rootwards through the graph from child to parent. At each node $u$, we find an
 edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
-and move to the next node $p$.
+and move to the next node $p$. The efficiency of this process is discussed
+in Section XXX).
 
-[COMMENT ON FIG 1C, and unary nodes in the trees]
+There are some interesting consequences to these definitions, exemplified
+in Figure~\ref{fig-arg-in-pedigree}. Firstly,
+there is
+is no limitation on mating system, ploidy, or age structure. By making the
+basic unit of analysis an individual's \emph{genomes} (i.e., two per individuals
+for diploids), any pattern of inheritance among mixed ploidy can be
+accommodated.
+Secondly, because we only record the \emph{intervals} of inheritance
+between genomes (and not the causal \emph{processes}),
+arbitrary patterns of genetic inheritance such as gene conversions,
+multiple recombinations and so on can be directly expressed.
+Thirdly, ``local`` trees that we generate for a particular position on the
+genome are not explicitly concerned with ``coalescence'' (nodes at which
+one or more samples find a common ancestor); for example, node $e$
+is unary in the left-most tree of Figure~\ref{fig-arg-in-pedigree},
+denoting the fact that $e$ the ancestor of $a$ over the interval $(0, 2]$,
+but no coalescence occurs in this interval (see section XXX for more
+discussion). Fourth, recombination is modelled in terms of
+its outcomes in terms of inheritance intervals among parental genomes;
+thus, we will have a child node (the recombinant; e.g. node $a$
+Figure~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
+paternal genomes which this child has inherited segments from.
+Finally, gARGs are not defined in terms of the
+coalescent with recombination (or any other) stochastic process.
+Thus, the gARG encoding is focused on faithfully representing the
+\emph{outcome} of the evolutionary processes of genetic inheritance and
+recombination, and is agnostic to the details of those processes.
 
 % This paragraph is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
