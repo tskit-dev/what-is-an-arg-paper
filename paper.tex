@@ -110,7 +110,7 @@ and data representation~\citep{kelleher2016efficient}
 have raised the realistic prospect of genealogy-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using these inferred ancestries as inputs have begun to
-appear~\citep{osmond2021estimating,zhang2021biobank,fan2022genealogical,hejase2022deep}
+appear~\citep{osmond2021estimating,zhang2023biobank,fan2022genealogical,hejase2022deep}
 and many more are sure to
 follow~\citep{harris2019database}. This vibrant research area, however,
 has a significant difficulty, which risks hampering
@@ -931,12 +931,8 @@ but effective heuristics have been proposed~\citep{rasmussen2022espalier}.
 % trees from different regions of the genome.
 
 
+% NEEDS more work!
 \section*{Precision of ancestry information}
-% Not all nodes in an ARG are equal. Assuming that we have sequenced the
-% genomes of the samples, there are intrinsic limits on what can
-% be known about more ancient nodes, determined by the graph topology
-% and the flow of ancestral material through it.
-
 Ancestral recombination graphs are often characterised
 as consisting of a complete record of the genetic history
 of a sample. For example,
@@ -953,121 +949,6 @@ such precision. Simulations will usually generate complete
 information about the history of a sample, of course, but
 we may not have sufficient information to infer such detail.
 
-% Not sure where this goes, but there are some critical points
-% that we want to explain and not just throw out there in the
-% discussion.
-A critical distinction between the eARG and gARG encodings
-is the level of precision about the time and location of
-recombination events that is required. In an eARG, we are
-required to be absolutely precise about every recombination
-[explain and contrast with gARG, referring to examples]
-
-% % JK: This is very rough, just jotting down the basic ideas,
-% % will need substantial revision.
-% It is not clear that such complete information will always
-% (or indeed ever) be available from inferences. We may be
-% able to precisely identify the location and timing
-% of recent recombinations (particularly if detailed pedigree
-% information is available) but beyond this, the information
-% required simply isn't present. When sampling from a
-% process such as the Sequentially Markov
-% Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
-% like ARGweaver~\citep{rasmussen2014genome}, it is true that
-% we do obtain a fully resolved ARG with precise
-% information about recombination, but it is reasonable
-% to question how much information from the data is used
-% to support older recombinations, in particular.
-
-% It is helpful to consider the difference between fully
-% resolved binary trees and those that contain polytomies.
-
-% The situation is in fact directly analogous: an ARG that
-% contains fully resolved recombination information must have
-% at most parents per node.
-
-
-% At the very least, it is not reasonable for the \emph{data
-% structure} to require complete precision in order to
-% represent some less precise. This is a fundamental
-% advantage of the gARG encoding over the classical eARG
-% method: we are not forced to posit a precise cause (recombination
-% event) for every effect (difference between adjacent trees).
-% These differences in precision of recombination
-% information are illustrated in the ARGs estimated by different
-% methods, as we see in the next section.
-
-\begin{figure} \begin{center}
-\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} ARGs inferred by
-(A) \kwarg~\citep{ignatieva2021kwarg},
-(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
-(C) \tsinfer~\citep{kelleher2019inferring},
-and (D) \relate~\citep{speidel2019method}
-for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
-locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
-is a sample from the inferred posterior distribution. In each ARG,
-colours are assigned to edges based on the time of the edge's child node:
-lighter colours are assigned to edges with older child
-nodes, darker colours are assigned to edges with younger child nodes
-Note that the position of points on the
-Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
-algorithm, rather than as a direct measure of time.
-Line width corresponds to the genomic span of the edge. Node colour
-refers to the number of parents of the node: red is zero, brown is one,
-green to blue are two to N parents. The brightness
-of the node is determined by the genomic span over which
-the node has two or more children divided by the span where it has any
-children. The genomic intervals associated with edges are visualised below
-each ARG, where each row is an edge
-and the x axis reflects genomic position. The width of edges
-thus corresponds to their genomic span. Edges
-are ordered by the age of their child node, from oldest to youngest
-moving down the page, with colours matching the edge colours in the ARG.
-Vertical lines indicate breakpoints between local trees.
-}
-\end{figure}
-
-To illustrate this critical point, we inferred ARGs for the
-the classical \citet{kreitman1983nucleotide} benchmark dataset
-using four recent inference methods and show the results in
-Fig~\ref{fig-inferred-args}.
-While there is some consistency among the inferred ARGs (such as the samples
-FR-F, WA-F and Af-F being grouped into the same clade), there
-are also considerable differences. For this dataset, the minimum number
-of recombination breakpoints required in the absence of recurrent mutation
-is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
-under the input mutation and recombination rates
-varies from 2 (\relate) to 17 (\argweaver).
-The ARGs inferred by the different methods also have major differences
-in how recombination information is represented. Essentially,
-\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
-for each breakpoint, and those events are fully
-described in the output graph. On the other hand, \tsinfer\ and
-\relate\ do not infer causal events but instead focus on
-representing the inferred \emph{effect}: breakpoints between the
-trees. It is important to note that this does not imply that
-the methods must then necessarily infer only a sequence of
-unrelated local trees
-% More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
-% for discussion. I'm sure there were other examples of people saying
-% that
-(as claimed by e.g.~\citet{hejase2020summary}),
-and information about recombination and the correlation structure
-between trees is not ``all or nothing''.
-Both methods capture correlation structure between trees:
-\relate\ first infers local tree topologies and then identifies edges
-that persist from one tree to the next as a separate step
-(in a similar manner to \espalier~\citep{rasmussen2022espalier}), while
-\texttt{tsinfer} explicitly constructs nodes that are shared across local
-trees.
-
-% Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
-% explicit recombination events we cannot compute a likelihood
-% under the coalescent with recombination (see appendix XXX).
-% [Some stuff about whether we should see this as necessary or not,
-% but maybe we should keep this for the conclusion?]
-
-\section*{When do we need ``full'' ARGs?}
 % The full ancestral recombination graph (ARG) is a structure that encodes all
 % coalescence and recombination events resulting from the stochastic process of
 % the coalescent with recombination.
@@ -1108,106 +989,303 @@ In this case, the utility of a ``full`` ARG for some dataset
 is limited by how well the dataset fits the assumptions
 of the model.
 
-% If we want to use the coalescent, then really the assumptions
-% need to make sense.
-% n << Ne is a silly assumption in today's datasets
-A core assumption of the coalescent is that the sample size $n$
-is much less than the effective population size, $N_e$.
-Several human datasets now consist of hundreds of thousands of
-genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-and so sample size is substantially \emph{larger} than $N_e$
-(often assumed to be $10^4$ in humans).
-Agricultural datasets are even more extreme.
-For example,
-the US dairy cattle database alone currently comprises more than 6 million
-animals with SNP array
-genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-while the effective population size in modern dairy cattle breeds is
-less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-An extreme sign of these breeding practices is that there are only two ancestral
-Y-chromosome lineages present in today's US Holstein dairy breed~\citep{Yue2015}.
-Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
-comprises close to 7000 genomes, which are part of multi-generation pedigrees
-with millions of animals and extensive SNP array genotype and phenotype
-data \citep[e.g.][]{Cesarani2022}.
-In another example, genome and SNP array data for 440,610 individuals within
-7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
-were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
-Effective population size in modern pig breeds is also less than 100 due to
-intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-Another core assumption of the coalescent model is that the genome (or
-at least the region under study) is short enough that the number of extant
-lineages remains much smaller than $N_e$ at all times. Whole
-genome sequences have been available for model organisms
-for over a decade now, % True? Citation?
-and indeed complete chromosome-level assemblies are possible
-in humans~\citep{miga2020telomere}.
-Projects are under way to obtain high-quality assemblies
-for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-and ultimately worldwide~\citep{lewin2022earth}.
+% Not sure where this goes, but there are some critical points
+% that we want to explain and not just throw out there in the
+% discussion.
+% A critical distinction between the eARG and gARG encodings
+% is the level of precision about the time and location of
+% recombination events that is required. In an eARG, we are
+% required to be absolutely precise about every recombination
+% [explain and contrast with gARG, referring to examples]
 
-While the coalescent as a model can be suprisingly robust to
-basic violations of the underlying assumptions~\citep{
-wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
-it is reasonable to question the validity of the model in
-representing datasets such as UK Biobank.
-[Also mention somehow that $n\ll N_e$ is only one problem -
-we're also ignoring the myriad other evolutionary forces.]
-Such datasets cannot be reasonably be described by
-the coalescent as a statical model, and so more non-parametric
-methods like \tsinfer\ and \relate\ would seem more appropriate.
-[More]
+% JK: This is very rough, just jotting down the basic ideas,
+% will need substantial revision.
+It is not clear that such complete information will always
+(or indeed ever) be available from inferences. We may be
+able to precisely identify the location and timing
+of recent recombinations (particularly if detailed pedigree
+information is available) but beyond this, the information
+required simply isn't present. When sampling from a
+process such as the Sequentially Markov
+Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
+like ARGweaver~\citep{rasmussen2014genome}, it is true that
+we do obtain a fully resolved ARG with precise
+information about recombination, but it is reasonable
+to question how much information from the data is used
+to support older recombinations, in particular.
 
-% Is it practical to estimate full ARGs?
-% [Not particularly \citep{shipilina2022origin} - but maybe ARGneedle
-% has done this for UKB? Need to check]
+It is helpful to consider the difference between fully
+resolved binary trees and those that contain polytomies.
 
-% Do downstream applications actually make use of such full ARGs?
-Downstream applications using estimated ARGs to date rarely
-make use of such complete recombination information.
-The \relate\ selection statistic~\citep{speidel2019method}
-computes a $p$-value for selection [FIXME] for each
-local tree independently by comparing the rates of coalescence
-at various time-points. For cases like strong positive selection,
-where we expect there to be a clear signal in the local tree,
-such tree-by-tree methods can be simple and powerful.
-In their method
-for estimating dispersal rates and the locations of genetic
-ancestors,
-\citep{osmond2021estimating} downsample trees along the genome
-so that they can be regarded as approximately independent.
-The SIA method for detecting selection~\citep{hejase2022deep}
-encodes local trees as a set of lineage counts at discrete
-time intervals, and uses these as feature for a
-type of machine learning algorithm
-that takes ``temporal'' correlations into account. Thus,
-while SIA does use some of the information about local tree correlation,
-clearly much of the detail about recombination
-events in a ``full'' ARG is lost.
-The \texttt{tsdate} algorithm (and related naive estimator
-for ancestral location) uses much more between-tree
-information~\citep{wohns2022unified}, explicitly using the gARG
-encoding to reason about ancestral nodes.
-A major strength of this approach is that it can be used on
-any gARG, ranging from estimates containing relatively little
-information about recombination (e.g., as estimated by \relate)
-to ``full'' ARGs containing complete recombination information
-(e.g., as estimated by \kwarg), and will fully utilise
-any between-tree correlation information that is present.
+The situation is in fact directly analogous: an ARG that
+contains fully resolved recombination information must have
+at most parents per node.
 
-\section*{Computational efficiency}
+
+At the very least, it is not reasonable for the \emph{data
+structure} to require complete precision in order to
+represent some less precise. This is a fundamental
+advantage of the gARG encoding over the classical eARG
+method: we are not forced to posit a precise cause (recombination
+event) for every effect (difference between adjacent trees).
+These differences in precision of recombination
+information are illustrated in the ARGs estimated by different
+methods, as we see in the next section.
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
+\caption{\label{fig-inferred-args} ARGs inferred by
+(A) \kwarg~\citep{ignatieva2021kwarg},
+(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
+(C) \tsinfer~\citep{kelleher2019inferring},
+and (D) \relate~\citep{speidel2019method}
+for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
+locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
+is a sample from the inferred posterior distribution. In each ARG,
+colours are assigned to edges based on the time of the edge's child node:
+lighter colours are assigned to edges with older child
+nodes, darker colours are assigned to edges with younger child nodes
+Note that the position of points on the
+Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
+algorithm, rather than as a direct measure of time.
+Line width corresponds to the genomic span of the edge. Node colour
+refers to the number of parents of the node: red is zero, brown is one,
+green to blue are two to N parents. The brightness
+of the node is determined by the genomic span over which
+the node has two or more children divided by the span where it has any
+children. The genomic intervals associated with edges are visualised below
+each ARG, where each row is an edge
+and the x axis reflects genomic position. The width of edges
+thus corresponds to their genomic span. Edges
+are ordered by the age of their child node, from oldest to youngest
+moving down the page, with colours matching the edge colours in the ARG.
+Vertical lines indicate breakpoints between local trees.
+}
+\end{figure}
+
+To illustrate these points and to emphasise the heterogeneity
+of the ARGs inferred by current methods, we inferred ARGs for the
+the classical \citet{kreitman1983nucleotide} benchmark dataset
+using four recent inference methods and show the results in
+Fig~\ref{fig-inferred-args}.
+While there is some consistency among the inferred ARGs (such as the samples
+FR-F, WA-F and Af-F being grouped into the same clade), there
+are also considerable differences. For this dataset, the minimum number
+of recombination breakpoints required in the absence of recurrent mutation
+is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
+under the input mutation and recombination rates
+varies from 2 (\relate) to 17 (\argweaver).
+The ARGs inferred by the different methods also have major differences
+in how recombination information is represented. Essentially,
+\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
+for each breakpoint, and those events are fully
+described in the output graph. On the other hand, \tsinfer\ and
+\relate\ do not infer causal events but instead focus on
+representing the inferred \emph{effect}: breakpoints between the
+trees. It is important to note that this does not imply that
+the methods must then necessarily infer only a sequence of
+unrelated local trees
+% More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+% for discussion. I'm sure there were other examples of people saying
+% that
+(as claimed by e.g.~\citet{hejase2020summary}),
+and information about recombination and the correlation structure
+between trees is not ``all or nothing''.
+Both methods capture correlation structure between trees:
+\relate\ first infers local tree topologies and then identifies edges
+that persist from one tree to the next as a separate step
+(in a similar manner to \espalier~\citep{rasmussen2022espalier}), while
+\texttt{tsinfer} explicitly constructs nodes that are shared across local
+trees. See \cite{ignatieva2023distribution} for a detailed discussion
+and comparsion of inference methods on this property.
+
+% Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
+% explicit recombination events we cannot compute a likelihood
+% under the coalescent with recombination (see appendix XXX).
+% [Some stuff about whether we should see this as necessary or not,
+% but maybe we should keep this for the conclusion?]
+
+% \section*{When do we need ``full'' ARGs?}
+% % The full ancestral recombination graph (ARG) is a structure that encodes all
+% % coalescence and recombination events resulting from the stochastic process of
+% % the coalescent with recombination.
+% \citet{brandt2021evaluation} define a ``full'' ARG as
+% ``a structure that encodes all
+% coalescence and recombination events resulting from the stochastic process of
+% the coalescent with recombination'' (thus going against the general
+% historial trend discussed in the XXX section).
+% \citet{rasmussen2022espalier} have a less restrictive definition, in
+% which a ``full'' ARG is one that contains complete information about
+% recombination events, without necessarily being tied to a particular
+% stochastic process.
+% While [something positive], it is important to be clear on
+% what the overall goal of such precise inferences are,
+% what the limitations on when they can be made are,
+% and their downstream utility in applications.
+
+% % What is the goal of having fully precise ARGs?
+% % 1) studying the actual recombination events;
+% % 2) evaluating the likelihoods
+% The main reasons for wanting precise estimates of all recombination
+% events are to either compute a likelihood of the inferred ARG
+% under a statistical model, or to study the recombinants in
+% detail~\citep{rasmussen2022espalier}.
+% % Explain that we're really interested in the details of recombination
+% % itself with a small number of samples.
+% In the latter case, we might
+% have a small number of samples~\citep{guo2022recombination}.
+
+% Beyond cases in which visual inspection of the trees and the
+% effects of recombination is feasible, the main application
+% of having completely precise estimates of recombination events is
+% to evaluate the likelihood of the estimate under some
+% statistical model. The only statistical model available
+% is the coalescent with recombination
+% and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
+% In this case, the utility of a ``full`` ARG for some dataset
+% is limited by how well the dataset fits the assumptions
+% of the model.
+
+% % If we want to use the coalescent, then really the assumptions
+% % need to make sense.
+% % n << Ne is a silly assumption in today's datasets
+% A core assumption of the coalescent is that the sample size $n$
+% is much less than the effective population size, $N_e$.
+% Several human datasets now consist of hundreds of thousands of
+% genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+% and so sample size is substantially \emph{larger} than $N_e$
+% (often assumed to be $10^4$ in humans).
+% Agricultural datasets are even more extreme.
+% For example,
+% the US dairy cattle database alone currently comprises more than 6 million
+% animals with SNP array
+% genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
+% while the effective population size in modern dairy cattle breeds is
+% less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
+% An extreme sign of these breeding practices is that there are only two ancestral
+% Y-chromosome lineages present in today's US Holstein dairy breed~\citep{Yue2015}.
+% Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
+% comprises close to 7000 genomes, which are part of multi-generation pedigrees
+% with millions of animals and extensive SNP array genotype and phenotype
+% data \citep[e.g.][]{Cesarani2022}.
+% In another example, genome and SNP array data for 440,610 individuals within
+% 7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
+% were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
+% Effective population size in modern pig breeds is also less than 100 due to
+% intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
+% Another core assumption of the coalescent model is that the genome (or
+% at least the region under study) is short enough that the number of extant
+% lineages remains much smaller than $N_e$ at all times. Whole
+% genome sequences have been available for model organisms
+% for over a decade now, % True? Citation?
+% and indeed complete chromosome-level assemblies are possible
+% in humans~\citep{miga2020telomere}.
+% Projects are under way to obtain high-quality assemblies
+% for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
+% and ultimately worldwide~\citep{lewin2022earth}.
+
+% While the coalescent as a model can be suprisingly robust to
+% basic violations of the underlying assumptions~\citep{
+% wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
+% it is reasonable to question the validity of the model in
+% representing datasets such as UK Biobank.
+% [Also mention somehow that $n\ll N_e$ is only one problem -
+% we're also ignoring the myriad other evolutionary forces.]
+% Such datasets cannot be reasonably be described by
+% the coalescent as a statical model, and so more non-parametric
+% methods like \tsinfer\ and \relate\ would seem more appropriate.
+% [More]
+
+% % Is it practical to estimate full ARGs?
+% % [Not particularly \citep{shipilina2022origin} - but maybe ARGneedle
+% % has done this for UKB? Need to check]
+
+% % Do downstream applications actually make use of such full ARGs?
+% Downstream applications using estimated ARGs to date rarely
+% make use of such complete recombination information.
+% The \relate\ selection statistic~\citep{speidel2019method}
+% computes a $p$-value for selection [FIXME] for each
+% local tree independently by comparing the rates of coalescence
+% at various time-points. For cases like strong positive selection,
+% where we expect there to be a clear signal in the local tree,
+% such tree-by-tree methods can be simple and powerful.
+% In their method
+% for estimating dispersal rates and the locations of genetic
+% ancestors,
+% \citep{osmond2021estimating} downsample trees along the genome
+% so that they can be regarded as approximately independent.
+% The SIA method for detecting selection~\citep{hejase2022deep}
+% encodes local trees as a set of lineage counts at discrete
+% time intervals, and uses these as feature for a
+% type of machine learning algorithm
+% that takes ``temporal'' correlations into account. Thus,
+% while SIA does use some of the information about local tree correlation,
+% clearly much of the detail about recombination
+% events in a ``full'' ARG is lost.
+% The \texttt{tsdate} algorithm (and related naive estimator
+% for ancestral location) uses much more between-tree
+% information~\citep{wohns2022unified}, explicitly using the gARG
+% encoding to reason about ancestral nodes.
+% A major strength of this approach is that it can be used on
+% any gARG, ranging from estimates containing relatively little
+% information about recombination (e.g., as estimated by \relate)
+% to ``full'' ARGs containing complete recombination information
+% (e.g., as estimated by \kwarg), and will fully utilise
+% any between-tree correlation information that is present.
+
+\section*{Computational efficiency and data interchange}
+ARG inference methods have been successfully applied to vast datasets,
+including 500,000 genotyped humans~\citep{kelleher2019inferring,zhang2023biobank}
+from UK Biobank~\citep{bycroft2018genome}
+and over a million SARS-Cov-2 whole genomes~\citep{zhan2023towards}.
+Even larger datasets are
+available~\citep[e.g.][]{halldorsson2022sequences} % TODO more
+and it seems inevitable that ARGs will be inferred for them.
+The efficiency with which we can store and analyse these inferred
+ARGs is therefore of great importantance, and a key factor
+in the ultimate success of downstream ARG-based methods.
+Another key factor in the how important ARG-based methods become
+across the wide range of predicted application
+areas [CITE commentary pieces, tsinfer, ARGneedle any others?]
+is how well inference methods and downstream analysis applications
+interoperate. [Genetics doesn't have a good record here, let's
+try not to make the same mistakes again.]
+
+The gARG encoding discussed and concretely defined in this manuscript
+leads to highly efficient storage and processing of ARG data,
+and has already been in use for several years.
 The succinct tree sequence data structure (usually known as a ``tree sequence''
-for brevity, but see later comment on confusion around this point)
+for brevity, but see below for confusion around this point)
 is a concrete encoding of a gARG, as discussed in this article.
 It was originally developed as part of the \texttt{msprime}
-simulator~\cite{kelleher2016efficient} and subsequently ...
+simulator~\cite{kelleher2016efficient} and subsequently been
+extended and applied to forward-time
+simulations~\citep{kelleher2018efficient,haller2018tree},
+calculation of population genetics statistics~\citep{ralph2020efficiently}.
+The succinct tree sequence encoding extends the basic definition
+of a gARG provided here by stipulating a
+simple tabular representation and nodes and edges,
+and also defining a concise and lossless representation of
+sequence variation using the ``site'' and  ``mutation'' tables.
 
-[The tree sequence encoding is very efficient for lots of things. Examples]
+The \texttt{tskit} library~\citep{tskit2023tskit} is a liberally
+licensed open source toolkit that provides a comprehensive suite
+of tools for working with gARGs (encoded as a succinct tree sequence).
+Based on core functionality written
+in C, it provides interfaces in C, Python and Rust.
+Tskit is mature software, widely used in population genetics, and
+has been incorporated into several downstream
+applications~\citep[e.g.,][]{haller2019slim,speidel2019method,
+adrion2020community,
+terasaki2021geonomics,
+baumdicker2021efficient,
+fan2022genealogical,korfmann2022weak,
+mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
+zhang2023biobank}.
 
-In retrospect, the choice of terminology was unfortunate, and has led to
-significant confusion. [More]
-
-
+In retrospect, the choice of terminology around the succinct
+tree sequence data structure was unfortunate, and has led to
+significant confusion. [Discuss, and finish on a positive note]
 
 \section*{Discussion}
 
@@ -2017,7 +2095,7 @@ are limited to analysing at most hundreds of sequences. Hence, a number of
 methods aim to balance computational efficiency with reconstruction of
 ``reasonable", rather than parsimonious ARGs \citep{minichiello2006mapping,
 parida2008estimating, kelleher2019inferring,  speidel2019method,
-zhang2021biobank}. The latter three methods, as well as the parsimony-based
+zhang2023biobank}. The latter three methods, as well as the parsimony-based
 method of \citet{rasmussen2022espalier}, can be used on megabase scale data and
 hundreds of thousands of samples under human-like parameters.
 
