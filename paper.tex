@@ -72,86 +72,108 @@ levels of precision about ancestral processes to be represented,
 and forms the basis of an efficient computational framework.
 \end{abstract}
 
-\textbf{Keywords:} Ancestral Recombination Graphs
+\textbf{Keywords:} Ancestral recombination graphs
 
 \section*{Introduction}
-Inferring the genetic relationships between sampled genomes in the form of a
-phylogenetic tree is a necessary prerequisite for many analyses of
-species~\citep{rannala2003genetics}, non-recombining sections of
-DNA~\citep{cann1987mitochondrial,underhill2001annalsofhumangenetics}
-and viruses~\citep{grenfell2004science}.
-A phylogenetic tree captures information about the genealogy
-of the sample in an elegant and concise
-way, by postulating a set of ancestors common to the samples
-together with paths of inheritance between them. A rich literature exists
-on analysing the mathematical properties of these
-trees~\citep{steel2016phylogeny}, and numerous
-methods exist to infer them~\citep{felsenstein2004inferring}.
-However, the genetic genealogy of a recombining organism
-cannot be captured by a single tree: instead,
-the inheritance of each section of the genome may be described
-by a (slightly) different local tree~\citep{hudson1983properties}.
-Inferring complex
-genealogies of this nature
-presents profound technical difficulties, meaning genealogy-based approaches have
-not been widely used in population and statistical genetics.
-Until recently, analysis of
-population genetic data has therefore primarily focussed on summaries derived
-from the local trees~\citep{tajima1983evolutionary,tavare1984line}
-rather than using the full underlying genealogy itself. Such
-derived measures include allele frequencies and site frequency
-spectra~\citep{achaz2009frequency,ralph2020efficiently},
-patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
-principal components~\citep{mcvean2009genealogical}.
-
-Recent breakthroughs in large-scale inference
-methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,wohns2022unified}
-and data representation~\citep{kelleher2016efficient}
-have raised the realistic prospect of genealogy-based analysis becoming a standard part
+% Inferring the genetic relationships between sampled genomes in the form of a
+% phylogenetic tree is a necessary prerequisite for many analyses of
+% species~\citep{rannala2003genetics}, non-recombining sections of
+% DNA~\citep{cann1987mitochondrial,underhill2001annalsofhumangenetics}
+% and viruses~\citep{grenfell2004science}.
+% A phylogenetic tree captures information about the genealogy
+% of the sample in an elegant and concise
+% way, by postulating a set of ancestors common to the samples
+% together with paths of inheritance between them. A rich literature exists
+% on analysing the mathematical properties of these
+% trees~\citep{steel2016phylogeny}, and numerous
+% methods exist to infer them~\citep{felsenstein2004inferring}.
+% However, the genetic genealogy of a recombining organism
+% cannot be captured by a single tree: instead,
+% the inheritance of each section of the genome may be described
+% by a (slightly) different local tree~\citep{hudson1983properties}.
+% Inferring complex
+% genealogies of this nature
+% presents profound technical difficulties, meaning genealogy-based approaches have
+% not been widely used in population and statistical genetics.
+% Until recently, analysis of
+% population genetic data has therefore primarily focussed on summaries derived
+% from the local trees~\citep{tajima1983evolutionary,tavare1984line}
+% rather than using the full underlying genealogy itself. Such
+% derived measures include allele frequencies and site frequency
+% spectra~\citep{achaz2009frequency,ralph2020efficiently},
+% patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
+% principal components~\citep{mcvean2009genealogical}.
+Inferring the detailed genetic genealogy of a set of sequences
+under the influence of recombination,
+usually known as an Ancestral Recombination Graph (ARG), is a long-standing
+goal in genetics.
+Recent breakthroughs
+in large-scale inference
+methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
+schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
+and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
+have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using these inferred ancestries as inputs have begun to
-appear~\citep{osmond2021estimating,zhang2023biobank,fan2022genealogical,hejase2022deep}
+appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank}
 and many more are sure to
-follow~\citep{harris2019database}. This vibrant research area, however,
-has a significant difficulty, which risks hampering
-progress: we currently lack a well-defined data-model and shared terminology
-to discuss genealogies in the presence of recombination. This leads to basic errors in statements
-about what different inference methods produce as output, as well as presenting serious
-difficulties in either comparing the outputs of different methods or
-(from a user's perspective) using multiple inference methods in an analysis.
+follow~\citep{harris2019database,harris2023using}.
 
-In this paper we [turn into proper round up paragraph later]
-\begin{enumerate}
-\item Discuss the classical Ancestral Recombination Graph formulation,
-and show how it derives from (and is limited by) the coalescent with
-recombination.
-\item In the following sections we
-show that, although the ARG-as-a-data-structure perspective is
-now the most common interpretation, the \emph{form} of that
-data structure is still closely linked to the original
-stochastic process, and that this form is inflexible
-in the types of genetic inheritance that can be described,
-computationally inefficient, and
-forces complete (and potentially spurious) precision about
-the location and timing
-of recombination events. % (and coalescent events?)
-\item Suggest a definition of ARGs that is free of these limitations,
-where the formulation is derived from a (normally diploid) pedigree rather than from
-coalescent approximations, and where the genetic
-material which is transmitted is described by annotations attached to
-edges rather than nodes.
-\item Suggest a classification of ARG nodes that helps us to understand
-the properties of the structures inferred by different methods, and illustrate
-with some examples.
-% Perhaps we should also mention something about simplification and unknowable
-% nodes, e.g. ``show how some of the nodes are not required for useful interpretation
-% of ancestry''.
-\item Despite its status as ``the ideal data structure for
-population genomic analysis''~\citep{rasmussen2014genome}, there has been
-little discussion of its computational properties. We discuss the
-relationship between the classical concept of an ARG and the
-recently introduced succinct tree sequence data structure.
-\end{enumerate}
+% TODO need to mention ARG-as-a-data-structure to clarify.
+% What is the problem?
+Although it is widely accepted that ARGs are important, there is significant
+confusion about what, precisely, an ARG \emph{is}. [THIS IS BAD, WHY?]
+We also lack a shared format for interchanging ARG data [which is bad
+for users, progress]. [Because we don't really agree on what an ARG is,
+we don't really know what properties it should have, when we infer it].
+
+% What do we do?
+Here we precisely define an encoding for ARGs based on specific genomes
+and their intervals of genetic inheritance. We contrast this ``gARG''
+encoding with the classical approach derived from the coalescent
+with recombination stochastic process of Griffiths
+and colleagues~\citep{griffiths1991two,ethier1990two,
+griffiths1996ancestral,griffiths1997ancestral}. As this is based
+on recording evolutionary events, we refer to it as the event ARG, or
+``eARG'' encoding.
+We show that the gARG encoding is both flexible and efficient,
+and can represent varying levels of precision about historical
+events.
+[MORE]
+
+% and because it is focused on encoding the \emph{outcome}
+% of evolutionary events rather than the details of the events themselves,
+
+% In this paper we [turn into proper round up paragraph later]
+% \begin{enumerate}
+% \item Discuss the classical Ancestral Recombination Graph formulation,
+% and show how it derives from (and is limited by) the coalescent with
+% recombination.
+% \item In the following sections we
+% show that, although the ARG-as-a-data-structure perspective is
+% now the most common interpretation, the \emph{form} of that
+% data structure is still closely linked to the original
+% stochastic process, and that this form is inflexible
+% in the types of genetic inheritance that can be described,
+% computationally inefficient, and
+% forces complete (and potentially spurious) precision about
+% the location and timing
+% of recombination events. % (and coalescent events?)
+% \item Suggest a definition of ARGs that is free of these limitations,
+% where the formulation is derived from a (normally diploid) pedigree rather than from
+% coalescent approximations, and where the genetic
+% material which is transmitted is described by annotations attached to
+% edges rather than nodes.
+% \item Suggest a classification of ARG nodes that helps us to understand
+% the properties of the structures inferred by different methods, and illustrate
+% with some examples.
+
+% \item This, coupled with
+%     the explicit association of genome coordinates with edges, allows
+%     us to represent even the bewilderingly complex patterns of relatedness
+%     present in modern datasets.
+
+% \end{enumerate}
 
 
 % \section*{Genome ARGs}\label{eARG}
@@ -502,8 +524,12 @@ for diploids), any pattern of inheritance among mixed ploidy can be
 accommodated.
 Secondly, because we only record the \emph{intervals} of inheritance
 between genomes (and not the causal \emph{processes}),
-arbitrary patterns of genetic inheritance such as gene conversions,
-multiple recombinations and so on can be directly expressed.
+arbitrary patterns of genetic inheritance such as
+gene conversions,
+multiple recombinations
+across different chromosomes~\citep{fearnhead2003ancestral,koskela2019robust},
+and so on can be directly expressed.
+
 Thirdly, ``local`` trees that we generate for a particular position on the
 genome are not explicitly concerned with ``coalescence'' (nodes at which
 one or more samples find a common ancestor); for example, node $e$
@@ -520,6 +546,7 @@ coalescent with recombination (or any other) stochastic process.
 Thus, the gARG encoding is focused on faithfully representing the
 \emph{outcome} of the evolutionary processes of genetic inheritance and
 recombination, and is agnostic to the details of those processes.
+
 
 % This paragraph is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
@@ -593,6 +620,123 @@ recombination, and is agnostic to the details of those processes.
 % between an ancestor and a descendant, something that
 % cannot be done by storing recombination breakpoints.
 
+\section*{Event ARGs}\label{eARG}
+We are mainly interested in exploring the properties of gARGs in
+this manuscript, but in order to contrast with the existing
+methods we concretely define an ``event ARG'', or eARG.
+
+\begin{figure}
+\centering
+% \begin{tabular}{cc}
+\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (3, 1) {};
+\node (s4) [greynode] at (1, 2) {};
+\node (s5) [greynode] at (5, 3) {};
+\node (s6) [greynode] at (3, 4) {};
+
+% \node [anchor=north west] at (0,6) {A};
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
+\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) -- (s3);
+\draw (s0) |- (s4);
+\draw (s4) -- (2,2) |- (s3);
+\draw (s4) |- (s6);
+\draw (s3) -- (4,1) |- (s5);
+\draw (s2) |- (s5);
+\draw (s5) |- (s6);
+
+% \node [anchor=north west] at (9,6) {B};
+\node [nodelabel,anchor=north west] at ($(10,5)$) {
+\begin{tabular}{c|c|l}
+% \multicolumn{2}{c}{Breakpoints}\\
+Node & Breakpoint & Parents\\
+\hline
+$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{g}$ & $\varnothing$ & []\\
+\end{tabular}};
+
+% \node [anchor=north west] at (9,6) {C};
+% \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% \begin{tabular}{ll}
+% Edges & Intervals\\
+% \hline
+% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% \end{tabular}};
+
+\end{tikzpicture}
+\caption{\label{fig-arg-data-structure}
+A graphical depiction of a classical event ARG and a concrete
+encoding of the information. Node \noderef{d} is a recombination
+event as it is associated with a non-null breakpoint, and has
+two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+common ancestor events.
+}
+\end{figure}
+
+In keeping with its original derivation in terms of a stochastic
+process (see Appendix~\ref{sec-arg-history}), the classical definition of an
+ARG data structure is
+in terms of events.
+Nodes represent
+common ancestor or recombination events that occurred in the
+history of some set of sample genomes, and edges represent ancestral
+lineages~\citep{griffiths1996ancestral}.
+In a common ancestor event the inbound lineages are merged into a
+single ancestral lineage, and in a recombination
+event a lineage is split into two independent
+ancestral lineages.
+% The final vital
+% detail is that we associate a breakpoint with each recombination
+% event.
+% This information is sufficient to uniquely
+% define the local genealogical trees at every position along the genome,
+% which is the basic requirement for a data structure encoding
+% genome-wide genetic ancestry.
+As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+is usually concretely encoded by associating a recombination breakpoint
+(which is null for common ancestor events) and an ordered list of parents
+with each node. We refer to such a  data structure as an
+``event ARG'' (eARG).
+To recover the local tree at genome coordinate $x$ (the most
+fundamental operation required for an ARG data structure),
+we traverse the graph rootwards from the leaves.
+At a particular
+node $u$, if it has one parent we are at a common ancestor
+node and we follow that parent. If we are at a
+recombination node, $u$ has two parents: if
+$x$ is less than the breakpoint we follow
+the edge to the first parent, and otherwise follow the edge
+to the second parent.
+The order in which parents are listed at a recombination node is
+therefore significant, telling us
+from which parent the segments of genome to the left and right of the breakpoint
+were inherited.
+
+[TODO list the salient points that we want to contrast against
+the gARG. We don't want this to seem like a straw man]
+
 \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
@@ -658,11 +802,16 @@ sample (note that node $q$ is now ommitted because the MRCA of the sample
 has already been found for the full genome at node $p$).
 Tracking such
 ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
-is usually much more useful and, indeed, all that is possible to
+is much more useful~\citep{mcgill2013graphml,arenas2013importance}
+and, indeed, all that is possible to
 have information about when inferring ARGs from contemporary samples.
 We refer to a gARG with inheritance annotations of this type as
 ``sample resolved''.
-
+% Keeping track of resolved ancestral material is one of the distinguishing
+% features of ARGs vs phylogenetic
+% networks~\citep{mcgill2013graphml,arenas2013importance}, but
+% is actually incompatible with the Griffiths gARG encoding (it does this
+% implicitly, I guess)
 
 % Fig~\ref{fig-ancestry-resolution} is an instructive example
 % from the literature \citep{wiuf1999recombination} and illustrates
@@ -1001,7 +1150,8 @@ of the model.
 % JK: This is very rough, just jotting down the basic ideas,
 % will need substantial revision.
 It is not clear that such complete information will always
-(or indeed ever) be available from inferences. We may be
+(or indeed ever) be available from inferences~\cite{shipilina2022origin}.
+ We may be
 able to precisely identify the location and timing
 of recent recombinations (particularly if detailed pedigree
 information is available) but beyond this, the information
@@ -1013,6 +1163,14 @@ we do obtain a fully resolved ARG with precise
 information about recombination, but it is reasonable
 to question how much information from the data is used
 to support older recombinations, in particular.
+
+% This idea of a continuum of information about recombination
+% being inferrable and representable is consistent with the ideas
+% discussed by~\cite{shipilina2022origin}. There a haplotype block
+% is synonymous with coalescent nodes in the ARG, which we can generalise
+% as nodes in a gARG with at least two children. In principle, these
+% nodes are identifiable by the mutations that occur on the outbound
+% edges of the node.
 
 It is helpful to consider the difference between fully
 resolved binary trees and those that contain polytomies.
@@ -1031,6 +1189,18 @@ event) for every effect (difference between adjacent trees).
 These differences in precision of recombination
 information are illustrated in the ARGs estimated by different
 methods, as we see in the next section.
+
+In general, discussions tend to contrast an ARG
+on one hand as holding \emph{complete} information about recombination
+(and therefore between-tree correlation structure)
+and a sequence of local trees on the other (with, by implication,
+no direct information about between-tree correlations).
+This is a false dichotomy:
+a \emph{continuum} of information about recombination and between-tree
+correlation structure can be represented and inferred, and all
+such levels of information are useful, even if only for computational
+efficiency.
+
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
@@ -1265,6 +1435,9 @@ this approach scales poorly in terms of software development
 effort, and is ultimately not compatible with the widespread use
 of ARGs for routine data analysis, and a healthy and diverse
 software ecosystem.
+% FIXME not sure where this goes
+Earlier efforts to standardise ARG interchange
+did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
 
 The gARG encoding discussed and concretely defined in this manuscript
 leads to highly efficient storage and processing of ARG data,
@@ -1296,6 +1469,27 @@ baumdicker2021efficient,
 fan2022genealogical,korfmann2022weak,
 mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
 zhang2023biobank}.
+
+% FIXME this needs more work and doesn't really fit into the
+% narrative right now, but we do need to make this point.
+The key insight that makes the succinct tree sequence encoding
+an efficient substrate for defining analysis algorithms is that
+it allows us to generate the local trees along the genome
+in a way that allows us to reason about the \emph{differences}
+between those trees.
+Sequentially generating the marginal trees along the genome
+is also fundamental, and is necessary whenever we need to
+perform calculations that are contingent on more than just the
+isolated properties of an edge. \cite{kelleher2016efficient}
+showed how all trees can be sequentially generated in
+constant time per tree transition in a fully simplified gARG.
+Furthermore, we can easily reason about how tree topologies
+change (and stay the same), leading to efficient algorithms
+for computing population genetic
+statistics~\citep{kelleher2016efficient,kelleher2018efficient},
+implementing the Li and Stephens
+model~\citep{kelleher2019inferring,wohns2022unified}
+and likely many more.
 
 In retrospect, the choice of terminology around the succinct
 tree sequence data structure was unfortunate, and has led to
@@ -1329,145 +1523,120 @@ trees~\citep[e.g.,][]{hejase2020summary,ignatieva2021kwarg}.
 % in the discussion
 
 \section*{Discussion}
+Recent breakthroughs have made ARG inference methods practical
+for the first time, and there has been a surge of interest
+in inference methods, their evaluation and application.
+The prospect of ARGs being used routinely in population
+and statistical genetics applications is tantalising,
+but in reality there is  substantial work to be done to
+enable this, and much remains to be done.
 
-Discussion points (may or may not be used, certainly would be heavily revised)
+A necessary first step towards this goal is some terminological
+clarity. As discussed in Appendix XXX, the term ARG has several
+subtly different interpretations depending on context. The
+trend to decouple the ARG from its origins as a stochastic
+process and instead use the term as a more general representation of any
+recombinant genetic ancestry seems most useful, which we have
+tried to clarify and systematise here. Thus
+we can think of an ARG as being any structure that encodes the
+reticulate genetic ancestry of a sample of colinear sequences under
+the influence of recombination. The ``genome'' ARG encoding
+made explicit here is one way we can concretely
+define such recombinant ancestry, which we have shown is both
+flexible and efficient.
 
-\begin{itemize}
+The flexiblity of the gARG encoding contrasts with the classical
+``event'' ARG (eARG), which, because of its origins in an idealised
+mathematical model, is more limited in what can be described.
+The necessity of complete precision under the eARG encoding has been
+conflated with the idea of a ``true'' or ``full'' ARG.
+[A discussion of how realistic inferring a completely precise ARG is]
+[Do downstream applications use full ARGs? usually no]
 
-\item Recap quickly distinction bewtween aARG and gARG.Then:
-    This, coupled with
-    the explicit association of genome coordinates with edges, allows
-    us to represent even the bewilderingly complex patterns of relatedness
-    present in modern datasets.
+% % Do downstream applications actually make use of such full ARGs?
+% Downstream applications using estimated ARGs to date rarely
+% make use of such complete recombination information.
+% The \relate\ selection statistic~\citep{speidel2019method}
+% computes a $p$-value for selection [FIXME] for each
+% local tree independently by comparing the rates of coalescence
+% at various time-points. For cases like strong positive selection,
+% where we expect there to be a clear signal in the local tree,
+% such tree-by-tree methods can be simple and powerful.
+% In their method
+% for estimating dispersal rates and the locations of genetic
+% ancestors,
+% \citep{osmond2021estimating} downsample trees along the genome
+% so that they can be regarded as approximately independent.
+% The SIA method for detecting selection~\citep{hejase2022deep}
+% encodes local trees as a set of lineage counts at discrete
+% time intervals, and uses these as feature for a
+% type of machine learning algorithm
+% that takes ``temporal'' correlations into account. Thus,
+% while SIA does use some of the information about local tree correlation,
+% clearly much of the detail about recombination
+% events in a ``full'' ARG is lost.
+% The \texttt{tsdate} algorithm (and related naive estimator
+% for ancestral location) uses much more between-tree
+% information~\citep{wohns2022unified}, explicitly using the gARG
+% encoding to reason about ancestral nodes.
+% A major strength of this approach is that it can be used on
+% any gARG, ranging from estimates containing relatively little
+% information about recombination (e.g., as estimated by \relate)
+% to ``full'' ARGs containing complete recombination information
+% (e.g., as estimated by \kwarg), and will fully utilise
+% any between-tree correlation information that is present.
 
-\item In general, discussions tend to contrast an ARG
-on one hand as holding \emph{complete} information about recombination
-(and therefore between-tree correlation structure)
-and a sequence of local trees on the other (with, by implication,
-no direct information about between-tree correlations).
-A key goal of this article is to show that this is a false dichotomy:
-a \emph{continuum} of information about recombination and between-tree
-correlation structure can be represented and inferred, and all
-such levels of information are useful, even if only for computational
-efficiency.
+Fully decoupling the general concept of an ARG from the coalescent
+with recombination stochastic process is an important step.
+While the coalescent with recombination is a very useful and
+robust model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
+many modern datasets have properties that grossly
+violate its assumptions.
+For example, several human datasets now consist of hundreds of thousands of
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+substantially \emph{larger} than the usually assumed $N_e$ values.
+Agricultural datasets are an even more extreme departure from coalescent
+assumptions, with large samples embedded in
+multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
+and effective population sizes of 100 and even
+less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
+Finally, the COVID-19 pandemic has provided an example of a dataset that
+is clearly a very poor fit for the coalescent with recombination, but which,
+nevertheless, we would like to estimate ARGs.
+\cite{zhan2023towards} inferred an ARG for 1.27 million SARS-Cov-2 whole
+genomes, and showed how it accurately captures several known properties of
+the pathogen's evolution, and can efficiently and concisely
+encode this vast dataset.
 
-\item This idea of a continuum of information about recombination
-being inferrable and representable is consistent with the ideas
-discussed by~\cite{shipilina2022origin}. There a haplotype block
-is synonymous with coalescent nodes in the ARG, which we can generalise
-as nodes in a gARG with at least two children. In principle, these
-nodes are identifiable by the mutations that occur on the outbound
-edges of the node.
-Their definition of an ARG is interesting, as they emphasise that it
-is composed of events, but illustate the genomes. [Nice to mention
-this connection somehere if we can, see Fig B1]
-
-\item It is unfortunate that we are adding yet another meaning to the
-term ARG here, but all we're really doing is making the implicit
-assumptions that others have made (i.e., describing the output of
-Relate, tsinfer etc as ARGs) and making them concrete. We need to have a
-term to describe all of these things, and since people are already using
-ARG for this, we might as well make it rigorous. We can then move away
-from the unfruitful discussion about which methods infer a ``true'' or
-``real'' ARG (none do, really, under the original definitions) and
-instead start discussing the \emph{properties} of these ARGs. (See
-next point also.)
-\item Terminology based around an inferred ancestry being a ``true''
-ARG is impoverished and misleading. The only reasonable interpretation
-of a ARG being true or not is whether it's a sample from the coalescent.
-Most inference methods (and all that scale well) do not. In any case,
-the coalescent is just one model, and a highly idealised one. It is
-exceedingly unlikely that the actual ARG describing the ancestry
-of any biological population is ``true'' ARG in this sense. The terminology is
-impoverished because it reduces the possibilities available
-to something either being an ARG or not, whereas there are many different
-interesting properties of these structures that we should be able to
-discuss and compare.
-\item tskit can represent any ARG.
-\item Interchange is a real problem, and if we're going to realise the
-potential for ARGs in genomics we must solve it. Efforts to standardise
-phylogenetic networks haven't done very well (~\citep{cardona2008extended}
-has 89 citations). The only real effort to standardise an ARG format
-based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
-GraphML~\citep{mcgill2013graphml} has some of the same key ideas
-as tskit though, in particular allowing the annotation of ``live sites''
-to an edge as a set of disjoint intervals that hold ancestral material.
-
-\item There are real computational disadvantages to the Griffiths ARG
-data structure. Having two types of node (three really, as we need
-``sample'' nodes which are also treated differently) complicates algorithms,
-and makes it difficult to reason about the structure of the ARG as a
-graph. For example, there's some weirdness about mutations over
-recombination nodes discussed by Gusfield [Ana?]
-
-\item Comparison metrics are a problem. All evaluations has essentially
-looked at either some form of pairwise comparison of trees along the genome
-using tree metrics as proposed by \citet{kuhner2015assessing},
-or looked at the distributions of TMRCAs. No
-one has succeeded in performing any comparisons of ARGs beyond
-regarding them as a sequence of independent trees. If we genuinely believe
-that ARGs are more than this, then we need to devise some metrics that
-consider more than the local tree structure.
-
-\item Throughout, we considered ARGs defined for a single chromosome comprising
-of a fixed number of discrete sites. Our argument applies equally well to ARGs
-defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
-koskela2019robust} and to idealised, continuous chromosomes.
-
-\item The gARG structure as described here is sufficiently expressive
-to model any form of homologous genetic transmission between individuals,
-and is far more flexible than the classical eARG approach.
-Phylogenetic networks~\citep{huson2010phylogenetic} are a more
-general concept, and specific classes capture dynamics that
-cannot be modelled using an ARG. For example,
-reassortment networks model the exchange of
-(non-recombining) genomic segments between viral particles inside a co-infected host,
-and hybridisation networks, model the genetic material from
-different species combining to create a hybrid.
-Similarly Genome Graphs~\cite{novak2017genome} model complicated things
-within species. Future work should look to capture all of these things
-in a single structure.
-
-\end{itemize}
-
-
-% TODO not clear this belongs in the discussion, but we'll definitely
-% want to make some of these points, even if they are being repeated
-% from earlier section.
-It is difficult to imagine a practical calculation performed on an
-ARG that does not involve either the sequential generation of trees
-along the genome or the resolved ancestry segments.
-Knowing the resolved segments in an ancestry resolved gARG allows
-us to perform many calculations without explicitly generating
-the trees, and lets us work with the ancestry on a genome-by-genome
-basis. We give three examples here. Firstly, generating mutations
-on edges can be performed very quickly on an ancestry resolved
-gARG, since we only need to examine $O(|E|)$ edges rather than
-$O(nt)$ tree branches (assuming $n$ samples and $t$ marginal trees)
-~\citep{baumdicker2021efficient}. If the ancestry were not resolved,
-we would generate a large number of mutations on areas of the edge that
-are non-ancestral. Secondly, computing the likelihood of a given
-ARG realisation under the coalescent with recombination model
-requires that we essentially recapitulate the state of Hudson's
-algorithm (see XXX section) at each node in
-the graph~\citep{baumdicker2021efficient}. Having resolved ancestry
-substantially simplifies this process. Thirdly, computing
-[FIXME describe what we did in tsdate]~\citep{wohns2022unified}.
-
-Sequentially generating the marginal trees along the genome
-is also fundamental, and is necessary whenever we need to
-perform calculations that are contingent on more than just the
-isolated properties of an edge. \cite{kelleher2016efficient}
-showed how all trees can be sequentially generated in
-constant time per tree transition in a fully simplified gARG.
-Furthermore, we can easily reason about how tree topologies
-change (and stay the same), leading to efficient algorithms
-for computing population genetic
-statistics~\citep{kelleher2016efficient,kelleher2018efficient},
-implementing the Li and Stephens
-model~\citep{kelleher2019inferring,wohns2022unified}
-and likely many more.
-
+This view of ARGs,
+decoupled from generative models and
+without the hard requirement
+of complete precision on all historical events, may help improve
+methods for inference method evaluation. In the majority of cases,
+ARG inference accuracy is evaluated by comparing some truth simulations
+to the inferred ARGs by the pairwise comparison of local trees along the genome
+using tree metrics as originally proposed by \citet{kuhner2015assessing}.
+While this provides valuable insights into the method's performance,
+it is not clear how well these tree distance metrics reflect
+performance on real data.
+In comparing tree-by-tree along the genome, the effects of recombination
+structure is incorporated in a very indirect manner.
+Tree distance metrics usually have $O(n^2)$ time complexity, and so cannot be
+applied to the very large sample sizes currently of interest.
+\citet{deng2021distribution} derived the distribution of the expected
+waiting distances to tree changes.
+[ \citet{ignatieva2023distribution} DID SOMETHING ELSE]
+\citet{brandt2021evaluation} compared the
+distributions of time to the most recent common ancestor across several
+methods, which is a useful addition but only indirectly captures
+topological comparisons.
+% Not sure this is the right place for this sentence
+All of these comparisons and evaluations have been based on
+highly idealised simulations, and the effects richness of real data
+(beyond simplistic error models) are almost entirely unknown.
+A suite of true ARG distance metrics, that take into account more of the
+global topology and can be applied to large ARGs, would be a
+valuable addition to the field.
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
@@ -1617,154 +1786,154 @@ interpretation for the remainder of this paper.
 
 % FIXME putting this here for now just to see if this will work.
 
-\section*{Event ARGs}\label{eARG}
-In keeping with its original derivation in terms of a stochastic
-process (see Appendix~\ref{sec-arg-history}), the classical definition of an
-ARG data structure is
-in terms of events.
-Nodes represent
-common ancestor or recombination events that occurred in the
-history of some set of sample genomes, and edges represent ancestral
-lineages~\citep{griffiths1996ancestral}.
-In a common ancestor event the inbound lineages are merged into a
-single ancestral lineage, and in a recombination
-event a lineage is split into two independent
-ancestral lineages.
-% The final vital
-% detail is that we associate a breakpoint with each recombination
-% event.
-% This information is sufficient to uniquely
-% define the local genealogical trees at every position along the genome,
-% which is the basic requirement for a data structure encoding
-% genome-wide genetic ancestry.
-As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
-is usually concretely encoded by associating a recombination breakpoint
-(which is null for common ancestor events) and an ordered list of parents
-with each node. We refer to such a  data structure as an
-``event ARG'' (eARG).
-To recover the local tree at genome coordinate $x$ (the most
-fundamental operation required for an ARG data structure),
-we traverse the graph rootwards from the leaves.
-At a particular
-node $u$, if it has one parent we are at a common ancestor
-node and we follow that parent. If we are at a
-recombination node, $u$ has two parents: if
-$x$ is less than the breakpoint we follow
-the edge to the first parent, and otherwise follow the edge
-to the second parent.
-The order in which parents are listed at a recombination node is
-therefore significant, telling us
-from which parent the segments of genome to the left and right of the breakpoint
-were inherited.
+% \section*{Event ARGs}\label{eARG}
+% In keeping with its original derivation in terms of a stochastic
+% process (see Appendix~\ref{sec-arg-history}), the classical definition of an
+% ARG data structure is
+% in terms of events.
+% Nodes represent
+% common ancestor or recombination events that occurred in the
+% history of some set of sample genomes, and edges represent ancestral
+% lineages~\citep{griffiths1996ancestral}.
+% In a common ancestor event the inbound lineages are merged into a
+% single ancestral lineage, and in a recombination
+% event a lineage is split into two independent
+% ancestral lineages.
+% % The final vital
+% % detail is that we associate a breakpoint with each recombination
+% % event.
+% % This information is sufficient to uniquely
+% % define the local genealogical trees at every position along the genome,
+% % which is the basic requirement for a data structure encoding
+% % genome-wide genetic ancestry.
+% As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+% is usually concretely encoded by associating a recombination breakpoint
+% (which is null for common ancestor events) and an ordered list of parents
+% with each node. We refer to such a  data structure as an
+% ``event ARG'' (eARG).
+% To recover the local tree at genome coordinate $x$ (the most
+% fundamental operation required for an ARG data structure),
+% we traverse the graph rootwards from the leaves.
+% At a particular
+% node $u$, if it has one parent we are at a common ancestor
+% node and we follow that parent. If we are at a
+% recombination node, $u$ has two parents: if
+% $x$ is less than the breakpoint we follow
+% the edge to the first parent, and otherwise follow the edge
+% to the second parent.
+% The order in which parents are listed at a recombination node is
+% therefore significant, telling us
+% from which parent the segments of genome to the left and right of the breakpoint
+% were inherited.
 
-This ordering requirement, while straightforward
-to describe, has some practical drawbacks. For example,
-% Surely the meaning is clear from the context here and we don't need
-% qualify the meaning of ``ARG''
-when using this representation and simulating an ARG backwards in time,
-the first event older than a recombination may involve the lineage carrying the
-ancestry to the right of the breakpoint rather
-than the left, and so we cannot emit edges as they are generated.
-Such issues can be worked around, of course, but depending on the ordering of
-otherwise indistinguishable objects is generally problematic.
+% This ordering requirement, while straightforward
+% to describe, has some practical drawbacks. For example,
+% % Surely the meaning is clear from the context here and we don't need
+% % qualify the meaning of ``ARG''
+% when using this representation and simulating an ARG backwards in time,
+% the first event older than a recombination may involve the lineage carrying the
+% ancestry to the right of the breakpoint rather
+% than the left, and so we cannot emit edges as they are generated.
+% Such issues can be worked around, of course, but depending on the ordering of
+% otherwise indistinguishable objects is generally problematic.
 
-\begin{figure}
-\centering
-% \begin{tabular}{cc}
-\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
-\tikzset{greynode/.style={circle,fill,inner sep=1},
-nodelabel/.style={font=\footnotesize}}
+% \begin{figure}
+% \centering
+% % \begin{tabular}{cc}
+% \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
+% \tikzset{greynode/.style={circle,fill,inner sep=1},
+% nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (3, 1) {};
-\node (s4) [greynode] at (1, 2) {};
-\node (s5) [greynode] at (5, 3) {};
-\node (s6) [greynode] at (3, 4) {};
+% \node (s0) [greynode] at (0, 0) {};
+% \node (s1) [greynode] at (3, 0) {};
+% \node (s2) [greynode] at (6, 0) {};
+% \node (s3) [greynode] at (3, 1) {};
+% \node (s4) [greynode] at (1, 2) {};
+% \node (s5) [greynode] at (5, 3) {};
+% \node (s6) [greynode] at (3, 4) {};
 
-% \node [anchor=north west] at (0,6) {A};
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+% % \node [anchor=north west] at (0,6) {A};
+% \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
+% \foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+% \foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+% \foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+% \foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
 
-%% Edges
-\draw (s1) -- (s3);
-\draw (s0) |- (s4);
-\draw (s4) -- (2,2) |- (s3);
-\draw (s4) |- (s6);
-\draw (s3) -- (4,1) |- (s5);
-\draw (s2) |- (s5);
-\draw (s5) |- (s6);
+% %% Edges
+% \draw (s1) -- (s3);
+% \draw (s0) |- (s4);
+% \draw (s4) -- (2,2) |- (s3);
+% \draw (s4) |- (s6);
+% \draw (s3) -- (4,1) |- (s5);
+% \draw (s2) |- (s5);
+% \draw (s5) |- (s6);
 
-% \node [anchor=north west] at (9,6) {B};
-\node [nodelabel,anchor=north west] at ($(10,5)$) {
-\begin{tabular}{c|c|l}
-% \multicolumn{2}{c}{Breakpoints}\\
-Node & Breakpoint & Parents\\
-\hline
-$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
-$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
-$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
-$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
-$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{g}$ & $\varnothing$ & []\\
-\end{tabular}};
-
-
-% \node [anchor=north west] at (9,6) {C};
+% % \node [anchor=north west] at (9,6) {B};
 % \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% \begin{tabular}{ll}
-% Edges & Intervals\\
+% \begin{tabular}{c|c|l}
+% % \multicolumn{2}{c}{Breakpoints}\\
+% Node & Breakpoint & Parents\\
 % \hline
-% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
-% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
-% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
-% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
-% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
-% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
-% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% $\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+% $\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+% $\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+% $\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+% $\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{g}$ & $\varnothing$ & []\\
 % \end{tabular}};
 
 
-\end{tikzpicture}
-\caption{\label{fig-arg-data-structure}
-A graphical depiction of a classical event ARG and a concrete
-encoding of the information. Node \noderef{d} is a recombination
-event as it is associated with a non-null breakpoint, and has
-two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
-common ancestor events.
-}
-\end{figure}
+% % \node [anchor=north west] at (9,6) {C};
+% % \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% % \begin{tabular}{ll}
+% % Edges & Intervals\\
+% % \hline
+% % $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% % $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% % $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% % $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% % $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% % $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% % $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% % \end{tabular}};
 
-% What do we mean by an eARG, formally?
-To be concrete, we can formally define the
-classical Griffiths eARG as a tuple $(e, \sigma)$, where $e$
-is an ordered list of edges defining a directed acyclic graph and
-$\sigma: \mathbb{N} \rightarrow \mathbb{N}$
-is a function mapping nodes to recombination breakpoints,
-such that $\sigma(u) = x$
-if $u$ is a recombination event with breakpoint $x$ and
-$\sigma(u) = \varnothing$ otherwise.
-(This is equivalent to having different ``types''
-of node, where breakpoints are associated with recombination
-nodes only).
-Each edge $e_j = (c, p)$ describes an edge between
-child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
-% For each recombination node $u$ we must
-% have exactly two edges in $e$ such that $u$ is the child.
-This encoding of an eARG is equivalent to the output
-of programs such as
-\texttt{ARGweaver}~\citep{rasmussen2014genome}
-and \texttt{KwARG}~\citep{ignatieva2021kwarg},
-and an example is given in Fig.~\ref{fig-arg-data-structure}A.
-Note that the description above captures only the
-graph topology: if we also wish to know the branch lengths we need
-an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
-which defines the time of each node.
+
+% \end{tikzpicture}
+% \caption{\label{fig-arg-data-structure}
+% A graphical depiction of a classical event ARG and a concrete
+% encoding of the information. Node \noderef{d} is a recombination
+% event as it is associated with a non-null breakpoint, and has
+% two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+% common ancestor events.
+% }
+% \end{figure}
+
+% % What do we mean by an eARG, formally?
+% To be concrete, we can formally define the
+% classical Griffiths eARG as a tuple $(e, \sigma)$, where $e$
+% is an ordered list of edges defining a directed acyclic graph and
+% $\sigma: \mathbb{N} \rightarrow \mathbb{N}$
+% is a function mapping nodes to recombination breakpoints,
+% such that $\sigma(u) = x$
+% if $u$ is a recombination event with breakpoint $x$ and
+% $\sigma(u) = \varnothing$ otherwise.
+% (This is equivalent to having different ``types''
+% of node, where breakpoints are associated with recombination
+% nodes only).
+% Each edge $e_j = (c, p)$ describes an edge between
+% child node $c$ and parent $p$, where $c, p \in \mathbb{N}$.
+% % For each recombination node $u$ we must
+% % have exactly two edges in $e$ such that $u$ is the child.
+% This encoding of an eARG is equivalent to the output
+% of programs such as
+% \texttt{ARGweaver}~\citep{rasmussen2014genome}
+% and \texttt{KwARG}~\citep{ignatieva2021kwarg},
+% and an example is given in Fig.~\ref{fig-arg-data-structure}A.
+% Note that the description above captures only the
+% graph topology: if we also wish to know the branch lengths we need
+% an additional function $t(u): \mathbb{N} \rightarrow \mathbb{R}$
+% which defines the time of each node.
 
 
 \subsection*{The Big and Little ARG}
