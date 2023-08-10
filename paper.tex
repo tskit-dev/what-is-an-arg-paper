@@ -1244,12 +1244,27 @@ and it seems inevitable that ARGs will be inferred for them.
 The efficiency with which we can store and analyse these inferred
 ARGs is therefore of great importantance, and a key factor
 in the ultimate success of downstream ARG-based methods.
-Another key factor in the how important ARG-based methods become
+Another key factor in how important ARG-based methods become
 across the wide range of predicted application
-areas [CITE commentary pieces, tsinfer, ARGneedle any others?]
+% TODO more?
+areas~\citep{rasmussen2014genome,harris2019database,
+hejase2020summary,schaefer2021ancestral,
+fan2022genealogical,wohns2022unified,harris2023using}
 is how well inference methods and downstream analysis applications
-interoperate. [Genetics doesn't have a good record here, let's
-try not to make the same mistakes again.]
+interoperate. Without a well-defined and efficient shared format
+for ARG data interchange,
+users will suffer from problems of converting data from one programs
+output to another, an unfortunate hallmark of population genetics
+software for many years~\citep{excoffier2006computer}.
+While current methods tend to tightly couple downstream analysis
+of the inferred ARG with the inference
+itself within the same software package
+% FIXME-  more explicit?
+(e.g.\ Relate, ARGneedle)
+this approach scales poorly in terms of software development
+effort, and is ultimately not compatible with the widespread use
+of ARGs for routine data analysis, and a healthy and diverse
+software ecosystem.
 
 The gARG encoding discussed and concretely defined in this manuscript
 leads to highly efficient storage and processing of ARG data,
@@ -1258,7 +1273,7 @@ The succinct tree sequence data structure (usually known as a ``tree sequence''
 for brevity, but see below for confusion around this point)
 is a concrete encoding of a gARG, as discussed in this article.
 It was originally developed as part of the \texttt{msprime}
-simulator~\cite{kelleher2016efficient} and subsequently been
+simulator~\citep{kelleher2016efficient} and subsequently been
 extended and applied to forward-time
 simulations~\citep{kelleher2018efficient,haller2018tree},
 calculation of population genetics statistics~\citep{ralph2020efficiently}.
@@ -1267,7 +1282,6 @@ of a gARG provided here by stipulating a
 simple tabular representation and nodes and edges,
 and also defining a concise and lossless representation of
 sequence variation using the ``site'' and  ``mutation'' tables.
-
 The \texttt{tskit} library~\citep{tskit2023tskit} is a liberally
 licensed open source toolkit that provides a comprehensive suite
 of tools for working with gARGs (encoded as a succinct tree sequence).
@@ -1285,7 +1299,34 @@ zhang2023biobank}.
 
 In retrospect, the choice of terminology around the succinct
 tree sequence data structure was unfortunate, and has led to
-significant confusion. [Discuss, and finish on a positive note]
+significant confusion. As first introduced by~\cite{kelleher2016efficient}
+a ``tree sequence`` was defined as the set of ``coalescence records``
+that is output by Hudson's simulation algorithm.
+This was then generalised to use the
+tabular encoding described above and formally described as a ``succinct
+tree sequence''~\citep{kelleher2018efficient}.
+The ``succinct'' prefix here is intended to connect
+with the concept of succinct data structures
+\citep[e.g.][]{gog2014theory},
+which have near-optimal
+space usage but still support efficient retrieval and computation.
+The concrete data structures of the succinct tree sequence, precisely
+defined and with a particular focus on computational efficiency
+did not have an obvious connection to the ARG definitions
+provided by Griffiths and
+colleagues~\citep{griffiths1991two,ethier1990two,
+griffiths1996ancestral,griffiths1997ancestral}, and with the lack
+of any other precise definitions, it seemed best to avoid the
+term to prevent confusion. Unfortunately, however, the opposite
+has occured. In describing the output of \tsinfer\ as a ``tree
+sequence''~\citep{kelleher2019inferring} many
+have---not unreasonably, but incorrectly---concluded that the
+output is a collection of \emph{independent}
+% MORE?
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+trees~\citep[e.g.,][]{hejase2020summary,ignatieva2021kwarg}.
+% Could say more here, but maybe we'll have a note about terminology
+% in the discussion
 
 \section*{Discussion}
 
