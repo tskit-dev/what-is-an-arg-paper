@@ -502,8 +502,12 @@ for diploids), any pattern of inheritance among mixed ploidy can be
 accommodated.
 Secondly, because we only record the \emph{intervals} of inheritance
 between genomes (and not the causal \emph{processes}),
-arbitrary patterns of genetic inheritance such as gene conversions,
-multiple recombinations and so on can be directly expressed.
+arbitrary patterns of genetic inheritance such as
+gene conversions,
+multiple recombinations
+across different chromosomes~\citep{fearnhead2003ancestral,koskela2019robust},
+and so on can be directly expressed.
+
 Thirdly, ``local`` trees that we generate for a particular position on the
 genome are not explicitly concerned with ``coalescence'' (nodes at which
 one or more samples find a common ancestor); for example, node $e$
@@ -520,6 +524,7 @@ coalescent with recombination (or any other) stochastic process.
 Thus, the gARG encoding is focused on faithfully representing the
 \emph{outcome} of the evolutionary processes of genetic inheritance and
 recombination, and is agnostic to the details of those processes.
+
 
 % This paragraph is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
@@ -658,11 +663,16 @@ sample (note that node $q$ is now ommitted because the MRCA of the sample
 has already been found for the full genome at node $p$).
 Tracking such
 ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
-is usually much more useful and, indeed, all that is possible to
+is much more useful~\citep{mcgill2013graphml,arenas2013importance}
+and, indeed, all that is possible to
 have information about when inferring ARGs from contemporary samples.
 We refer to a gARG with inheritance annotations of this type as
 ``sample resolved''.
-
+% Keeping track of resolved ancestral material is one of the distinguishing
+% features of ARGs vs phylogenetic
+% networks~\citep{mcgill2013graphml,arenas2013importance}, but
+% is actually incompatible with the Griffiths gARG encoding (it does this
+% implicitly, I guess)
 
 % Fig~\ref{fig-ancestry-resolution} is an instructive example
 % from the literature \citep{wiuf1999recombination} and illustrates
@@ -1265,6 +1275,9 @@ this approach scales poorly in terms of software development
 effort, and is ultimately not compatible with the widespread use
 of ARGs for routine data analysis, and a healthy and diverse
 software ecosystem.
+% FIXME not sure where this goes
+Earlier efforts to standardise ARG interchange
+did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
 
 The gARG encoding discussed and concretely defined in this manuscript
 leads to highly efficient storage and processing of ARG data,
@@ -1296,6 +1309,27 @@ baumdicker2021efficient,
 fan2022genealogical,korfmann2022weak,
 mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
 zhang2023biobank}.
+
+% FIXME this needs more work and doesn't really fit into the
+% narrative right now, but we do need to make this point.
+The key insight that makes the succinct tree sequence encoding
+an efficient substrate for defining analysis algorithms is that
+it allows us to generate the local trees along the genome
+in a way that allows us to reason about the \emph{differences}
+between those trees.
+Sequentially generating the marginal trees along the genome
+is also fundamental, and is necessary whenever we need to
+perform calculations that are contingent on more than just the
+isolated properties of an edge. \cite{kelleher2016efficient}
+showed how all trees can be sequentially generated in
+constant time per tree transition in a fully simplified gARG.
+Furthermore, we can easily reason about how tree topologies
+change (and stay the same), leading to efficient algorithms
+for computing population genetic
+statistics~\citep{kelleher2016efficient,kelleher2018efficient},
+implementing the Li and Stephens
+model~\citep{kelleher2019inferring,wohns2022unified}
+and likely many more.
 
 In retrospect, the choice of terminology around the succinct
 tree sequence data structure was unfortunate, and has led to
@@ -1372,6 +1406,7 @@ from the unfruitful discussion about which methods infer a ``true'' or
 ``real'' ARG (none do, really, under the original definitions) and
 instead start discussing the \emph{properties} of these ARGs. (See
 next point also.)
+
 \item Terminology based around an inferred ancestry being a ``true''
 ARG is impoverished and misleading. The only reasonable interpretation
 of a ARG being true or not is whether it's a sample from the coalescent.
@@ -1383,22 +1418,6 @@ impoverished because it reduces the possibilities available
 to something either being an ARG or not, whereas there are many different
 interesting properties of these structures that we should be able to
 discuss and compare.
-\item tskit can represent any ARG.
-\item Interchange is a real problem, and if we're going to realise the
-potential for ARGs in genomics we must solve it. Efforts to standardise
-phylogenetic networks haven't done very well (~\citep{cardona2008extended}
-has 89 citations). The only real effort to standardise an ARG format
-based on extending GraphML~\citep{mcgill2013graphml} has 11 citations.
-GraphML~\citep{mcgill2013graphml} has some of the same key ideas
-as tskit though, in particular allowing the annotation of ``live sites''
-to an edge as a set of disjoint intervals that hold ancestral material.
-
-\item There are real computational disadvantages to the Griffiths ARG
-data structure. Having two types of node (three really, as we need
-``sample'' nodes which are also treated differently) complicates algorithms,
-and makes it difficult to reason about the structure of the ARG as a
-graph. For example, there's some weirdness about mutations over
-recombination nodes discussed by Gusfield [Ana?]
 
 \item Comparison metrics are a problem. All evaluations has essentially
 looked at either some form of pairwise comparison of trees along the genome
@@ -1409,64 +1428,7 @@ regarding them as a sequence of independent trees. If we genuinely believe
 that ARGs are more than this, then we need to devise some metrics that
 consider more than the local tree structure.
 
-\item Throughout, we considered ARGs defined for a single chromosome comprising
-of a fixed number of discrete sites. Our argument applies equally well to ARGs
-defined for several non-homologous chromosomes \citep{fearnhead2003ancestral,
-koskela2019robust} and to idealised, continuous chromosomes.
-
-\item The gARG structure as described here is sufficiently expressive
-to model any form of homologous genetic transmission between individuals,
-and is far more flexible than the classical eARG approach.
-Phylogenetic networks~\citep{huson2010phylogenetic} are a more
-general concept, and specific classes capture dynamics that
-cannot be modelled using an ARG. For example,
-reassortment networks model the exchange of
-(non-recombining) genomic segments between viral particles inside a co-infected host,
-and hybridisation networks, model the genetic material from
-different species combining to create a hybrid.
-Similarly Genome Graphs~\cite{novak2017genome} model complicated things
-within species. Future work should look to capture all of these things
-in a single structure.
-
 \end{itemize}
-
-
-% TODO not clear this belongs in the discussion, but we'll definitely
-% want to make some of these points, even if they are being repeated
-% from earlier section.
-It is difficult to imagine a practical calculation performed on an
-ARG that does not involve either the sequential generation of trees
-along the genome or the resolved ancestry segments.
-Knowing the resolved segments in an ancestry resolved gARG allows
-us to perform many calculations without explicitly generating
-the trees, and lets us work with the ancestry on a genome-by-genome
-basis. We give three examples here. Firstly, generating mutations
-on edges can be performed very quickly on an ancestry resolved
-gARG, since we only need to examine $O(|E|)$ edges rather than
-$O(nt)$ tree branches (assuming $n$ samples and $t$ marginal trees)
-~\citep{baumdicker2021efficient}. If the ancestry were not resolved,
-we would generate a large number of mutations on areas of the edge that
-are non-ancestral. Secondly, computing the likelihood of a given
-ARG realisation under the coalescent with recombination model
-requires that we essentially recapitulate the state of Hudson's
-algorithm (see XXX section) at each node in
-the graph~\citep{baumdicker2021efficient}. Having resolved ancestry
-substantially simplifies this process. Thirdly, computing
-[FIXME describe what we did in tsdate]~\citep{wohns2022unified}.
-
-Sequentially generating the marginal trees along the genome
-is also fundamental, and is necessary whenever we need to
-perform calculations that are contingent on more than just the
-isolated properties of an edge. \cite{kelleher2016efficient}
-showed how all trees can be sequentially generated in
-constant time per tree transition in a fully simplified gARG.
-Furthermore, we can easily reason about how tree topologies
-change (and stay the same), leading to efficient algorithms
-for computing population genetic
-statistics~\citep{kelleher2016efficient,kelleher2018efficient},
-implementing the Li and Stephens
-model~\citep{kelleher2019inferring,wohns2022unified}
-and likely many more.
 
 
 \bibliographystyle{plainnat}
