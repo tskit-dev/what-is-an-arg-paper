@@ -72,92 +72,108 @@ levels of precision about ancestral processes to be represented,
 and forms the basis of an efficient computational framework.
 \end{abstract}
 
-\textbf{Keywords:} Ancestral Recombination Graphs
+\textbf{Keywords:} Ancestral recombination graphs
 
 \section*{Introduction}
-Inferring the genetic relationships between sampled genomes in the form of a
-phylogenetic tree is a necessary prerequisite for many analyses of
-species~\citep{rannala2003genetics}, non-recombining sections of
-DNA~\citep{cann1987mitochondrial,underhill2001annalsofhumangenetics}
-and viruses~\citep{grenfell2004science}.
-A phylogenetic tree captures information about the genealogy
-of the sample in an elegant and concise
-way, by postulating a set of ancestors common to the samples
-together with paths of inheritance between them. A rich literature exists
-on analysing the mathematical properties of these
-trees~\citep{steel2016phylogeny}, and numerous
-methods exist to infer them~\citep{felsenstein2004inferring}.
-However, the genetic genealogy of a recombining organism
-cannot be captured by a single tree: instead,
-the inheritance of each section of the genome may be described
-by a (slightly) different local tree~\citep{hudson1983properties}.
-Inferring complex
-genealogies of this nature
-presents profound technical difficulties, meaning genealogy-based approaches have
-not been widely used in population and statistical genetics.
-Until recently, analysis of
-population genetic data has therefore primarily focussed on summaries derived
-from the local trees~\citep{tajima1983evolutionary,tavare1984line}
-rather than using the full underlying genealogy itself. Such
-derived measures include allele frequencies and site frequency
-spectra~\citep{achaz2009frequency,ralph2020efficiently},
-patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
-principal components~\citep{mcvean2009genealogical}.
-
-Recent breakthroughs in large-scale inference
-methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,wohns2022unified}
-and data representation~\citep{kelleher2016efficient}
-have raised the realistic prospect of genealogy-based analysis becoming a standard part
+% Inferring the genetic relationships between sampled genomes in the form of a
+% phylogenetic tree is a necessary prerequisite for many analyses of
+% species~\citep{rannala2003genetics}, non-recombining sections of
+% DNA~\citep{cann1987mitochondrial,underhill2001annalsofhumangenetics}
+% and viruses~\citep{grenfell2004science}.
+% A phylogenetic tree captures information about the genealogy
+% of the sample in an elegant and concise
+% way, by postulating a set of ancestors common to the samples
+% together with paths of inheritance between them. A rich literature exists
+% on analysing the mathematical properties of these
+% trees~\citep{steel2016phylogeny}, and numerous
+% methods exist to infer them~\citep{felsenstein2004inferring}.
+% However, the genetic genealogy of a recombining organism
+% cannot be captured by a single tree: instead,
+% the inheritance of each section of the genome may be described
+% by a (slightly) different local tree~\citep{hudson1983properties}.
+% Inferring complex
+% genealogies of this nature
+% presents profound technical difficulties, meaning genealogy-based approaches have
+% not been widely used in population and statistical genetics.
+% Until recently, analysis of
+% population genetic data has therefore primarily focussed on summaries derived
+% from the local trees~\citep{tajima1983evolutionary,tavare1984line}
+% rather than using the full underlying genealogy itself. Such
+% derived measures include allele frequencies and site frequency
+% spectra~\citep{achaz2009frequency,ralph2020efficiently},
+% patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
+% principal components~\citep{mcvean2009genealogical}.
+Inferring the detailed genetic genealogy of a set of sequences
+under the influence of recombination,
+usually known as an Ancestral Recombination Graph (ARG), is a long-standing
+goal in genetics.
+Recent breakthroughs
+in large-scale inference
+methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
+schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
+and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
+have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using these inferred ancestries as inputs have begun to
-appear~\citep{osmond2021estimating,zhang2023biobank,fan2022genealogical,hejase2022deep}
+appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank}
 and many more are sure to
-follow~\citep{harris2019database}. This vibrant research area, however,
-has a significant difficulty, which risks hampering
-progress: we currently lack a well-defined data-model and shared terminology
-to discuss genealogies in the presence of recombination. This leads to basic errors in statements
-about what different inference methods produce as output, as well as presenting serious
-difficulties in either comparing the outputs of different methods or
-(from a user's perspective) using multiple inference methods in an analysis.
+follow~\citep{harris2019database,harris2023using}.
 
-In this paper we [turn into proper round up paragraph later]
-\begin{enumerate}
-\item Discuss the classical Ancestral Recombination Graph formulation,
-and show how it derives from (and is limited by) the coalescent with
-recombination.
-\item In the following sections we
-show that, although the ARG-as-a-data-structure perspective is
-now the most common interpretation, the \emph{form} of that
-data structure is still closely linked to the original
-stochastic process, and that this form is inflexible
-in the types of genetic inheritance that can be described,
-computationally inefficient, and
-forces complete (and potentially spurious) precision about
-the location and timing
-of recombination events. % (and coalescent events?)
-\item Suggest a definition of ARGs that is free of these limitations,
-where the formulation is derived from a (normally diploid) pedigree rather than from
-coalescent approximations, and where the genetic
-material which is transmitted is described by annotations attached to
-edges rather than nodes.
-\item Suggest a classification of ARG nodes that helps us to understand
-the properties of the structures inferred by different methods, and illustrate
-with some examples.
-% Perhaps we should also mention something about simplification and unknowable
-% nodes, e.g. ``show how some of the nodes are not required for useful interpretation
-% of ancestry''.
-\item Despite its status as ``the ideal data structure for
-population genomic analysis''~\citep{rasmussen2014genome}, there has been
-little discussion of its computational properties. We discuss the
-relationship between the classical concept of an ARG and the
-recently introduced succinct tree sequence data structure.
+% TODO need to mention ARG-as-a-data-structure to clarify.
+% What is the problem?
+Although it is widely accepted that ARGs are important, there is significant
+confusion about what, precisely, an ARG \emph{is}. [THIS IS BAD, WHY?]
+We also lack a shared format for interchanging ARG data [which is bad
+for users, progress]. [Because we don't really agree on what an ARG is,
+we don't really know what properties it should have, when we infer it].
 
-\item This, coupled with
-    the explicit association of genome coordinates with edges, allows
-    us to represent even the bewilderingly complex patterns of relatedness
-    present in modern datasets.
+% What do we do?
+Here we precisely define an encoding for ARGs based on specific genomes
+and their intervals of genetic inheritance. We contrast this ``gARG''
+encoding with the classical approach derived from the coalescent
+with recombination stochastic process of Griffiths
+and colleagues~\citep{griffiths1991two,ethier1990two,
+griffiths1996ancestral,griffiths1997ancestral}. As this is based
+on recording evolutionary events, we refer to it as the event ARG, or
+``eARG'' encoding.
+We show that the gARG encoding is both flexible and efficient,
+and can represent varying levels of precision about historical
+events.
+[MORE]
 
-\end{enumerate}
+% and because it is focused on encoding the \emph{outcome}
+% of evolutionary events rather than the details of the events themselves,
+
+% In this paper we [turn into proper round up paragraph later]
+% \begin{enumerate}
+% \item Discuss the classical Ancestral Recombination Graph formulation,
+% and show how it derives from (and is limited by) the coalescent with
+% recombination.
+% \item In the following sections we
+% show that, although the ARG-as-a-data-structure perspective is
+% now the most common interpretation, the \emph{form} of that
+% data structure is still closely linked to the original
+% stochastic process, and that this form is inflexible
+% in the types of genetic inheritance that can be described,
+% computationally inefficient, and
+% forces complete (and potentially spurious) precision about
+% the location and timing
+% of recombination events. % (and coalescent events?)
+% \item Suggest a definition of ARGs that is free of these limitations,
+% where the formulation is derived from a (normally diploid) pedigree rather than from
+% coalescent approximations, and where the genetic
+% material which is transmitted is described by annotations attached to
+% edges rather than nodes.
+% \item Suggest a classification of ARG nodes that helps us to understand
+% the properties of the structures inferred by different methods, and illustrate
+% with some examples.
+
+% \item This, coupled with
+%     the explicit association of genome coordinates with edges, allows
+%     us to represent even the bewilderingly complex patterns of relatedness
+%     present in modern datasets.
+
+% \end{enumerate}
 
 
 % \section*{Genome ARGs}\label{eARG}
