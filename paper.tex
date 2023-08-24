@@ -115,7 +115,7 @@ and forms the basis of an efficient computational framework.
 % spectra~\citep{achaz2009frequency,ralph2020efficiently},
 % patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
 % principal components~\citep{mcvean2009genealogical}.
-Inferring the detailed genetic genealogy of a set of sequences
+Estimating the detailed genetic genealogy of a set of sequences
 under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
@@ -127,7 +127,9 @@ and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
 have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using these inferred ancestries as inputs have begun to
-appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank}
+appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank,
+% TODO update when natgen paper comes out
+nowbandegani2022extremely}
 and many more are sure to
 follow~\citep{harris2019database,harris2023using}.
 
@@ -435,18 +437,17 @@ events.
 % we call a ``genome ARG'' (gARG).
 In this section we define a concrete definition of an ARG in terms
 of particular genomes and their patterns of inheritance, which
-to avoid confusion, we refer to as a ``genome ARG``, or gARG.
-(We contrast this with the classical definition derived from the
-coalescent process in later sections.)
+we refer to as a ``genome ARG``, or gARG.
 First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
 Then, a gARG is a graph in which nodes represent
 monoploid genomes  and edges represent
 genetic inheritance between an ancestor and a descendant,
 where each edge is annotated with the coordinates
-of the genomic intervals over which genetic inheritance occurs
-(the next section explores the subtleties of what we mean by
-genetic inheritance).
+of the genomic intervals over which genetic inheritance occurs.
+We can therefore view a gARG for a given set of individuals
+as a subset of their pedigree, but, crucially,
+where each individual is represented by two nodes (for diploids).
 % To recover the local tree for a genomic
 % position $x$, we traverse the graph rootwards from the leaves
 % (as in an eARG) and at a particular node, we follow the outbound
@@ -458,17 +459,14 @@ genetic inheritance).
 % well understood
 % \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
 % speed2015naturereviewsgenetics}.
-Fig.~\ref{fig-arg-in-pedigree}
+This is illustrated in Fig.~\ref{fig-arg-in-pedigree},
+which
 shows how the genomes embedded in an example (highly inbred)
-pedigree correspond to the nodes in a gARG, along with the corresponding
-local trees.
+pedigree correspond to the nodes in a gARG.
 In this diploid example
 a genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
-% NOTE: does this example really help? Rather than spelling out what
-% we can already see, perhaps we should point out the non-obvious
-% thing that we have decoupled from "events"
 For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
 has two genomes \textsf{a} and \textsf{b},
 inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
@@ -486,26 +484,30 @@ recombination.
 An example gARG embedded in a pedigree.
 (A) Diploid individuals, visualised in a highly inbred pedigree and
 labelled $I_1$ to $I_8$, contain both paternal  and maternal  genomes
-labelled \textsf{a} to \textsf{p}. Black lines show transmission paths connecting
+labelled \textsf{a} to \textsf{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
 Genomes \textsf{a} and \textsf{c} are independent recombinants of
 the paternal genomes \textsf{e}
 % Gregor: there is some overlap between a and c still (the middle region inherited
 % from f) so, a and c are not fully independent!
-and \textsf{f}, and regions of genome transmitted are shown.
+and \textsf{f}, and regions of genome inherited are shown.
 Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker.
-(B) The corresponding genome ARG along with annotations on all edges;
-annotations showing partial
-genome transmission are highlighted in bold. Recombination (e.g.,
-the cause of the breakpoint at position 7)
-is associated with two parent genomes (\textsf{e} and
-\textsf{f}) and a child genome (the recombinant, \textsf{c}).
-(C) The edge-annotated genome ARG in (B) fully defines the
-local relationships along the genome, as shown in the local
-(``marginal'') trees.
+(B) The corresponding gARG along with inheritance annotations on all edges
+(partial inheritance in bold).
+% Recombination (e.g.,
+% the cause of the breakpoint at position 7)
+% is associated with two parent genomes (\textsf{e} and
+% \textsf{f}) and a child genome (the recombinant, \textsf{c}).
+% (C) The edge-annotated genome ARG in (B) fully defines the
+(C) The corresponding local (``marginal'') trees.
 }
 \end{figure}
+
+The edges in a gARG specify that genetic inheritance occurred between an
+ancestor and a descendant, but the connectivity information alone
+does not tell us which \emph{parts} of their genomes were inherited.
+
 
 Formally, we can define a gARG as a set of nodes $N$ and edges $E$, where each
 element of $E$ is a tuple $(c, p, I)$ such that
@@ -749,21 +751,72 @@ were inherited.
 [TODO list the salient points that we want to contrast against
 the gARG. We don't want this to seem like a straw man]
 
-\section*{Inheritance and ancestral material}\label{Ancestry_resolution}
+% \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
+\section*{Prospective vs restrospective ARGs}
+ARGs are usually thought of as a restrospective structure, in which we
+reason about the genomes that are genetic ancestors of some set of
+sample genomes. Figure~\ref{fig-arg-in-pedigree}
+is retrospective because it only includes information
+about genetic inheritance relative to the sample individuals
+$I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
+Genetic inheritance must have occured between (e.g.)
+$I_8$ and her daughter $I_6$, but this is not recorded because
+% this is probably not true, given we know the complete pedigree?
+we have no information about it, given these sampled genomes.
+Event ARGs, given their roots in the coalescent with recombination,
+are inherently retrospective. They define the evolutionary
+events that have occured in the genetic ancestry of a sample.
+% This is weak, rephrase.
+An event ARG must have some set of samples, or there
+will be nothing to define events in terms of.
+
+The gARG representation, on the other hand,
+can be either retrospective or \emph{prospective}.
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
-number of generations (ultimately from cell to cell). The edges are ``annotated''
+number of generations (ultimately from cell to cell),
+and are annotated
 with the genome coordinates over which inheritance occurs.
-There are two different ways in which we use these inheritance
-annotations, and the distinction is subtle and important. The difference
-is illustrated in Fig~\ref{fig-ancestry-resolution}.
+In a prospective gARG, the inheritance intervals $I$
+on an edge joining ancestor genome $v$ and descendant $u$
+defines \emph{all} regions of genome that $u$ inherited from $v$.
+Thus, these  inheritance intervals are
+concerned only with the genetic relationship
+between the nodes in question, and are not defined with respect
+to any given set of samples. We are simply recording the
+direct genetic inheritance between two genomes
+(in the simplest case, between a parent and a child).
+
+Prospective ARGs occur in individual-based forwards-time
+simulations~\citep{kelleher2018efficient,haller2018tree},
+where the genetic inheritance between genomes is recorded
+exhaustively and periodically
+``simplified'' to retain only
+the ancestry relevant to the current population.
+\citet{kelleher2018efficient} refer to the structure
+recording all such forwards-in-time genetic relationships
+as an ``embellished pedigree`` (and suggest the term ``nedigree'').
+Describing this instead as a ``prospective ARG'', and emphasising
+the use of the same data structures and direct connection with
+the usual retrospective interpretation of an ARG, may be
+more useful.
+The ``simplify'' algorithm which converts a prospective
+ARG into a retrospective one is a powerful tool,
+with other applications as we discuss in the following sections.
+
+\section*{Ancestry resolution}\label{Ancestry_resolution}
+
+These genomic intervals, directly ancestral to the samples
+and  scattered across a set of lineages at some time in the past,
+are usually known as the
+``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
+of the sample.
 
 % TODO majorly condense this caption, it's much too long.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
-TODO DELETE A? Or keep it? Maybe this would help some hard-core eARGers?
 The \citet[][Fig.~1]{wiuf1999recombination} example graph as an eARG and
 two gARGs with alternative edge annotation schemes.
 % (A) A conventional Griffiths eARG. Square nodes represent events, with
@@ -787,21 +840,6 @@ to events which have no impact on the genetic ancestry of the samples.
 }
 \end{figure}
 
-
-The simplest interpretation of the inheritance intervals $I$ for
-an ancestor genome $v$ and descendant $u$, is that $I$ defines the
-regions of genome that $u$ inherited from $v$. For example,
-node $o$ is the recombinant descendant of nodes $p$ and $q$ in
-Figure~\ref{fig-ancestry-resolution}A, which shows that it in inherited
-everything to the left of position $1$ from $p$ and the rest of
-its genome from node $q$.
-Thus, these edge annotations are concerned only with the genetic relationship
-between the nodein question, and are not affected by the rest of the graph.
-We will thefore refer to inheritance annotations of this type as ``local inheritance
-annotations''. Graphs of this type result from forwards-time
-simulations~\citep{kelleher2018efficient,haller2018tree} or the
-``Big ARG'' stochastic process (Appendix XXX).
-
 ARGs are most often thought of as a \emph{retrospective} structure however,
 defined with respect to some set of (usually, contemporary) sample genomes.
 In this case we are not explicitly interested in the
@@ -819,6 +857,7 @@ and, indeed, all that is possible to
 have information about when inferring ARGs from contemporary samples.
 We refer to a gARG with inheritance annotations of this type as
 ``sample resolved''.
+
 % Keeping track of resolved ancestral material is one of the distinguishing
 % features of ARGs vs phylogenetic
 % networks~\citep{mcgill2013graphml,arenas2013importance}, but
