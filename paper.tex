@@ -801,68 +801,122 @@ the use of the same data structures and direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
 The ``simplify'' algorithm which converts a prospective
-ARG into a retrospective one is a powerful tool,
-with other applications as we discuss in the following sections.
+gARG into a retrospective one is a powerful tool,
+with several other applications
+as we discuss in the following sections.
 
-\section*{Ancestry resolution}\label{Ancestry_resolution}
+\section*{Converting an eARG to a gARG}
+The process of converting an eARG to a gARG is very similar to
+simplifying a prospective gARG with respect to a set of samples,
+and highlights some important differences between the encodings.
+The process involves two steps, and is illustrated in
+Fig~\ref{fig-ancestry-resolution}.
 
-These genomic intervals, directly ancestral to the samples
-and  scattered across a set of lineages at some time in the past,
-are usually known as the
-``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
-of the sample.
-
-% TODO majorly condense this caption, it's much too long.
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
+% TODO update the source of this figure to make less tall. It's taking
+% up far too much vspace at in native coords at the moment.
+\includegraphics[width=0.75\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
-The \citet[][Fig.~1]{wiuf1999recombination} example graph as an eARG and
-two gARGs with alternative edge annotation schemes.
-% (A) A conventional Griffiths eARG. Square nodes represent events, with
-% each recombination (red) annotated with the position of a single breakpoint
-% along the 7-unit-long chromosome.
-(A) A gARG with edges annotated by . Oval nodes represent
-genomes and annotations reflect ``local'' transmission of all genetic material
-between parent and child. Edges that do not span the full genome are visually
-highlighted, showing how breakpoint positions can be encoded.
-(C) A gARG with sample-resolved edge annotations. The Hudson-like simplification
-algorithm has been used to shorten edge spans to
-reflect only the upwards transmission of genetic material from the samples
-\textsf{a}, \textsf{b}, and \textsf{c}; very few edges then span the entire genome.
-The depiction of the genome within each
-node is shaded as in Fig.~\ref{fig-arg-in-pedigree}A to show coalescing
-regions of genome back to the MRCA nodes \textsf{k} (regions 0 to 2) and \textsf{p}
-(regions 2 to 7). Line widths reflect the genomic span of each edge, highlighting
-the relative importance of different transmission pathways to the samples. Nodes
-\textsf{g},  \textsf{j}, \textsf{o} and \textsf{q} are redundant in that they correspond
-to events which have no impact on the genetic ancestry of the samples.
+Converting the \citet[][Fig.~1]{wiuf1999recombination} example graph
+to a gARG. (A) The original eARG; square nodes represent events, with
+each recombination (red) showing the corresponding breakpoint.
+(B) The corresponding gARG with breakpoints directly converted to
+edges annotated with inheritance intervals.
+(C) The sample-resolved gARG resulting from simplifying with respect
+to the samples, $a$, $b$, and $c$. Dashed lines show edges that are
+no longer present (in practice, nodes $g$ and $q$ would also be removed).
+Coalescence with respect to the sample is indicated by shaded bars, as
+in Fig~\ref{fig-arg-in-pedigree}A.
+Line thickness is proportional to the genomic span of each edge.
 }
 \end{figure}
 
-ARGs are most often thought of as a \emph{retrospective} structure however,
-defined with respect to some set of (usually, contemporary) sample genomes.
-In this case we are not explicitly interested in the
-entire interval of genome descendant $u$ inherited from ancestor $v$,
-but rather the subset of that interval that is \emph{ancestral to our
-sample}.
-Fig~\ref{fig-ancestry-resolution}B shows the graph that we obtain when
-reduce the annotation intervals to those that are ancestral to the
-sample (note that node $q$ is now ommitted because the MRCA of the sample
-has already been found for the full genome at node $p$).
-Tracking such
+The first step is straightforward
+(Figure~\ref{fig-ancestry-resolution}B).
+We duplicate the nodes and
+edges from the input eARG, and the add inheritance annotations
+to the output gARG's edges. If the node is a common ancestor node,
+we annotate the single outbound edge with the interval $(0,L]$.
+If the node is a recombination node with a breakpoint $x$,
+we annotate the outbound edges with the intervals $(0, x]$
+and $(x, L]$.
+These inheritance annotations are clearly in one-to-one
+correspondance with the information in the input eARG,
+but they are a superset of the
 ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
-is much more useful~\citep{mcgill2013graphml,arenas2013importance}
-and, indeed, all that is possible to
-have information about when inferring ARGs from contemporary samples.
-We refer to a gARG with inheritance annotations of this type as
-``sample resolved''.
+of the sample.
 
-% Keeping track of resolved ancestral material is one of the distinguishing
-% features of ARGs vs phylogenetic
-% networks~\citep{mcgill2013graphml,arenas2013importance}, but
-% is actually incompatible with the Griffiths gARG encoding (it does this
-% implicitly, I guess)
+Ancestral material is a critical concept in a retrospective ARG,
+and refers to the genomic intervals directly ancestral to the samples
+scattered across lineages (the edges of the graph)
+at some time in the past. At recombination
+events, ancestral material is split between the ancestral lineages.
+As genome segments coalesce in a common
+ancestor the total amount ancestral material is reduced, until
+eventually as we traverse pastwards through the graph, all
+samples reach a most recent common ancestor at all locations
+along the genome. The process of transmitting ancestral material
+along the edges of an ARG is directly analogous to Hudson's
+simulation algorithm for the coalescent with
+recombination~\citep{hudson1983testing,kelleher2016efficient}.
+
+Fig~\ref{fig-ancestry-resolution}C shows the graph that we obtain
+by resolving the ancestral material transmitted along each edge
+(using the ``simplify'' algorithm), and highlights some important
+differences between the eARG and gARG encodings.
+Firstly, we can see that some nodes and edges are removed entirely
+from the graph. The ``grand MRCA'' $q$ is ommitted from the
+fully resolved gARG because all segments of the genome have
+fully coalesced before it is reached. Likewise, the edge
+between $g$ and $j$ is omitted because the recombination
+event at position $5$ fell in non-ancestral material.
+(This example of an eARG
+from \citet{wiuf1999recombination} is something of a straw-man,
+in that it is highly unlikely that an inference or simulation
+program would produce an ARG that contains nodes or edges
+that are not ancestral to the sample.)
+More generally, the gARG encoding allows for ``local'' inspection
+(with respect to a set of samples)
+of an ARG in a way that is not possible by storing
+common ancestor and recombination events in an eARG. Because
+the ancestral material is stored with each edge, the effects
+of multiple events can be reasoned about at once. Many algorithms
+that we wish to perform on an ARG will require resolving
+the genetic material with respect to a sample.
+% this is weak, but would be good to emphasise this point.
+% you just end up running simplify lots of times, in your
+% downstream algs
+The gARG encoding
+allows us to do this once and to store the result, whereas
+the eARG encoding requires us to repeat the process.
+
+%(see Appendix XXX) and has several features that we are unlikely to simulate or
+%infer in practice. For example, by definition the samples contain no genetic information about
+%nodes \textsf{g} and nodes \textsf{j} and so neither of those nodes are likely to be inferred.
+%Likewise, is is unlikely we would have information to infer the ``grand MRCA''
+%\textsf{q} as all regions of the genome have already reached a
+%common ancestor separately (in nodes \textsf{k} and \textsf{p}).
+
+% Third, there exist nodes such as
+% \textsf{k} with two children (i.e. ``common ancestor'' nodes in Hudson's terminology)
+% but in which no ancestral coalescence occurs. Fourth, some breakpoint positions occur
+% within regions of genome that are not ancestral (e.g. the breakpoint at position 3 in
+% node \textsf{k}). In this case sample-resolved edge annotations lose the exact position of
+% the breakpoint, although they retain the information that a breakpoint occurred between
+% positions 2 and 4 (which is sufficient for calculating the likelihood, see appendix XXX).
+
+
+% reduce the annotation intervals to those that are ancestral to the
+% sample (note that node $q$ is now ommitted because the MRCA of the sample
+% has already been found for the full genome at node $p$).
+% Tracking such
+% ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
+% is much more useful~\citep{mcgill2013graphml,arenas2013importance}
+% and, indeed, all that is possible to
+% have information about when inferring ARGs from contemporary samples.
+% We refer to a gARG with inheritance annotations of this type as
+% ``sample resolved''.
 
 % Fig~\ref{fig-ancestry-resolution} is an instructive example
 % from the literature \citep{wiuf1999recombination} and illustrates
@@ -909,26 +963,26 @@ We refer to a gARG with inheritance annotations of this type as
 % the breakpoint, although they retain the information that a breakpoint occurred between
 % positions 2 and 4 (which is sufficient for calculating the likelihood, see appendix XXX).
 
-Given a gARG with direct-inheritance edge annotations
-(Fig~\ref{fig-ancestry-resolution}B),
- we obtain the sample-resolved edge annotation
-(Fig~\ref{fig-ancestry-resolution}C) by traversing the graph backwards in time
-from sample nodes (\textsf{a}, \textsf{b}, \textsf{c}).
-Proceeding in topological order (such that an ancestor node is visited
-after all of its descendants) the sample-resolved material for a node is the
-union of the sample-resolved intervals on its inbound edges. We then annotate
-the outbound edges with the intersection of their direct-inheritance intervals
-and the just-computed sample-resolved intervals for the node.
-For example, node \textsf{i} in Fig~\ref{fig-ancestry-resolution}C
-carries sample-resolved material on the intervals $(0, 2]$ and $(4, 7]$. The edge
-joining \textsf{i} to its ancestor \textsf{k} then carries
-material on $(0, 2]$ since although \textsf{i} directly inherits interval
-$(0, 3]$ from \textsf{k} (Fig~\ref{fig-ancestry-resolution}B), only $(0, 2]$ is
-ancestral to the sample. For each node, we also keep track of the number of
-descendant samples over each genomic interval, and stop tracking that
-interval once the lineages from all samples have coalesced. For example,
-the edge from \textsf{k} to \textsf{n} omits the region $(0,2]$ because it has
-already fully coalesced (indicated by a fully black genomic region).
+% Given a gARG with direct-inheritance edge annotations
+% (Fig~\ref{fig-ancestry-resolution}B),
+%  we obtain the sample-resolved edge annotation
+% (Fig~\ref{fig-ancestry-resolution}C) by traversing the graph backwards in time
+% from sample nodes (\textsf{a}, \textsf{b}, \textsf{c}).
+% Proceeding in topological order (such that an ancestor node is visited
+% after all of its descendants) the sample-resolved material for a node is the
+% union of the sample-resolved intervals on its inbound edges. We then annotate
+% the outbound edges with the intersection of their direct-inheritance intervals
+% and the just-computed sample-resolved intervals for the node.
+% For example, node \textsf{i} in Fig~\ref{fig-ancestry-resolution}C
+% carries sample-resolved material on the intervals $(0, 2]$ and $(4, 7]$. The edge
+% joining \textsf{i} to its ancestor \textsf{k} then carries
+% material on $(0, 2]$ since although \textsf{i} directly inherits interval
+% $(0, 3]$ from \textsf{k} (Fig~\ref{fig-ancestry-resolution}B), only $(0, 2]$ is
+% ancestral to the sample. For each node, we also keep track of the number of
+% descendant samples over each genomic interval, and stop tracking that
+% interval once the lineages from all samples have coalesced. For example,
+% the edge from \textsf{k} to \textsf{n} omits the region $(0,2]$ because it has
+% already fully coalesced (indicated by a fully black genomic region).
 
 
 % In practice, the backwards-in-time Griffiths process that produces
@@ -944,12 +998,12 @@ already fully coalesced (indicated by a fully black genomic region).
 % in the sample set that can be used to resolve these nodes, so that they
 % are essentially unknowable.
 
-The process of converting a gARG with local-inheritance annotations
-to its sample-resolved equivalent is also known as ``simplification'',
-and is the key algorithm underlying recent
-advances in forwards-in-time
-simulation~\citep{kelleher2018efficient,haller2018tree}.
-It has many useful properties, as we discuss in the next section.
+% The process of converting a gARG with local-inheritance annotations
+% to its sample-resolved equivalent is also known as ``simplification'',
+% and is the key algorithm underlying recent
+% advances in forwards-in-time
+% simulation~\citep{kelleher2018efficient,haller2018tree}.
+% It has many useful properties, as we discuss in the next section.
 
 % It is worth noting the process of sample resolution can reveal that certain ARG
 % nodes are \emph{redundant}: if they are removed and the edges adjusted to
@@ -957,31 +1011,6 @@ It has many useful properties, as we discuss in the next section.
 % knowledge of the samples' genetic ancestry. Removing nodes,
 % both redundant ones and others, is part of a process we call
 % ``simplification''.
-
-\begin{figure}
-\centering
-\vspace{5em}
-\includegraphics[width=\linewidth]{illustrations/simplification}
-\caption{\label{fig-simplification}
-ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent local trees on the right. Since multiple parents are indicative of
-recombination(s), nodes are coloured by the number of parents. and shaded
-according to the proportion of their span over which they are coalescent.
-(A) A gARG simulated from a diploid Wright-Fisher
-model. Note that the genome \textsf{k} has three children, and the genomes
-\textsf{e} and \textsf{g} simultaneously have multiple parents and multiple
-children.
-(B) Simplified to remove all
-% trying out this terminology - can define in the text
-1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
-(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
-that have only one child (e.g. \textsf{n}) and nodes that have more
-than one child (i.e. are ``common ancestors'') but never represent coalescences
-in the local trees (e.g. \textsf{r}).
-(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
-information such as the fact that \textsf{k} is connected to \textsf{a} via \textsf{e}.
-}
-\end{figure}
 
 \section*{Simplification}\label{ARG_simplification}
 % I think a sentence is needed here on why "so much" text is devoted to simplification.
@@ -1015,6 +1044,32 @@ nodes usually mark the points where samples coalesce in a
 joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
 containing the intermediate unary nodes. Simplification is the process of removing
 these less informative nodes from the local trees by modifying the gARG.
+
+\begin{figure}
+\centering
+\vspace{5em}
+\includegraphics[width=\linewidth]{illustrations/simplification}
+\caption{\label{fig-simplification}
+ARG simplification. In all cases the graph visualization is shown on the left
+and the equivalent local trees on the right. Since multiple parents are indicative of
+recombination(s), nodes are coloured by the number of parents. and shaded
+according to the proportion of their span over which they are coalescent.
+(A) A gARG simulated from a diploid Wright-Fisher
+model. Note that the genome \textsf{k} has three children, and the genomes
+\textsf{e} and \textsf{g} simultaneously have multiple parents and multiple
+children.
+(B) Simplified to remove all
+% trying out this terminology - can define in the text
+1-connected graph components (e.g., diamonds such as \textsf{jlnm}).
+(C) Remove nodes that are unary in all local trees. This removes both recombinant nodes
+that have only one child (e.g. \textsf{n}) and nodes that have more
+than one child (i.e. are ``common ancestors'') but never represent coalescences
+in the local trees (e.g. \textsf{r}).
+(D) Rewrite edges to bypass any unary nodes in local trees. Note that this loses lineage
+information such as the fact that \textsf{k} is connected to \textsf{a} via \textsf{e}.
+}
+\end{figure}
+
 
 The first type of simplification that we can perform is to remove
 graph topology that is invisible to the samples.
