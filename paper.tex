@@ -63,12 +63,24 @@ The structure representing such recombinant genetic ancestry
 is usually referred to as an Ancestral Recombination Graph (ARG),
 although there is some confusion about the interpretation and little
 agreement on the concrete details.
-We propose a concrete definition of ARGs that is suitable for modern
-datasets, in terms of genomes and their patterns of inheritance,
-and contrast this with the classical event-based definition which
-makes several limiting assumptions.
-We show that this new definition enables fine-grained
-levels of precision about ancestral processes to be represented,
+We propose a concrete definition of ARGs
+in terms of genomes and their intervals of genetic inheritance (gARG)
+and contrast this with the classical event-based definition (eARG).
+The eARG definition is based on the coalescent with recombination
+stochastic process, and we show how the assumptions of that process
+place limitations on the patterns of inheritance that can be
+represented, and that these assumptions are
+% Better wording
+substantially broken
+in modern large-scale datasets.
+Representing genetic ancestry
+with an eARG also requires complete precision about the ordering
+of all recombination events, which we will rarely have sufficient
+information to infer.
+We show, in contrast, that the gARG definition
+can fully capture the richness of modern large-scale datasets,
+enables fine-grained
+levels of precision about recombination to be represented,
 and forms the basis of an efficient computational framework.
 \end{abstract}
 
