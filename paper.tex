@@ -762,7 +762,7 @@ $I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
 Genetic inheritance must have occured between (e.g.)
 $I_8$ and her daughter $I_6$, but this is not recorded because
 % this is probably not true, given we know the complete pedigree?
-we have no information about it, given these sampled genomes.
+we have no information about it, given these samples.
 Event ARGs, given their roots in the coalescent with recombination,
 are inherently retrospective. They define the evolutionary
 events that have occured in the genetic ancestry of a sample.
@@ -795,9 +795,10 @@ exhaustively and periodically
 the ancestry relevant to the current population.
 \citet{kelleher2018efficient} refer to the structure
 recording all such forwards-in-time genetic relationships
-as an ``embellished pedigree`` (and suggest the term ``nedigree'').
-Describing this instead as a ``prospective ARG'', and emphasising
-the use of the same data structures and direct connection with
+as an ``embellished pedigree`` (and suggest the term ``nedigree''
+as a shorthard).
+Describing this instead as a ``prospective ARG'', emphasising
+the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
 The ``simplify'' algorithm which converts a prospective
@@ -871,13 +872,9 @@ fully resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
 between $g$ and $j$ is omitted because the recombination
 event at position $5$ fell in non-ancestral material.
-(This example of an eARG
-from \citet{wiuf1999recombination} is something of a straw-man,
-in that it is highly unlikely that an inference or simulation
-program would produce an ARG that contains nodes or edges
-that are not ancestral to the sample.)
-More generally, the gARG encoding allows for ``local'' inspection
-(with respect to a set of samples)
+More generally, we can see that the fully resolved
+gARG encoding of Fig~\ref{fig-ancestry-resolution}C
+allows for ``local'' inspection
 of an ARG in a way that is not possible by storing
 common ancestor and recombination events in an eARG. Because
 the ancestral material is stored with each edge, the effects
@@ -889,7 +886,19 @@ the genetic material with respect to a sample.
 % downstream algs
 The gARG encoding
 allows us to do this once and to store the result, whereas
-the eARG encoding requires us to repeat the process.
+the eARG encoding requires us to repeat the process on
+each traversal.
+
+It is important to note here that the \citet{wiuf1999recombination} eARG
+example used here is something of a straw man, in that it is highly unlikely
+that an inference or simulation program would produce a retrospective
+ARG that contains
+nodes or edges that are not ancestral to the sample. Nonetheless, it
+is an instructive example from the literature which highlights several
+important properties of ARGs, and the general point about
+the need to resolve ancestral material ``on the fly'' for eARG traversals
+holds.
+
 
 %(see Appendix XXX) and has several features that we are unlikely to simulate or
 %infer in practice. For example, by definition the samples contain no genetic information about
