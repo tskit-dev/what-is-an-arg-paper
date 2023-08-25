@@ -762,7 +762,7 @@ $I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
 Genetic inheritance must have occured between (e.g.)
 $I_8$ and her daughter $I_6$, but this is not recorded because
 % this is probably not true, given we know the complete pedigree?
-we have no information about it, given these sampled genomes.
+we have no information about it, given these samples.
 Event ARGs, given their roots in the coalescent with recombination,
 are inherently retrospective. They define the evolutionary
 events that have occured in the genetic ancestry of a sample.
@@ -795,9 +795,10 @@ exhaustively and periodically
 the ancestry relevant to the current population.
 \citet{kelleher2018efficient} refer to the structure
 recording all such forwards-in-time genetic relationships
-as an ``embellished pedigree`` (and suggest the term ``nedigree'').
-Describing this instead as a ``prospective ARG'', and emphasising
-the use of the same data structures and direct connection with
+as an ``embellished pedigree`` (and suggest the term ``nedigree''
+as a shorthard).
+Describing this instead as a ``prospective ARG'', emphasising
+the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
 The ``simplify'' algorithm which converts a prospective
@@ -829,6 +830,9 @@ no longer present (in practice, nodes $g$ and $q$ would also be removed).
 Coalescence with respect to the sample is indicated by shaded bars, as
 in Fig~\ref{fig-arg-in-pedigree}A.
 Line thickness is proportional to the genomic span of each edge.
+Nodes representing recombination events have been retained
+for clarity, but could be removed by simplification if
+desired.
 }
 \end{figure}
 
@@ -871,13 +875,9 @@ fully resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
 between $g$ and $j$ is omitted because the recombination
 event at position $5$ fell in non-ancestral material.
-(This example of an eARG
-from \citet{wiuf1999recombination} is something of a straw-man,
-in that it is highly unlikely that an inference or simulation
-program would produce an ARG that contains nodes or edges
-that are not ancestral to the sample.)
-More generally, the gARG encoding allows for ``local'' inspection
-(with respect to a set of samples)
+More generally, we can see that the fully resolved
+gARG encoding of Fig~\ref{fig-ancestry-resolution}C
+allows for ``local'' inspection
 of an ARG in a way that is not possible by storing
 common ancestor and recombination events in an eARG. Because
 the ancestral material is stored with each edge, the effects
@@ -889,7 +889,19 @@ the genetic material with respect to a sample.
 % downstream algs
 The gARG encoding
 allows us to do this once and to store the result, whereas
-the eARG encoding requires us to repeat the process.
+the eARG encoding requires us to repeat the process on
+each traversal.
+
+It is important to note here that the \citet{wiuf1999recombination} eARG
+example used here is something of a straw man, in that it is highly unlikely
+that an inference or simulation program would produce a retrospective
+ARG that contains
+nodes or edges that are not ancestral to the sample. Nonetheless, it
+is an instructive example from the literature which highlights several
+important properties of ARGs, and the general point about
+the need to resolve ancestral material ``on the fly'' for eARG traversals
+holds.
+
 
 %(see Appendix XXX) and has several features that we are unlikely to simulate or
 %infer in practice. For example, by definition the samples contain no genetic information about
@@ -1012,22 +1024,22 @@ the eARG encoding requires us to repeat the process.
 % both redundant ones and others, is part of a process we call
 % ``simplification''.
 
-\section*{Simplification}\label{ARG_simplification}
-% I think a sentence is needed here on why "so much" text is devoted to simplification.
-% How does simplification connect to eARG vs gARG and practical benefits of gARG over eARG
-% and why do you now talk about unary nodes and a bit polytomies? Hold my hand here please;)
-ARG simplification~\citep{kelleher2018efficient} is the process
+\section*{Levels of simplification}\label{ARG_simplification}
+ARG simplification is a powerful tool, and can do much more
+besides removing unreachable nodes and edges in a prospective ARG
+and resolving ancestral material in an eARG.
+In general, we can think of
+ARG simplification as the process
 of removing nodes and re-writing edges in a gARG to remove
-various types of redundancy,
-retaining the ``meaningful'' topology within local trees
-and maintaining the identity of nodes across different trees.
-The idea of meaningful local tree topologies is based on the
-presence of ``unary'' nodes: a tree node that has exactly
-% should presence above be absence?
-one child. Fig.~\ref{fig-simplification} show a series of successive steps of
+various types of redundancy.
+Many of the types of redundancy revolve around the presence
+of ``unary'' nodes in the local trees
+(a tree node that has exactly one child).
+
+Fig.~\ref{fig-simplification} show a series of successive steps of
 simplification, starting with a complete gARG simulated under a
-(backwards-in-time) Wright-Fisher
-model, shown both as a graph on the left, and the equivalent set of 6
+backwards-in-time Wright-Fisher
+model, shown both as a graph on the left, and the corresponding sequence of 6
 local trees on the right.
 For example, consider the path above node
 \textsf{a} in the first tree (covering positions 30 to 40)
@@ -1042,17 +1054,17 @@ Such unary nodes in a local tree are not usually considered important;
 nodes usually mark the points where samples coalesce in a
  \emph{common} ancestor. For most purposes, we would therefore consider a path directly
 joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
-containing the intermediate unary nodes. Simplification is the process of removing
-these less informative nodes from the local trees by modifying the gARG.
+containing the intermediate unary nodes.
 
 \begin{figure}
 \centering
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
-ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent local trees on the right. Since multiple parents are indicative of
-recombination(s), nodes are coloured by the number of parents. and shaded
+Levels of ARG simplification.
+In all cases the graph visualization is shown on the left
+and the corresponding local trees on the right.
+Nodes are coloured by the number of parents and shaded
 according to the proportion of their span over which they are coalescent.
 (A) A gARG simulated from a diploid Wright-Fisher
 model. Note that the genome \textsf{k} has three children, and the genomes
@@ -1070,8 +1082,7 @@ information such as the fact that \textsf{k} is connected to \textsf{a} via \tex
 }
 \end{figure}
 
-
-The first type of simplification that we can perform is to remove
+The first level of simplification that we can perform is to remove
 graph topology that is invisible to the samples.
 An example of such topology is a
 ``diamond''~\citep{rasmussen2014genome}
@@ -1079,7 +1090,7 @@ in which the two parent nodes of a recombination immediately
 join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
 and \textsf{n} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
-interested in the recombination event or ancestral genomes,
+interested in the recombination event or these ancestral genomes,
 there is no information in this topology and the diamond can be
 replaced by a single edge. More generally, any
 subgraph that is singly-connected in both the leafward and
@@ -1095,14 +1106,15 @@ local trees, but there can still be nodes that are unary in all
 of the local trees. In particular, a node can represent a recombinant
 with multiple parents in the graph but only a single child (e.g.\ node \textsf{n}
 in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
-multiple children in the graph but in which no local coalescence takes place
+multiple children in the graph but in which no coalescence takes place
+in the local trees
 (node \textsf{r} in Fig.~\ref{fig-simplification}B).
 % point out that this is why Hudson refers to CA nodes, not coalescence nodes
 Such nodes are not singly connected in the graph, but are nevertheless unary in
 all of the local trees.
 The operation to remove them
 therefore requires knowledge not just of the graph topology but also of the
-edge annotations.
+ancestral material associated with the edges.
 As we see in Fig.~\ref{fig-simplification}C,
 removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \textsf{e}); and likewise, removal of
@@ -1139,173 +1151,205 @@ the graph, we lose potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
 and utilised is an interesting open question.
 
-% Needs another pass
-An important consequence of simplifying local trees to remove
-unary nodes is that we may lose the ability to identify
-the ``subtree prune-and-regraft'' (SPR) operations
-by which they differ~\citep{hein1990reconstructing,song2003on,song2006properties}.
-% The effects of recombination as we move from left-to-right along
-% the genome in the complete simulated gARG
-% of Fig~\ref{fig-simplification}A are easy to interpret,
-% but as more redundancy is removed from the graph
-% the
-As explained above, we can have multiple recombination and
-common ancestor events stacking up, and therefore
-many possible SPR operations. Deducing the SPRs between
-trees is NP-hard in
-general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
-but effective heuristics have been proposed~\citep{rasmussen2022espalier}.
+An important consequence of simplifying ARGs to remove
+unary nodes in local trees is that we lose some information
+about recombination
+events. This is related to the amount of \emph{precision} about
+recombination events that we store, which is the topic of the next
+section.
 
-% JK TODO: finish up this section with a quick version of the
-% para here. Basically say, people often say an ARG is a
-% set of local trees cite cite, but it's not as simple as that as we
-% can see from the example (probably).
+\section*{Precision of recombination information}
+% The ARGs in Fig.~\ref{fig-simplification} represent different
+% levels of detail about the same ancestral history. They represent
+% the same set of recombination and common ancestor events,
+As illustated in Fig.~\ref{fig-simplification}, successive levels
+of ARG simplification reduce the amount of information about the
+history of the sample that is stored. Some of the information lost,
+for example, ``diamond'' removal (Fig.~\ref{fig-simplification}A),
+seems like a reasonable tradeoff for a simpler structure.
+The consequences of other simplifications, however, are
+more subtle and relate directly to what can be known about
+recombination events and the levels of precision that
+we should seek to infer about them.
 
-% The equivalence between an ARG and a set of local trees
-% separated by SPRs is often mentioned [e.g. x y z], but
-% it is important to note that while extracting local
-% trees from an ARG is straightforward, the converse
-% process of reconstructing precisely the same ARG from
-% these trees is more problematic. If the internal
-% nodes are consistently labelled and unary nodes are
-% included in the local trees (e.g., Fig~\ref{fig-simplification})
-% then it is easy to exactly reconstruct the ARG.
-% Otherwise, the problem is much more difficult and it
-% may not be possible to uniquely reconstruct the original ARG.
-% Without labels for the internal nodes, we are forced to
-% to reason about which subtrees remain the same and which
-% differ due to the SPR separating adjacent trees in order to
-% assign node identity. Without the internal unary nodes marking
-% recombinations, we must infer their existence. In
-% general, there will not be a unique solution to this problem,
-% and so there can be many possible ARGs compatible with
-% a given list of leaf-labelled binary trees.
-% This is the approach taken by the Espalier inference
-% method~\citep{rasmussen2022espalier}, which finds a
-% set of SPRs that reconcile independently inferred
-% trees from different regions of the genome.
+The ARGs in Fig.~\ref{fig-simplification} contain different
+numbers of local trees ($6$, $5$, $5$ and $4$ for A through
+D, respectively). When we move from A to B the local trees
+for the intervals $(44,61]$ and $(61,87]$ are merged because
+the only differences between them are their journeys through
+nodes \noderef{l} and \noderef{m}. These nodes that participated
+in the diamond are removed from the ARG, and we have lost
+all information about the corresponding recombination at
+position 61. Other nodes (e.g.\ \noderef{o} and \noderef{p})
+have also been removed but these represent the \emph{parents}
+of recombinants. The recombinant nodes themselves
+(e.g. \noderef{n}) are still present, and represent precise
+information about the time, genomic location and tree
+branches involved
+in the recombination event.
 
+Fig.~\ref{fig-simplification}C has the same number of local trees
+as Fig.~\ref{fig-simplification}B, but has less precise information
+about recombination. Continuing the previous example, node
+\noderef{n} has been removed from the graph because it was unary
+in all of the local trees; its outbound edges to \noderef{s}
+and \noderef{q} have effectively been ``pushed down''
+to \noderef{e} (which is retained because it is the coalescent
+parent of \noderef{a} and \noderef{b} over the interval
+$(44, 100]$). We
+have therefore lost precision about
+the \emph{timing} of this recombination event, and know only
+that it must have occured between the times of node \noderef{e}
+and \noderef{q}.
 
-% NEEDS more work!
-\section*{Precision of ancestry information}
-Ancestral recombination graphs are often characterised
-as consisting of a complete record of the genetic history
-of a sample. For example,
-\cite{rasmussen2014genome} state that an ``ARG provides a record of all
-coalescence and recombination events since the divergence of the sequences
-under study'' and
-according to \cite{deng2021distribution} an ARG
-``provides all the information about the genealogical history of a sample,
-including the locations of recombination events.'' It is worth
-questioning, however, whether such comprehensive information
-will always be available, and in particular whether our
-representation of genealogical history should \emph{require}
-such precision. Simulations will usually generate complete
-information about the history of a sample, of course, but
-we may not have sufficient information to infer such detail.
+Fig.~\ref{fig-simplification}D removes all unary nodes from the
+local trees, and further reduces the precision of
+recombination information. Node \noderef{e} has not been
+removed from the graph because it is coalescent in the
+final tree, but we no longer know that the recombination
+event at position 30 was ancestral to it, or have
+any indication of its timings. Furthermore,
+trees for $(44, 87]$ and $(87, 100]$ were only distinguishable
+by the passage of the former tree through nodes \noderef{e}
+and \noderef{q}, and so the recombination on node \noderef{g}
+at position 87 has been lost entirely.
 
-% The full ancestral recombination graph (ARG) is a structure that encodes all
+% The example in Fig.~\ref{fig-simplification} is usually
+% referred to as ``fully simplified'', and is the default output
+% of simulation programs like \msprime. While there is significant
+% precision about recombination events lost
+
+The point of these examples is to emphasise that
+information about recombination in an ARG is not ``all
+or nothing'': there is a continuuum of detail
+about recombination, in terms of genomic location, timing
+the ancestral lineages involved, that we can describe.
+While there has been a recent tendancy to emphasise the
+importance of ``full ARGs''
+\citep[e.g.][]{deng2021distribution,brandt2021evaluation,
+rasmussen2022espalier}
+which contain complete information about all recombination
+events, it is reasonable to question the value of
+such precise information and whether it is knowable.
+[SOME MORE STUFF]
+
+% Ancestral recombination graphs are often characterised
+% as consisting of a complete record of the genetic history
+% of a sample. For example,
+% \cite{rasmussen2014genome} state that an ``ARG provides a record of all
+% coalescence and recombination events since the divergence of the sequences
+% under study'' and
+% according to \cite{deng2021distribution} an ARG
+% ``provides all the information about the genealogical history of a sample,
+% including the locations of recombination events.'' It is worth
+% questioning, however, whether such comprehensive information
+% will always be available, and in particular whether our
+% representation of genealogical history should \emph{require}
+% such precision. Simulations will usually generate complete
+% information about the history of a sample, of course, but
+% we may not have sufficient information to infer such detail.
+
+% % The full ancestral recombination graph (ARG) is a structure that encodes all
+% % coalescence and recombination events resulting from the stochastic process of
+% % the coalescent with recombination.
+% \citet{brandt2021evaluation} define a ``full'' ARG as
+% ``a structure that encodes all
 % coalescence and recombination events resulting from the stochastic process of
-% the coalescent with recombination.
-\citet{brandt2021evaluation} define a ``full'' ARG as
-``a structure that encodes all
-coalescence and recombination events resulting from the stochastic process of
-the coalescent with recombination'' (thus going against the general
-historial trend discussed in the XXX section).
-\citet{rasmussen2022espalier} have a less restrictive definition, in
-which a ``full'' ARG is one that contains complete information about
-recombination events, without necessarily being tied to a particular
-stochastic process.
-While [something positive], it is important to be clear on
-what the overall goal of such precise inferences are,
-what the limitations on when they can be made are,
-and their downstream utility in applications.
+% the coalescent with recombination'' (thus going against the general
+% historial trend discussed in the XXX section).
+% \citet{rasmussen2022espalier} have a less restrictive definition, in
+% which a ``full'' ARG is one that contains complete information about
+% recombination events, without necessarily being tied to a particular
+% stochastic process.
+% While [something positive], it is important to be clear on
+% what the overall goal of such precise inferences are,
+% what the limitations on when they can be made are,
+% and their downstream utility in applications.
 
-% What is the goal of having fully precise ARGs?
-% 1) studying the actual recombination events;
-% 2) evaluating the likelihoods
-The main reasons for wanting precise estimates of all recombination
-events are to either compute a likelihood of the inferred ARG
-under a statistical model, or to study the recombinants in
-detail~\citep{rasmussen2022espalier}.
-% Explain that we're really interested in the details of recombination
-% itself with a small number of samples.
-In the latter case, we might
-have a small number of samples~\citep{guo2022recombination}.
+% % What is the goal of having fully precise ARGs?
+% % 1) studying the actual recombination events;
+% % 2) evaluating the likelihoods
+% The main reasons for wanting precise estimates of all recombination
+% events are to either compute a likelihood of the inferred ARG
+% under a statistical model, or to study the recombinants in
+% detail~\citep{rasmussen2022espalier}.
+% % Explain that we're really interested in the details of recombination
+% % itself with a small number of samples.
+% In the latter case, we might
+% have a small number of samples~\citep{guo2022recombination}.
 
-Beyond cases in which visual inspection of the trees and the
-effects of recombination is feasible, the main application
-of having completely precise estimates of recombination events is
-to evaluate the likelihood of the estimate under some
-statistical model. The only statistical model available
-is the coalescent with recombination
-and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
-In this case, the utility of a ``full`` ARG for some dataset
-is limited by how well the dataset fits the assumptions
-of the model.
+% Beyond cases in which visual inspection of the trees and the
+% effects of recombination is feasible, the main application
+% of having completely precise estimates of recombination events is
+% to evaluate the likelihood of the estimate under some
+% statistical model. The only statistical model available
+% is the coalescent with recombination
+% and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
+% In this case, the utility of a ``full`` ARG for some dataset
+% is limited by how well the dataset fits the assumptions
+% of the model.
 
-% Not sure where this goes, but there are some critical points
-% that we want to explain and not just throw out there in the
-% discussion.
-% A critical distinction between the eARG and gARG encodings
-% is the level of precision about the time and location of
-% recombination events that is required. In an eARG, we are
-% required to be absolutely precise about every recombination
-% [explain and contrast with gARG, referring to examples]
+% % Not sure where this goes, but there are some critical points
+% % that we want to explain and not just throw out there in the
+% % discussion.
+% % A critical distinction between the eARG and gARG encodings
+% % is the level of precision about the time and location of
+% % recombination events that is required. In an eARG, we are
+% % required to be absolutely precise about every recombination
+% % [explain and contrast with gARG, referring to examples]
 
-% JK: This is very rough, just jotting down the basic ideas,
-% will need substantial revision.
-It is not clear that such complete information will always
-(or indeed ever) be available from inferences~\cite{shipilina2022origin}.
- We may be
-able to precisely identify the location and timing
-of recent recombinations (particularly if detailed pedigree
-information is available) but beyond this, the information
-required simply isn't present. When sampling from a
-process such as the Sequentially Markov
-Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
-like ARGweaver~\citep{rasmussen2014genome}, it is true that
-we do obtain a fully resolved ARG with precise
-information about recombination, but it is reasonable
-to question how much information from the data is used
-to support older recombinations, in particular.
+% % JK: This is very rough, just jotting down the basic ideas,
+% % will need substantial revision.
+% It is not clear that such complete information will always
+% (or indeed ever) be available from inferences~\cite{shipilina2022origin}.
+%  We may be
+% able to precisely identify the location and timing
+% of recent recombinations (particularly if detailed pedigree
+% information is available) but beyond this, the information
+% required simply isn't present. When sampling from a
+% process such as the Sequentially Markov
+% Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
+% like ARGweaver~\citep{rasmussen2014genome}, it is true that
+% we do obtain a fully resolved ARG with precise
+% information about recombination, but it is reasonable
+% to question how much information from the data is used
+% to support older recombinations, in particular.
 
-% This idea of a continuum of information about recombination
-% being inferrable and representable is consistent with the ideas
-% discussed by~\cite{shipilina2022origin}. There a haplotype block
-% is synonymous with coalescent nodes in the ARG, which we can generalise
-% as nodes in a gARG with at least two children. In principle, these
-% nodes are identifiable by the mutations that occur on the outbound
-% edges of the node.
+% % This idea of a continuum of information about recombination
+% % being inferrable and representable is consistent with the ideas
+% % discussed by~\cite{shipilina2022origin}. There a haplotype block
+% % is synonymous with coalescent nodes in the ARG, which we can generalise
+% % as nodes in a gARG with at least two children. In principle, these
+% % nodes are identifiable by the mutations that occur on the outbound
+% % edges of the node.
 
-It is helpful to consider the difference between fully
-resolved binary trees and those that contain polytomies.
+% It is helpful to consider the difference between fully
+% resolved binary trees and those that contain polytomies.
 
-The situation is in fact directly analogous: an ARG that
-contains fully resolved recombination information must have
-at most parents per node.
+% The situation is in fact directly analogous: an ARG that
+% contains fully resolved recombination information must have
+% at most parents per node.
 
+% At the very least, it is not reasonable for the \emph{data
+% structure} to require complete precision in order to
+% represent some less precise. This is a fundamental
+% advantage of the gARG encoding over the classical eARG
+% method: we are not forced to posit a precise cause (recombination
+% event) for every effect (difference between adjacent trees).
+% These differences in precision of recombination
+% information are illustrated in the ARGs estimated by different
+% methods, as we see in the next section.
 
-At the very least, it is not reasonable for the \emph{data
-structure} to require complete precision in order to
-represent some less precise. This is a fundamental
-advantage of the gARG encoding over the classical eARG
-method: we are not forced to posit a precise cause (recombination
-event) for every effect (difference between adjacent trees).
-These differences in precision of recombination
-information are illustrated in the ARGs estimated by different
-methods, as we see in the next section.
-
-In general, discussions tend to contrast an ARG
-on one hand as holding \emph{complete} information about recombination
-(and therefore between-tree correlation structure)
-and a sequence of local trees on the other (with, by implication,
-no direct information about between-tree correlations).
-This is a false dichotomy:
-a \emph{continuum} of information about recombination and between-tree
-correlation structure can be represented and inferred, and all
-such levels of information are useful, even if only for computational
-efficiency.
+% In general, discussions tend to contrast an ARG
+% on one hand as holding \emph{complete} information about recombination
+% (and therefore between-tree correlation structure)
+% and a sequence of local trees on the other (with, by implication,
+% no direct information about between-tree correlations).
+% This is a false dichotomy:
+% a \emph{continuum} of information about recombination and between-tree
+% correlation structure can be represented and inferred, and all
+% such levels of information are useful, even if only for computational
+% efficiency.
 
 
 \begin{figure} \begin{center}
@@ -1360,26 +1404,115 @@ described in the output graph. On the other hand, \tsinfer\ and
 representing the inferred \emph{effect}: breakpoints between the
 trees. It is important to note that this does not imply that
 the methods must then necessarily infer only a sequence of
-unrelated local trees
-% More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
-% for discussion. I'm sure there were other examples of people saying
-% that
-(as claimed by e.g.~\citet{hejase2020summary}),
-and information about recombination and the correlation structure
-between trees is not ``all or nothing''.
-Both methods capture correlation structure between trees:
-\relate\ first infers local tree topologies and then identifies edges
-that persist from one tree to the next as a separate step
-(in a similar manner to \espalier~\citep{rasmussen2022espalier}), while
-\texttt{tsinfer} explicitly constructs nodes that are shared across local
-trees. See \cite{ignatieva2023distribution} for a detailed discussion
-and comparsion of inference methods on this property.
+\emph{unrelated} local trees (i.e., with either unlabelled internal
+nodes or differently labelled nodes in each tree; see the
+next section).
+The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
+information about node sharing across trees, and hence capturing
+the important correlation structures.
 
-% Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
-% explicit recombination events we cannot compute a likelihood
-% under the coalescent with recombination (see appendix XXX).
-% [Some stuff about whether we should see this as necessary or not,
-% but maybe we should keep this for the conclusion?]
+% \relate\ by first inferring local topologies and then identifies edges
+% that persist from one tree, while
+% local trees only emerge from \tsinfer\ as a consequence of the copying
+% patterns inferred among ancestral haplotypes.
+
+% % More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+% % for discussion. I'm sure there were other examples of people saying
+% % that
+% (as claimed by e.g.~\citet{hejase2020summary}),
+% and information about recombination and the correlation structure
+% between trees is not ``all or nothing''.
+% Both methods capture correlation structure between trees:
+% \relate\ first infers local tree topologies and then identifies edges
+% that persist from one tree to the next as a separate step, while
+% \texttt{tsinfer} explicitly constructs nodes that are shared across local
+% trees.
+% % Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
+% % explicit recombination events we cannot compute a likelihood
+% % under the coalescent with recombination (see appendix XXX).
+% % [Some stuff about whether we should see this as necessary or not,
+% % but maybe we should keep this for the conclusion?]
+
+\section*{Equivalance of ARGs and the set of local trees}
+An ARG is sometimes referred to as being equivalent to a set of
+local trees along the genome [TODO citation], but the connection
+between the two is not as simple as it may seem.
+In order for the mapping to be one-to-one, so that the original
+gARG can be exactly recovered from a set of local trees and
+their genome coordinates,
+some specific properties of the ARG and the trees are required.
+
+Firstly, the internal nodes in the local trees must be labelled
+(i.e.\ marked with the identity of the corresponding ARG node).
+If the nodes are not labelled, we must infer their identity
+from the tree topology, which is both
+expensive to compute and imprecise. For example
+we could infer that node \textsf{k} is shared in the second
+and third trees of in Fig.~\ref{fig-simplification}D
+because it subtends identical subtrees in both,
+but it would not be straightforward to infer that it
+is also the root of the first tree.
+% JK: Does this need to be said?
+% (One may use the time of a node as a proxy for identity,
+% but it is not reliable as we can have multiple nodes at the
+% same time, e.g. with time discretisation.)
+
+The precision of the information about recombination that
+can be represented in the trees depends the ARG itself.
+Secondly, the local trees must contain ``unary'' nodes.
+[Some discussion].
+With these two conditions met, there is a direct correspondance
+between a gARG and the trees.
+
+
+These properties have interesting consequences when we
+consider the inference strategy of esimating local trees
+independenty and subsequently stitching them together
+into an ARG. Two recent methods take this approach,
+\relate\ and
+\texttt{espalier}~\citep{rasmussen2022espalier},
+and have different strategies for reconciling the local
+trees into an ARG. [Relate does something fairly lightweight,
+but by default imprecise.]
+Espalier, on the other hand, is specifically in interested
+in the recombination events and therefore attempts to infer
+the precise ``subtree prune-and-regraft'' (SPR)
+operations~\citep{hein1990reconstructing,song2003on,song2006properties}
+using heuristics~\citep{rasmussen2022espalier}.
+Inferring the SPRs between
+leaf-labelled trees is NP-hard in
+general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
+
+% JK TODO: finish up this section with a quick version of the
+% para here. Basically say, people often say an ARG is a
+% set of local trees cite cite, but it's not as simple as that as we
+% can see from the example (probably).
+
+% The equivalence between an ARG and a set of local trees
+% separated by SPRs is often mentioned [e.g. x y z], but
+% it is important to note that while extracting local
+% trees from an ARG is straightforward, the converse
+% process of reconstructing precisely the same ARG from
+% these trees is more problematic. If the internal
+% nodes are consistently labelled and unary nodes are
+% included in the local trees (e.g., Fig~\ref{fig-simplification})
+% then it is easy to exactly reconstruct the ARG.
+% Otherwise, the problem is much more difficult and it
+% may not be possible to uniquely reconstruct the original ARG.
+% Without labels for the internal nodes, we are forced to
+% to reason about which subtrees remain the same and which
+% differ due to the SPR separating adjacent trees in order to
+% assign node identity. Without the internal unary nodes marking
+% recombinations, we must infer their existence. In
+% general, there will not be a unique solution to this problem,
+% and so there can be many possible ARGs compatible with
+% a given list of leaf-labelled binary trees.
+% This is the approach taken by the Espalier inference
+% method~\citep{rasmussen2022espalier}, which finds a
+% set of SPRs that reconcile independently inferred
+% trees from different regions of the genome.
+
+
 
 % \section*{When do we need ``full'' ARGs?}
 % % The full ancestral recombination graph (ARG) is a structure that encodes all
@@ -1525,7 +1658,8 @@ across the wide range of predicted application
 % TODO more?
 areas~\citep{rasmussen2014genome,harris2019database,
 hejase2020summary,schaefer2021ancestral,
-fan2022genealogical,wohns2022unified,harris2023using}
+fan2022genealogical,wohns2022unified,harris2023using,
+nowbandegani2022extremely}
 is how well inference methods and downstream analysis applications
 interoperate. Without a well-defined and efficient shared format
 for ARG data interchange,
