@@ -1151,11 +1151,287 @@ the graph, we lose potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
 and utilised is an interesting open question.
 
-An important consequence of simplifying local trees to remove
-unary nodes is that we lose information about recombination
+An important consequence of simplifying ARGs to remove
+unary nodes in local trees is that we lose some information
+about recombination
 events. This is related to the amount of \emph{precision} about
 recombination events that we store, which is the topic of the next
 section.
+
+\section*{Precision of recombination information}
+% The ARGs in Fig.~\ref{fig-simplification} represent different
+% levels of detail about the same ancestral history. They represent
+% the same set of recombination and common ancestor events,
+As illustated in Fig.~\ref{fig-simplification}, successive levels
+of ARG simplification reduce the amount of information about the
+history of the sample that is stored. Some of the information lost,
+for example, ``diamond'' removal (Fig.~\ref{fig-simplification}A),
+seems like a reasonable tradeoff for a simpler structure.
+The consequences of other simplifications, however, are
+more subtle and relate directly to what can be known about
+recombination events and the levels of precision that
+we should seek to infer about them.
+
+The ARGs in Fig.~\ref{fig-simplification} contain different
+numbers of local trees ($6$, $5$, $5$ and $4$ for A through
+D, respectively). When we move from A to B the local trees
+for the intervals $(44,61]$ and $(61,87]$ are merged because
+the only differences between them are their journeys through
+nodes \noderef{l} and \noderef{m}. These nodes that participated
+in the diamond are removed from the ARG, and we have lost
+all information about the corresponding recombination at
+position 61. Other nodes (e.g.\ \noderef{o} and \noderef{p})
+have also been removed but these represent the \emph{parents}
+of recombinants. The recombinant nodes themselves
+(e.g. \noderef{n}) are still present, and represent precise
+information about the time, genomic location and tree
+branches involved
+in the recombination event.
+
+Fig.~\ref{fig-simplification}C has the same number of local trees
+as Fig.~\ref{fig-simplification}B, but has less precise information
+about recombination. Continuing the previous example, node
+\noderef{n} has been removed from the graph because it was unary
+in all of the local trees; its outbound edges to \noderef{s}
+and \noderef{q} have effectively been ``pushed down''
+to \noderef{e} (which is retained because it is the coalescent
+parent of \noderef{a} and \noderef{b} over the interval
+$(44, 100]$). We
+have therefore lost precision about
+the \emph{timing} of this recombination event, and know only
+that it must have occured between the times of node \noderef{e}
+and \noderef{q}.
+
+Fig.~\ref{fig-simplification}D removes all unary nodes from the
+local trees, and further reduces the precision of
+recombination information. Node \noderef{e} has not been
+removed from the graph because it is coalescent in the
+final tree, but we no longer know that the recombination
+event at position 30 was ancestral to it, or have
+any indication of its timings. Furthermore,
+trees for $(44, 87]$ and $(87, 100]$ were only distinguishable
+by the passage of the former tree through nodes \noderef{e}
+and \noderef{q}, and so the recombination on node \noderef{g}
+at position 87 has been lost entirely.
+
+% The example in Fig.~\ref{fig-simplification} is usually
+% referred to as ``fully simplified'', and is the default output
+% of simulation programs like \msprime. While there is significant
+% precision about recombination events lost
+
+The point of these examples is to emphasise that
+information about recombination in an ARG is not ``all
+or nothing'': there is a continuuum of detail
+about recombination, in terms of genomic location, timing
+the ancestral lineages involved, that we can describe.
+While there has been a recent tendancy to emphasise the
+importance of ``full ARGs''
+\citep[e.g.][]{deng2021distribution,brandt2021evaluation,
+rasmussen2022espalier}
+which contain complete information about all recombination
+events, it is reasonable to question the value of
+such precise information and whether it is knowable.
+[SOME MORE STUFF]
+
+% Ancestral recombination graphs are often characterised
+% as consisting of a complete record of the genetic history
+% of a sample. For example,
+% \cite{rasmussen2014genome} state that an ``ARG provides a record of all
+% coalescence and recombination events since the divergence of the sequences
+% under study'' and
+% according to \cite{deng2021distribution} an ARG
+% ``provides all the information about the genealogical history of a sample,
+% including the locations of recombination events.'' It is worth
+% questioning, however, whether such comprehensive information
+% will always be available, and in particular whether our
+% representation of genealogical history should \emph{require}
+% such precision. Simulations will usually generate complete
+% information about the history of a sample, of course, but
+% we may not have sufficient information to infer such detail.
+
+% % The full ancestral recombination graph (ARG) is a structure that encodes all
+% % coalescence and recombination events resulting from the stochastic process of
+% % the coalescent with recombination.
+% \citet{brandt2021evaluation} define a ``full'' ARG as
+% ``a structure that encodes all
+% coalescence and recombination events resulting from the stochastic process of
+% the coalescent with recombination'' (thus going against the general
+% historial trend discussed in the XXX section).
+% \citet{rasmussen2022espalier} have a less restrictive definition, in
+% which a ``full'' ARG is one that contains complete information about
+% recombination events, without necessarily being tied to a particular
+% stochastic process.
+% While [something positive], it is important to be clear on
+% what the overall goal of such precise inferences are,
+% what the limitations on when they can be made are,
+% and their downstream utility in applications.
+
+% % What is the goal of having fully precise ARGs?
+% % 1) studying the actual recombination events;
+% % 2) evaluating the likelihoods
+% The main reasons for wanting precise estimates of all recombination
+% events are to either compute a likelihood of the inferred ARG
+% under a statistical model, or to study the recombinants in
+% detail~\citep{rasmussen2022espalier}.
+% % Explain that we're really interested in the details of recombination
+% % itself with a small number of samples.
+% In the latter case, we might
+% have a small number of samples~\citep{guo2022recombination}.
+
+% Beyond cases in which visual inspection of the trees and the
+% effects of recombination is feasible, the main application
+% of having completely precise estimates of recombination events is
+% to evaluate the likelihood of the estimate under some
+% statistical model. The only statistical model available
+% is the coalescent with recombination
+% and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
+% In this case, the utility of a ``full`` ARG for some dataset
+% is limited by how well the dataset fits the assumptions
+% of the model.
+
+% % Not sure where this goes, but there are some critical points
+% % that we want to explain and not just throw out there in the
+% % discussion.
+% % A critical distinction between the eARG and gARG encodings
+% % is the level of precision about the time and location of
+% % recombination events that is required. In an eARG, we are
+% % required to be absolutely precise about every recombination
+% % [explain and contrast with gARG, referring to examples]
+
+% % JK: This is very rough, just jotting down the basic ideas,
+% % will need substantial revision.
+% It is not clear that such complete information will always
+% (or indeed ever) be available from inferences~\cite{shipilina2022origin}.
+%  We may be
+% able to precisely identify the location and timing
+% of recent recombinations (particularly if detailed pedigree
+% information is available) but beyond this, the information
+% required simply isn't present. When sampling from a
+% process such as the Sequentially Markov
+% Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
+% like ARGweaver~\citep{rasmussen2014genome}, it is true that
+% we do obtain a fully resolved ARG with precise
+% information about recombination, but it is reasonable
+% to question how much information from the data is used
+% to support older recombinations, in particular.
+
+% % This idea of a continuum of information about recombination
+% % being inferrable and representable is consistent with the ideas
+% % discussed by~\cite{shipilina2022origin}. There a haplotype block
+% % is synonymous with coalescent nodes in the ARG, which we can generalise
+% % as nodes in a gARG with at least two children. In principle, these
+% % nodes are identifiable by the mutations that occur on the outbound
+% % edges of the node.
+
+% It is helpful to consider the difference between fully
+% resolved binary trees and those that contain polytomies.
+
+% The situation is in fact directly analogous: an ARG that
+% contains fully resolved recombination information must have
+% at most parents per node.
+
+% At the very least, it is not reasonable for the \emph{data
+% structure} to require complete precision in order to
+% represent some less precise. This is a fundamental
+% advantage of the gARG encoding over the classical eARG
+% method: we are not forced to posit a precise cause (recombination
+% event) for every effect (difference between adjacent trees).
+% These differences in precision of recombination
+% information are illustrated in the ARGs estimated by different
+% methods, as we see in the next section.
+
+% In general, discussions tend to contrast an ARG
+% on one hand as holding \emph{complete} information about recombination
+% (and therefore between-tree correlation structure)
+% and a sequence of local trees on the other (with, by implication,
+% no direct information about between-tree correlations).
+% This is a false dichotomy:
+% a \emph{continuum} of information about recombination and between-tree
+% correlation structure can be represented and inferred, and all
+% such levels of information are useful, even if only for computational
+% efficiency.
+
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
+\caption{\label{fig-inferred-args} ARGs inferred by
+(A) \kwarg~\citep{ignatieva2021kwarg},
+(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
+(C) \tsinfer~\citep{kelleher2019inferring},
+and (D) \relate~\citep{speidel2019method}
+for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
+locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
+is a sample from the inferred posterior distribution. In each ARG,
+colours are assigned to edges based on the time of the edge's child node:
+lighter colours are assigned to edges with older child
+nodes, darker colours are assigned to edges with younger child nodes
+Note that the position of points on the
+Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
+algorithm, rather than as a direct measure of time.
+Line width corresponds to the genomic span of the edge. Node colour
+refers to the number of parents of the node: red is zero, brown is one,
+green to blue are two to N parents. The brightness
+of the node is determined by the genomic span over which
+the node has two or more children divided by the span where it has any
+children. The genomic intervals associated with edges are visualised below
+each ARG, where each row is an edge
+and the x axis reflects genomic position. The width of edges
+thus corresponds to their genomic span. Edges
+are ordered by the age of their child node, from oldest to youngest
+moving down the page, with colours matching the edge colours in the ARG.
+Vertical lines indicate breakpoints between local trees.
+}
+\end{figure}
+
+To illustrate these points and to emphasise the heterogeneity
+of the ARGs inferred by current methods, we inferred ARGs for the
+the classical \citet{kreitman1983nucleotide} benchmark dataset
+using four recent inference methods and show the results in
+Fig~\ref{fig-inferred-args}.
+While there is some consistency among the inferred ARGs (such as the samples
+FR-F, WA-F and Af-F being grouped into the same clade), there
+are also considerable differences. For this dataset, the minimum number
+of recombination breakpoints required in the absence of recurrent mutation
+is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
+under the input mutation and recombination rates
+varies from 2 (\relate) to 17 (\argweaver).
+The ARGs inferred by the different methods also have major differences
+in how recombination information is represented. Essentially,
+\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
+for each breakpoint, and those events are fully
+described in the output graph. On the other hand, \tsinfer\ and
+\relate\ do not infer causal events but instead focus on
+representing the inferred \emph{effect}: breakpoints between the
+trees. It is important to note that this does not imply that
+the methods must then necessarily infer only a sequence of
+\emph{unrelated} local trees (i.e., with either unlabelled internal
+nodes or differently labelled nodes in each tree; see the
+next section).
+The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
+information about node sharing across trees, and hence capturing
+the important correlation structures.
+
+% \relate\ by first inferring local topologies and then identifies edges
+% that persist from one tree, while
+% local trees only emerge from \tsinfer\ as a consequence of the copying
+% patterns inferred among ancestral haplotypes.
+
+% % More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+% % for discussion. I'm sure there were other examples of people saying
+% % that
+% (as claimed by e.g.~\citet{hejase2020summary}),
+% and information about recombination and the correlation structure
+% between trees is not ``all or nothing''.
+% Both methods capture correlation structure between trees:
+% \relate\ first infers local tree topologies and then identifies edges
+% that persist from one tree to the next as a separate step, while
+% \texttt{tsinfer} explicitly constructs nodes that are shared across local
+% trees.
+% % Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
+% % explicit recombination events we cannot compute a likelihood
+% % under the coalescent with recombination (see appendix XXX).
+% % [Some stuff about whether we should see this as necessary or not,
+% % but maybe we should keep this for the conclusion?]
 
 \section*{Equivalance of ARGs and the set of local trees}
 An ARG is sometimes referred to as being equivalent to a set of
@@ -1237,200 +1513,6 @@ general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 % trees from different regions of the genome.
 
 
-% NEEDS more work!
-\section*{Precision of ancestry information}
-Ancestral recombination graphs are often characterised
-as consisting of a complete record of the genetic history
-of a sample. For example,
-\cite{rasmussen2014genome} state that an ``ARG provides a record of all
-coalescence and recombination events since the divergence of the sequences
-under study'' and
-according to \cite{deng2021distribution} an ARG
-``provides all the information about the genealogical history of a sample,
-including the locations of recombination events.'' It is worth
-questioning, however, whether such comprehensive information
-will always be available, and in particular whether our
-representation of genealogical history should \emph{require}
-such precision. Simulations will usually generate complete
-information about the history of a sample, of course, but
-we may not have sufficient information to infer such detail.
-
-% The full ancestral recombination graph (ARG) is a structure that encodes all
-% coalescence and recombination events resulting from the stochastic process of
-% the coalescent with recombination.
-\citet{brandt2021evaluation} define a ``full'' ARG as
-``a structure that encodes all
-coalescence and recombination events resulting from the stochastic process of
-the coalescent with recombination'' (thus going against the general
-historial trend discussed in the XXX section).
-\citet{rasmussen2022espalier} have a less restrictive definition, in
-which a ``full'' ARG is one that contains complete information about
-recombination events, without necessarily being tied to a particular
-stochastic process.
-While [something positive], it is important to be clear on
-what the overall goal of such precise inferences are,
-what the limitations on when they can be made are,
-and their downstream utility in applications.
-
-% What is the goal of having fully precise ARGs?
-% 1) studying the actual recombination events;
-% 2) evaluating the likelihoods
-The main reasons for wanting precise estimates of all recombination
-events are to either compute a likelihood of the inferred ARG
-under a statistical model, or to study the recombinants in
-detail~\citep{rasmussen2022espalier}.
-% Explain that we're really interested in the details of recombination
-% itself with a small number of samples.
-In the latter case, we might
-have a small number of samples~\citep{guo2022recombination}.
-
-Beyond cases in which visual inspection of the trees and the
-effects of recombination is feasible, the main application
-of having completely precise estimates of recombination events is
-to evaluate the likelihood of the estimate under some
-statistical model. The only statistical model available
-is the coalescent with recombination
-and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
-In this case, the utility of a ``full`` ARG for some dataset
-is limited by how well the dataset fits the assumptions
-of the model.
-
-% Not sure where this goes, but there are some critical points
-% that we want to explain and not just throw out there in the
-% discussion.
-% A critical distinction between the eARG and gARG encodings
-% is the level of precision about the time and location of
-% recombination events that is required. In an eARG, we are
-% required to be absolutely precise about every recombination
-% [explain and contrast with gARG, referring to examples]
-
-% JK: This is very rough, just jotting down the basic ideas,
-% will need substantial revision.
-It is not clear that such complete information will always
-(or indeed ever) be available from inferences~\cite{shipilina2022origin}.
- We may be
-able to precisely identify the location and timing
-of recent recombinations (particularly if detailed pedigree
-information is available) but beyond this, the information
-required simply isn't present. When sampling from a
-process such as the Sequentially Markov
-Coalescent~\citep{mcvean2005approximating,marjoram2006fast}
-like ARGweaver~\citep{rasmussen2014genome}, it is true that
-we do obtain a fully resolved ARG with precise
-information about recombination, but it is reasonable
-to question how much information from the data is used
-to support older recombinations, in particular.
-
-% This idea of a continuum of information about recombination
-% being inferrable and representable is consistent with the ideas
-% discussed by~\cite{shipilina2022origin}. There a haplotype block
-% is synonymous with coalescent nodes in the ARG, which we can generalise
-% as nodes in a gARG with at least two children. In principle, these
-% nodes are identifiable by the mutations that occur on the outbound
-% edges of the node.
-
-It is helpful to consider the difference between fully
-resolved binary trees and those that contain polytomies.
-
-The situation is in fact directly analogous: an ARG that
-contains fully resolved recombination information must have
-at most parents per node.
-
-
-At the very least, it is not reasonable for the \emph{data
-structure} to require complete precision in order to
-represent some less precise. This is a fundamental
-advantage of the gARG encoding over the classical eARG
-method: we are not forced to posit a precise cause (recombination
-event) for every effect (difference between adjacent trees).
-These differences in precision of recombination
-information are illustrated in the ARGs estimated by different
-methods, as we see in the next section.
-
-In general, discussions tend to contrast an ARG
-on one hand as holding \emph{complete} information about recombination
-(and therefore between-tree correlation structure)
-and a sequence of local trees on the other (with, by implication,
-no direct information about between-tree correlations).
-This is a false dichotomy:
-a \emph{continuum} of information about recombination and between-tree
-correlation structure can be represented and inferred, and all
-such levels of information are useful, even if only for computational
-efficiency.
-
-
-\begin{figure} \begin{center}
-\includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} ARGs inferred by
-(A) \kwarg~\citep{ignatieva2021kwarg},
-(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
-(C) \tsinfer~\citep{kelleher2019inferring},
-and (D) \relate~\citep{speidel2019method}
-for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
-locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
-is a sample from the inferred posterior distribution. In each ARG,
-colours are assigned to edges based on the time of the edge's child node:
-lighter colours are assigned to edges with older child
-nodes, darker colours are assigned to edges with younger child nodes
-Note that the position of points on the
-Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
-algorithm, rather than as a direct measure of time.
-Line width corresponds to the genomic span of the edge. Node colour
-refers to the number of parents of the node: red is zero, brown is one,
-green to blue are two to N parents. The brightness
-of the node is determined by the genomic span over which
-the node has two or more children divided by the span where it has any
-children. The genomic intervals associated with edges are visualised below
-each ARG, where each row is an edge
-and the x axis reflects genomic position. The width of edges
-thus corresponds to their genomic span. Edges
-are ordered by the age of their child node, from oldest to youngest
-moving down the page, with colours matching the edge colours in the ARG.
-Vertical lines indicate breakpoints between local trees.
-}
-\end{figure}
-
-To illustrate these points and to emphasise the heterogeneity
-of the ARGs inferred by current methods, we inferred ARGs for the
-the classical \citet{kreitman1983nucleotide} benchmark dataset
-using four recent inference methods and show the results in
-Fig~\ref{fig-inferred-args}.
-While there is some consistency among the inferred ARGs (such as the samples
-FR-F, WA-F and Af-F being grouped into the same clade), there
-are also considerable differences. For this dataset, the minimum number
-of recombination breakpoints required in the absence of recurrent mutation
-is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
-under the input mutation and recombination rates
-varies from 2 (\relate) to 17 (\argweaver).
-The ARGs inferred by the different methods also have major differences
-in how recombination information is represented. Essentially,
-\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
-for each breakpoint, and those events are fully
-described in the output graph. On the other hand, \tsinfer\ and
-\relate\ do not infer causal events but instead focus on
-representing the inferred \emph{effect}: breakpoints between the
-trees. It is important to note that this does not imply that
-the methods must then necessarily infer only a sequence of
-unrelated local trees
-% More? See https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
-% for discussion. I'm sure there were other examples of people saying
-% that
-(as claimed by e.g.~\citet{hejase2020summary}),
-and information about recombination and the correlation structure
-between trees is not ``all or nothing''.
-Both methods capture correlation structure between trees:
-\relate\ first infers local tree topologies and then identifies edges
-that persist from one tree to the next as a separate step
-(in a similar manner to \espalier~\citep{rasmussen2022espalier}), while
-\texttt{tsinfer} explicitly constructs nodes that are shared across local
-trees. See \cite{ignatieva2023distribution} for a detailed discussion
-and comparsion of inference methods on this property.
-
-% Because the ARGs inferred by \tsinfer\ and \relate\ do not contain
-% explicit recombination events we cannot compute a likelihood
-% under the coalescent with recombination (see appendix XXX).
-% [Some stuff about whether we should see this as necessary or not,
-% but maybe we should keep this for the conclusion?]
 
 % \section*{When do we need ``full'' ARGs?}
 % % The full ancestral recombination graph (ARG) is a structure that encodes all
@@ -1576,7 +1658,8 @@ across the wide range of predicted application
 % TODO more?
 areas~\citep{rasmussen2014genome,harris2019database,
 hejase2020summary,schaefer2021ancestral,
-fan2022genealogical,wohns2022unified,harris2023using}
+fan2022genealogical,wohns2022unified,harris2023using,
+nowbandegani2022extremely}
 is how well inference methods and downstream analysis applications
 interoperate. Without a well-defined and efficient shared format
 for ARG data interchange,
