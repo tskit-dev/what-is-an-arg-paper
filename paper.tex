@@ -830,6 +830,9 @@ no longer present (in practice, nodes $g$ and $q$ would also be removed).
 Coalescence with respect to the sample is indicated by shaded bars, as
 in Fig~\ref{fig-arg-in-pedigree}A.
 Line thickness is proportional to the genomic span of each edge.
+Nodes representing recombination events have been retained
+for clarity, but could be removed by simplification if
+desired.
 }
 \end{figure}
 
@@ -1021,22 +1024,22 @@ holds.
 % both redundant ones and others, is part of a process we call
 % ``simplification''.
 
-\section*{Simplification}\label{ARG_simplification}
-% I think a sentence is needed here on why "so much" text is devoted to simplification.
-% How does simplification connect to eARG vs gARG and practical benefits of gARG over eARG
-% and why do you now talk about unary nodes and a bit polytomies? Hold my hand here please;)
-ARG simplification~\citep{kelleher2018efficient} is the process
+\section*{Levels of simplification}\label{ARG_simplification}
+ARG simplification is a powerful tool, and can do much more
+besides removing unreachable nodes and edges in a prospective ARG
+and resolving ancestral material in an eARG.
+In general, we can think of
+ARG simplification as the process
 of removing nodes and re-writing edges in a gARG to remove
-various types of redundancy,
-retaining the ``meaningful'' topology within local trees
-and maintaining the identity of nodes across different trees.
-The idea of meaningful local tree topologies is based on the
-presence of ``unary'' nodes: a tree node that has exactly
-% should presence above be absence?
-one child. Fig.~\ref{fig-simplification} show a series of successive steps of
+various types of redundancy.
+Many of the types of redundancy revolve around the presence
+of ``unary'' nodes in the local trees
+(a tree node that has exactly one child).
+
+Fig.~\ref{fig-simplification} show a series of successive steps of
 simplification, starting with a complete gARG simulated under a
-(backwards-in-time) Wright-Fisher
-model, shown both as a graph on the left, and the equivalent set of 6
+backwards-in-time Wright-Fisher
+model, shown both as a graph on the left, and the corresponding sequence of 6
 local trees on the right.
 For example, consider the path above node
 \textsf{a} in the first tree (covering positions 30 to 40)
@@ -1051,17 +1054,17 @@ Such unary nodes in a local tree are not usually considered important;
 nodes usually mark the points where samples coalesce in a
  \emph{common} ancestor. For most purposes, we would therefore consider a path directly
 joining sample \textsf{a} to node \textsf{q} to be equivalent to the path
-containing the intermediate unary nodes. Simplification is the process of removing
-these less informative nodes from the local trees by modifying the gARG.
+containing the intermediate unary nodes.
 
 \begin{figure}
 \centering
 \vspace{5em}
 \includegraphics[width=\linewidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
-ARG simplification. In all cases the graph visualization is shown on the left
-and the equivalent local trees on the right. Since multiple parents are indicative of
-recombination(s), nodes are coloured by the number of parents. and shaded
+Levels of ARG simplification.
+In all cases the graph visualization is shown on the left
+and the corresponding local trees on the right.
+Nodes are coloured by the number of parents and shaded
 according to the proportion of their span over which they are coalescent.
 (A) A gARG simulated from a diploid Wright-Fisher
 model. Note that the genome \textsf{k} has three children, and the genomes
@@ -1079,8 +1082,7 @@ information such as the fact that \textsf{k} is connected to \textsf{a} via \tex
 }
 \end{figure}
 
-
-The first type of simplification that we can perform is to remove
+The first level of simplification that we can perform is to remove
 graph topology that is invisible to the samples.
 An example of such topology is a
 ``diamond''~\citep{rasmussen2014genome}
@@ -1088,7 +1090,7 @@ in which the two parent nodes of a recombination immediately
 join again into a common ancestor (e.g.~\textsf{j}, \textsf{l}, \textsf{m}
 and \textsf{n} in Fig.~\ref{fig-simplification}A).
 Unless we are specifically
-interested in the recombination event or ancestral genomes,
+interested in the recombination event or these ancestral genomes,
 there is no information in this topology and the diamond can be
 replaced by a single edge. More generally, any
 subgraph that is singly-connected in both the leafward and
@@ -1104,14 +1106,15 @@ local trees, but there can still be nodes that are unary in all
 of the local trees. In particular, a node can represent a recombinant
 with multiple parents in the graph but only a single child (e.g.\ node \textsf{n}
 in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
-multiple children in the graph but in which no local coalescence takes place
+multiple children in the graph but in which no coalescence takes place
+in the local trees
 (node \textsf{r} in Fig.~\ref{fig-simplification}B).
 % point out that this is why Hudson refers to CA nodes, not coalescence nodes
 Such nodes are not singly connected in the graph, but are nevertheless unary in
 all of the local trees.
 The operation to remove them
 therefore requires knowledge not just of the graph topology but also of the
-edge annotations.
+ancestral material associated with the edges.
 As we see in Fig.~\ref{fig-simplification}C,
 removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \textsf{e}); and likewise, removal of
@@ -1148,22 +1151,61 @@ the graph, we lose potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
 and utilised is an interesting open question.
 
-% Needs another pass
 An important consequence of simplifying local trees to remove
-unary nodes is that we may lose the ability to identify
-the ``subtree prune-and-regraft'' (SPR) operations
-by which they differ~\citep{hein1990reconstructing,song2003on,song2006properties}.
-% The effects of recombination as we move from left-to-right along
-% the genome in the complete simulated gARG
-% of Fig~\ref{fig-simplification}A are easy to interpret,
-% but as more redundancy is removed from the graph
-% the
-As explained above, we can have multiple recombination and
-common ancestor events stacking up, and therefore
-many possible SPR operations. Deducing the SPRs between
-trees is NP-hard in
-general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
-but effective heuristics have been proposed~\citep{rasmussen2022espalier}.
+unary nodes is that we lose information about recombination
+events. This is related to the amount of \emph{precision} about
+recombination events that we store, which is the topic of the next
+section.
+
+\section*{Equivalance of ARGs and the set of local trees}
+An ARG is sometimes referred to as being equivalent to a set of
+local trees along the genome [TODO citation], but the connection
+between the two is not as simple as it may seem.
+In order for the mapping to be one-to-one, so that the original
+gARG can be exactly recovered from a set of local trees and
+their genome coordinates,
+some specific properties of the ARG and the trees are required.
+
+Firstly, the internal nodes in the local trees must be labelled
+(i.e.\ marked with the identity of the corresponding ARG node).
+If the nodes are not labelled, we must infer their identity
+from the tree topology, which is both
+expensive to compute and imprecise. For example
+we could infer that node \textsf{k} is shared in the second
+and third trees of in Fig.~\ref{fig-simplification}D
+because it subtends identical subtrees in both,
+but it would not be straightforward to infer that it
+is also the root of the first tree.
+% JK: Does this need to be said?
+% (One may use the time of a node as a proxy for identity,
+% but it is not reliable as we can have multiple nodes at the
+% same time, e.g. with time discretisation.)
+
+The precision of the information about recombination that
+can be represented in the trees depends the ARG itself.
+Secondly, the local trees must contain ``unary'' nodes.
+[Some discussion].
+With these two conditions met, there is a direct correspondance
+between a gARG and the trees.
+
+
+These properties have interesting consequences when we
+consider the inference strategy of esimating local trees
+independenty and subsequently stitching them together
+into an ARG. Two recent methods take this approach,
+\relate\ and
+\texttt{espalier}~\citep{rasmussen2022espalier},
+and have different strategies for reconciling the local
+trees into an ARG. [Relate does something fairly lightweight,
+but by default imprecise.]
+Espalier, on the other hand, is specifically in interested
+in the recombination events and therefore attempts to infer
+the precise ``subtree prune-and-regraft'' (SPR)
+operations~\citep{hein1990reconstructing,song2003on,song2006properties}
+using heuristics~\citep{rasmussen2022espalier}.
+Inferring the SPRs between
+leaf-labelled trees is NP-hard in
+general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 
 % JK TODO: finish up this section with a quick version of the
 % para here. Basically say, people often say an ARG is a
