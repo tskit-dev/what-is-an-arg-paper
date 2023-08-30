@@ -1408,20 +1408,18 @@ at position 87 has been lost entirely.
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} ARGs inferred by
+\caption{\label{fig-inferred-args} Inference results for
 (A) \kwarg, (B) \argweaver, (C) \tsinfer,
 and (D) \relate\
 for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
 locus~\citep{kreitman1983nucleotide}. 
 The \argweaver\ example
-is a sample from the inferred posterior distribution. In each ARG,
-colours are assigned to edges based on the time of the edge's child node
+is a sample from the inferred posterior distribution.
+Edge colours are based on the time of the edge's child node
 (lighter: older; darker: younger).
+Line width corresponds to the genomic span of the edge.
 Position on the X and Y axes for the graph visualization is arbitrary.
-% Note that the position of points on the
-% Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
-% algorithm, rather than as a direct measure of time.
-Line width corresponds to the genomic span of the edge. Node colour
+ Node colour
 refers to the number of parents of the node.
 The fill colour intensity of a node is determined by the genomic span over which
 it has two or more children divided by the span where it has any
@@ -1429,9 +1427,6 @@ children (the ``coalescent span'').
 The genomic intervals associated with edges are shown below
 each ARG, where each row is an edge
 and the X axis reflects genomic position. 
-% Edges
-% are ordered by the age of their child node, from oldest to youngest
-% moving down the page, with colours matching the edge colours in the ARG.
 Vertical lines indicate breakpoints between local trees.
 }
 \end{figure}
@@ -1460,6 +1455,8 @@ is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
 under the input mutation and recombination rates
 varies from 2 (\relate) to 17 (\argweaver).
 % TODO this needs a bit of rewriting with the rest of the paper in mind
+% kwarg and argweaver are inferring eARGs, but we need to be careful
+% not to confuse people.
 The ARGs inferred by the different methods also have major differences
 in how recombination information is represented. 
 Essentially,
@@ -1474,10 +1471,11 @@ the methods must then necessarily infer only a sequence of
 nodes or differently labelled nodes in each tree; see the
 next section).
 The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
-information about node sharing across trees, and hence lie somewhere 
+information about node sharing across trees, and hence,
+in terms of the level of detail inferred about recombination,
+lie somewhere 
 in between a sequence of unrelated trees on one extreme and a 
-completely precise event ARG on the other, in terms of the precision
-inferred about recombination.
+completely precise event ARG on the other.
 
 % \relate\ "postorder" first inferring local topologies and then identifies edges
 % that persist from one tree, while
@@ -1501,55 +1499,55 @@ inferred about recombination.
 % % [Some stuff about whether we should see this as necessary or not,
 % % but maybe we should keep this for the conclusion?]
 
-\section*{Equivalance of ARGs and the set of local trees}
-An ARG is sometimes referred to as being equivalent to a set of
-local trees along the genome [TODO citation], but the connection
-between the two is not as simple as it may seem.
-In order for the mapping to be one-to-one, so that the original
-gARG can be exactly recovered from a set of local trees and
-their genome coordinates,
-some specific properties of the ARG and the trees are required.
+% \section*{Equivalance of ARGs and the set of local trees}
+% An ARG is sometimes referred to as being equivalent to a set of
+% local trees along the genome [TODO citation], but the connection
+% between the two is not as simple as it may seem.
+% In order for the mapping to be one-to-one, so that the original
+% gARG can be exactly recovered from a set of local trees and
+% their genome coordinates,
+% some specific properties of the ARG and the trees are required.
 
-Firstly, the internal nodes in the local trees must be labelled
-(i.e.\ marked with the identity of the corresponding ARG node).
-If the nodes are not labelled, we must infer their identity
-from the tree topology, which is both
-expensive to compute and imprecise. For example
-we could infer that node \textsf{k} is shared in the second
-and third trees of in Fig.~\ref{fig-simplification}D
-because it subtends identical subtrees in both,
-but it would not be straightforward to infer that it
-is also the root of the first tree.
-% JK: Does this need to be said?
-% (One may use the time of a node as a proxy for identity,
-% but it is not reliable as we can have multiple nodes at the
-% same time, e.g. with time discretisation.)
+% Firstly, the internal nodes in the local trees must be labelled
+% (i.e.\ marked with the identity of the corresponding ARG node).
+% If the nodes are not labelled, we must infer their identity
+% from the tree topology, which is both
+% expensive to compute and imprecise. For example
+% we could infer that node \textsf{k} is shared in the second
+% and third trees of in Fig.~\ref{fig-simplification}D
+% because it subtends identical subtrees in both,
+% but it would not be straightforward to infer that it
+% is also the root of the first tree.
+% % JK: Does this need to be said?
+% % (One may use the time of a node as a proxy for identity,
+% % but it is not reliable as we can have multiple nodes at the
+% % same time, e.g. with time discretisation.)
 
-The precision of the information about recombination that
-can be represented in the trees depends the ARG itself.
-Secondly, the local trees must contain ``unary'' nodes.
-[Some discussion].
-With these two conditions met, there is a direct correspondance
-between a gARG and the trees.
+% The precision of the information about recombination that
+% can be represented in the trees depends the ARG itself.
+% Secondly, the local trees must contain ``unary'' nodes.
+% [Some discussion].
+% With these two conditions met, there is a direct correspondance
+% between a gARG and the trees.
 
 
-These properties have interesting consequences when we
-consider the inference strategy of esimating local trees
-independenty and subsequently stitching them together
-into an ARG. Two recent methods take this approach,
-\relate\ and
-\texttt{espalier}~\citep{rasmussen2022espalier},
-and have different strategies for reconciling the local
-trees into an ARG. [Relate does something fairly lightweight,
-but by default imprecise.]
-Espalier, on the other hand, is specifically in interested
-in the recombination events and therefore attempts to infer
-the precise ``subtree prune-and-regraft'' (SPR)
-operations~\citep{hein1990reconstructing,song2003on,song2006properties}
-using heuristics~\citep{rasmussen2022espalier}.
-Inferring the SPRs between
-leaf-labelled trees is NP-hard in
-general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
+% These properties have interesting consequences when we
+% consider the inference strategy of esimating local trees
+% independenty and subsequently stitching them together
+% into an ARG. Two recent methods take this approach,
+% \relate\ and
+% \texttt{espalier}~\citep{rasmussen2022espalier},
+% and have different strategies for reconciling the local
+% trees into an ARG. [Relate does something fairly lightweight,
+% but by default imprecise.]
+% Espalier, on the other hand, is specifically in interested
+% in the recombination events and therefore attempts to infer
+% the precise ``subtree prune-and-regraft'' (SPR)
+% operations~\citep{hein1990reconstructing,song2003on,song2006properties}
+% using heuristics~\citep{rasmussen2022espalier}.
+% Inferring the SPRs between
+% leaf-labelled trees is NP-hard in
+% general~\citep{hein1996complexity,allen2001subtree,bordewich2005computational}.
 
 % JK TODO: finish up this section with a quick version of the
 % para here. Basically say, people often say an ARG is a
@@ -1840,7 +1838,8 @@ but in reality there is  substantial work to be done to
 enable this, and much remains to be done.
 
 A necessary first step towards this goal is some terminological
-clarity. As discussed in Appendix XXX, the term ARG has several
+clarity. As discussed in Appendix XXX, the term Ancestral Recombination
+Graph has several
 subtly different interpretations depending on context. The
 trend to decouple the ARG from its origins as a stochastic
 process and instead use the term as a more general representation of any
@@ -1851,42 +1850,55 @@ reticulate genetic ancestry of a sample of colinear sequences under
 the influence of recombination. The ``genome'' ARG encoding
 made explicit here is one way we can concretely
 define such recombinant ancestry, which we have shown is both
-flexible and efficient.
-
-The flexiblity of the gARG encoding contrasts with the classical
+flexible and efficient. 
+The flexibility of the gARG encoding contrasts with the classical
 ``event'' ARG (eARG), which, because of its origins in an idealised
 mathematical model, is more limited in what can be described.
-The necessity of complete precision under the eARG encoding has been
-conflated with the idea of a ``true'' or ``full'' ARG.
-[A discussion of how realistic inferring a completely precise ARG is]
-[Do downstream applications use full ARGs? usually no]
+
+The necessity of complete precision about all recombination
+events under the eARG encoding has been
+conflated with the idea of a ``true'' or ``full'' ARG. [Cites]
+For example, \citet{brandt2021evaluation} define a ``full'' ARG as
+``a structure that encodes all
+coalescence and recombination events''. While there are certainly cases
+when inferring such fully precise ARGs is useful, for example when 
+studying the details of a small number of recombination
+events~\citep{rasmussen2022espalier}, it is worth considering
+whether sufficient information exists to support such inferences
+and indeed whether this precision is required (or indeed useful
+for) downstream applications.
+
+[Discuss information about recomb]
+\citet{shipilina2022origin} 
 
 % % Do downstream applications actually make use of such full ARGs?
-% Downstream applications using estimated ARGs to date rarely
-% make use of such complete recombination information.
-% The \relate\ selection statistic~\citep{speidel2019method}
-% computes a $p$-value for selection [FIXME] for each
-% local tree independently by comparing the rates of coalescence
-% at various time-points. For cases like strong positive selection,
-% where we expect there to be a clear signal in the local tree,
-% such tree-by-tree methods can be simple and powerful.
-% In their method
-% for estimating dispersal rates and the locations of genetic
-% ancestors,
-% \citep{osmond2021estimating} downsample trees along the genome
-% so that they can be regarded as approximately independent.
-% The SIA method for detecting selection~\citep{hejase2022deep}
-% encodes local trees as a set of lineage counts at discrete
-% time intervals, and uses these as feature for a
-% type of machine learning algorithm
-% that takes ``temporal'' correlations into account. Thus,
-% while SIA does use some of the information about local tree correlation,
-% clearly much of the detail about recombination
-% events in a ``full'' ARG is lost.
-% The \texttt{tsdate} algorithm (and related naive estimator
-% for ancestral location) uses much more between-tree
-% information~\citep{wohns2022unified}, explicitly using the gARG
-% encoding to reason about ancestral nodes.
+Downstream applications using estimated ARGs to date rarely
+make use of such complete recombination information.
+The \relate\ selection statistic~\citep{speidel2019method}
+computes a $p$-value for selection [FIXME] for each
+local tree independently by comparing the rates of coalescence
+at various time-points. For cases like strong positive selection,
+where we expect there to be a clear signal in the local tree,
+such tree-by-tree methods can be simple and powerful.
+In their method
+for estimating dispersal rates and the locations of genetic
+ancestors,
+\citep{osmond2021estimating} downsample trees along the genome
+so that they can be regarded as approximately independent.
+The SIA method for detecting selection~\citep{hejase2022deep}
+encodes local trees as a set of lineage counts at discrete
+time intervals, and uses these as feature for a
+type of machine learning algorithm
+that takes ``temporal'' correlations into account. Thus,
+while SIA does use some of the information about local tree correlation,
+clearly much of the detail about recombination
+events in a ``full'' ARG is lost.
+The \texttt{tsdate} algorithm (and related naive estimator
+for ancestral location) uses much more between-tree
+information~\citep{wohns2022unified}, explicitly using the gARG
+encoding to reason about ancestral nodes.
+[MORE applications]
+
 % A major strength of this approach is that it can be used on
 % any gARG, ranging from estimates containing relatively little
 % information about recombination (e.g., as estimated by \relate)
