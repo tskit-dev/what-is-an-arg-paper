@@ -10,7 +10,8 @@ import argutils
 
 def convert_argweaver(infile):
     """
-    Convert an ARGweaver .arg file to a tree sequence. An example .arg file is at
+    Convert an ARGweaver .arg file to a tree sequence. `infile` should be a filehandle,
+    e.g. as returned by the `open` command. An example .arg file is at
 
     https://github.com/CshlSiepelLab/argweaver/blob/master/test/data/test_trans/0.arg
     """
@@ -21,7 +22,9 @@ def convert_argweaver(infile):
     end = int(end[len("end=") :])
     # the "name" field can be a string. Force it to be so, in case it is just numbers
     df = pd.read_csv(infile, header=0, sep="\t", dtype={"name": str, "parents": str})
-
+    for col in ("name", "parents", "age"):
+        if col not in df.columns:
+            raise ValueError(f"Column {col} not found in ARGweaver file")
     name_to_record = {}
     for _, row in df.iterrows():
         row = dict(row)
@@ -48,23 +51,31 @@ def convert_argweaver(infile):
     aw_to_tsk_id = {}
     min_time_diff = min(np.diff(sorted(time_map.keys())))
     epsilon = min_time_diff / 1e6
-    for node in nx.lexicographical_topological_sort(G):
-        record = name_to_record[node]
-        flags = 0
-        # Sample nodes are marked as "gene" events
-        if record["event"] == "gene":
-            flags = tskit.NODE_IS_SAMPLE
-            assert record["age"] == 0
-            time = record["age"]
-        else:
-            time = time_map[record["age"]]
-            # Argweaver allows age of parent and child to be the same, so we
-            # need to add epsilons to enforce parent_age > child_age
-            time_map[record["age"]] += epsilon
-        tsk_id = tables.nodes.add_row(flags=flags, time=time, metadata=record)
-        aw_to_tsk_id[node] = tsk_id
-        if record["event"] == "recomb":
-            breakpoints[tsk_id] = record["pos"]
+    try:
+        for node in nx.lexicographical_topological_sort(G):
+            record = name_to_record[node]
+            flags = 0
+            # Sample nodes are marked as "gene" events
+            if record["event"] == "gene":
+                flags = tskit.NODE_IS_SAMPLE
+                assert record["age"] == 0
+                time = record["age"]
+            else:
+                if record["age"] == 0:
+                    time_map[record["age"]] += epsilon
+                time = time_map[record["age"]]
+                # Argweaver allows age of parent and child to be the same, so we
+                # need to add epsilons to enforce parent_age > child_age
+                time_map[record["age"]] += epsilon
+            tsk_id = tables.nodes.add_row(flags=flags, time=time, metadata=record)
+            aw_to_tsk_id[node] = tsk_id
+            if record["event"] == "recomb":
+                breakpoints[tsk_id] = record["pos"]
+    except nx.exception.NetworkXUnfeasible:
+        bad_edges = nx.find_cycle(G, orientation="original")
+        raise nx.exception.NetworkXUnfeasible(
+            f"Cycle found in ARGweaver graph: {bad_edges}")
+
 
     L = tables.sequence_length
     for aw_node in G:
