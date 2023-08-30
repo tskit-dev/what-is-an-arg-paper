@@ -1039,11 +1039,28 @@ besides removing unreachable nodes and edges in a prospective ARG
 and resolving ancestral material in an eARG.
 In general, we can think of
 ARG simplification as the process
-of removing nodes and re-writing edges in a gARG to remove
-various types of redundancy.
-Many of the types of redundancy revolve around the presence
+of removing nodes and re-writing edges (and their inheritance annotations)
+to remove various types of redundancy.
+The redundancy that we are interested in 
+revolves around the presence
 of ``unary'' nodes in the local trees
-(a tree node that has exactly one child).
+(a tree node that has exactly one child), which arise in several different ways.
+Unary nodes are not a standard feature of evolutionary trees;
+we are usually interested
+nodes that have at least two children, because these
+are in principle detectable from mutational differences
+arising in the respective subtrees.
+A tree branch may correspond to many generations 
+of individuals (or indeed cell divisions) and there is usually
+very little information about these intermediates, or utility
+in modelling them. 
+% FIXME the bridge between the next few paragraphs is a bit weird, in 
+% that we've just been talking about how interesting unary nodes are
+% but then go on about how to remove them. Just needs a bit of smoothing
+% out I think.
+ARGs, however, are different, and there 
+can be significant information about evolutionary processes
+provided by unary nodes in the local trees.
 
 \begin{figure}
 \centering
@@ -1077,15 +1094,14 @@ backwards-in-time Wright-Fisher
 model, shown both as a graph on the left, and the corresponding sequence of
 local trees on the right.
 In Fig.~\ref{fig-simplification}A the local trees (right)
-contain many unary nodes, and as we simplify more and more
+contain many unary nodes, and as we successively simplify
 the local trees contain fewer
 unary nodes (Fig.~\ref{fig-simplification}B,C) until
-we reach Fig.~\ref{fig-simplification}D in which the local trees
+we reach Fig.~\ref{fig-simplification}D, where the local trees
 have no unary nodes.
-Unary nodes in a local tree arise from
-genetic inheritance
-passing through an ARG node in which no coalescence
-occurs in the corresponding genome interval.
+A node is unary in a local tree covering the genome interval $I$
+if genetic inheritance passes through that ARG node,
+but no coalescence occurs in the interval $I$.
 The distinction between the ``common ancestry'' of two or more genomes
 in an ancestral genome and the ``coalescence'' which may or may
 not occur in the local trees is
@@ -1094,13 +1110,8 @@ Consider \noderef{e} in in Fig.~\ref{fig-simplification}A,
 for example. We can see from the graph that it is a common
 ancestor of  samples \noderef{a} and \noderef{b}, but
 it does not correspond to any coalescence in the
-local trees to the left of position $44$, and is a unary
-node in these three trees. Unary nodes in the local trees
-arise from a variety of processes, and would not usually
-be considered significant. We are usually interested in tree
-nodes that have at least two children, because these
-are in principle detectable from mutational differences
-arising in the respective subtrees.
+local trees to the left of position $44$, and is a therefore a 
+unary node in these three trees. 
 
 % \noderef{a} in the leftmost tree (covering positions 0 to 30)
 % Consider, for example, the path ancestral to node
@@ -1203,7 +1214,7 @@ section.
 As illustated in Fig.~\ref{fig-simplification}, successive levels
 of ARG simplification reduce the amount of information about the
 history of the sample that is stored. Some of the information lost,
-for example, ``diamond'' removal (Fig.~\ref{fig-simplification}A),
+e.g.\ ``diamond'' removal (Fig.~\ref{fig-simplification}A),
 seems like a reasonable tradeoff for a simpler structure.
 The consequences of other simplifications, however, are
 more subtle and relate directly to what can be known about
@@ -1252,24 +1263,29 @@ by the passage of the former tree through nodes \noderef{e}
 and \noderef{q}, and so the recombination on node \noderef{g}
 at position 87 has been lost entirely.
 
+% or nothing'': there is a gradation of detail
+% about recombination, in terms of genomic location, timing,
+% and the ancestral lineages involved.
+% that vary levels of precision about reccomb
+
 % The example in Fig.~\ref{fig-simplification} is usually
 % referred to as ``fully simplified'', and is the default output
 % of simulation programs like \msprime. While there is significant
 % precision about recombination events lost
 
-The point of these examples is to emphasise that
-information about recombination in an ARG is not ``all
-or nothing'': there is a gradation of detail
-about recombination, in terms of genomic location, timing,
-and the ancestral lineages involved.
-While there has been a recent tendancy to emphasise the
-importance of ``full ARGs''
-\citep[e.g.][]{deng2021distribution,brandt2021evaluation,
-rasmussen2022espalier}
-which contain complete information about all recombination
-events, it is reasonable to question the value of
-such precise information and whether it is knowable.
-[SOME MORE STUFF]
+% The point of these examples is to emphasise that
+% information about recombination in an ARG is not ``all
+% or nothing'': there is a gradation of detail
+% about recombination, in terms of genomic location, timing,
+% and the ancestral lineages involved.
+% While there has been a recent tendancy to emphasise the
+% importance of ``full ARGs''
+% \citep[e.g.][]{deng2021distribution,brandt2021evaluation,
+% rasmussen2022espalier}
+% which contain complete information about all recombination
+% events, it is reasonable to question the value of
+% such precise information and whether it is knowable.
+% [SOME MORE STUFF]
 
 % Ancestral recombination graphs are often characterised
 % as consisting of a complete record of the genetic history
@@ -1393,39 +1409,49 @@ such precise information and whether it is knowable.
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} ARGs inferred by
-(A) \kwarg~\citep{ignatieva2021kwarg},
-(B) \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
-(C) \tsinfer~\citep{kelleher2019inferring},
-and (D) \relate~\citep{speidel2019method}
+(A) \kwarg, (B) \argweaver, (C) \tsinfer,
+and (D) \relate\
 for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
-locus~\citep{kreitman1983nucleotide}. The \argweaver\ example
+locus~\citep{kreitman1983nucleotide}. 
+The \argweaver\ example
 is a sample from the inferred posterior distribution. In each ARG,
-colours are assigned to edges based on the time of the edge's child node:
-lighter colours are assigned to edges with older child
-nodes, darker colours are assigned to edges with younger child nodes
-Note that the position of points on the
-Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
-algorithm, rather than as a direct measure of time.
+colours are assigned to edges based on the time of the edge's child node
+(lighter: older; darker: younger).
+Position on the X and Y axes for the graph visualization is arbitrary.
+% Note that the position of points on the
+% Y axis is chosen for graphical clarity by the graphviz \texttt{dot}
+% algorithm, rather than as a direct measure of time.
 Line width corresponds to the genomic span of the edge. Node colour
-refers to the number of parents of the node: red is zero, brown is one,
-green to blue are two to N parents. The brightness
-of the node is determined by the genomic span over which
-the node has two or more children divided by the span where it has any
-children. The genomic intervals associated with edges are visualised below
+refers to the number of parents of the node.
+The fill colour intensity of a node is determined by the genomic span over which
+it has two or more children divided by the span where it has any
+children (the ``coalescent span''). 
+The genomic intervals associated with edges are shown below
 each ARG, where each row is an edge
-and the x axis reflects genomic position. The width of edges
-thus corresponds to their genomic span. Edges
-are ordered by the age of their child node, from oldest to youngest
-moving down the page, with colours matching the edge colours in the ARG.
+and the X axis reflects genomic position. 
+% Edges
+% are ordered by the age of their child node, from oldest to youngest
+% moving down the page, with colours matching the edge colours in the ARG.
 Vertical lines indicate breakpoints between local trees.
 }
 \end{figure}
 
-To illustrate these points and to emphasise the heterogeneity
-of the ARGs inferred by current methods, we inferred ARGs for the
-the classical \citet{kreitman1983nucleotide} benchmark dataset
-using four recent inference methods and show the results in
-Fig~\ref{fig-inferred-args}.
+The example of successive simplification of a simulated ARG
+in Fig.~\ref{fig-simplification} illustrates the point
+that is is possible to \emph{store} varying levels of precision
+about recombination in an ARG. 
+It is also possible, of course, to \emph{infer} varying levels of precision about 
+recombination.
+To illustrate this, and to demonstrate the structural 
+heterogeneity of the ARGs inferred  by current methods,
+Fig.~\ref{fig-inferred-args} shows the results ARG inference
+% To illustrate these points and to emphasise the heterogeneity
+% of the ARGs inferred by current methods, we inferred ARGs for the
+for the classical \citet{kreitman1983nucleotide} benchmark dataset
+using  \kwarg~\citep{ignatieva2021kwarg},
+\argweaver~\citep{rasmussen2014genome,hubisz2020inference},
+\tsinfer~\citep{kelleher2019inferring},
+and \relate~\citep{speidel2019method}.
 While there is some consistency among the inferred ARGs (such as the samples
 FR-F, WA-F and Af-F being grouped into the same clade), there
 are also considerable differences. For this dataset, the minimum number
@@ -1433,8 +1459,10 @@ of recombination breakpoints required in the absence of recurrent mutation
 is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
 under the input mutation and recombination rates
 varies from 2 (\relate) to 17 (\argweaver).
+% TODO this needs a bit of rewriting with the rest of the paper in mind
 The ARGs inferred by the different methods also have major differences
-in how recombination information is represented. Essentially,
+in how recombination information is represented. 
+Essentially,
 \kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
 for each breakpoint, and those events are fully
 described in the output graph. On the other hand, \tsinfer\ and
@@ -1446,10 +1474,12 @@ the methods must then necessarily infer only a sequence of
 nodes or differently labelled nodes in each tree; see the
 next section).
 The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
-information about node sharing across trees, and hence capturing
-the important correlation structures.
+information about node sharing across trees, and hence lie somewhere 
+in between a sequence of unrelated trees on one extreme and a 
+completely precise event ARG on the other, in terms of the precision
+inferred about recombination.
 
-% \relate\ by first inferring local topologies and then identifies edges
+% \relate\ "postorder" first inferring local topologies and then identifies edges
 % that persist from one tree, while
 % local trees only emerge from \tsinfer\ as a consequence of the copying
 % patterns inferred among ancestral haplotypes.
