@@ -37,7 +37,7 @@
 
 % Middle Authors
 \author[4]{Gregor Gorjanc}
-\author[5]{Anthony W. Wohns}
+\author[5,6]{Anthony W. Wohns}
 
 % Corresponding
 \author[1,$\dagger$]{Jerome Kelleher}
@@ -47,6 +47,7 @@
 \affil[3]{Department of Statistics, University of Warwick, CV4 7AL, UK}
 \affil[4]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, EH25 9RG, UK}
 \affil[5]{Broad Institute of MIT and Harvard, Cambridge, MA 02142, USA}
+\affil[6]{Department of Genetics, Stanford University School of Medicine, Stanford, CA 94305, USA}
 
 \affil[$\star$]{Denotes shared second authorship, listed alphabetically}
 \affil[$\dagger$]{Denotes corresponding author}
@@ -152,6 +153,10 @@ on recording evolutionary events, we refer to it as the event ARG, or
 We show that the gARG encoding is both flexible and efficient,
 and can represent varying levels of precision about historical
 events.
+% Wilder: important to get this point into the intro
+We argue that while adopting the general concept of an ARG data structure
+is useful, it is important that we then fully decouple this data structure
+from the original stochastic process.
 [MORE]
 
 % and because it is focused on encoding the \emph{outcome}
@@ -434,7 +439,7 @@ events.
 % there are significant advantages to using
 % a slightly different formulation, which
 % we call a ``genome ARG'' (gARG).
-In this section we define a concrete definition of an ARG in terms
+In this section we provide a  concrete definition of an ARG in terms
 of particular genomes and their patterns of inheritance, which
 we refer to as a ``genome ARG``, or gARG.
 First, let us define a genome as the complete set of genetic material that a child
@@ -531,7 +536,7 @@ in Section XXX).
 There are some interesting consequences to these definitions, exemplified
 in Figure~\ref{fig-arg-in-pedigree}. Firstly,
 there is
-is no limitation on mating system, ploidy, or age structure. By making the
+no limitation on mating system, ploidy, or age structure. By making the
 basic unit of analysis an individual's \emph{genomes} (i.e., two per individuals
 for diploids), any pattern of inheritance among mixed ploidy can be
 accommodated.
@@ -542,8 +547,9 @@ gene conversions,
 multiple recombinations
 across different chromosomes~\citep{fearnhead2003ancestral,koskela2019robust},
 and so on can be directly expressed.
+% Wilder: give forward ref to section on efficiency here, mention tree sequence
 
-Thirdly, ``local`` trees that we generate for a particular position on the
+Thirdly, ``local'' trees that we generate for a particular position on the
 genome are not explicitly concerned with ``coalescence'' (nodes at which
 one or more samples find a common ancestor); for example, node $e$
 is unary in the left-most tree of Figure~\ref{fig-arg-in-pedigree},
@@ -554,6 +560,8 @@ its outcomes in terms of inheritance intervals among parental genomes;
 thus, we will have a child node (the recombinant; e.g. node $a$
 Figure~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
 paternal genomes which this child has inherited segments from.
+% TODO rephrase this, it'll confuse people. Just need to reiterate the
+% points about events, and maybe lead into the next section
 Finally, gARGs are not defined in terms of the
 coalescent with recombination (or any other) stochastic process.
 Thus, the gARG encoding is focused on faithfully representing the
@@ -773,6 +781,7 @@ The gARG representation, on the other hand,
 can be either retrospective or \emph{prospective}.
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
+% Wilder: finds the cell-to-cell confusing. Maybe drop?
 number of generations (ultimately from cell to cell),
 and are annotated
 with the genome coordinates over which inheritance occurs.
@@ -799,11 +808,11 @@ Describing this instead as a ``prospective ARG'', emphasising
 the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
-The ``simplify'' algorithm, which prunes away parts of the graph that 
-are not ancestral to a sample, is the key enabling factor for 
+The ``simplify'' algorithm, which prunes away parts of the graph that
+are not ancestral to a sample, is the key enabling factor for
 this approach to forwards-time simulation and is
 described in detail by
-\citet{kelleher2018efficient}. It is a 
+\citet{kelleher2018efficient}. It is a
 powerful tool with many other applications,
 some of which we discuss in the following sections.
 
@@ -869,11 +878,11 @@ recombination~\citep{hudson1983testing,kelleher2016efficient}.
 
 Fig.~\ref{fig-ancestry-resolution}C shows the graph that we obtain
 by resolving the ancestral material transmitted along each edge
-using the ``simplify'' algorithm~\citep{kelleher2018efficient}, 
+using the ``simplify'' algorithm~\citep{kelleher2018efficient},
 and highlights some important
 differences between the eARG and gARG encodings.
 Firstly, we can see that some nodes and edges are removed entirely
-from the graph by this conversion process. 
+from the graph by this conversion process.
 The ``grand MRCA'' \noderef{q} is omitted from the
 sample resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
@@ -895,11 +904,11 @@ the ancestral material with respect to a sample.
 % downstream algs
 The gARG encoding
 allows us to do this once and to store the result, whereas
-the eARG encoding requires us to repeat the process 
+the eARG encoding requires us to repeat the process
 each time.
 
 It is important to note here that the \citet{wiuf1999recombination} eARG
-in Fig.~\ref{fig-ancestry-resolution} is something of a straw man, 
+in Fig.~\ref{fig-ancestry-resolution} is something of a straw man,
 in that it is unlikely
 that an inference or simulation program would produce a retrospective
 ARG that contains
@@ -1041,7 +1050,7 @@ In general, we can think of
 ARG simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
-The redundancy that we are interested in 
+The redundancy that we are interested in
 revolves around the presence
 of ``unary'' nodes in the local trees
 (a tree node that has exactly one child), which arise in several different ways.
@@ -1050,15 +1059,15 @@ we are usually interested
 nodes that have at least two children, because these
 are in principle detectable from mutational differences
 arising in the respective subtrees.
-A tree branch may correspond to many generations 
+A tree branch may correspond to many generations
 of individuals (or indeed cell divisions) and there is usually
 very little information about these intermediates, or utility
-in modelling them. 
-% FIXME the bridge between the next few paragraphs is a bit weird, in 
+in modelling them.
+% FIXME the bridge between the next few paragraphs is a bit weird, in
 % that we've just been talking about how interesting unary nodes are
 % but then go on about how to remove them. Just needs a bit of smoothing
 % out I think.
-ARGs, however, are different, and there 
+ARGs, however, are different, and there
 can be significant information about evolutionary processes
 provided by unary nodes in the local trees.
 
@@ -1110,8 +1119,8 @@ Consider \noderef{e} in in Fig.~\ref{fig-simplification}A,
 for example. We can see from the graph that it is a common
 ancestor of  samples \noderef{a} and \noderef{b}, but
 it does not correspond to any coalescence in the
-local trees to the left of position $44$, and is a therefore a 
-unary node in these three trees. 
+local trees to the left of position $44$, and is a therefore a
+unary node in these three trees.
 
 % \noderef{a} in the leftmost tree (covering positions 0 to 30)
 % Consider, for example, the path ancestral to node
@@ -1188,7 +1197,7 @@ The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
-local tree. For example, node  \noderef{k} is unary in the second tree
+local tree. For example, node  \noderef{k} is unary in the fourth tree
 of Fig.~\ref{fig-simplification}C, but is either binary
 or ternary in all subsequent trees (recall this is a Wright-Fisher
 simulation). The final level of simplification is to alter the edge annotations
@@ -1412,7 +1421,7 @@ at position 87 has been lost entirely.
 (A) \kwarg, (B) \argweaver, (C) \tsinfer,
 and (D) \relate\
 for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
-locus~\citep{kreitman1983nucleotide}. 
+locus~\citep{kreitman1983nucleotide}.
 The \argweaver\ example
 is a sample from the inferred posterior distribution.
 Edge colours are based on the time of the edge's child node
@@ -1423,10 +1432,10 @@ Position on the X and Y axes for the graph visualization is arbitrary.
 refers to the number of parents of the node.
 The fill colour intensity of a node is determined by the genomic span over which
 it has two or more children divided by the span where it has any
-children (the ``coalescent span''). 
+children (the ``coalescent span'').
 The genomic intervals associated with edges are shown below
 each ARG, where each row is an edge
-and the X axis reflects genomic position. 
+and the X axis reflects genomic position.
 Vertical lines indicate breakpoints between local trees.
 }
 \end{figure}
@@ -1434,10 +1443,10 @@ Vertical lines indicate breakpoints between local trees.
 The example of successive simplification of a simulated ARG
 in Fig.~\ref{fig-simplification} illustrates the point
 that is is possible to \emph{store} varying levels of precision
-about recombination in an ARG. 
-It is also possible, of course, to \emph{infer} varying levels of precision about 
+about recombination in an ARG.
+It is also possible, of course, to \emph{infer} varying levels of precision about
 recombination.
-To illustrate this, and to demonstrate the structural 
+To illustrate this, and to demonstrate the structural
 heterogeneity of the ARGs inferred  by current methods,
 Fig.~\ref{fig-inferred-args} shows the results ARG inference
 % To illustrate these points and to emphasise the heterogeneity
@@ -1458,7 +1467,7 @@ varies from 2 (\relate) to 17 (\argweaver).
 % kwarg and argweaver are inferring eARGs, but we need to be careful
 % not to confuse people.
 The ARGs inferred by the different methods also have major differences
-in how recombination information is represented. 
+in how recombination information is represented.
 Essentially,
 \kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
 for each breakpoint, and those events are fully
@@ -1473,8 +1482,8 @@ next section).
 The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
 information about node sharing across trees, and hence,
 in terms of the level of detail inferred about recombination,
-lie somewhere 
-in between a sequence of unrelated trees on one extreme and a 
+lie somewhere
+in between a sequence of unrelated trees on one extreme and a
 completely precise event ARG on the other.
 
 % \relate\ "postorder" first inferring local topologies and then identifies edges
@@ -1835,7 +1844,7 @@ in inference methods, their evaluation and application.
 The prospect of ARGs being used routinely in population
 and statistical genetics applications is tantalising,
 but in reality there is  substantial work to be done to
-enable this, and much remains to be done.
+enable this.
 
 A necessary first step towards this goal is some terminological
 clarity. As discussed in Appendix XXX, the term Ancestral Recombination
@@ -1850,7 +1859,7 @@ reticulate genetic ancestry of a sample of colinear sequences under
 the influence of recombination. The ``genome'' ARG encoding
 made explicit here is one way we can concretely
 define such recombinant ancestry, which we have shown is both
-flexible and efficient. 
+flexible and efficient.
 The flexibility of the gARG encoding contrasts with the classical
 ``event'' ARG (eARG), which, because of its origins in an idealised
 mathematical model, is more limited in what can be described.
@@ -1861,7 +1870,7 @@ conflated with the idea of a ``true'' or ``full'' ARG. [Cites]
 For example, \citet{brandt2021evaluation} define a ``full'' ARG as
 ``a structure that encodes all
 coalescence and recombination events''. While there are certainly cases
-when inferring such fully precise ARGs is useful, for example when 
+when inferring such fully precise ARGs is useful, for example when
 studying the details of a small number of recombination
 events~\citep{rasmussen2022espalier}, it is worth considering
 whether sufficient information exists to support such inferences
@@ -1869,7 +1878,7 @@ and indeed whether this precision is required (or indeed useful
 for) downstream applications.
 
 [Discuss information about recomb]
-\citet{shipilina2022origin} 
+\citet{shipilina2022origin}
 
 % % Do downstream applications actually make use of such full ARGs?
 Downstream applications using estimated ARGs to date rarely
