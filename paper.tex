@@ -584,24 +584,23 @@ no limitation on mating system, ploidy, or age structure. By making the
 basic unit of analysis an individual's \emph{genomes} (i.e., two per individuals
 for diploids), any pattern of inheritance among mixed ploidy can be
 accommodated.
-Secondly, because we only record the \emph{intervals} of inheritance
-between genomes (and not the causal \emph{processes}),
+Secondly, because we record the intervals of inheritance
+between genomes (and not causal \emph{events}),
 arbitrary patterns of genetic inheritance such as
 gene conversions,
 multiple recombinations
 across different chromosomes~\citep{fearnhead2003ancestral,koskela2019robust},
 and so on can be directly expressed.
 % Wilder: give forward ref to section on efficiency here, mention tree sequence
-
 Thirdly, ``local'' trees that we generate for a particular position on the
 genome are not explicitly concerned with ``coalescence'' (nodes at which
-one or more samples find a common ancestor); for example, node $e$
+one or more samples find a common ancestor); for example, node \noderef{e}
 is unary in the left-most tree of Figure~\ref{fig-arg-in-pedigree},
-denoting the fact that $e$ the ancestor of $a$ over the interval $(0, 2]$,
+denoting the fact that \noderef{e} the ancestor of \noderef{a} over the interval $(0, 2]$,
 but no coalescence occurs in this interval (see section XXX for more
 discussion). Fourth, recombination is modelled in terms of
 its outcomes in terms of inheritance intervals among parental genomes;
-thus, we will have a child node (the recombinant; e.g. node $a$
+thus, we will have a child node (the recombinant; e.g. node \noderef{a}
 Figure~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
 paternal genomes which this child has inherited segments from.
 % TODO rephrase this, it'll confuse people. Just need to reiterate the
@@ -690,75 +689,75 @@ We are mainly interested in exploring the properties of gARGs in
 this manuscript, but in order to contrast with the existing
 methods we concretely define an ``event ARG'', or eARG.
 
-\begin{figure}
-\centering
-% \begin{tabular}{cc}
-\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
-\tikzset{greynode/.style={circle,fill,inner sep=1},
-nodelabel/.style={font=\footnotesize}}
+% \begin{figure}
+% \centering
+% % \begin{tabular}{cc}
+% \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
+% \tikzset{greynode/.style={circle,fill,inner sep=1},
+% nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (3, 1) {};
-\node (s4) [greynode] at (1, 2) {};
-\node (s5) [greynode] at (5, 3) {};
-\node (s6) [greynode] at (3, 4) {};
+% \node (s0) [greynode] at (0, 0) {};
+% \node (s1) [greynode] at (3, 0) {};
+% \node (s2) [greynode] at (6, 0) {};
+% \node (s3) [greynode] at (3, 1) {};
+% \node (s4) [greynode] at (1, 2) {};
+% \node (s5) [greynode] at (5, 3) {};
+% \node (s6) [greynode] at (3, 4) {};
 
-% \node [anchor=north west] at (0,6) {A};
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+% % \node [anchor=north west] at (0,6) {A};
+% \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
+% \foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+% \foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+% \foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+% \foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
 
-%% Edges
-\draw (s1) -- (s3);
-\draw (s0) |- (s4);
-\draw (s4) -- (2,2) |- (s3);
-\draw (s4) |- (s6);
-\draw (s3) -- (4,1) |- (s5);
-\draw (s2) |- (s5);
-\draw (s5) |- (s6);
+% %% Edges
+% \draw (s1) -- (s3);
+% \draw (s0) |- (s4);
+% \draw (s4) -- (2,2) |- (s3);
+% \draw (s4) |- (s6);
+% \draw (s3) -- (4,1) |- (s5);
+% \draw (s2) |- (s5);
+% \draw (s5) |- (s6);
 
-% \node [anchor=north west] at (9,6) {B};
-\node [nodelabel,anchor=north west] at ($(10,5)$) {
-\begin{tabular}{c|c|l}
-% \multicolumn{2}{c}{Breakpoints}\\
-Node & Breakpoint & Parents\\
-\hline
-$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
-$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
-$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
-$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
-$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
-$\noderef{g}$ & $\varnothing$ & []\\
-\end{tabular}};
-
-% \node [anchor=north west] at (9,6) {C};
+% % \node [anchor=north west] at (9,6) {B};
 % \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% \begin{tabular}{ll}
-% Edges & Intervals\\
+% \begin{tabular}{c|c|l}
+% % \multicolumn{2}{c}{Breakpoints}\\
+% Node & Breakpoint & Parents\\
 % \hline
-% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
-% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
-% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
-% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
-% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
-% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
-% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% $\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+% $\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+% $\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+% $\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+% $\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+% $\noderef{g}$ & $\varnothing$ & []\\
 % \end{tabular}};
 
-\end{tikzpicture}
-\caption{\label{fig-arg-data-structure}
-A graphical depiction of a classical event ARG and a concrete
-encoding of the information. Node \noderef{d} is a recombination
-event as it is associated with a non-null breakpoint, and has
-two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
-common ancestor events.
-}
-\end{figure}
+% % \node [anchor=north west] at (9,6) {C};
+% % \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% % \begin{tabular}{ll}
+% % Edges & Intervals\\
+% % \hline
+% % $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% % $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% % $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% % $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% % $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% % $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% % $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% % \end{tabular}};
+
+% \end{tikzpicture}
+% \caption{\label{fig-arg-data-structure}
+% A graphical depiction of a classical event ARG and a concrete
+% encoding of the information. Node \noderef{d} is a recombination
+% event as it is associated with a non-null breakpoint, and has
+% two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+% common ancestor events.
+% }
+% \end{figure}
 
 In keeping with its original derivation in terms of a stochastic
 process (see Appendix~\ref{sec-arg-history}), the classical definition of an
@@ -779,25 +778,25 @@ ancestral lineages.
 % define the local genealogical trees at every position along the genome,
 % which is the basic requirement for a data structure encoding
 % genome-wide genetic ancestry.
-As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
-is usually concretely encoded by associating a recombination breakpoint
-(which is null for common ancestor events) and an ordered list of parents
-with each node. We refer to such a  data structure as an
-``event ARG'' (eARG).
-To recover the local tree at genome coordinate $x$ (the most
-fundamental operation required for an ARG data structure),
-we traverse the graph rootwards from the leaves.
-At a particular
-node $u$, if it has one parent we are at a common ancestor
-node and we follow that parent. If we are at a
-recombination node, $u$ has two parents: if
-$x$ is less than the breakpoint we follow
-the edge to the first parent, and otherwise follow the edge
-to the second parent.
-The order in which parents are listed at a recombination node is
-therefore significant, telling us
-from which parent the segments of genome to the left and right of the breakpoint
-were inherited.
+% As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+% is usually concretely encoded by associating a recombination breakpoint
+% (which is null for common ancestor events) and an ordered list of parents
+% with each node. We refer to such a  data structure as an
+% ``event ARG'' (eARG).
+% To recover the local tree at genome coordinate $x$ (the most
+% fundamental operation required for an ARG data structure),
+% we traverse the graph rootwards from the leaves.
+% At a particular
+% node $u$, if it has one parent we are at a common ancestor
+% node and we follow that parent. If we are at a
+% recombination node, $u$ has two parents: if
+% $x$ is less than the breakpoint we follow
+% the edge to the first parent, and otherwise follow the edge
+% to the second parent.
+% The order in which parents are listed at a recombination node is
+% therefore significant, telling us
+% from which parent the segments of genome to the left and right of the breakpoint
+% were inherited.
 
 [TODO list the salient points that we want to contrast against
 the gARG. We don't want this to seem like a straw man]
