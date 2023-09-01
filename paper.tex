@@ -136,28 +136,63 @@ follow~\citep{harris2019database,harris2023using}.
 % TODO need to mention ARG-as-a-data-structure to clarify.
 % What is the problem?
 Although it is widely accepted that ARGs are important, there is significant
-confusion about what, precisely, an ARG \emph{is}. [THIS IS BAD, WHY?]
-We also lack a shared format for interchanging ARG data [which is bad
-for users, progress]. [Because we don't really agree on what an ARG is,
-we don't really know what properties it should have, when we infer it].
+confusion about what, precisely, an ARG \emph{is}. 
+Originally, the ARG was defined as a variant 
+of the coalescent with recombination stochastic 
+process~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral},
+but has subsequently come to be seen as a data
+structure~\citep{minichiello2006mapping}, i.e., a means of 
+describing the \emph{outcome} of some such ancestral process
+(the distinction, however, is not clear cut and subfields use the term
+differently; see Appendix XXX).
+ARG inference was for many years synonymous with estimating realisations
+of the coalescent with recombination (with, it must be said, limited success),
+and the distinction between process and realisation was not especially important.
+The recent introduction of two methods, \relate~\citep{speidel2019method}
+and \tsinfer~\citep{kelleher2019inferring}, that estimate structures 
+sharing many properties of this classical idea of an ARG at previously
+unthinkable scale, has led to a surge of interest in the area.
+Although both \cite{speidel2019method} and \cite{kelleher2019inferring}
+avoid describing the output of the methods as an ARG, the general 
+consensus has emerged that they belong to a growing class of 
+ARG inference methods~\citep[MORE][]{mathieson2020ancestry},
+and we therefore need a more general definition of an ``ARG'' than the classical
+Griffiths formulation.
+
+A general term to describe the detailed genetic genealogy of a sample 
+that encompasses the output of all these methods is indeed useful, but 
+there are substantial problems emerging from the current usage of the term 
+ARG (and its implicit concrete definition in the Griffiths formulation).
+The problem is much deeper than some pedantic discussion over terminology,
+and directly informs what we should be attempting to estimate, how we 
+evaluate inference methods, and what the limitations on the precision
+and accuracy of our inferences are.
+We currently lack a well-defined target for inference, and therefore there is 
+disagreement on how these inference should be evaluated, and 
+what the criteria for success should be.
+We also lack a shared format for interchanging ARG data between
+programs, with the assorted negative consequences which
+geneticists are only too familiar with~\citep{excoffier2006computer}.
+Finally, and perhaps most importantly, and overly narrow definition of ARGs
+leads to potentially missed opportunities in their application and usage.
 
 % What do we do?
-Here we precisely define an encoding for ARGs based on specific genomes
-and their intervals of genetic inheritance. We contrast this ``gARG''
-encoding with the classical approach derived from the coalescent
-with recombination stochastic process of Griffiths
-and colleagues~\citep{griffiths1991two,ethier1990two,
-griffiths1996ancestral,griffiths1997ancestral}. As this is based
-on recording evolutionary events, we refer to it as the event ARG, or
-``eARG'' encoding.
-We show that the gARG encoding is both flexible and efficient,
-and can represent varying levels of precision about historical
-events.
-% Wilder: important to get this point into the intro
-We argue that while adopting the general concept of an ARG data structure
-is useful, it is important that we then fully decouple this data structure
-from the original stochastic process.
-[MORE]
+In this paper we attempt to address these problems by 
+providing a precise definition of an ARG that is general enough to encompass
+the output of all currently available inference methods. 
+The detailed genetic genealogy of a sample is defined in terms 
+of based on specific genomes
+and their intervals of genetic inheritance, which we refer to as 
+a ``genome ARG'', or ``gARG''.
+This contrasts with the classical Griffiths approach which 
+is based on recording evolutionary events, and we therefore refer to as 
+the ``event ARG'', or ``eARG'' encoding.
+We show that the gARG encoding has a range of advantages over the 
+eARG approach, being both flexible and efficient.
+In particular, we argue that the goal of inferring fully precise 
+ARGs---a necessity under the eARG encoding---should be critically 
+examined as part of the process of fully decoupling our ARG data 
+structure from the coalescent with recombination model.
 
 % and because it is focused on encoding the \emph{outcome}
 % of evolutionary events rather than the details of the events themselves,
@@ -440,7 +475,7 @@ from the original stochastic process.
 % a slightly different formulation, which
 % we call a ``genome ARG'' (gARG).
 In this section we provide a  concrete definition of an ARG in terms
-of particular genomes and their patterns of inheritance, which
+of specific genomes and their patterns of inheritance, which
 we refer to as a ``genome ARG``, or gARG.
 First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
@@ -1531,7 +1566,7 @@ completely precise event ARG on the other.
 \section*{Equivalance of ARGs and the set of local trees}
 An ARG is sometimes referred to as being equivalent to a set of
 local trees along the genome [TODO citation], but the connection
-between the two is not as simple as it may seem.
+between the two is subtle.
 In order for the mapping to be one-to-one, so that the original
 gARG can be exactly recovered from a set of local trees and
 their genome coordinates,
