@@ -145,7 +145,9 @@ structure~\citep{minichiello2006mapping}, i.e., a means of
 describing the \emph{outcome} of some such ancestral process
 (the distinction, however, is not clear cut and subfields use the term
 differently; see Appendix XXX).
-ARG inference was for many years synonymous with estimating realisations
+ARG inference was for many years synonymous [FIXME: this isn't really true,
+what about parsimony ARGs?]
+with estimating realisations
 of the coalescent with recombination (with, it must be said, limited success),
 and the distinction between process and realisation was not especially important.
 The recent introduction of two methods, \relate~\citep{speidel2019method}
@@ -482,8 +484,8 @@ inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
 In this usage a ``genome'' is equivalent to the definition of a ``haplotype'' used by
 \cite{shipilina2023origin}; we avoid term haplotype because 
 it already has many interpretations, and in particular carries the implication of 
-specific mutational patterns [CITES] and the persistance of a particular 
-haplotype over many generations. A ``genome'' in our usage corresponds to the 
+specific mutational patterns [CITES] which persist over 
+many generations. A ``genome'' in our usage corresponds to the 
 genetic material present in a particular individual or cell.
 We will also use the term ``genome`` in its 
 more common sense of ``the genome'' of a species, denoting the full set 
@@ -495,10 +497,11 @@ processes being entirely separate.
 A gARG is then a graph in which nodes represent
 monoploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant,
-where each edge is annotated with the coordinates
-of the genomic intervals over which genetic inheritance occurs.
-\footnote{We use the standard graph theoretic sense of
+where each 
+edge\footnote{We use the standard graph theoretic sense of
 an ``edge'' here, rather than the somewhat specialised interpretation of \cite{shipilina2023origin}.}
+ is annotated with the coordinates
+of the genomic intervals over which genetic inheritance occurs.
 We can therefore view a gARG for a given set of individuals
 as a subset of their pedigree, but
 where each individual is represented by two nodes (for diploids).
@@ -685,80 +688,6 @@ recombination, and is agnostic to the details of those processes.
 % cannot be done by storing recombination breakpoints.
 
 \section*{Event ARGs}\label{eARG}
-We are mainly interested in exploring the properties of gARGs in
-this manuscript, but in order to contrast with the existing
-methods we concretely define an ``event ARG'', or eARG.
-
-% \begin{figure}
-% \centering
-% % \begin{tabular}{cc}
-% \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
-% \tikzset{greynode/.style={circle,fill,inner sep=1},
-% nodelabel/.style={font=\footnotesize}}
-
-% \node (s0) [greynode] at (0, 0) {};
-% \node (s1) [greynode] at (3, 0) {};
-% \node (s2) [greynode] at (6, 0) {};
-% \node (s3) [greynode] at (3, 1) {};
-% \node (s4) [greynode] at (1, 2) {};
-% \node (s5) [greynode] at (5, 3) {};
-% \node (s6) [greynode] at (3, 4) {};
-
-% % \node [anchor=north west] at (0,6) {A};
-% \node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-% \foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-% \foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-% \foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-% \foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
-
-% %% Edges
-% \draw (s1) -- (s3);
-% \draw (s0) |- (s4);
-% \draw (s4) -- (2,2) |- (s3);
-% \draw (s4) |- (s6);
-% \draw (s3) -- (4,1) |- (s5);
-% \draw (s2) |- (s5);
-% \draw (s5) |- (s6);
-
-% % \node [anchor=north west] at (9,6) {B};
-% \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% \begin{tabular}{c|c|l}
-% % \multicolumn{2}{c}{Breakpoints}\\
-% Node & Breakpoint & Parents\\
-% \hline
-% $\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
-% $\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
-% $\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
-% $\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
-% $\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
-% $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
-% $\noderef{g}$ & $\varnothing$ & []\\
-% \end{tabular}};
-
-% % \node [anchor=north west] at (9,6) {C};
-% % \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% % \begin{tabular}{ll}
-% % Edges & Intervals\\
-% % \hline
-% % $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
-% % $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
-% % $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
-% % $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
-% % $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
-% % $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
-% % $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
-% % \end{tabular}};
-
-% \end{tikzpicture}
-% \caption{\label{fig-arg-data-structure}
-% A graphical depiction of a classical event ARG and a concrete
-% encoding of the information. Node \noderef{d} is a recombination
-% event as it is associated with a non-null breakpoint, and has
-% two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
-% common ancestor events.
-% }
-% \end{figure}
-
 In keeping with its original derivation in terms of a stochastic
 process (see Appendix~\ref{sec-arg-history}), the classical definition of an
 ARG data structure is
@@ -771,18 +700,17 @@ In a common ancestor event the inbound lineages are merged into a
 single ancestral lineage, and in a recombination
 event a lineage is split into two independent
 ancestral lineages.
-% The final vital
-% detail is that we associate a breakpoint with each recombination
-% event.
-% This information is sufficient to uniquely
-% define the local genealogical trees at every position along the genome,
-% which is the basic requirement for a data structure encoding
-% genome-wide genetic ancestry.
-% As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
-% is usually concretely encoded by associating a recombination breakpoint
-% (which is null for common ancestor events) and an ordered list of parents
-% with each node. We refer to such a  data structure as an
-% ``event ARG'' (eARG).
+The final vital
+detail is that we associate a \emph{breakpoint} with each recombination
+event, and this information is sufficient to uniquely
+define the local genealogical trees at every position along the genome.
+
+As illustrated in Fig.~\ref{fig-arg-data-structure}, this information
+is usually concretely encoded by associating a recombination breakpoint
+(which is null for common ancestor events) and an ordered list of parents
+with each node. We refer to such a  data structure as an
+``event ARG'' (eARG).
+
 % To recover the local tree at genome coordinate $x$ (the most
 % fundamental operation required for an ARG data structure),
 % we traverse the graph rootwards from the leaves.
@@ -798,8 +726,94 @@ ancestral lineages.
 % from which parent the segments of genome to the left and right of the breakpoint
 % were inherited.
 
-[TODO list the salient points that we want to contrast against
-the gARG. We don't want this to seem like a straw man]
+% [TODO list the salient points that we want to contrast against
+% the gARG. We don't want this to seem like a straw man]
+
+% Griffiths and colleagues~\citep{griffiths1997ancestral} originally defined 
+% the ARG as analog of the Kingman coalescent~\citep{kingman1982coalescent},
+% in which the ancestry of a sample of $n$ genomes under idealised 
+% conditions is modelled. One of the key assumptions of this model is that 
+% the sample size $n$ is much less than the population size $N$, which means 
+% that the probability of two multiple concurrent events (i.e., coalescence
+% and recombination events) is negligible. 
+
+
+\begin{figure}
+\centering
+% \begin{tabular}{cc}
+\begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
+\tikzset{greynode/.style={circle,fill,inner sep=1},
+nodelabel/.style={font=\footnotesize}}
+
+\node (s0) [greynode] at (0, 0) {};
+\node (s1) [greynode] at (3, 0) {};
+\node (s2) [greynode] at (6, 0) {};
+\node (s3) [greynode] at (3, 1) {};
+\node (s4) [greynode] at (1, 2) {};
+\node (s5) [greynode] at (5, 3) {};
+\node (s6) [greynode] at (3, 4) {};
+
+% \node [anchor=north west] at (0,6) {A};
+\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
+\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
+\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+
+%% Edges
+\draw (s1) -- (s3);
+\draw (s0) |- (s4);
+\draw (s4) -- (2,2) |- (s3);
+\draw (s4) |- (s6);
+\draw (s3) -- (4,1) |- (s5);
+\draw (s2) |- (s5);
+\draw (s5) |- (s6);
+
+% \node [anchor=north west] at (9,6) {B};
+\node [nodelabel,anchor=north west] at ($(10,5)$) {
+\begin{tabular}{c|c|l}
+% \multicolumn{2}{c}{Breakpoints}\\
+Node & Breakpoint & Parents\\
+\hline
+$\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
+$\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
+$\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
+$\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
+$\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
+$\noderef{g}$ & $\varnothing$ & []\\
+\end{tabular}};
+
+% \node [anchor=north west] at (9,6) {C};
+% \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% \begin{tabular}{ll}
+% Edges & Intervals\\
+% \hline
+% $(\textsf{a}, \textsf{e})$ & $(0, L]$ \\
+% $(\textsf{b}, \textsf{d})$ & $(0, L]$ \\
+% $(\textsf{c}, \textsf{f})$ & $(0, L]$ \\
+% $(\textsf{d}, \textsf{e})$ & $(0, x]$ \\
+% $(\textsf{d}, \textsf{f})$ & $(x, L]$ \\
+% $(\textsf{e}, \textsf{g})$ & $(0, L]$ \\
+% $(\textsf{f}, \textsf{g})$ & $(0, L]$ \\
+% \end{tabular}};
+
+\end{tikzpicture}
+\caption{\label{fig-arg-data-structure}
+A graphical depiction of a classical event ARG and a concrete
+encoding of the information. Node \noderef{d} is a recombination
+event as it is associated with a non-null breakpoint, and has
+two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
+common ancestor events.
+}
+\end{figure}
+
+[TODO: what do we need to cover here?]
+
+[What is the ARG definition provided by the parsimony ARG literature?]
+
+[What is Gusfields ARG definition? Presumably it's still an eARG, but with a
+quirky dependence on SNP data?]
 
 \cite{mathieson2020ancestry} have a slightly different definition of an ARG,
 which they say ``is a subset of the pedigree... contain[ing] only those edges along which
