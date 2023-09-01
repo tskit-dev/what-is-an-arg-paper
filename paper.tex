@@ -444,8 +444,21 @@ of particular genomes and their patterns of inheritance, which
 we refer to as a ``genome ARG``, or gARG.
 First, let us define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
-Then, a gARG is a graph in which nodes represent
-monoploid genomes  and edges represent
+In this usage a ``genome'' is equivalent to the definition of a ``haplotype'' used by
+\cite{shipilina2023origin}; we avoid term haplotype because 
+it already has many interpretations, and in particular carries the implication of 
+specific mutational patterns [CITES] and the existance of a particular 
+haplotype over many generations. A ``genome'' in our usage corresponds to the 
+genetic material present in a particular individual or cell.
+We will also use the term ``genome`` in its 
+more common sense of ``the genome'' of a species, denoting the full set 
+of chromosomes and their coordinate spaces, and hope that the distinction
+will be clear from the context.
+We consider only patterns of genetic inheritance, with mutational 
+processes being entirely separate.
+
+A gARG is then a graph in which nodes represent
+monoploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant,
 where each edge is annotated with the coordinates
 of the genomic intervals over which genetic inheritance occurs.
@@ -757,6 +770,13 @@ were inherited.
 
 [TODO list the salient points that we want to contrast against
 the gARG. We don't want this to seem like a straw man]
+
+\cite{mathieson2020ancestry} have a slightly different definition of an ARG,
+which they say ``is a subset of the pedigree... contain[ing] only those edges along which
+inherited segments of DNA have been transmitted, and only those nodes
+corresponding to ancestors in which there was a recombination or coalescence
+event.'' Thus, while their definition is decoupled from the coalescent
+process it is defined by events.
 
 % \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 \section*{Prospective vs restrospective ARGs}
@@ -1364,7 +1384,7 @@ at position 87 has been lost entirely.
 % % JK: This is very rough, just jotting down the basic ideas,
 % % will need substantial revision.
 % It is not clear that such complete information will always
-% (or indeed ever) be available from inferences~\cite{shipilina2022origin}.
+% (or indeed ever) be available from inferences~\cite{shipilina2023origin}.
 %  We may be
 % able to precisely identify the location and timing
 % of recent recombinations (particularly if detailed pedigree
@@ -1380,7 +1400,7 @@ at position 87 has been lost entirely.
 
 % % This idea of a continuum of information about recombination
 % % being inferrable and representable is consistent with the ideas
-% % discussed by~\cite{shipilina2022origin}. There a haplotype block
+% % discussed by~\cite{shipilina2023origin}. There a haplotype block
 % % is synonymous with coalescent nodes in the ARG, which we can generalise
 % % as nodes in a gARG with at least two children. In principle, these
 % % nodes are identifiable by the mutations that occur on the outbound
@@ -1508,37 +1528,50 @@ completely precise event ARG on the other.
 % % [Some stuff about whether we should see this as necessary or not,
 % % but maybe we should keep this for the conclusion?]
 
-% \section*{Equivalance of ARGs and the set of local trees}
-% An ARG is sometimes referred to as being equivalent to a set of
-% local trees along the genome [TODO citation], but the connection
-% between the two is not as simple as it may seem.
-% In order for the mapping to be one-to-one, so that the original
-% gARG can be exactly recovered from a set of local trees and
-% their genome coordinates,
-% some specific properties of the ARG and the trees are required.
+\section*{Equivalance of ARGs and the set of local trees}
+An ARG is sometimes referred to as being equivalent to a set of
+local trees along the genome [TODO citation], but the connection
+between the two is not as simple as it may seem.
+In order for the mapping to be one-to-one, so that the original
+gARG can be exactly recovered from a set of local trees and
+their genome coordinates,
+some specific properties of the ARG and the trees are required.
 
-% Firstly, the internal nodes in the local trees must be labelled
-% (i.e.\ marked with the identity of the corresponding ARG node).
-% If the nodes are not labelled, we must infer their identity
-% from the tree topology, which is both
-% expensive to compute and imprecise. For example
-% we could infer that node \textsf{k} is shared in the second
-% and third trees of in Fig.~\ref{fig-simplification}D
-% because it subtends identical subtrees in both,
-% but it would not be straightforward to infer that it
-% is also the root of the first tree.
-% % JK: Does this need to be said?
-% % (One may use the time of a node as a proxy for identity,
-% % but it is not reliable as we can have multiple nodes at the
-% % same time, e.g. with time discretisation.)
+Firstly, the internal nodes in the local trees must be labelled
+(i.e.\ marked with the identity of the corresponding ARG node).
+If the nodes are not labelled, we must infer their identity
+from the tree topology, which is both
+expensive to compute and imprecise. For example
+we could infer that node \textsf{k} is shared in the second
+and third trees of in Fig.~\ref{fig-simplification}D
+because it subtends identical subtrees in both,
+but it would not be straightforward to infer that it
+is also the root of the first tree.
+% JK: Does this need to be said?
+% (One may use the time of a node as a proxy for identity,
+% but it is not reliable as we can have multiple nodes at the
+% same time, e.g. with time discretisation.)
 
-% The precision of the information about recombination that
-% can be represented in the trees depends the ARG itself.
-% Secondly, the local trees must contain ``unary'' nodes.
-% [Some discussion].
-% With these two conditions met, there is a direct correspondance
-% between a gARG and the trees.
+The precision of the information about recombination that
+can be represented in the trees depends the ARG itself.
+Secondly, the local trees must contain ``unary'' nodes.
+[Some discussion].
+With these two conditions met, there is a direct correspondance
+between a gARG and the trees.
 
+\cite{shipilina2023origin} discuss the same ideas, and note that 
+``full ARG ... contains more information than the series of tree
+sequences along the genome''. They view the ``full ARG'' as an
+eARG, and the ``series of tree sequences'' is their 
+% jk: probably should delete this. It *is* muddled though
+(somewhat muddled) 
+term for the sequence of local trees along the genome. We can see
+that their statment is true, \emph{if} the local trees contain
+no unary nodes. However, as we have shown, if the local trees 
+contain labelled unary nodes, then  there is precisely as 
+much information in them as an ARG. Whether such unary nodes
+are \emph{observable} is an entirely separate question,
+of course.
 
 % These properties have interesting consequences when we
 % consider the inference strategy of esimating local trees
@@ -1874,21 +1907,30 @@ when inferring such fully precise ARGs is useful, for example when
 studying the details of a small number of recombination
 events~\citep{rasmussen2022espalier}, it is worth considering
 whether sufficient information exists to support such inferences
-and indeed whether this precision is required (or indeed useful
-for) downstream applications.
+and indeed whether this precision is required, or useful,
+for downstream applications.
 
-[Discuss information about recomb]
-\citet{shipilina2022origin}
+The amount of information about recombination that is inferrable 
+is the subject of much research
+has a long history [summarise this in a couple of sentences?]
+\cite{shipilina2023origin} discuss the idea of a ``haplotype block''
+(equivalent to the ``bricked tree sequence'' of
+\cite{nowbandegani2023extremely}), where we consider the unique sets of 
+samples that coalesce at a node in the ARG over a particular 
+genome interval, and the fundamental limitations they place 
+on ARG inference.
 
 % % Do downstream applications actually make use of such full ARGs?
-Downstream applications using estimated ARGs to date rarely
+Besides the inherent limitations that exist on inferring fully precise ARGs
+from data,
+we should also consider the value that such precise estimates provide
+to downstream applications. 
+To date, few downstream applications using estimated ARGs 
 make use of such complete recombination information.
 The \relate\ selection statistic~\citep{speidel2019method}
 computes a $p$-value for selection [FIXME] for each
 local tree independently by comparing the rates of coalescence
-at various time-points. For cases like strong positive selection,
-where we expect there to be a clear signal in the local tree,
-such tree-by-tree methods can be simple and powerful.
+at various time-points. 
 In their method
 for estimating dispersal rates and the locations of genetic
 ancestors,
@@ -1907,17 +1949,15 @@ for ancestral location) uses much more between-tree
 information~\citep{wohns2022unified}, explicitly using the gARG
 encoding to reason about ancestral nodes.
 [MORE applications]
-
-% A major strength of this approach is that it can be used on
-% any gARG, ranging from estimates containing relatively little
-% information about recombination (e.g., as estimated by \relate)
-% to ``full'' ARGs containing complete recombination information
-% (e.g., as estimated by \kwarg), and will fully utilise
-% any between-tree correlation information that is present.
+The main application for fully precise ARGs thus far has been
+to be to compute a likelihood under the coalescent with 
+recombination~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian}, 
+which currently requires the details of all recombination
+events to be known.
 
 Fully decoupling the general concept of an ARG from the coalescent
 with recombination stochastic process is an important step.
-While the coalescent with recombination is a very useful and
+While it has proven to be a useful and
 robust model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
 many modern datasets have properties that grossly
 violate its assumptions.
