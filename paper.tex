@@ -150,7 +150,7 @@ of the coalescent with recombination (with, it must be said, limited success),
 and the distinction between process and realisation was not especially important.
 The recent introduction of two methods, \relate~\citep{speidel2019method}
 and \tsinfer~\citep{kelleher2019inferring}, that estimate structures 
-sharing many properties of this classical idea of an ARG at previously
+sharing many properties of this classical idea of an ARG, but at previously
 unthinkable scale, has led to a surge of interest in the area.
 Although both \cite{speidel2019method} and \cite{kelleher2019inferring}
 avoid describing the output of the methods as an ARG, the general 
@@ -482,7 +482,7 @@ inherits from one parent (i.e., haploids have one genome, diploids two, etc.).
 In this usage a ``genome'' is equivalent to the definition of a ``haplotype'' used by
 \cite{shipilina2023origin}; we avoid term haplotype because 
 it already has many interpretations, and in particular carries the implication of 
-specific mutational patterns [CITES] and the existance of a particular 
+specific mutational patterns [CITES] and the persistance of a particular 
 haplotype over many generations. A ``genome'' in our usage corresponds to the 
 genetic material present in a particular individual or cell.
 We will also use the term ``genome`` in its 
@@ -497,20 +497,11 @@ monoploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant,
 where each edge is annotated with the coordinates
 of the genomic intervals over which genetic inheritance occurs.
+\footnote{We use the standard graph theoretic sense of
+an ``edge'' here, rather than the somewhat specialised interpretation of \cite{shipilina2023origin}.}
 We can therefore view a gARG for a given set of individuals
-as a subset of their pedigree, but, crucially,
+as a subset of their pedigree, but
 where each individual is represented by two nodes (for diploids).
-% To recover the local tree for a genomic
-% position $x$, we traverse the graph rootwards from the leaves
-% (as in an eARG) and at a particular node, we follow the outbound
-% edge associated with the genomic interval containing $x$.
-% Recent discussions have illustrated the
-% relationship between ARGs and
-% pedigrees~\citep{mathieson2020ancestry,brandt2021evaluation},
-% and the deep connections between the structures are
-% well understood
-% \citep[e.g.][]{wakeley2012genetics,gusfield2014recombinatorics,
-% speed2015naturereviewsgenetics}.
 This is illustrated in Fig.~\ref{fig-arg-in-pedigree},
 which
 shows how the genomes embedded in an example (highly inbred)
@@ -557,29 +548,34 @@ they merge into a common ancestor, the merged region is darker.
 \end{figure}
 
 The edges in a gARG specify that genetic inheritance occurred between an
-ancestor and a descendant, but the connectivity information alone
+ancestor and a descendant, but the graph connectivity 
 does not tell us which \emph{parts} of their genomes were inherited.
+In order to capture the effects of recombination (and any other process
+that results in the partial inheritance of a descendant genome 
+from an ancestor) we must ``annotate'' the edges with the genome
+coordinates over which inheritance occurs.
+Continuing the example of genome \textsf{a} in Fig.~\ref{fig-arg-in-pedigree},
+the recombination at position 2 means that it inherits the (half-closed) genome
+interval $(0, 2]$ from \textsf{e} and it inherits $(2, 10]$ from \textsf{f}.
+These intervals are shown attached to the corresponding graph edges.
 
-
+% JK: dunno if this will make some readers switch off, but I feel it's 
+% important to show that this is a formal model and the concrete definition
+% will help some readers?
 Formally, we can define a gARG as a set of nodes $N$ and edges $E$, where each
-element of $E$ is a tuple $(c, p, I)$ such that
-$c\in N$ is the child node, $p\in N$ is the parent node and $I$ is the set of
-disjoint genomic intervals $(\ell, r]$ over which genome $c$ inherits from $p$ (we may
-also phrase this in terms of the ancestral material of a sample---see
-the next section).
-% To recover the local tree for a genomic
-% position $x$, we traverse the graph rootwards from the leaves
-% (as in an eARG) and at a particular node, we follow the outbound
-% edge associated with the genomic interval containing $x$.
-To recover the local tree at genome coordinate $x$ (the most
-fundamental operation required for an ARG data structure; see
-Section XXX),
-we traverse the graph rootwards from the leaves.
-Starting with the sample nodes $S$ we traverse
-rootwards through the graph from child to parent. At each node $u$, we find an
-edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$
-and move to the next node $p$. The efficiency of this process is discussed
-in Section XXX).
+element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
+parent nodes and $I$ is the set of disjoint genomic intervals $(\ell, r]$ over
+which genome $c$ inherits from $p$. The most fundamental operation for
+an ARG data structure is the process of recovering the corresponding sequence
+of local trees along the genome. To generate the local tree at genome
+coordinate $x$, we traverse the graph rootwards from the leaves. 
+For concreteness, we can describe this tree as an oriented forest $\pi$
+\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
+At each node
+$u$, we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$.
+We then set $\pi_c \leftarrow p$,  and move to the next node $p$.
+At the end of this process, $\pi$ fully describes the local tree 
+at position $x$. 
 
 There are some interesting consequences to these definitions, exemplified
 in Figure~\ref{fig-arg-in-pedigree}. Firstly,
