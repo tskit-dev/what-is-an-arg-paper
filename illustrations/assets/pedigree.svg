@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="130.50952mm"
-   height="283mm"
-   viewBox="0 0 130.50951 283"
+   width="132mm"
+   height="285mm"
+   viewBox="0 0 131.99999 285"
    version="1.1"
    id="svg5"
    sodipodi:docname="pedigree.svg"
-   inkscape:version="1.2-alpha1 (b6a15bb, 2022-02-23)"
+   inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,11 +25,11 @@
      showgrid="false"
      inkscape:snap-object-midpoints="true"
      inkscape:zoom="1.2077477"
-     inkscape:cx="123.78414"
-     inkscape:cy="32.705507"
-     inkscape:window-width="1396"
+     inkscape:cx="253.36418"
+     inkscape:cy="899.60842"
+     inkscape:window-width="1393"
      inkscape:window-height="847"
-     inkscape:window-x="44"
+     inkscape:window-x="47"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1"
@@ -37,14 +37,15 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:deskcolor="#d1d1d1" />
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:showpageshadow="2" />
   <defs
      id="defs2">
     <rect
-       x="400.33104"
-       y="798.05407"
-       width="73.024555"
-       height="44.336337"
+       x="400.33105"
+       y="798.05408"
+       width="73.024551"
+       height="44.336338"
        id="rect2717" />
   </defs>
   <g
@@ -883,7 +884,7 @@
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,34.559284,9.9999999)"
        id="text2715"
-       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect2717)" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect2717);display:inline;fill:#000000;fill-opacity:1;stroke:none" />
     <g
        id="g8620-6-7-1-85"
        transform="translate(-102.29696,11.1891)">
@@ -906,7 +907,7 @@
            id="tspan3239-8-9-5-0"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(0,2]</tspan></text>
+           y="228.3972">[0,2)</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2"
@@ -930,7 +931,7 @@
            id="tspan3239-8-9-5-4-5"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(2,10]</tspan></text>
+           y="228.3972">[2,10)</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2-1"
@@ -954,7 +955,7 @@
            id="tspan3239-8-9-5-4-5-1"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="137.37503"
-           y="228.3972">(7,10]</tspan></text>
+           y="228.3972">[7,10)</tspan></text>
     </g>
     <g
        id="g8620-6-7-1-2-2-1-4"
@@ -978,7 +979,7 @@
            id="tspan3239-8-9-5-4-5-1-1"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
            x="138.48286"
-           y="227.84328">(0,7]</tspan></text>
+           y="227.84328">[0,7)</tspan></text>
     </g>
     <text
        xml:space="preserve"

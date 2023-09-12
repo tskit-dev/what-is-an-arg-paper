@@ -89,7 +89,7 @@ def ancestry_resolution():
 
     def add_edge_labels(ax, ts, G, pos):
         # Merge edge labels that have the same parent & child
-        label_format = "({0:.0f},{1:.0f}]"
+        label_format = "[{0:.0f},{1:.0f})"
         full_edge = label_format.format(0, ts.sequence_length)
         lab = {}
         for e in ts.edges():
@@ -365,10 +365,10 @@ def simplification():
     tables.sort()
     ts=tables.tree_sequence()
 
-    labels = {i: string.ascii_lowercase[i] for i in range(len(string.ascii_lowercase))}
+    labels = {i: i for i in range(len(string.ascii_lowercase))}
     # relabel the nodes to get samples reading A B C D
-    labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
-    #labels = {i: i for i in range(26)}
+    #labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
+    labels = {i: i for i in range(26)}
     ts1 = argutils.viz.label_nodes(ts, labels)
 
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 12))
@@ -392,6 +392,8 @@ def simplification():
         node_arity_colors=True,
     )
     ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts1, map_nodes=True)
+    tables = ts3.dump_tables()
+    ts3 = argutils.viz.label_nodes(ts3, labels)
     argutils.viz.draw(
         ts3,
         ax3,
@@ -399,6 +401,7 @@ def simplification():
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
+    ts3.dump("/Users/yan/ts3.trees")
     ts4, node_map = ts1.simplify(map_nodes=True)
     argutils.viz.draw(
         ts4,
@@ -428,7 +431,7 @@ def simplification():
             node_labels={n.id: n.metadata["name"] for n in ts.nodes()},
             x_label=None if i == 3 else "",
             style=(
-                '.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
+                #'.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
                 '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}' +
                 '.subfig3 .x-axis .tick .lab {visibility: visible}'
             ),
@@ -442,7 +445,7 @@ def simplification():
             tree_svg +
             "</g>"
         )
-    svg.append('<g transform="translate(190, 580) scale(0.5)">' + legend_svg() + "</g>")
+    #svg.append('<g transform="translate(190, 580) scale(0.5)">' + legend_svg() + "</g>")
     svg.append("</svg>")
 
 
@@ -475,7 +478,7 @@ def arg_in_pedigree():
                 ec=(1.0, 1.0, 1.0),
                 fc=(1.0, 1.0, 1.0)),
         }
-        edge_labels={(e.child, e.parent): f"({e.left:.0f},{e.right:.0f}]" for e in ts.edges()}
+        edge_labels={(e.child, e.parent): f"[{e.left:.0f},{e.right:.0f})" for e in ts.edges()}
         full_edges = {k: v for k, v in edge_labels.items() if not argutils.is_recombinant(ts.node(k[0]).flags)}
         nx.draw_networkx_edge_labels(
             **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
@@ -685,7 +688,7 @@ def inference():
                              width_ratios=widths, height_ratios=heights))
     tree_seq_positions = []
     max_rank_by_ts = {}
-    for ax, ax_edges, (name, ts) in zip(axes[0], axes[1], tree_seqs.items()):
+    for ax, ax_edges, (name, ts) in zip(reversed(axes[0]), reversed(axes[1]), tree_seqs.items()):
         subtitle = f"{ts.num_trees} trees"
         params = dict(
             # some of these can get overwritten
@@ -696,12 +699,12 @@ def inference():
             node_arity_colors=True,
             max_edge_width=2,
             tweak_x={},
-            use_ranked_times = None,  # By default use Y axis layout from graphviz dot
+            use_ranked_times = False,  # By default use Y axis layout from graphviz dot
         )
         if name == "Tsinfer":
             params["tweak_x"] = {
-                21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
-                23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
+            #    21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
+            #    23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
             }
         if name == "ARGweaver":
             subtitle = "(typical MCMC result) " + subtitle
@@ -793,7 +796,7 @@ def inference():
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(145, 60) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(300, 60) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
