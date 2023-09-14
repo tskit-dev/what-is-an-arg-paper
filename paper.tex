@@ -139,9 +139,14 @@ follow~\citep{harris2019database,harris2023using}.
 Although it is widely accepted that ARGs are important, there is significant
 confusion about what, precisely, an ARG \emph{is}.
 Originally, the ARG was based on a stochastic
-process~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral} which modelled the coalescent with recombination \citep{hudson1983properties}. Subsequently, it has come instead to be thought of as a data
+process~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}
+which modelled the coalescent with recombination \citep{hudson1983properties}.
+Subsequently, it has come instead to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ a means of
-describing the sequence of correlated local trees that are the \emph{outcome} of some such ancestral process. However, the distinction between process and structure is not clear cut and subfields use the term
+describing the sequence of correlated local trees that
+are the \emph{outcome} of some such ancestral process.
+However, the distinction between process and structure is not clear cut
+and subfields use the term
 differently (see Appendix XXX).
 %% Sentence deleted: point made already
 % ARG inference was for many years synonymous [FIXME: this isn't really true,
@@ -162,16 +167,20 @@ differently (see Appendix XXX).
 %and we therefore need a more general definition of an ``ARG'' than the classical
 %Griffiths formulation.
 
-The word ``ARG'' is now widely used to refer to genetic genealogies in general~\citep[MORE][]{mathieson2020ancestry}, including
+The word ``ARG'' is now widely used to refer to genetic genealogies in
+general~\citep[MORE][]{mathieson2020ancestry}, including
 varied outputs from modern simulation and
-inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree, kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
-However, this broad usage means there is disagreement on the exact object being defined. This causes problems, for example,
+inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
+kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
+However, this broad usage means there is disagreement on the
+exact object being defined. This causes problems, for example,
 not just when evaluating inferred ARGs, but even when defining
 what the criteria for success should be.
 It also means there is no shared format for interchanging ARG data between
 programs, resulting in the assorted negative consequences with which
 geneticists are only too familiar~\citep{excoffier2006computer}.
-Perhaps most importantly some definitions of ARGs, especially those linked to a specific stochastic process, are overly narrow which
+Perhaps most importantly, some definitions of ARGs
+(especially those linked to a specific stochastic process) are overly narrow, which
 can lead to missed opportunities in their application and usage.
 Such problems go much deeper than pedantic discussion over terminology;
 they directly inform what we should be attempting to estimate, how we
@@ -181,10 +190,14 @@ and accuracy of our inferences.
 % What do we do?
 In this paper we attempt to address these problems by
 providing a precise definition of an ARG that is general enough to encompass
-the output of all popular simulation and inference methods, yet simple enough to be encoded via a conventional mathematical graph.
+the output of all popular simulation and inference methods,
+yet simple enough to be encoded via a conventional mathematical graph.
 %% Yan: I added the above as both the ARGON and the Shipilova definitions
 %% use non-conventional graph structures for their encoding (e.g. hypergraphs, weird edges, etc)
-We follow the well established principle that it is advantageous to decouple the presence of mutations from the genealogical structure itself \citep[contra][chap.~3]{gusfield2014recombinatorics}. We propose a definition of genetic genealogy purely in terms of specific genomes
+We follow the well established principle that it is advantageous
+to decouple the presence of mutations from the genealogical structure
+itself \citep[contra][chap.~3]{gusfield2014recombinatorics}.
+We propose a definition of genetic genealogy purely in terms of specific genomes
 and their intervals of genetic inheritance, and refer to this as
 a ``genome ARG'', or ``gARG''.
 This contrasts with the classical Griffiths approach,
@@ -477,7 +490,8 @@ structure from any specific generative model.
 
 We define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e.\ haploids have one genome, diploids two, etc.).
-In this usage a ``genome'' is equivalent to the definition of a ``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
+In this usage a ``genome'' is equivalent to the definition of a
+``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
 it already has many interpretations, and in particular carries the implication of
 specific mutational patterns [CITES] that persist over
 many generations. A ``genome'' in our usage corresponds to the
@@ -492,9 +506,13 @@ haploid genomes, edges represent
 genetic inheritance between an ancestor and a descendant, and
 annotations specify coordinates of the genomic intervals
 over which genetic inheritance occurs.
+% FIXME WE're missing the important distinction here that the pedigree
+% has one node per ind, whereas a gARG has two nodes.
 We can therefore view a gARG for a given set of individuals
 as a subset of their pedigree.
-An example of this for diploids (so each individual is represented by two nodes) is illustrated in Fig.~\ref{fig-arg-in-pedigree}.
+An example of this for diploids
+(so each individual is represented by two nodes)
+is illustrated in Fig.~\ref{fig-arg-in-pedigree}.
 Each genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
@@ -517,7 +535,8 @@ An example gARG embedded in a pedigree.
 labelled $I_1$ to $I_8$, contain both paternal and maternal  genomes
 labelled \textsf{a} to \textsf{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
-Genomes \textsf{a} and \textsf{c} are the product of two independent recombination events between
+Genomes \textsf{a} and \textsf{c} are the product of two independent
+recombination events between
 the paternal genomes \textsf{e}
 and \textsf{f}, and regions of genome inherited are shown.
 Genomes are shaded such that where, backwards in time,
@@ -542,22 +561,29 @@ from an ancestor) we ``annotate'' the edges with the genome
 coordinates over which inheritance occurs.
 Continuing the example of genome \textsf{a} in Fig.~\ref{fig-arg-in-pedigree},
 the recombination at position 2 means that it inherits the (half-closed) genome
-interval $[0, 2)$ from \textsf{e} and it inherits $[2, 10)$ from \textsf{f}; these intervals are shown attached to the corresponding graph edges. Alternative gARG encodings split transmitted intervals and associate each with a new node, resulting in a single genome being represented by a group of multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for efficiency of storage.
+interval $[0, 2)$ from \textsf{e} and it inherits $[2, 10)$ from \textsf{f};
+these intervals are shown attached to the corresponding graph edges.
 
-% JK: dunno if this will make some readers switch off, but I feel it's
 % important to show that this is a formal model and the concrete definition
 % will help some readers?
-Formally, our gARG encoding is defined by sets of nodes $N$ and edges $E$, where each
-element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
+% FIXME - the oriented forest definition is wrong, we need to be more
+% concrete about the fact that nodes are integers.
+Formally, we define a gARG as a sets of nodes $N$ and edges $E$.
+Each element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
 parent nodes and $I$ is the set of disjoint genomic intervals $[\ell, r)$ over
 which genome $c$ inherits from $p$. The most fundamental operation for
 an ARG data structure is the process of recovering the corresponding sequence
 of local trees along the genome. Concretely, we can describe a local tree
-at position $x$ as an oriented forest $\pi = ( \pi_1, \hdots, \pi_{|N|} )$, where the entry $\pi_j$ is the index
+at position $x$ as an oriented forest $\pi = ( \pi_1, \hdots, \pi_{|N|} )$,
+where the entry $\pi_j$ is the index
 of the parent of $j$ and $\pi_j = \emptyset$ if $j$ is not present in the
 tree~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
-We use a forest to describe the local ancestry at a given position so that we allow for cases where not all leaves have found a most recent common ancestor, resulting in multiple roots.
-To construct $\pi$ at position $x$, set $\pi_i = \emptyset$ for $i \in \{1, \hdots, |N|\}$.
+We use a forest to describe the local ancestry at a given
+position so that we allow for cases where not all leaves have
+found a most recent common ancestor, resulting in multiple roots.
+To construct $\pi$ at position $x$, set
+$\pi_i = \emptyset$ for $i \in \{1, \hdots, |N|\}$.
+% FIXME - this is wrong
 Then, traversing over all nodes of the tree,
 at each node
 $u$, find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
@@ -596,11 +622,22 @@ recombination, and is agnostic to the details of those processes.
 % In particular, the "Finally" bit doesn't really seem to follow
 % from the others. Is there a more direct way we can address these points ?
 
-In this section we have considered the nodes in a gARG as separate from events in a generative process.
-Nevertheless, gARGs are commonly constructed to include only those genomes associated with specific events.
-For example, \cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree... contain[ing] only those edges along which inherited segments of DNA have been transmitted, and only those nodes
-corresponding to ancestors in which there was a recombination or coalescence
-event.''. In an eARG however, events are even more explicitly embedded in the data structure.
+[FIXME find somewhere natural for this. The last clause is too vague - what
+are the implications?]
+Alternative gARG encodings split transmitted intervals and associate each with
+a new node, resulting in a single genome being represented by a group of
+multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
+efficiency of storage.
+
+
+In this section we have considered the nodes in a gARG as separate from events
+in a generative process. Nevertheless, gARGs are commonly constructed to
+include only those genomes associated with specific events. For example,
+\cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree...
+contain[ing] only those edges along which inherited segments of DNA have been
+transmitted, and only those nodes corresponding to ancestors in which there was
+a recombination or coalescence event.''. In an eARG however, events are even
+more explicitly embedded in the data structure.
 
 % There are some interesting and important consequences to this focus on genomes
 % rather than events.
@@ -784,11 +821,11 @@ common ancestor events.
 }
 \end{figure}
 
+% FIXME this isn't worth getting into
 Storing only breakpoint positions, rather than transmitted regions,
 makes it hard to perform genetic analyses (such as extracting local trees)
 without traversing the entire graph.
 % "For this reason"?
-Some eARG encodings, such as \citet{shipilina2023origin}, have a specialised definition of edges, which places them outside the scope of the standard graph-theoretic representation.
 %% Is the above true?? It the reason for this to allow efficient tree extraction? Are there other examples where encodings have been
 %% built on top of an eARG-like node annotation scheme (ARGON?) and made efficient somehow?
 
@@ -858,7 +895,8 @@ described in detail by
 powerful tool with many other applications,
 some of which we discuss in the following sections.
 
-\section*{From eARGs to sample-resolved gARGs}
+% JK: previous heading was jargony - this is clearer
+\section*{Converting an eARG to a gARG}
 Any eARG can be converted to a gARG without loss of information,
 and the conversion process is very similar to
 simplifying a prospective gARG with respect to a set of samples.
@@ -893,7 +931,8 @@ each recombination (red) showing the corresponding breakpoint.
 (B) The corresponding gARG with breakpoints directly converted to
 edges annotated with inheritance intervals.
 (C) The sample-resolved gARG resulting from simplifying with respect
-to the samples, \noderef{a}, \noderef{b}, and \noderef{c}. Dashed lines show edges that are
+to the samples, \noderef{a}, \noderef{b}, and \noderef{c}.
+Dashed lines show edges that are
 no longer present (in practice, nodes \noderef{g} and \noderef{q} would also be removed).
 Coalescence with respect to the sample is indicated by shaded bars, as
 in Fig~\ref{fig-arg-in-pedigree}A.
@@ -1093,8 +1132,14 @@ of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
 revolves around the presence
-of ``unary'' regions for nodes
-(where a node has exactly one child over a particular genomic region). These arise in several different ways.
+``unary'' nodes in the local trees
+(where a node has exactly one child over a particular genomic region).
+% "unary regions" is jargon - just dropping it in here like this doesn't
+% clarify. We can't assume that people are used to switching between
+% graphs and trees.
+% of ``unary'' regions for nodes
+% (where a node has exactly one child over a particular genomic region).
+These arise in several different ways.
 Nodes with one child are not a standard feature of evolutionary trees;
 we are usually interested in
 nodes that have at least two children, because these
@@ -1110,7 +1155,7 @@ in modelling them.
 % out I think.
 ARGs, however, are different, and there
 can be significant information about evolutionary processes
-provided by nodes which appear unary in one or more local trees.
+provided by nodes that are unary in one or more local trees.
 
 \begin{figure}
 \centering
@@ -1127,13 +1172,16 @@ model: genome \noderef{k} has three children, and the genomes
 \noderef{e} and \noderef{g} simultaneously have multiple parents and multiple children.
 (B) Simplified to remove all
 singly-connected graph components (e.g., diamonds such as \noderef{jlnm}).
-(C) Remove nodes that never represent coalescences, i.e. are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
+(C) Remove nodes that never represent coalescences,
+i.e.\ are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
 (D) Rewrite edges to bypass any unary nodes in local trees.
 }
 \end{figure}
 
-Fig.~\ref{fig-simplification} show a series of successive steps of
-simplification, starting with a sample-resolved but unsimplified gARG, simulated under a
+Fig.~\ref{fig-simplification} shows a series of successive steps of
+simplification,
+% FIXME this doesn't explain anything - what did we store in the simulation?
+starting with a sample-resolved but unsimplified gARG, simulated under a
 backward-time Wright-Fisher
 model. We show the graph on the left, and the corresponding sequence of
 local trees on the right.
@@ -1150,7 +1198,7 @@ The distinction between the ``common ancestry'' of two or more genomes
 in an ancestral genome and the ``coalescence'' which may or may
 not occur in the local trees is
 important~\citep{hudson1983testing,kelleher2016efficient}.
-Consider \noderef{e} in in Fig.~\ref{fig-simplification}A,
+Consider \noderef{e} in Fig.~\ref{fig-simplification}A,
 for example. We can see from the graph that it is a common
 ancestor of  samples \noderef{a} and \noderef{b}, but
 it does not correspond to any coalescence in the
