@@ -117,7 +117,7 @@ and forms the basis of an efficient computational framework.
 % spectra~\citep{achaz2009frequency,ralph2020efficiently},
 % patterns of linkage disequilibrium~\citep{mcvean2002genealogical}, and
 % principal components~\citep{mcvean2009genealogical}.
-Estimating the detailed genealogy of a set of genome sequences
+Estimating the genetic genealogy of a set of genome sequences
 under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
@@ -128,7 +128,7 @@ schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
 and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
 have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
-Applications using these ancestries as inputs have begun to
+Applications using inferred ARGs as input have begun to
 appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank,
 nowbandegani2023extremely}
 and many more are sure to
@@ -138,13 +138,15 @@ follow~\citep{harris2019database,harris2023using}.
 % What is the problem?
 Although it is widely accepted that ARGs are important, there is significant
 confusion about what, precisely, an ARG \emph{is}.
-Originally, the ARG was based on a stochastic
-process~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}
-which modelled the coalescent with recombination \citep{hudson1983properties}.
-Subsequently, it has come instead to be thought of as a data
-structure~\citep{minichiello2006mapping}, i.e.\ a means of
-describing the sequence of correlated local trees that
-are the \emph{outcome} of some such ancestral process.
+Originally, ARGs were defined by Griffiths and colleagues as an alternative
+formulation of the coalescent with recombination~\citep{hudson1983properties},
+where the stochastic process of coalescence and recombination
+among ancestral lineages is formalised as a
+graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
+Subsequently, ARGs have come to be thought of as a data
+structure~\citep{minichiello2006mapping}, i.e.\ describing
+the \emph{outcome} of such a random process or an inference
+of the genetic genealogy of a sample of genome sequences.
 However, the distinction between process and structure is not clear cut
 and subfields use the term
 differently (see Appendix XXX).
@@ -179,8 +181,10 @@ what the criteria for success should be.
 It also means there is no shared format for interchanging ARG data between
 programs, resulting in the assorted negative consequences with which
 geneticists are only too familiar~\citep{excoffier2006computer}.
-Perhaps most importantly, some definitions of ARGs
-(especially those linked to a specific stochastic process) are overly narrow, which
+Perhaps most importantly, the direct linkage to
+the original stochastic process definition leads to an overly
+overly narrow interpretation of ARGs, which is significantly
+out of step with modern methods, and
 can lead to missed opportunities in their application and usage.
 Such problems go much deeper than pedantic discussion over terminology;
 they directly inform what we should be attempting to estimate, how we
@@ -190,28 +194,29 @@ and accuracy of our inferences.
 % What do we do?
 In this paper we attempt to address these problems by
 providing a precise definition of an ARG that is general enough to encompass
-the output of all popular simulation and inference methods,
-yet simple enough to be encoded via a conventional mathematical graph.
-%% Yan: I added the above as both the ARGON and the Shipilova definitions
-%% use non-conventional graph structures for their encoding (e.g. hypergraphs, weird edges, etc)
-We follow the well established principle that it is advantageous
-to decouple the presence of mutations from the genealogical structure
-itself \citep[contra][chap.~3]{gusfield2014recombinatorics}.
-We propose a definition of genetic genealogy purely in terms of specific genomes
+the output of all popular simulation and inference methods.
+% We follow the well established principle that it is advantageous
+% to decouple the presence of mutations from the genealogical structure
+% itself \citep[contra][chap.~3]{gusfield2014recombinatorics}.
+We propose a definition of genetic genealogy in terms of specific genomes
 and their intervals of genetic inheritance, and refer to this as
 a ``genome ARG'', or ``gARG''.
 This contrasts with the classical Griffiths approach,
-which is based on recording evolutionary events, and which we call
+based on recording evolutionary events, which we call
 an ``event ARG'', or ``eARG''.
 We show that the gARG encoding has a range of advantages over the
-eARG approach, being both flexible and efficient.
-In particular, we argue that the goal of inferring fully precise
-ARGs---a necessity under the eARG encoding---should be
-% weird phrasing for a criticism?
-critically examined
-%
-as part of the process of fully decoupling our ARG data
-structure from any specific generative model.
+eARG approach, being flexible, efficient and, in particular,
+allowing us to systematically encode uncertainty about the
+time ordering of recombination events.
+
+% We examineV}
+% In particular, we argue that the goal of inferring fully precise
+% ARGs---a necessity under the eARG encoding---should be
+% % weird phrasing for a criticism?
+% critically examined
+% %
+% as part of the process of fully decoupling our ARG data
+% structure from any specific generative model.
 
 % and because it is focused on encoding the \emph{outcome}
 % of evolutionary events rather than the details of the events themselves,
@@ -710,7 +715,12 @@ more explicitly embedded in the data structure.
 
 \section*{Event ARGs}\label{eARG}
 In keeping with its original derivation in terms of a backward-time stochastic
-process (see Appendix~\ref{sec-arg-history}), the classical definition of an ARG data structure is in terms of events, and we therefore refer to it as an ``event ARG'' (eARG).
+process (see Appendix~\ref{sec-arg-history}),
+the classical definition of an ARG data structure is in terms of evolutionary
+\emph{events}.
+
+
+and we therefore refer to it as an ``event ARG'' (eARG).
 In an eARG, nodes represent
 common ancestor or recombination events that occurred in the
 history of some set of sample genomes, and edges represent ancestral
