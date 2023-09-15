@@ -121,6 +121,10 @@ Estimating the genetic genealogy of a set of genome sequences
 under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
+% TODO say this better.
+From a high-level, ARGs describe the sequence of correlated genealogical
+trees along the genome, induced by the different paths of
+genetic inheritance caused by recombination.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -182,7 +186,7 @@ It also means there is no shared format for interchanging ARG data between
 programs, resulting in the assorted negative consequences with which
 geneticists are only too familiar~\citep{excoffier2006computer}.
 Perhaps most importantly, the direct linkage to
-the original stochastic process definition leads to an overly
+the original stochastic process definition leads to an
 overly narrow interpretation of ARGs, which is significantly
 out of step with modern methods, and
 can lead to missed opportunities in their application and usage.
@@ -492,41 +496,50 @@ time ordering of recombination events.
 % power of ancestral recombination graph data structures.
 
 \section*{Genome ARGs}
-
 We define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e.\ haploids have one genome, diploids two, etc.).
 In this usage a ``genome'' is equivalent to the definition of a
 ``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
 it already has many interpretations, and in particular carries the implication of
 specific mutational patterns [CITES] that persist over
-many generations. A ``genome'' in our usage corresponds to the
-haploid genetic material present in a particular individual or cell.
+many generations.
+% A ``genome'' in our usage corresponds to the
+% haploid genetic material present in a particular individual or cell.
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species, denoting the full set
 of chromosomes and their coordinate spaces, and hope that the distinction
 will be clear from the context.
 
-A gARG is then a graph in which nodes represent
-haploid genomes, edges represent
-genetic inheritance between an ancestor and a descendant, and
-annotations specify coordinates of the genomic intervals
-over which genetic inheritance occurs.
-% FIXME WE're missing the important distinction here that the pedigree
-% has one node per ind, whereas a gARG has two nodes.
-We can therefore view a gARG for a given set of individuals
-as a subset of their pedigree.
-An example of this for diploids
-(so each individual is represented by two nodes)
-is illustrated in Fig.~\ref{fig-arg-in-pedigree}.
-Each genome is inherited from one
-of the individual's parents,
-and may be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
-has two genomes \textsf{a} and \textsf{b},
-inherited from parents $I_3$ and $I_4$. Genome \textsf{a} is the product of
-recombining $I_3$'s two genomes \textsf{e} and \textsf{f} at position 2,
-whereas \textsf{b} was inherited directly from $I_4$'s genome \textsf{g} without
-recombination.
+A genome ARG (gARG) is a graph in which nodes represent
+haploid genomes and edges represent
+genetic inheritance between an ancestor and a descendant.
+% This has two purposes: clarify that we're not talking about Shipilina
+% et als edges, and also get "Graph theory" in here
+(Note that we are using the term ``edge'' in its standard
+graph-theoretic sense
+and not the specialised interpretation of
+\cite{shipilina2023origin}.)
+The topology of a gARG specifies that genetic inheritance
+occurred between particular
+ancestors and descendants, but the graph connectivity
+does not tell us which \emph{parts} of their genomes were inherited.
+In order to capture the effects of recombination
+(and other processes that lead to the partial genome inheritance)
+ we ``annotate'' the edges with the genome
+coordinates over which inheritance occurs.
+We can define a gARG formally as follows.
+% TODO we should change the notation for inheritance intervals here,
+% as we use I to index individuals.
+Let $N \subset \mathbb{N}$ be the set of nodes representing
+the genomes in the gARG, and $E$ be the set of edges.
+We will usually define a set of nodes $S \subseteq N$
+representing the sampled genomes
+(but see section XXX for some subtlety around this point).
+Each element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
+parent nodes and $I$ is the set of disjoint genomic intervals $[\ell, r)$ over
+which genome $c$ inherits from $p$. Thus, each topological connection between
+ a parent and child in the graph is ``annotated'' with set of
+inheritance intervals $I$.
 
 \begin{figure}
 \begin{center}
@@ -557,61 +570,77 @@ they merge into a common ancestor, the merged region is darker.
 }
 \end{figure}
 
-The topology of a gARG specifies that genetic inheritance occurred between particular
-ancestors and descendants, but the graph connectivity
-does not tell us which \emph{parts} of their genomes were inherited.
-In order to capture the effects of recombination (and any other process
-that results in the partial inheritance of a descendant genome
-from an ancestor) we ``annotate'' the edges with the genome
-coordinates over which inheritance occurs.
-Continuing the example of genome \textsf{a} in Fig.~\ref{fig-arg-in-pedigree},
-the recombination at position 2 means that it inherits the (half-closed) genome
-interval $[0, 2)$ from \textsf{e} and it inherits $[2, 10)$ from \textsf{f};
+As illustrated in Fig.~\ref{fig-arg-in-pedigree},
+the gARG for a given set of individuals is embedded in their pedigree.
+In this diploid example, each genome is inherited from one
+of the individual's parents,
+and may be the recombined product of that parent's two genomes.
+For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
+has two genomes \noderef{a} and \noderef{b},
+inherited from parents $I_3$ and $I_4$.
+Genome \noderef{b} was inherited directly from $I_4$'s genome \noderef{g} without
+recombination, whereas
+\noderef{a} is the product of
+recombining $I_3$'s two genomes \noderef{e} and \noderef{f} at position 2.
+This recombination at means \noderef{a} inherits the (half-closed) genome
+interval $[0, 2)$ from \noderef{e} and it inherits $[2, 10)$ from \noderef{f};
 these intervals are shown attached to the corresponding graph edges.
 
-% important to show that this is a formal model and the concrete definition
-% will help some readers?
-% FIXME - the oriented forest definition is wrong, we need to be more
-% concrete about the fact that nodes are integers.
-Formally, we define a gARG as a sets of nodes $N$ and edges $E$.
-Each element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
-parent nodes and $I$ is the set of disjoint genomic intervals $[\ell, r)$ over
-which genome $c$ inherits from $p$. The most fundamental operation for
-an ARG data structure is the process of recovering the corresponding sequence
-of local trees along the genome. Concretely, we can describe a local tree
-at position $x$ as an oriented forest $\pi = ( \pi_1, \hdots, \pi_{|N|} )$,
-where the entry $\pi_j$ is the index
-of the parent of $j$ and $\pi_j = \emptyset$ if $j$ is not present in the
-tree~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
-We use a forest to describe the local ancestry at a given
-position so that we allow for cases where not all leaves have
-found a most recent common ancestor, resulting in multiple roots.
-To construct $\pi$ at position $x$, set
-$\pi_i = \emptyset$ for $i \in \{1, \hdots, |N|\}$.
-% FIXME - this is wrong
-Then, traversing over all nodes of the tree,
-at each node
-$u$, find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
-$\pi_c \leftarrow p$.
-At the end of this process, $\pi$ fully describes the local tree.
+% The most fundamental operation for
+% an ARG data structure is to recover the embedded local tree
+% at some position $x$ along the genome.
+The relationship between an ARG and the corresponding local trees
+is somewhat subtle (see section XXX), and it useful to have
+a concrete definition and process for reconstruction.
+We can describe a local tree as an
+oriented tree~\cite[p.\ 461]{knuth11combinatorial},
+a sequence of integers $\pi_1\pi_2\dots$ where $\pi_u$ denotes the parent of
+node $u$~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
+If $u$ is a root
+% I'm not sure if this is a helpful clarification, and whether it'll just
+% confuse people. It depends on some tricky details.
+(or not reachable from the samples)
+in the local tree at position $x$, $\pi_u = -1$.
+Technically, this structure is a ``forest'', as it allows us to have
+multiple disconnected trees, which occurs when all samples have not
+found a most recent common ancestor. Oriented trees also allow nodes
+to have  any number of children from one (see section XXX for more
+discussion on such ``unary nodes'' in the local trees), to arbitrarily
+large polytomies.
+To recover the local tree $\pi$ at position $x$  then, we begin by
+setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
+node in $S$ we trace its path rootwards through the
+ARG for position $x$, and record this path in $\pi$.
+Specifically, at a given node $u$,
+we an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
+$\pi_c \leftarrow p$. The set $u \leftarrow p$, and repeat
+until either $\pi_u \neq -1$ (indicating we have traversed this section
+of the ARG already on the path from another sample) or there
+is no matching outbound edge (indicating we are at a root).
 
-There are some interesting consequences to these definitions. Firstly,
-there is
-no limitation on mating system, ploidy, or age structure. By making the
-basic unit of analysis an individual's \emph{genomes} (i.e.\ two per individuals
-for diploids), any pattern of inheritance among mixed ploidy can be
-accommodated.
+There are some important consequences to these definitions.
+Firstly, there is
+no limitation on mating system, ploidy, or age structure in a gARG.
+By making the
+basic unit of analysis an individual's genomes,
+any pattern of inheritance among mixed ploidy can be accommodated.
 Secondly, because we record the intervals of inheritance
-between genomes (and not causal \emph{events}),
+between genomes,
 arbitrary patterns of genetic inheritance such as
 gene conversions,
-multiple simultaneous recombinations (e.g.\ Figure~\ref{fig-arg-in-pedigree}), and so on can be directly expressed.
+multiple simultaneous recombinations
+(e.g.\ Figure~\ref{fig-arg-in-pedigree}),
+and so on can be directly expressed.
 % Wilder: give forward ref to section on efficiency here, mention tree sequence
-Thirdly, ``local'' trees that we generate for a particular position on the
-genome are not explicitly concerned with ``coalescence'' (nodes at which
-one or more samples find a common ancestor); for example, node \noderef{e}
-is present but not coalescent in the left-most tree of Figure~\ref{fig-arg-in-pedigree} (see the ``Precision of recombination information'' section for more
-discussion). Fourth, recombination is modelled in terms of
+Thirdly, local trees that we generate for a particular position on the
+genome can have nodes of any arity, including ``unary''
+nodes with a single child (see Section XXX).
+% are not explicitly concerned with ``coalescence'' (nodes at which
+% one or more samples find a common ancestor); for example, node \noderef{e}
+% is present but not coalescent in the left-most tree of
+% Figure~\ref{fig-arg-in-pedigree}
+% (see section XXX for more discussion).
+Fourth, recombination is modelled in terms of
 its outcomes in terms of inheritance intervals among parental genomes;
 thus we will have a child node (the recombinant; e.g. node \noderef{a}
 Figure~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
@@ -627,22 +656,15 @@ recombination, and is agnostic to the details of those processes.
 % In particular, the "Finally" bit doesn't really seem to follow
 % from the others. Is there a more direct way we can address these points ?
 
-[FIXME find somewhere natural for this. The last clause is too vague - what
-are the implications?]
-Alternative gARG encodings split transmitted intervals and associate each with
-a new node, resulting in a single genome being represented by a group of
-multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
-efficiency of storage.
 
-
-In this section we have considered the nodes in a gARG as separate from events
-in a generative process. Nevertheless, gARGs are commonly constructed to
-include only those genomes associated with specific events. For example,
-\cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree...
-contain[ing] only those edges along which inherited segments of DNA have been
-transmitted, and only those nodes corresponding to ancestors in which there was
-a recombination or coalescence event.''. In an eARG however, events are even
-more explicitly embedded in the data structure.
+% In this section we have considered the nodes in a gARG as separate from events
+% in a generative process. Nevertheless, gARGs are commonly constructed to
+% include only those genomes associated with specific events. For example,
+% \cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree...
+% contain[ing] only those edges along which inherited segments of DNA have been
+% transmitted, and only those nodes corresponding to ancestors in which there was
+% a recombination or coalescence event.''. In an eARG however, events are even
+% more explicitly embedded in the data structure.
 
 % There are some interesting and important consequences to this focus on genomes
 % rather than events.
@@ -2073,10 +2095,22 @@ is the subject of much research
 has a long history [summarise this in a couple of sentences?]
 \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
 (equivalent to the ``bricked tree sequence'' of
-\cite{nowbandegani2023extremely}), where we consider the unique sets of
+\cite{nowbandegani2023extremely},
+% TODO look this up. I expect it's basically the same??
+and the block-based ARG data structure of
+\citep{palamara2016argon}),
+here we consider the unique sets of
 samples that coalesce at a node in the ARG over a particular
 genome interval, and the fundamental limitations they place
 on ARG inference.
+
+% [FIXME find somewhere natural for this. The last clause is too vague - what
+% are the implications?]
+% Alternative gARG encodings split transmitted intervals and associate each with
+% a new node, resulting in a single genome being represented by a group of
+% multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
+% efficiency of storage.
+
 
 % % Do downstream applications actually make use of such full ARGs?
 Besides the inherent limitations that exist on inferring fully precise ARGs
