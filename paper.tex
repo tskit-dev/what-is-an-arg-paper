@@ -566,7 +566,7 @@ they merge into a common ancestor, the merged region is darker.
 % is associated with two parent genomes (\textsf{e} and
 % \textsf{f}) and a child genome (the recombinant, \textsf{c}).
 % (C) The edge-annotated genome ARG in (B) fully defines the
-(C) The corresponding local (``marginal'') trees.
+(C) The corresponding local trees.
 }
 \end{figure}
 
@@ -589,7 +589,9 @@ these intervals are shown attached to the corresponding graph edges.
 % The most fundamental operation for
 % an ARG data structure is to recover the embedded local tree
 % at some position $x$ along the genome.
-The relationship between an ARG and the corresponding local trees
+The relationship between an ARG and the corresponding local
+% TODO do we mention "marginal" anywhere? Might not be worth the
+% effort, surely "local" is clear?
 is somewhat subtle (see section XXX), and it useful to have
 a concrete definition and process for reconstruction.
 We can describe a local tree as an
@@ -736,25 +738,48 @@ recombination, and is agnostic to the details of those processes.
 % cannot be done by storing recombination breakpoints.
 
 \section*{Event ARGs}\label{eARG}
-In keeping with its original derivation in terms of a backward-time stochastic
-process (see Appendix~\ref{sec-arg-history}),
-the classical definition of an ARG data structure is in terms of evolutionary
-\emph{events}.
-
-
+Genome ARGs model the inheritance between specific genomes,
+annotating the edges of the graph with the intervals
+of genetic inheritance. It is primarily concerned with
+describing relationships and the details of inheritance
+between pairs of genomes.
+In contrast, the classical ARG data structure is defined
+by evolutionary \emph{events},
 and we therefore refer to it as an ``event ARG'' (eARG).
-In an eARG, nodes represent
-common ancestor or recombination events that occurred in the
-history of some set of sample genomes, and edges represent ancestral
-lineages~\citep{griffiths1996ancestral}.
+In an eARG we usually have two different types
+of node,
+representing common ancestor and recombination events that occurred in the
+history of some set of sample genomes
+and edges represent ancestral lineages~\citep{griffiths1996ancestral}.
 In a common ancestor event the inbound lineages are merged into a
 single ancestral lineage with one parent, whereas in a recombination
 event a lineage is split into two independent
-ancestral lineages, and a list of two parents is required.
-As illustrated in Figure~\ref{fig-arg-data-structure},
+ancestral lineages with an associated breakpoint.
+Figure~\ref{fig-arg-data-structure} shows an example of a classical
+eARG with three samples (\noderef{a}, \noderef{b}, and \noderef{c})
+and a single recombination event, along with an example concrete
+encoding of the data.  There is a single recombination event
+at node \noderef{d} with a breakpoint at position $x$. We
+assume that \noderef{d} inherits genetic material to the
+left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
+We use the standard convention here
+that the order of parents
+is significant, but additional information can be incorporated to
+distinguish left and right parents
+\citep[e.g.][Chap.\ 3]{gusfield2014recombinatorics}.
+
+Beyone the interpretation of nodes as representing events or
+genomes (which may reasonably be seen as somewhat philosophical),
+the essential difference between a gARG and a classical eARG
+[JK WIP from here:]
+is that eARGs define the
+
+carry positional information on their nodes, rather than
+storing genome positions as edge annotations.
+
 the regions of the genome which are transmitted are usually
 specified by associating recombination nodes with a breakpoint.
-In other words, eARGs traditionally
+In other words, eARGs
 carry positional information on their nodes, rather than
 storing genome positions as edge annotations.
 
@@ -764,7 +789,7 @@ When we encounter a recombination node during traversal
 if $x$ is less than the breakpoint we follow
 the edge to the first parent, and otherwise follow the edge
 to the second parent. This means the order in which parents are
-listed is important. Alternatively, additional information can be incorporated to distinguish left and right parents \citep[e.g.][Chap.\ 3]{gusfield2014recombinatorics}.
+listed is important.
 
 % Jere & Yan: we thought about going into how simulation is difficult
 % with just one recombination node due to needing an order before
@@ -772,18 +797,6 @@ listed is important. Alternatively, additional information can be incorporated t
 % fairly trivially with two recombination nodes, we decided it was
 % more fiddly than it's worth.
 % However, see https://github.com/tskit-dev/what-is-an-arg-paper/discussions/41#discussioncomment-2035609 for additional complexities
-
-
-
-
-% Griffiths and colleagues~\citep{griffiths1997ancestral} originally defined
-% the ARG as analog of the Kingman coalescent~\citep{kingman1982coalescent},
-% in which the ancestry of a sample of $n$ genomes under idealised
-% conditions is modelled. One of the key assumptions of this model is that
-% the sample size $n$ is much less than the population size $N$, which means
-% that the probability of two multiple concurrent events (i.e., coalescence
-% and recombination events) is negligible.
-
 
 \begin{figure}
 \centering
@@ -831,25 +844,27 @@ $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
 $\noderef{g}$ & $\varnothing$ & []\\
 \end{tabular}};
 
-\node [anchor=north west] at (20,6) {C};
-\node [nodelabel,anchor=north west] at ($(10,5)$) {
-\begin{tabular}{ll}
-% Edges & Intervals\\
-\hline
-$(\textsf{a}, \textsf{e})$ & $[0, L)$ \\
-$(\textsf{b}, \textsf{d})$ & $[0, L)$ \\
-$(\textsf{c}, \textsf{f})$ & $[0, L)$ \\
-$(\textsf{d}, \textsf{e})$ & $[0, x)$ \\
-$(\textsf{d}, \textsf{f})$ & $[x, L)$ \\
-$(\textsf{e}, \textsf{g})$ & $[0, L)$ \\
-$(\textsf{f}, \textsf{g})$ & $[0, L)$ \\
-\end{tabular}};
+% \node [anchor=north west] at (20,6) {C};
+% \node [nodelabel,anchor=north west] at ($(10,5)$) {
+% \begin{tabular}{ll}
+% % Edges & Intervals\\
+% \hline
+% $(\textsf{a}, \textsf{e})$ & $[0, L)$ \\
+% $(\textsf{b}, \textsf{d})$ & $[0, L)$ \\
+% $(\textsf{c}, \textsf{f})$ & $[0, L)$ \\
+% $(\textsf{d}, \textsf{e})$ & $[0, x)$ \\
+% $(\textsf{d}, \textsf{f})$ & $[x, L)$ \\
+% $(\textsf{e}, \textsf{g})$ & $[0, L)$ \\
+% $(\textsf{f}, \textsf{g})$ & $[0, L)$ \\
+% \end{tabular}};
 
 \end{tikzpicture}
 \caption{\label{fig-arg-data-structure}
-A graphical depiction of a classical event ARG (left) and a corresponding encoding of the information (right). For uniformity, rather than defining alternative node types, we
-identify recombination nodes (e.g.\ \noderef{d}) as those with a non-null breakpoint; these also have two parents. Nodes \noderef{e}, \noderef{f} and \noderef{g} are
-common ancestor events.
+A graphical depiction of a classical event ARG (left) and a corresponding
+encoding of the information (right).
+Recombination nodes (e.g.\ \noderef{d}) have a non-null breakpoint
+and two parents.
+Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 }
 \end{figure}
 
@@ -1916,7 +1931,7 @@ an efficient substrate for defining analysis algorithms is that
 it allows us to generate the local trees along the genome
 in a way that allows us to reason about the \emph{differences}
 between those trees.
-Sequentially generating the marginal trees along the genome
+Sequentially generating the local trees along the genome
 is also fundamental, and is necessary whenever we need to
 perform calculations that are contingent on more than just the
 isolated properties of an edge. \cite{kelleher2016efficient}
