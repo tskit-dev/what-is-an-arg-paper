@@ -1934,6 +1934,95 @@ trees~\citep[e.g.,][]{hejase2020summary,ignatieva2021kwarg}.
 % Could say more here, but maybe we'll have a note about terminology
 % in the discussion
 
+\section*{SARS-CoV-2 ARGs: a case study}
+% What is SARS-CoV-2 and why is it interesting here? What's the dataset?
+% What are its basic evolutionary properties, summarised for a
+% population geneticist?
+Recombination via template switching is an important
+factor in the evolution of
+SARS-CoV-2~\citep{vaninsberghe2021recombinant,jackson2021generation,ignatieva2022ongoing}.
+With multiple deeply divergent lineages circulating globally,
+coinfection (and the potential for recombination)
+is relatively likely~\citep{bal2022detection}.
+The COVID-19 pandemic led to collection of whole-genome viral data
+at unprecented scale, with the GISAID database~\citep{shu2017gisaid}
+currently holding over 15 million sequences [FIXME]. Detection
+and characterisation of recombination is of profound interest
+for [reasons XYZ].
+
+% Summary of sc2ts paper. We inferred some big ole ARGs, with an
+% unprecedented degree of detail about recombination (outside, I guess,
+% of agri datasets). Summary of what's previously known about sc2 recomb.
+\citet{zhan2023towards} inferred two large ARGs for SARS-CoV-2 based
+on GISAID data, one containing 1.27 million sequences sampled up to
+June 30, 2021 (the ``Wide ARG'', and the second
+(more sparsely sampled) consisting of 657K sequences sampled up to June 30,
+2022 (the ``Long ARG''). Recombination is rare in both ARGs, with $<0.3\%$
+of the nodes being inferred to be recombinants (and quite likely
+a substantial number of false positives caused by poor data quality).
+Nonetheless, this provides thousands of automatically detected
+recombination events, the characterisation of which is usually a manual
+and labour intensive process. The recombinations events detected
+and fully characterised in these large ARGs fit well with previous
+which exhaustively investigate specific
+recombinants~\citep{jackson2021generation}.
+[Not sure what I'm trying to say here;
+what does a PopGen person who knows very little about SARS2 need to
+know here to given them context?]
+
+% What's the point of this case study? To emphasise that we
+% need to systematically represent topological uncertainty in ARGs.
+The pandemic scale SARS-CoV-2 dataset is an interesting case study
+for a number of reasons.
+Firstly, fundamental properties of the data underscore the
+need for topological uncertainty through polytomies
+and stacked recombination [more concise way of saying this?].
+The scale of sequencing effort at the height
+of the pandemic means that there were at times tens of thousands
+of sequences collected in a single day. This, combined with
+the slow rate of mutation, means that we will often have hundreds
+of identical sequences collected on the same day.
+This makes polytomies an unescapable reality, and a
+fully-resolved binary tree is clearly false precision in this case.
+At the other extreme, ``unary'' nodes are also a common and
+necessary property of such densely sampled data [explain and
+give numbers?]
+Even with this exquisite level of detail we are
+often unable to fully time-resolve recombination events. While
+in some cases a recombination event with two parental lineages
+can be quite precisely located in space and time (e.g. XA was in Wales
+around [when]), in others three or more quite distinct parental
+lineages indicate multiple unobserved recombinations.
+[JK: I'm just making stuff up here: I'm assuming that there's an
+example of a complex X lineages that people haven't figured the
+exact history of. Just seeing if this makes a good narrative
+before filling in the details.]
+While this
+may be seen as a limitation of the \texttt{sc2ts} method,
+concerted efforts to disentangle the origins of [some example
+of a complicated X lineage] have not succeeded in shedding
+much extra light, and truthfully representing the uncertainty
+around these events seems a more useful approach than
+ arbitrary resolution. Encoding the dataset as an eARG,
+with a specific event for each recombination breakpoint,
+would require such false precision.
+
+An interesting property of the SARS-CoV-2 dataset is that
+it highlights the uncertainty in the genomic position of
+recombination breakpoints. [Some discussion about why
+we can never know where the breakpoint really happened, and
+some follow-up to note that this is even more acute in
+standard popgen datasets where we're thinking about ancient
+recombs].
+This is a limitation of the
+gARG encoding proposed here, which requires that we specify
+exact intervals of inheritance and therefore precise
+recombination breakpoints.
+An approach in which we can systematically reason about the
+uncertainty of inheritance intervals as they propogate
+through an ARG
+would be an interesting avenue for future research.
+
 \section*{Discussion}
 Recent breakthroughs have made ARG inference methods practical
 for the first time, and there has been a surge of interest
