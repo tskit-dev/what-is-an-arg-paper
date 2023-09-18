@@ -592,8 +592,6 @@ these intervals are shown attached to the corresponding graph edges.
 % an ARG data structure is to recover the embedded local tree
 % at some position $x$ along the genome.
 The relationship between an ARG and the corresponding local trees
-% TODO do we mention "marginal" anywhere? Might not be worth the
-% effort, surely "local" is clear?
 is somewhat subtle (see section XXX), and it is useful to have
 a concrete definition and explicit process for reconstruction.
 We can describe a local tree as an
@@ -770,33 +768,20 @@ coalescence and recombination events resulting from the stochastic process of
 the coalescent with recombination.''
 In contrast ~\citet{gusfield2014recombinatorics} defines an ARG as [FIXME]
 
+% Papers that do not discuss how positions work:
+% - Mathieson and Scally: no discussion of how it works concretely (but quite
+%   close to gARG, in some ways)
+% 
+
 The common features of these definitions is that they are expressed
 in terms of evolutionary events, emphasise the exhaustiveness
 of the record (full, complete), and they do not specify the mechanism
 by which partial genetic inheritance occurs. Just as the graph topology
 in a gARG defines the paths along which genetic inheritance occurs, some
 additional information is required to define the actual regions of genome
-inherited.
+inherited. 
 
-
-
-% % The full ancestral recombination graph (ARG) is a structure that encodes all
-% % coalescence and recombination events resulting from the stochastic process of
-% % the coalescent with recombination.
-
-% historial trend discussed in the XXX section).
-% \citet{rasmussen2022espalier} have a less restrictive definition, in
-% which a ``full'' ARG is one that contains complete information about
-% recombination events, without necessarily being tied to a particular
-% stochastic process.
-% While [something positive], it is important to be clear on
-% what the overall goal of such precise inferences are,
-% what the limitations on when they can be made are,
-% and their downstream utility in applications.
-
-
-
-In an eARG we usually have two different types
+In the classical view of an eARG we usually have two different types
 of node,
 representing common ancestor and recombination events that occurred in the
 history of some set of sample genomes
@@ -1248,6 +1233,15 @@ in modelling them.
 ARGs, however, are different, and there
 can be significant information about evolutionary processes
 provided by nodes that are unary in one or more local trees.
+[FIXME this is clumsy; should mention somewhere, though.]
+\citep{mathieson2020ancestry} show examples in which the ARGs 
+contain unary nodes, and state that paths are ``implicitly passing through points representing specific
+individuals.''
+% Full quote from fig caption:
+% Genetic ancestry in the form of the ARG for a single individual. Combining
+% genetic ancestry from different positions leads to a graph, incorporating all
+% realized genetic ancestry paths, implicitly passing through points representing
+% specific individuals.
 
 \begin{figure}
 \centering
@@ -1692,6 +1686,10 @@ In order for the mapping to be one-to-one, so that the original
 gARG can be exactly recovered from a set of local trees and
 their genome coordinates,
 some specific properties of the ARG and the trees are required.
+Note that many authors use the term ``marginal''
+trees~\citep[e.g.][]{minichiello2006mapping} [more]
+which we avoid due the potential confusion with statistical
+marginal distrubtions [FIXME Gregor, what's the right wording here?]
 
 Firstly, the internal nodes in the local trees must be labelled
 (i.e.\ marked with the identity of the corresponding ARG node).
