@@ -536,7 +536,9 @@ We will usually define a set of nodes $S \subseteq N$
 representing the sampled genomes
 (but see section XXX for some subtlety around this point).
 Each element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
-parent nodes and $I$ is the set of disjoint genomic intervals $[\ell, r)$ over
+parent nodes and $I$ is the set of disjoint genomic intervals
+%$[\ell, r)$
+over
 which genome $c$ inherits from $p$. Thus, each topological connection between
  a parent and child in the graph is ``annotated'' with set of
 inheritance intervals $I$.
@@ -589,11 +591,11 @@ these intervals are shown attached to the corresponding graph edges.
 % The most fundamental operation for
 % an ARG data structure is to recover the embedded local tree
 % at some position $x$ along the genome.
-The relationship between an ARG and the corresponding local
+The relationship between an ARG and the corresponding local trees
 % TODO do we mention "marginal" anywhere? Might not be worth the
 % effort, surely "local" is clear?
-is somewhat subtle (see section XXX), and it useful to have
-a concrete definition and process for reconstruction.
+is somewhat subtle (see section XXX), and it is useful to have
+a concrete definition and explicit process for reconstruction.
 We can describe a local tree as an
 oriented tree~\cite[p.\ 461]{knuth11combinatorial},
 a sequence of integers $\pi_1\pi_2\dots$ where $\pi_u$ denotes the parent of
@@ -614,8 +616,8 @@ setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
 node in $S$ we trace its path rootwards through the
 ARG for position $x$, and record this path in $\pi$.
 Specifically, at a given node $u$,
-we an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
-$\pi_c \leftarrow p$. The set $u \leftarrow p$, and repeat
+we an find edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
+$\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
 until either $\pi_u \neq -1$ (indicating we have traversed this section
 of the ARG already on the path from another sample) or there
 is no matching outbound edge (indicating we are at a root).
@@ -746,6 +748,54 @@ between pairs of genomes.
 In contrast, the classical ARG data structure is defined
 by evolutionary \emph{events},
 and we therefore refer to it as an ``event ARG'' (eARG).
+The difference between gARGs and eARGs is subtle and the distinctions
+at times rather porous. In essense, our main goal of introducing the
+term ``Event ARG'' is to contrast the flexibility of the genome ARG
+view with current practice. It is therefore useful to consider
+the definition of an ARG from recent work.
+
+% Todo this is rough. Ideally we want a bit of commentary running through
+% the quotations.
+\cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree...
+contain[ing] only those edges along which inherited segments of DNA have been
+transmitted, and only those nodes corresponding to ancestors in which there was
+a recombination or coalescence event.''
+\citet{shipilina2023origin} emphasise the reality  ``The ARG describes the complete
+ancestry of a sample of genomes through a series of real coalescence and
+recombination events''. In contrast,
+\citet{brandt2021evaluation} tie the definition of an ARG explicitly
+to a generative process:
+``The full ancestral recombination graph (ARG) is a structure that encodes all
+coalescence and recombination events resulting from the stochastic process of
+the coalescent with recombination.''
+In contrast ~\citet{gusfield2014recombinatorics} defines an ARG as [FIXME]
+
+The common features of these definitions is that they are expressed
+in terms of evolutionary events, emphasise the exhaustiveness
+of the record (full, complete), and they do not specify the mechanism
+by which partial genetic inheritance occurs. Just as the graph topology
+in a gARG defines the paths along which genetic inheritance occurs, some
+additional information is required to define the actual regions of genome
+inherited.
+
+
+
+% % The full ancestral recombination graph (ARG) is a structure that encodes all
+% % coalescence and recombination events resulting from the stochastic process of
+% % the coalescent with recombination.
+
+% historial trend discussed in the XXX section).
+% \citet{rasmussen2022espalier} have a less restrictive definition, in
+% which a ``full'' ARG is one that contains complete information about
+% recombination events, without necessarily being tied to a particular
+% stochastic process.
+% While [something positive], it is important to be clear on
+% what the overall goal of such precise inferences are,
+% what the limitations on when they can be made are,
+% and their downstream utility in applications.
+
+
+
 In an eARG we usually have two different types
 of node,
 representing common ancestor and recombination events that occurred in the
