@@ -767,29 +767,43 @@ to a generative process:
 coalescence and recombination events resulting from the stochastic process of
 the coalescent with recombination.''
 In contrast ~\citet{gusfield2014recombinatorics} defines an ARG as [FIXME]
-
-% Papers that do not discuss how positions work:
-% - Mathieson and Scally: no discussion of how it works concretely (but quite
-%   close to gARG, in some ways)
-% 
-
 The common features of these definitions is that they are expressed
-in terms of evolutionary events, emphasise the exhaustiveness
-of the record (full, complete), and they do not specify the mechanism
-by which partial genetic inheritance occurs. Just as the graph topology
-in a gARG defines the paths along which genetic inheritance occurs, some
-additional information is required to define the actual regions of genome
-inherited. 
+in terms of evolutionary events, and emphasise the exhaustiveness
+of the record (full, complete). We will examine the consequences of both
+of these properties in different contexts throughout the remainder of
+this article.
 
-In the classical view of an eARG we usually have two different types
-of node,
-representing common ancestor and recombination events that occurred in the
-history of some set of sample genomes
-and edges represent ancestral lineages~\citep{griffiths1996ancestral}.
-In a common ancestor event the inbound lineages are merged into a
-single ancestral lineage with one parent, whereas in a recombination
-event a lineage is split into two independent
-ancestral lineages with an associated breakpoint.
+Another common feature of these definitions is that they do not explicitly
+discuss the mechanism by which genealogical trees vary along the genome.
+The topology of an eARG defines the common ancestor and
+recombination events that occured,
+but the graph structure alone is not sufficient to define the local trees,
+or equivalently, how ``ancestral material'' (Section XXX) flows along
+the edges of the ARG.
+% % Papers that do not discuss how positions work:
+% % - Mathieson and Scally: no discussion of how it works concretely (but quite
+% %   close to gARG, in some ways)
+% %
+% The common features of these definitions is that they are expressed
+% in terms of evolutionary events, emphasise the exhaustiveness
+% of the record (full, complete), and they do not specify the mechanism
+% by which partial genetic inheritance occurs. Just as the graph topology
+% in a gARG defines the paths along which genetic inheritance occurs, some
+% additional information is required to define the actual regions of genome
+% inherited.
+Classically, this is done by having two different types
+of node:
+common ancestor nodes in which the inbound lineages are merged into a
+single ancestral lineage with one parent, and recombination
+nodes in which a single lineage is split into two independent
+ancestral lineages.
+Recombination nodes are then
+annotated with
+the corresponding crossover breakpoint~\citep{griffiths1996ancestral}.
+% In a common ancestor event the inbound lineages are merged into a
+% single ancestral lineage with one parent, whereas in a recombination
+% event a lineage is split into two independent
+% ancestral lineages with an associated breakpoint.
 Figure~\ref{fig-arg-data-structure} shows an example of a classical
 eARG with three samples (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event, along with an example concrete
@@ -797,11 +811,11 @@ encoding of the data.  There is a single recombination event
 at node \noderef{d} with a breakpoint at position $x$. We
 assume that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
-We use the standard convention here
+We use a common convention here
 that the order of parents
-is significant, but additional information can be incorporated to
+is significant, but additional information is sometimes incorporated to
 distinguish left and right parents
-\citep[e.g.][Chap.\ 3]{gusfield2014recombinatorics}.
+\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
 
 Beyone the interpretation of nodes as representing events or
 genomes (which may reasonably be seen as somewhat philosophical),
@@ -895,7 +909,7 @@ $\noderef{g}$ & $\varnothing$ & []\\
 
 \end{tikzpicture}
 \caption{\label{fig-arg-data-structure}
-A graphical depiction of a classical event ARG (left) and a corresponding
+A classical event ARG (left) and a corresponding
 encoding of the information (right).
 Recombination nodes (e.g.\ \noderef{d}) have a non-null breakpoint
 and two parents.
@@ -1234,7 +1248,7 @@ ARGs, however, are different, and there
 can be significant information about evolutionary processes
 provided by nodes that are unary in one or more local trees.
 [FIXME this is clumsy; should mention somewhere, though.]
-\citep{mathieson2020ancestry} show examples in which the ARGs 
+\citep{mathieson2020ancestry} show examples in which the ARGs
 contain unary nodes, and state that paths are ``implicitly passing through points representing specific
 individuals.''
 % Full quote from fig caption:
