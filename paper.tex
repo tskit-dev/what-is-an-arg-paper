@@ -178,8 +178,6 @@ We are not concerned here with mutational processes or observed sequences,
 % FIXME topological isn't the right word...
 but consider only processes of inheritance,
 following the standard practise in coalescent theory.
-% A ``genome'' in our usage corresponds to the
-% haploid genetic material present in a particular individual or cell.
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species, denoting the full set
 of chromosomes and their coordinate spaces, and hope that the distinction
@@ -220,12 +218,14 @@ inheritance intervals $I$.
 
 \begin{figure}
 \begin{center}
-    \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
+    % FIXME making this 0.75 textwidth for now because it's too tall.
+    % https://github.com/tskit-dev/what-is-an-arg-paper/issues/321
+    \includegraphics[width=0.75\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
-An example gARG embedded in a pedigree.
+An example genome ARG embedded in a pedigree.
 (A) Diploid individuals, visualised in a highly inbred pedigree and
 labelled $I_1$ to $I_8$, contain both paternal and maternal  genomes
 labelled \textsf{a} to \textsf{p}. Black lines show inheritance paths connecting
@@ -238,11 +238,6 @@ Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker.
 (B) The corresponding gARG along with inheritance annotations on all edges
 (partial inheritance in bold).
-% Recombination (e.g.,
-% the cause of the breakpoint at position 7)
-% is associated with two parent genomes (\textsf{e} and
-% \textsf{f}) and a child genome (the recombinant, \textsf{c}).
-% (C) The edge-annotated genome ARG in (B) fully defines the
 (C) The corresponding local trees.
 }
 \end{figure}
@@ -312,11 +307,6 @@ and so on can be directly expressed.
 Thirdly, local trees that we generate for a particular position on the
 genome can have nodes of any arity, including ``unary''
 nodes with a single child (see Section XXX).
-% are not explicitly concerned with ``coalescence'' (nodes at which
-% one or more samples find a common ancestor); for example, node \noderef{e}
-% is present but not coalescent in the left-most tree of
-% Figure~\ref{fig-arg-in-pedigree}
-% (see section XXX for more discussion).
 Fourth, recombination is modelled in terms of
 its outcomes in terms of inheritance intervals among parental genomes;
 thus we will have a child node (the recombinant; e.g. node \noderef{a}
@@ -332,19 +322,6 @@ recombination, and is agnostic to the details of those processes.
 % The paragraph above is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
 % from the others. Is there a more direct way we can address these points ?
-
-
-% In this section we have considered the nodes in a gARG as separate from events
-% in a generative process. Nevertheless, gARGs are commonly constructed to
-% include only those genomes associated with specific events. For example,
-% \cite{mathieson2020ancestry} define an ARG as ``a subset of the pedigree...
-% contain[ing] only those edges along which inherited segments of DNA have been
-% transmitted, and only those nodes corresponding to ancestors in which there was
-% a recombination or coalescence event.''. In an eARG however, events are even
-% more explicitly embedded in the data structure.
-
-% There are some interesting and important consequences to this focus on genomes
-% rather than events.
 
 % Firstly, a gARG may contain nodes that are both samples \emph{and}
 % internal nodes in the local trees.
@@ -394,23 +371,6 @@ recombination, and is agnostic to the details of those processes.
 % section where we talk about stacking up recombination events
 % and their identifiability.]
 
-% The reader may arrive at the end of this section going, er, so what?
-% Try to tackle this head on by getting to the heart of the distinction.
-% The difference between eARGs and gARGs are subtle, and whether
-% we choose to interpret nodes as events or genomes
-% might seem of little practical importance.
-% However, there are substantial practical benefits
-% from using the gARG encoding, allowing differential
-% levels of information about the recombination process to be
-% represented in a computationally efficient way.
-% The key to this is not so much in how we interpret nodes
-% (see Appendix XXX), but specifically in how
-% we represent the process of genetic inheritance.
-% The critical distinction is that
-% the gARG encoding allows us to directly describe
-% genetic inheritance in multiple non-contiguous genome intervals
-% between an ancestor and a descendant, something that
-% cannot be done by storing recombination breakpoints.
 
 \section*{Event ARGs}\label{eARG}
 Genome ARGs are concerned with
@@ -494,8 +454,9 @@ distinguish left and right parents
 into the
 encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
 
-
 \begin{figure}
+% FIXME add local trees in B
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/320
 \centering
 % \begin{tabular}{cc}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
@@ -571,13 +532,17 @@ genetic material along the genome.
 While the additional generality provided by the gARG representation
 is useful, it is in reality a small change that does not
 lead to significantly different time or space complexity in computational
-tasks. The vitally important and fundamental distinction between
-a gARG and the classical eARG perspective is that gARGs do not
-\emph{require} us to posit explicit recombination events in order
-to describe a dataset, but
-instead provide a means of encoding the effects of
-multiple events, and to systematically describe the uncertainty around them
-(see Section XXX).
+tasks.
+The vitally important and fundamental distinction between
+a gARG and an eARG is that gARGs
+allow us to directly describe
+genetic inheritance in multiple non-contiguous genome intervals
+between an ancestor and a descendant, which cannot be done
+by specifying recombination events and breakpoints.
+Thus, we have the means of encoding the effects of
+multiple \emph{simultaneous} events, and to
+systematically describe the uncertainty around their
+ordering (see Section XXX).
 As we see in the following sections, freeing ourselves from the requirement
 of recording specific events and
 the additional generality of the gARG encoding
@@ -640,7 +605,6 @@ described in detail by
 powerful tool with many other applications,
 some of which we discuss in the following sections.
 
-% JK: previous heading was jargony - this is clearer
 \section*{Converting an eARG to a gARG}
 Any eARG can be converted to a gARG without loss of information,
 and the conversion process is very similar to
