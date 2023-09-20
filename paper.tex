@@ -146,6 +146,8 @@ Originally, ARGs were defined by Griffiths and colleagues as an alternative
 formulation of the coalescent with recombination~\citep{hudson1983properties},
 where the stochastic process of coalescence and recombination
 among ancestral lineages is formalised as a
+% Note: please don't add "mathematical graph". If a reader doesn't know what a
+% graph is they're not going to understand this paper.
 graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
 Subsequently, ARGs have come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
@@ -741,10 +743,10 @@ recombination, and is agnostic to the details of those processes.
 Genome ARGs are concerned with
 describing the details of genetic inheritance
 between specific pairs of genomes.
-In contrast, ARGs are classically seem as being defined
+In contrast, ARGs are classically seem defined
 by the evolutionary \emph{events} in the history of a sample.
 The difference between gARGs and this prevalent view of
-what defines an ARGs is subtle and the distinctions sometimes porous.
+what defines an ARG is subtle and the distinctions sometimes porous.
 It is therefore useful to first survey some representative
 definitions of
 an ARG from the literature, to allow us to capture the common features
@@ -806,43 +808,19 @@ encoding of the data.  There is a single recombination event
 at node \noderef{d} with a breakpoint at position $x$. We
 assume that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
-We use a common convention here
-that the order of parents
-% TODO list papers where people use ordering? ARGweaver I think?
-is significant,
-but additional information is sometimes incorporated to
+As shown in Figure~\ref{fig-arg-data-structure}B,
+the local trees are embedded in the graph, and can be reconstructed
+in essentially the same manner as outlined the previous section for
+gARGs. The only difference is that decisions about which outbound
+edge to follow during the rootward traversal are taken at recombination
+nodes, following
+either the common convention that the order of parents
+is significant~\citep[e.g.][]{griffiths1991two},
+or by incorporating additional information to
 distinguish left and right parents
-\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
+into the
+encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
 
-Beyone the interpretation of nodes as representing events or
-genomes (which may reasonably be seen as somewhat philosophical),
-the essential difference between a gARG and a classical eARG
-[JK WIP from here:]
-is that eARGs define the
-
-carry positional information on their nodes, rather than
-storing genome positions as edge annotations.
-
-the regions of the genome which are transmitted are usually
-specified by associating recombination nodes with a breakpoint.
-In other words, eARGs
-carry positional information on their nodes, rather than
-storing genome positions as edge annotations.
-
-To recover the local tree at position $x$,
-requires traversing the graph rootwards from the leaves.
-When we encounter a recombination node during traversal
-if $x$ is less than the breakpoint we follow
-the edge to the first parent, and otherwise follow the edge
-to the second parent. This means the order in which parents are
-listed is important.
-
-% Jere & Yan: we thought about going into how simulation is difficult
-% with just one recombination node due to needing an order before
-% one is available during runtime. But since that can be solved
-% fairly trivially with two recombination nodes, we decided it was
-% more fiddly than it's worth.
-% However, see https://github.com/tskit-dev/what-is-an-arg-paper/discussions/41#discussioncomment-2035609 for additional complexities
 
 \begin{figure}
 \centering
@@ -875,7 +853,7 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [anchor=north west] at (8,6) {B};
+\node [anchor=north west] at (8,6) {C};
 \node [nodelabel,anchor=north west] at ($(10,5)$) {
 \begin{tabular}{c|c|l}
 % \multicolumn{2}{c}{Breakpoints}\\
@@ -890,61 +868,67 @@ $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
 $\noderef{g}$ & $\varnothing$ & []\\
 \end{tabular}};
 
-% \node [anchor=north west] at (20,6) {C};
-% \node [nodelabel,anchor=north west] at ($(10,5)$) {
-% \begin{tabular}{ll}
-% % Edges & Intervals\\
-% \hline
-% $(\textsf{a}, \textsf{e})$ & $[0, L)$ \\
-% $(\textsf{b}, \textsf{d})$ & $[0, L)$ \\
-% $(\textsf{c}, \textsf{f})$ & $[0, L)$ \\
-% $(\textsf{d}, \textsf{e})$ & $[0, x)$ \\
-% $(\textsf{d}, \textsf{f})$ & $[x, L)$ \\
-% $(\textsf{e}, \textsf{g})$ & $[0, L)$ \\
-% $(\textsf{f}, \textsf{g})$ & $[0, L)$ \\
-% \end{tabular}};
-
 \end{tikzpicture}
 \caption{\label{fig-arg-data-structure}
-A classical event ARG (left) and a corresponding
-encoding of the information (right).
-Recombination nodes (e.g.\ \noderef{d}) have a non-null breakpoint
-and two parents.
+A classical event ARG. (A) Standard graph depiction with
+breakpoint $x$ associated with the recombination node \noderef{d}.
 Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
+(B) Corresponding local trees to the left and right of breakpoint $x$.
+(C) A concrete encoding of the information (right).
+Recombination nodes have a non-null breakpoint
+and two parents.
 }
 \end{figure}
 
-% FIXME this isn't worth getting into
-Storing only breakpoint positions, rather than transmitted regions,
-makes it hard to perform genetic analyses (such as extracting local trees)
-without traversing the entire graph.
-% "For this reason"?
-%% Is the above true?? It the reason for this to allow efficient tree extraction? Are there other examples where encodings have been
-%% built on top of an eARG-like node annotation scheme (ARGON?) and made efficient somehow?
+Whether we regard nodes as events or genomes is something of a
+philosophical question, and in most senses the two are equivalent
+(but see the discussion on ``unary nodes'' in section XXX).
+From a concrete data-structure encoding perspective, the only real
+difference between an eARG and a gARG is that we store recombination
+\emph{breakpoints} at nodes of out-degree two (recombination nodes)
+in an eARG and we store \emph{inheritance intervals} on the edges
+of a gARG. A key advantage of associating inheritance intervals with
+edges in a gARG is that it allows us to describe evolutionary events other
+than simple crossovers, such as multiple recombinations and
+gene-conversions. By explicitly stating the exact regions of genome
+that are transmitted along an edge, we generalise the representation
+to encompass any process that leads to the differential inheritance of
+genetic material along the genome.
 
-[What is the ARG definition provided by the parsimony ARG literature?]
+While the additional generality provided by the gARG representation
+is useful, it is in reality a small change that does not
+lead to significantly different time or space complexity in computational
+tasks. The vitally important and fundamental distinction between
+a gARG and the classical eARG perspective is that gARGs do not
+\emph{require} us to posit explicit recombination events in order
+to describe a dataset, but
+instead provide a means of encoding the effects of
+multiple events, and to systematically describe the uncertainty around them
+(see Section XXX).
+As we see in the following sections, freeing ourselves from the requirement
+of recording specific events and
+the additional generality of the gARG encoding
+has many advantages. It also raises questions about what our goals
+for inferring ARGs should be, and how we evaluate the success
+of such inferences.
 
-%[What is Gusfields ARG definition? Presumably it's still an eARG, but with a
-%quirky dependence on SNP data?] DONE
-
-Encoding genome positions on edges, rather than breakpoints on the nodes of an eARG, has important implications for efficiency, especially in forward-time simulations (see XXX)
-
-
-% \section*{Inheritance and ancestral material}\label{Ancestry_resolution}
 \section*{Prospective vs retrospective ARGs}
-ARGs are usually thought of as a retrospective structure, in which we
-reason about the genomes that are genetic ancestors of some set of
-sample genomes. Figure~\ref{fig-arg-in-pedigree}
+Event ARGs, as defined in the previous section as a way of encompassing
+the range of definitions provided in the literature, are
+inherently \emph{retrospective}.
+Event ARGs are defined in terms
+of the events that occur in the history of some set of sampled
+sequences.
+For example, Figure~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
 $I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
 Genetic transmission must have occurred between (e.g.)
-$I_8$ and her daughter $I_6$, but this is omitted because
+$I_8$ and her daughter $I_6$, but this is not recorded because
 % this is probably not true, given we know the complete pedigree?
-it is not relevant to the genetic ancestry of the samples
+it is not relevant to the genetic ancestry of the samples.
 
-
-The gARG representation, on the other hand,
+Genome ARGs, on the hand,
 can be either retrospective or \emph{prospective}.
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
@@ -1698,7 +1682,7 @@ gARG can be exactly recovered from a set of local trees and
 their genome coordinates,
 some specific properties of the ARG and the trees are required.
 Note that many authors use the term ``marginal''
-trees~\citep[e.g.][]{minichiello2006mapping} [more]
+trees~\citep[e.g.][]{minichiello2006mapping,griffiths1996ancestral} [more]
 which we avoid due the potential confusion with statistical
 marginal distrubtions [FIXME Gregor, what's the right wording here?]
 
