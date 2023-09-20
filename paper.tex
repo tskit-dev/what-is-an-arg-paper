@@ -750,8 +750,7 @@ individuals.''
 
 \begin{figure}
 \centering
-\vspace{5em}
-\includegraphics[width=\linewidth]{illustrations/simplification}
+\includegraphics[width=\textwidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
 Levels of ARG simplification.
 In all cases the graph visualization is shown on the left
@@ -835,7 +834,6 @@ more than two parents (e.g.~node \noderef{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
 more than two children (e.g.~node \noderef{s}). These represent a ``stacking up'' of
 multiple---often indistinguishable---events into a single node.
-% something which is impossible to encode in an eARG.
 
 % JK: Text moved from an earlier section. See if we want to reuse this here
 % if not already said.
@@ -863,7 +861,9 @@ Note that although this last stage produces simpler local trees, by
 removing information about the exact paths taken by lineages through
 the graph, we lose potentially useful information about shared edges
 between trees. The extent to which this information can be inferred
-and utilised is an interesting open question [CITE Ralph in prep.].
+and utilised is an interesting open question.
+% I don't think there's an actual manuscript or title to refer to here
+% [CITE Ralph in prep.].
 
 An important consequence of simplifying ARGs to remove
 unary nodes in local trees is that we lose some information
@@ -928,16 +928,6 @@ trees for $[44, 87)$ and $[87, 100)$ were only distinguishable
 by the passage of the former tree through nodes \noderef{e}
 and \noderef{q}, and so the recombination on node \noderef{g}
 at position 87 has been lost entirely.
-
-% or nothing'': there is a gradation of detail
-% about recombination, in terms of genomic location, timing,
-% and the ancestral lineages involved.
-% that vary levels of precision about reccomb
-
-% The example in Fig.~\ref{fig-simplification} is usually
-% referred to as ``fully simplified'', and is the default output
-% of simulation programs like \msprime. While there is significant
-% precision about recombination events lost
 
 % The point of these examples is to emphasise that
 % information about recombination in an ARG is not ``all
@@ -1009,15 +999,6 @@ at position 87 has been lost entirely.
 % is limited by how well the dataset fits the assumptions
 % of the model.
 
-% % Not sure where this goes, but there are some critical points
-% % that we want to explain and not just throw out there in the
-% % discussion.
-% % A critical distinction between the eARG and gARG encodings
-% % is the level of precision about the time and location of
-% % recombination events that is required. In an eARG, we are
-% % required to be absolutely precise about every recombination
-% % [explain and contrast with gARG, referring to examples]
-
 % % JK: This is very rough, just jotting down the basic ideas,
 % % will need substantial revision.
 % It is not clear that such complete information will always
@@ -1045,20 +1026,9 @@ at position 87 has been lost entirely.
 
 % It is helpful to consider the difference between fully
 % resolved binary trees and those that contain polytomies.
-
 % The situation is in fact directly analogous: an ARG that
 % contains fully resolved recombination information must have
-% at most parents per node.
-
-% At the very least, it is not reasonable for the \emph{data
-% structure} to require complete precision in order to
-% represent some less precise. This is a fundamental
-% advantage of the gARG encoding over the classical eARG
-% method: we are not forced to posit a precise cause (recombination
-% event) for every effect (difference between adjacent trees).
-% These differences in precision of recombination
-% information are illustrated in the ARGs estimated by different
-% methods, as we see in the next section.
+% at two most parents per node.
 
 % In general, discussions tend to contrast an ARG
 % on one hand as holding \emph{complete} information about recombination
@@ -1070,7 +1040,6 @@ at position 87 has been lost entirely.
 % correlation structure can be represented and inferred, and all
 % such levels of information are useful, even if only for computational
 % efficiency.
-
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
@@ -1174,7 +1143,7 @@ gARG can be exactly recovered from a set of local trees and
 their genome coordinates,
 some specific properties of the ARG and the trees are required.
 Note that many authors use the term ``marginal''
-trees~\citep[e.g.][]{minichiello2006mapping,griffiths1996ancestral} [more]
+trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping} [more]
 which we avoid due the potential confusion with statistical
 marginal distrubtions [FIXME Gregor, what's the right wording here?]
 
@@ -1262,48 +1231,6 @@ of course.
 % trees from different regions of the genome.
 
 
-
-% \section*{When do we need ``full'' ARGs?}
-% % The full ancestral recombination graph (ARG) is a structure that encodes all
-% % coalescence and recombination events resulting from the stochastic process of
-% % the coalescent with recombination.
-% \citet{brandt2021evaluation} define a ``full'' ARG as
-% ``a structure that encodes all
-% coalescence and recombination events resulting from the stochastic process of
-% the coalescent with recombination'' (thus going against the general
-% historial trend discussed in the XXX section).
-% \citet{rasmussen2022espalier} have a less restrictive definition, in
-% which a ``full'' ARG is one that contains complete information about
-% recombination events, without necessarily being tied to a particular
-% stochastic process.
-% While [something positive], it is important to be clear on
-% what the overall goal of such precise inferences are,
-% what the limitations on when they can be made are,
-% and their downstream utility in applications.
-
-% % What is the goal of having fully precise ARGs?
-% % 1) studying the actual recombination events;
-% % 2) evaluating the likelihoods
-% The main reasons for wanting precise estimates of all recombination
-% events are to either compute a likelihood of the inferred ARG
-% under a statistical model, or to study the recombinants in
-% detail~\citep{rasmussen2022espalier}.
-% % Explain that we're really interested in the details of recombination
-% % itself with a small number of samples.
-% In the latter case, we might
-% have a small number of samples~\citep{guo2022recombination}.
-
-% Beyond cases in which visual inspection of the trees and the
-% effects of recombination is feasible, the main application
-% of having completely precise estimates of recombination events is
-% to evaluate the likelihood of the estimate under some
-% statistical model. The only statistical model available
-% is the coalescent with recombination
-% and its approximations~\citep{mcvean2005approximating,marjoram2006fast}.
-% In this case, the utility of a ``full`` ARG for some dataset
-% is limited by how well the dataset fits the assumptions
-% of the model.
-
 % % If we want to use the coalescent, then really the assumptions
 % % need to make sense.
 % % n << Ne is a silly assumption in today's datasets
@@ -1353,10 +1280,6 @@ of course.
 % the coalescent as a statical model, and so more non-parametric
 % methods like \tsinfer\ and \relate\ would seem more appropriate.
 % [More]
-
-% % Is it practical to estimate full ARGs?
-% % [Not particularly \citep{shipilina2022origin} - but maybe ARGneedle
-% % has done this for UKB? Need to check]
 
 % % Do downstream applications actually make use of such full ARGs?
 % Downstream applications using estimated ARGs to date rarely
