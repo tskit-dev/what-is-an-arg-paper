@@ -632,7 +632,7 @@ of the sample.
 \centering
 % TODO update the source of this figure to make less tall. It's taking
 % up far too much vspace at in native coords at the moment.
-\includegraphics[width=0.75\textwidth]{illustrations/ancestry-resolution}
+\includegraphics[width=0.6\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
 Converting the \citet[][Fig.~1]{wiuf1999recombination} example graph
 to a gARG. (A) The original eARG; square nodes represent events, with
@@ -721,11 +721,6 @@ The redundancy that we are interested in
 revolves around the presence
 ``unary'' nodes in the local trees
 (where a node has exactly one child over a particular genomic region).
-% "unary regions" is jargon - just dropping it in here like this doesn't
-% clarify. We can't assume that people are used to switching between
-% graphs and trees.
-% of ``unary'' regions for nodes
-% (where a node has exactly one child over a particular genomic region).
 These arise in several different ways.
 Nodes with one child are not a standard feature of evolutionary trees;
 we are usually interested in
@@ -800,24 +795,6 @@ ancestor of  samples \noderef{a} and \noderef{b}, but
 it does not correspond to any coalescence in the
 local trees to the left of position $44$, and is a therefore a
 unary node in these three trees.
-
-% \noderef{a} in the leftmost tree (covering positions 0 to 30)
-% Consider, for example, the path ancestral to node
-% \noderef{a} in the leftmost tree (covering positions 0 to 30)
-% in Fig.~\ref{fig-simplification}A.
-% We can see from the graph that
-% % Before \noderef{a} meets its common ancestor with the other samples at
-% % node \noderef{q}, it passes through \noderef{e}, \noderef{j}, \noderef{m}, \noderef{n} and
-% % \noderef{p}, which in this region of the genome are all unary nodes.
-% % Node \noderef{e}
-
-% Such unary nodes in a local tree are not usually considered important;
-% % because they provide little information and are not
-% % detectable by information from any given individual tree.
-% nodes usually mark the points where samples coalesce in a
-%  \emph{common} ancestor. For most purposes, we would therefore consider a path directly
-% joining sample \noderef{a} to node \noderef{q} to be equivalent to the path
-% containing the intermediate unary nodes.
 
 The first level of simplification that we can perform is to remove
 graph topology that is invisible to the samples.
