@@ -94,9 +94,9 @@ under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 % TODO say this better.
-From a high-level, ARGs describe the sequence of correlated genealogical
-trees along the genome, induced by the different paths of
-genetic inheritance caused by recombination.
+From a high-level, an ARG describes the different paths of genetic inheritance 
+caused by recombination, and encodes a sequence of correlated genealogical 
+trees along the genome.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -269,10 +269,10 @@ oriented tree~\cite[p.\ 461]{knuth11combinatorial},
 a sequence of integers $\pi_1\pi_2\dots$ where $\pi_u$ denotes the parent of
 node $u$~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
 If $u$ is a root
-% I'm not sure if this is a helpful clarification, and whether it'll just
+% I'm not sure if this reachability stuff is a helpful clarification, and whether it'll just
 % confuse people. It depends on some tricky details.
 (or not reachable from the samples)
-in the local tree at position $x$, $\pi_u = -1$.
+in the local tree at position $x$, $\pi_u = -1$ (by convention).
 Technically, this structure is a ``forest'', as it allows us to have
 multiple disconnected trees, which occurs when all samples have not
 found a most recent common ancestor. Oriented trees also allow nodes
@@ -373,7 +373,7 @@ recombination, and is agnostic to the details of those processes.
 
 
 \section*{Event ARGs}\label{eARG}
-Genome ARGs are concerned with
+Genome ARGs are composed by 
 describing the details of genetic inheritance
 between specific pairs of genomes.
 In contrast, ARGs are classically seem defined
