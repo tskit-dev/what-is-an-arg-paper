@@ -1082,11 +1082,13 @@ using  \kwarg~\citep{ignatieva2021kwarg},
 \argweaver~\citep{rasmussen2014genome,hubisz2020inference},
 \tsinfer~\citep{kelleher2019inferring},
 and \relate~\citep{speidel2019method}.
-While there is some consistency among the inferred ARGs (such as the samples
-FR-F, WA-F and Af-F being grouped into the same clade), there
-are also considerable differences. For this dataset, the minimum number
+% While there is some consistency among the inferred ARGs (such as the samples
+% FR-F, WA-F and Af-F being grouped into the same clade), there
+% are also considerable differences.
+The minimum number
 of recombination breakpoints required in the absence of recurrent mutation
-is 7~\citep{song2003parsimonious}, and the number of inferred breakpoints
+is 7 for this dataset~\citep{song2003parsimonious},
+and the number of inferred breakpoints
 under the input mutation and recombination rates
 varies from 2 (\relate) to 17 (\argweaver).
 % TODO this needs a bit of rewriting with the rest of the paper in mind
@@ -1095,22 +1097,26 @@ varies from 2 (\relate) to 17 (\argweaver).
 The ARGs inferred by the different methods also have major differences
 in how recombination information is represented.
 Essentially,
-\kwarg\ and \argweaver\ infer a specific causal recombination \emph{event}
-for each breakpoint, and those events are fully
-described in the output graph. On the other hand, \tsinfer\ and
-\relate\ do not infer causal events but instead focus on
-representing the inferred \emph{effect}: breakpoints between the
-trees. It is important to note that this does not imply that
-the methods must then necessarily infer only a sequence of
+\kwarg\ and \argweaver\ infer complete eARGs (section XXX),
+which contain specific causal recombination \emph{events}
+for each breakpoint.
+On the other hand, \tsinfer\ and
+\relate\ do not infer causal events but rather
+infer gARGs with differing levels of precision about recombination.
+The bottom row of Fig~\ref{fig-inferred-args} shows the extent along
+the genome to which graph edges are shared between multiple trees.
+We can see, for example, that the \relate\ trees ``share'' less topology
+than other methods, but it certainly does not infer a series of
 \emph{unrelated} local trees (i.e., with either unlabelled internal
 nodes or differently labelled nodes in each tree; see the
 next section).
 The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
-information about node sharing across trees, and hence,
-in terms of the level of detail inferred about recombination,
-lie somewhere
-in between a sequence of unrelated trees on one extreme and a
-completely precise event ARG on the other.
+information about node sharing across trees; for example,
+both infer that Af-f, Fr-f and Wa-f share a common ancestor along
+the entire sequence.
+Therefore, they contain a level of detail about recombination
+that lies somewhere between a sequence of unrelated local trees on one
+extreme and a completely precise event ARG on the other.
 
 % \relate\ "postorder" first inferring local topologies and then identifies edges
 % that persist from one tree, while
@@ -1525,7 +1531,7 @@ would be an interesting avenue for future research.
 
 \section*{Discussion}
 Recent breakthroughs have made ARG inference methods practical
-for the first time, and there has been a surge of interest
+at scale for the first time, and there has been a surge of interest
 in inference methods, their evaluation and application.
 The prospect of ARGs being used routinely in population
 and statistical genetics applications is tantalising,
@@ -1535,8 +1541,8 @@ enable this.
 A necessary first step towards this goal is some terminological
 clarity. As discussed in Appendix XXX, the term Ancestral Recombination
 Graph has several
-subtly different interpretations depending on context. The
-trend to decouple the ARG from its origins as a stochastic
+subtly different interpretations depending on context.
+The trend to decouple ARGs from their origins as a stochastic
 process and instead use the term as a more general representation of any
 recombinant genetic ancestry seems most useful, which we have
 tried to clarify and systematise here. Thus
@@ -1628,9 +1634,10 @@ many modern datasets have properties that grossly
 violate its assumptions.
 For example, several human datasets now consist of hundreds of thousands of
 genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-substantially \emph{larger} than the usually assumed $N_e$ values.
+meaning that sample size is substantially larger than the
+usually assumed $N_e$ values.
 Agricultural datasets are an even more extreme departure from coalescent
-assumptions, with large samples embedded in
+assumptions, with hundreds of thousands of samples embedded in
 multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
 and effective population sizes of 100 and even
 less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
@@ -1645,32 +1652,65 @@ encode this vast dataset.
 This view of ARGs,
 decoupled from generative models and
 without the hard requirement
-of complete precision on all historical events, may help improve
-methods for inference method evaluation. In the majority of cases,
+of complete precision on all historical events, may help
+to clarify inference goals and improve
+methods for evaluation.
+In the majority of cases,
 ARG inference accuracy is evaluated by comparing some truth simulations
 to the inferred ARGs by the pairwise comparison of local trees along the genome
-using tree metrics as originally proposed by \citet{kuhner2015assessing}.
-While this provides valuable insights into the method's performance,
-it is not clear how well these tree distance metrics reflect
-performance on real data.
+using tree distance
+metrics~\citep[e.g.][]{robinson1981comparison,kendall2016mapping}
+as originally proposed by \citet{kuhner2015assessing}.
+% While this provides valuable insights into the method's performance,
+% it is not clear how well these tree distance metrics reflect
+% performance on real data.
 In comparing tree-by-tree along the genome, the effects of recombination
-structure is incorporated in a very indirect manner.
+structure is incorporated in a indirect manner, and the tree
+metrics assume unlabelled nodes, effectively discarding information
+about node sharing between trees.
 Tree distance metrics usually have $O(n^2)$ time complexity, and so cannot be
 applied to the very large sample sizes currently of interest.
-\citet{deng2021distribution} derived the distribution of the expected
-waiting distances to tree changes.
-[ \citet{ignatieva2023distribution} DID SOMETHING ELSE]
+A recent trend has been to move away from such tree distance
+based approaches, and to examine more properties of the inferred ARGs.
 \citet{brandt2021evaluation} compared the
 distributions of time to the most recent common ancestor across several
-methods, which is a useful addition but only indirectly captures
-topological comparisons.
+methods, which captures many important aspects of dated ARGs
+but neglects [SOME OTHER THINGS].
+\citet{deng2021distribution} derived the distribution of the expected
+waiting distances to tree changes, and compared this to the
+outputs of several methods.
+[ \citet{ignatieva2023distribution} DID SOMETHING ELSE]
 % Not sure this is the right place for this sentence
-All of these comparisons and evaluations have been based on
-highly idealised simulations, and the effects richness of real data
-(beyond simplistic error models) are almost entirely unknown.
-A suite of true ARG distance metrics, that take into account more of the
+All of these evaluations have been based on
+ground truth data from highly idealised simulations
+with small sample sizes,
+and the effects of the richness of real data
+(beyond simplistic error models)
+on modern biobank scale datasets
+are almost entirely unknown.
+A suite of true ARG evaluation metrics, that take into account more of the
 global topology and can be applied to large ARGs, would be a
 valuable addition to the field.
+
+[NOTE This is a pedantic and slightly bullshitty to end up on,
+just writing it down to see if it works. Should probably cut.]
+A final point to note, is that
+if we are using the term ARG
+to loosely refer to genetic genealogies of varying
+levels of detail, either inferred or simulated,
+it makes little sense to refer ``the'' Ancestral Recombination
+Graph (i.e, in  the singular, like ``the tree'' or
+``the phylogeny'')
+% TODO add more if we keep this
+as favoured by some~\citep[e.g.][]{
+arenas2013importance,hubisz2020inference,zhang2023biobank}.
+While there is of course a single ``true'' ARG that describes
+the actual history of a sample, in reality there will be astronically
+many ARGs that are compatible with the data, even under
+parsimony conditions or when sampling from a model.
+There are many different levels of granularity at which we
+can reason about recombination, and many different ARGs.
+We should embrace this diversity.
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
