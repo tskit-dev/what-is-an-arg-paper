@@ -123,9 +123,9 @@ among ancestral lineages is formalised as a
 graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
 Subsequently, ARGs have come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
-the \emph{outcome} of such a random process or an inference
+the outcome of such a random process or an inference
 of the genetic genealogy of a sample of genome sequences.
-However, the distinction between process and structure is not clear cut
+However, the distinction between process and data structure is not clear cut
 and subfields use the term
 differently (see Appendix XXX).
 
@@ -134,9 +134,9 @@ general~\citep[MORE][]{mathieson2020ancestry}, including
 varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
-However, this broad usage means there is disagreement on the
+This broad usage means there is disagreement on the
 exact object being defined. This causes problems, for example,
-not just when evaluating inferred ARGs, but even when defining
+when evaluating inferred ARGs, and even when defining
 what the criteria for success should be.
 It also means there is no shared format for interchanging ARG data between
 programs, resulting in the assorted negative consequences with which
@@ -154,7 +154,7 @@ and accuracy of our inferences.
 % What do we do?
 In this paper we attempt to address these problems by
 providing a precise definition of an ARG that is general enough to encompass
-the output of all popular simulation and inference methods.
+the output of popular simulation and inference methods.
 We propose a definition of genetic genealogy in terms of specific genomes
 and their intervals of genetic inheritance, and refer to this as
 a ``genome ARG'', or ``gARG''.
@@ -272,7 +272,7 @@ If $u$ is a root
 % I'm not sure if this reachability stuff is a helpful clarification, and whether it'll just
 % confuse people. It depends on some tricky details.
 (or not reachable from the samples)
-in the local tree at position $x$, $\pi_u = -1$ (by convention).
+in the local tree at position $x$, then $\pi_u = -1$ (by convention).
 Technically, this structure is a ``forest'', as it allows us to have
 multiple disconnected trees, which occurs when all samples have not
 found a most recent common ancestor. Oriented trees also allow nodes
@@ -301,7 +301,7 @@ between genomes,
 arbitrary patterns of genetic inheritance such as
 gene conversions,
 multiple simultaneous recombinations
-(e.g.\ Figure~\ref{fig-arg-in-pedigree}),
+(e.g.\ Fig.~\ref{fig-arg-in-pedigree}),
 and so on can be directly expressed.
 % Wilder: give forward ref to section on efficiency here, mention tree sequence
 Thirdly, local trees that we generate for a particular position on the
@@ -309,8 +309,8 @@ genome can have nodes of any arity, including ``unary''
 nodes with a single child (see Section XXX).
 Fourth, recombination is modelled in terms of
 its outcomes in terms of inheritance intervals among parental genomes;
-thus we will have a child node (the recombinant; e.g. node \noderef{a}
-Figure~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
+thus we will have a child node (the recombinant; e.g.\ node \noderef{a}
+Fig.~\ref{fig-arg-in-pedigree}) and two (or more; see section XXX)
 paternal genomes from which this child has inherited segments.
 % TODO rephrase the above, it'll confuse people. Just need to reiterate the
 % points about events, and maybe lead into the next section
@@ -375,7 +375,7 @@ recombination, and is agnostic to the details of those processes.
 \section*{Event ARGs}\label{eARG}
 Genome ARGs are composed by
 describing the details of genetic inheritance
-between specific pairs of genomes.
+between specific ancestor and descendant genomes.
 In contrast, ARGs are classically seem defined
 by the evolutionary \emph{events} in the history of a sample.
 The difference between gARGs and this prevalent view of
@@ -403,8 +403,8 @@ define an ARG as ``a subset of the pedigree...
 contain[ing] only those edges along which inherited segments of DNA have been
 transmitted, and only those nodes corresponding to ancestors in which there was
 a recombination or coalescence event.''
-In contrast ~\citet{gusfield2014recombinatorics} defines an ARG as [TODO]
-
+In contrast, ~\citet{gusfield2014recombinatorics} defines an ARG as [TODO]
+x
 % Papers that do not discuss how positions work:
 % - Mathieson and Scally: no discussion of how it works concretely (but quite
 %   close to gARG, in some ways)
@@ -424,7 +424,7 @@ recombination events that occured,
 but the graph structure alone is not sufficient to define the local trees,
 or equivalently, how ``ancestral material'' (Section XXX) flows along
 the edges of the ARG.
-This is assumed to follow the mechanism described by
+This is usually assumed to follow the mechanism described by
 Griffiths and colleagues in which we have
 two different ``types'' of node in the graph:
 common ancestor nodes in which the inbound lineages are merged into a
@@ -434,14 +434,14 @@ ancestral lineages.
 Recombination nodes are then
 annotated with
 the corresponding crossover breakpoint~\citep{griffiths1996ancestral}.
-Figure~\ref{fig-arg-data-structure} shows an example of a classical
+Fig.~\ref{fig-arg-data-structure} shows an example of a classical
 eARG with three samples (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event, along with an example concrete
 encoding of the data.  There is a single recombination event
 at node \noderef{d} with a breakpoint at position $x$. We
 assume that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
-As shown in Figure~\ref{fig-arg-data-structure}B,
+As shown in Fig.~\ref{fig-arg-data-structure}B,
 the local trees are embedded in the graph, and can be reconstructed
 in essentially the same manner as outlined the previous section for
 gARGs. The only difference is that decisions about which outbound
@@ -557,7 +557,7 @@ inherently \emph{retrospective}.
 Event ARGs are defined in terms
 of the events that occur in the history of some set of sampled
 sequences.
-For example, Figure~\ref{fig-arg-in-pedigree}
+For example, Fig.~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
 $I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
@@ -718,8 +718,8 @@ ARG simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
-revolves around the presence
-``unary'' nodes in the local trees
+revolves around the presence of nodes which appear
+``unary'' in one or more local trees
 (where a node has exactly one child over a particular genomic region).
 These arise in several different ways.
 Nodes with one child are not a standard feature of evolutionary trees;
@@ -739,7 +739,7 @@ ARGs, however, are different, and there
 can be significant information about evolutionary processes
 provided by nodes that are unary in one or more local trees.
 [FIXME this is clumsy; should mention somewhere, though.]
-\citep{mathieson2020ancestry} show examples in which the ARGs
+\citet{mathieson2020ancestry} show examples in which the ARGs
 contain unary nodes, and state that paths are ``implicitly passing through points representing specific
 individuals.''
 % Full quote from fig caption:
@@ -877,7 +877,7 @@ section.
 % The ARGs in Fig.~\ref{fig-simplification} represent different
 % levels of detail about the same ancestral history. They represent
 % the same set of recombination and common ancestor events,
-As illustated in Fig.~\ref{fig-simplification}, successive levels
+As illustrated in Fig.~\ref{fig-simplification}, successive levels
 of ARG simplification reduce the amount of information about the
 history of the sample that is stored. Some of the information lost,
 e.g.\ ``diamond'' removal (Fig.~\ref{fig-simplification}A),
@@ -1618,11 +1618,13 @@ Graph (i.e, in  the singular, like ``the tree'' or
 as favoured by some~\citep[e.g.][]{
 arenas2013importance,palamara2016argon,hubisz2020inference}.
 While there is of course a single ``true'' ARG that describes
-the actual history of a sample, in reality there will be astronically
-many ARGs that are compatible with the data, even under
-parsimony conditions or when sampling from a model.
-There are many different levels of granularity at which we
-can reason about recombination, and many different ARGs.
+the actual history of a sample, 
+under parsimony conditions or when sampling from a model there 
+will be astronomically
+many ARGs that are equally likely given the data.
+There are also many different levels of granularity at which we
+can reason about recombination, 
+and consequently many different types of ARG.
 We should embrace this diversity.
 
 \bibliographystyle{plainnat}
