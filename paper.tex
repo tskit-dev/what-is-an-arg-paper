@@ -144,7 +144,7 @@ geneticists are only too familiar~\citep{excoffier2006computer}.
 Perhaps most importantly, the direct linkage to
 the original stochastic process definition leads to an
 overly narrow interpretation of ARGs, which is significantly
-out of step with modern methods, and
+out of step with modern methods and large-scale datasets, and
 can lead to missed opportunities in their application and usage.
 Such problems go much deeper than pedantic discussion over terminology;
 they directly inform what we should be attempting to estimate, how we
@@ -169,13 +169,13 @@ time ordering of recombination events.
 \section*{Genome ARGs}
 We define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e.\ haploids have one genome, diploids two, etc.).
-In this usage a ``genome'' is equivalent to the definition of a
-``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
-it already has many interpretations, and in particular carries the implication of
-specific mutational patterns [CITES] that persist over
-many generations.
+% Talking about "haplotypes" probably just confuses more
+% In this usage a ``genome'' is equivalent to the definition of a
+% ``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
+% it already has many interpretations, and in particular carries the implication of
+% specific mutational patterns [CITES] that persist over
+% many generations.
 We are not concerned here with mutational processes or observed sequences,
-% FIXME topological isn't the right word...
 but consider only processes of inheritance,
 following the standard practice in coalescent theory.
 We will also use the term ``genome'' in its
@@ -225,9 +225,12 @@ inheritance intervals $I$.
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
+[FIXME Update fig to make wider and less tall, and change $I$ to $D$.
+Also possibly add some tabular encoding of gARG data.]
 An example genome ARG embedded in a pedigree.
 (A) Diploid individuals, visualised in a highly inbred pedigree and
-labelled $I_1$ to $I_8$, contain both paternal and maternal  genomes
+labelled $D_1$ to $D_8$,
+contain both paternal and maternal  genomes
 labelled \textsf{a} to \textsf{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
 Genomes \textsf{a} and \textsf{c} are the product of two independent
@@ -247,13 +250,13 @@ the gARG for a given set of individuals is embedded in their pedigree.
 In this diploid example, each genome is inherited from one
 of the individual's parents,
 and may be the recombined product of that parent's two genomes.
-For example, individual $I_1$ in Fig.~\ref{fig-arg-in-pedigree}
+For example, diploid individual $D_1$ in Fig.~\ref{fig-arg-in-pedigree}
 has two genomes \noderef{a} and \noderef{b},
-inherited from parents $I_3$ and $I_4$.
-Genome \noderef{b} was inherited directly from $I_4$'s genome \noderef{g} without
+inherited from parents $D_3$ and $D_4$.
+Genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
 recombination, whereas
 \noderef{a} is the product of
-recombining $I_3$'s two genomes \noderef{e} and \noderef{f} at position 2.
+recombining $D_3$'s two genomes \noderef{e} and \noderef{f} at position 2.
 This recombination at means \noderef{a} inherits the (half-closed) genome
 interval $[0, 2)$ from \noderef{e} and it inherits $[2, 10)$ from \noderef{f};
 these intervals are shown attached to the corresponding graph edges.
@@ -560,9 +563,9 @@ sequences.
 For example, Fig.~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
-$I_1$ and $I_2$ (genomes \textsf{a}--\textsf{d}).
+$D_1$ and $D_2$ (genomes \textsf{a}--\textsf{d}).
 Genetic transmission must have occurred between (e.g.)
-$I_8$ and her daughter $I_6$, but this is not recorded because
+$D_8$ and her daughter $D_6$, but this is not recorded because
 % this is probably not true, given we know the complete pedigree?
 it is not relevant to the genetic ancestry of the samples.
 
@@ -1614,16 +1617,16 @@ levels of detail, either inferred or simulated,
 it makes little sense to refer ``the'' Ancestral Recombination
 Graph (i.e, in  the singular, like ``the tree'' or
 ``the phylogeny'')
-% TODO add more if we keep this
+% TODO add more if we keep this. Anyone who says "the ARG is"
 as favoured by some~\citep[e.g.][]{
 arenas2013importance,palamara2016argon,hubisz2020inference}.
 While there is of course a single ``true'' ARG that describes
-the actual history of a sample, 
-under parsimony conditions or when sampling from a model there 
+the actual history of a sample,
+under parsimony conditions or when sampling from a model there
 will be astronomically
 many ARGs that are equally likely given the data.
 There are also many different levels of granularity at which we
-can reason about recombination, 
+can reason about recombination,
 and consequently many different types of ARG.
 We should embrace this diversity.
 
