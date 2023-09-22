@@ -255,17 +255,20 @@ has two genomes \noderef{a} and \noderef{b},
 inherited from parents $D_3$ and $D_4$.
 Genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
 recombination, whereas
-\noderef{a} is the product of
-recombining $D_3$'s two genomes \noderef{e} and \noderef{f} at position 2.
-This recombination at means \noderef{a} inherits the (half-closed) genome
-interval $[0, 2)$ from \noderef{e} and it inherits $[2, 10)$ from \noderef{f};
-these intervals are shown attached to the corresponding graph edges.
+\noderef{a} is the recombinant product of
+$D_2$'s two genomes \noderef{e} and \noderef{f} crossing over at position 2.
+This recombination means \noderef{a} inherits the (half-closed) genome
+interval $[0, 2)$ from \noderef{e} and $[2, 10)$ from \noderef{f}.
+These intervals are shown attached to the corresponding graph edges.
 
 % The most fundamental operation for
 % an ARG data structure is to recover the embedded local tree
 % at some position $x$ along the genome.
+[NOTE: we could move this to the later section currently
+called "the equivalence of ARGS and the local trees",and
+refocus a bit to "ARGs and local trees".]
 The relationship between an ARG and the corresponding local trees
-is somewhat subtle (see section XXX), and it is useful to have
+is subtle (see section XXX), and it is useful to have
 a concrete definition and explicit process for reconstruction.
 We can describe a local tree as an
 oriented tree~\cite[p.\ 461]{knuth11combinatorial},
@@ -276,10 +279,12 @@ If $u$ is a root
 % confuse people. It depends on some tricky details.
 (or not reachable from the samples)
 in the local tree at position $x$, then $\pi_u = -1$ (by convention).
-Technically, this structure is a ``forest'', as it allows us to have
-multiple disconnected trees, which occurs when all samples have not
-found a most recent common ancestor. Oriented trees also allow nodes
-to have  any number of children from one (see section XXX for more
+% JK: this confused some people, so best left out?
+% Technically, this structure is a ``forest'', as it allows us to have
+% multiple disconnected trees, which occurs when all samples have not
+% found a most recent common ancestor.
+Oriented trees allow nodes
+to have  any number of children; from one (see section XXX for more
 discussion on such ``unary nodes'' in the local trees), to arbitrarily
 large polytomies.
 To recover the local tree $\pi$ at position $x$, we begin by
@@ -298,7 +303,8 @@ Firstly, there is
 no limitation on mating system, ploidy, or age structure in a gARG.
 By making the
 basic unit of analysis an individual's genomes,
-any pattern of inheritance among mixed ploidy can be accommodated.
+any pattern of inheritance among mixed ploidy (e.g.\ haplodiploid
+species) can be accommodated.
 Secondly, because we record the intervals of inheritance
 between genomes,
 arbitrary patterns of genetic inheritance such as
@@ -310,6 +316,7 @@ and so on can be directly expressed.
 Thirdly, local trees that we generate for a particular position on the
 genome can have nodes of any arity, including ``unary''
 nodes with a single child (see Section XXX).
+% TODO should rephrase this from parent/child to ancestor/descendant?
 Fourth, recombination is modelled in terms of
 its outcomes in terms of inheritance intervals among parental genomes;
 thus we will have a child node (the recombinant; e.g.\ node \noderef{a}
@@ -320,8 +327,9 @@ paternal genomes from which this child has inherited segments.
 Finally, gARGs are not defined in terms of the
 coalescent with recombination (or any other) stochastic process.
 Thus, the gARG encoding is focused on faithfully representing the
-\emph{outcome} of the evolutionary processes of genetic inheritance and
-recombination, and is agnostic to the details of those processes.
+\emph{outcome} of the evolutionary processes of genetic inheritance
+with recombination,
+and is agnostic to the details of those processes.
 % The paragraph above is a bit weak and muddled, needs a few more passes.
 % In particular, the "Finally" bit doesn't really seem to follow
 % from the others. Is there a more direct way we can address these points ?
@@ -542,6 +550,9 @@ allow us to directly describe
 genetic inheritance in multiple non-contiguous genome intervals
 between an ancestor and a descendant, which cannot be done
 by specifying recombination events and breakpoints.
+% FIXME this sentence is problematic. We should recast to talk about
+% the outcomes of events, not talk about simulateousness (which will
+% confuse people
 Thus, we have the means of encoding the effects of
 multiple \emph{simultaneous} events, and to
 systematically describe the uncertainty around their
@@ -564,7 +575,8 @@ For example, Fig.~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
 $D_1$ and $D_2$ (genomes \textsf{a}--\textsf{d}).
-Genetic transmission must have occurred between (e.g.)
+% Gregor & Jerome think that "inheritance" is clearer here than "transmission"
+Genetic inheritance must have occurred between (e.g.)
 $D_8$ and her daughter $D_6$, but this is not recorded because
 % this is probably not true, given we know the complete pedigree?
 it is not relevant to the genetic ancestry of the samples.
@@ -584,7 +596,7 @@ Thus, these  inheritance intervals are
 concerned only with the genetic relationship
 between the nodes in question, and are not defined with respect
 to any given set of samples. We are simply recording the
-direct genetic inheritance between two genomes
+genetic inheritance between two genomes
 (in the simplest case, between a parent and a child).
 
 Prospective ARGs arise in individual-based forwards-time
@@ -656,7 +668,7 @@ desired.
 \end{figure}
 
 Ancestral material is a critical concept in a retrospective ARG,
-and refers to the genomic intervals directly ancestral to the samples
+and refers to the genomic intervals ancestral to the samples
 scattered across lineages (the edges of the graph)
 at some time in the past. At recombination
 events, ancestral material is split between the ancestral lineages.
@@ -779,7 +791,7 @@ backward-time Wright-Fisher
 model. We show the graph on the left, and the corresponding sequence of
 local trees on the right.
 In Fig.~\ref{fig-simplification}A the local trees (right)
-contain many unary nodes, and as we successively simplify
+contain many unary nodes, and as we successively simplify,
 the local trees contain fewer
 unary nodes (Fig.~\ref{fig-simplification}B,C) until
 we reach Fig.~\ref{fig-simplification}D, where the local trees
@@ -795,8 +807,8 @@ Consider \noderef{e} in Fig.~\ref{fig-simplification}A,
 for example. We can see from the graph that it is a common
 ancestor of  samples \noderef{a} and \noderef{b}, but
 it does not correspond to any coalescence in the
-local trees to the left of position $44$, and is a therefore a
-unary node in these three trees.
+local trees to the left of position $44$, and is therefore
+unary in these three trees.
 
 The first level of simplification that we can perform is to remove
 graph topology that is invisible to the samples.
@@ -1140,8 +1152,9 @@ their genome coordinates,
 some specific properties of the ARG and the trees are required.
 Note that many authors use the term ``marginal''
 trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping} [more]
-which we avoid due the potential confusion with statistical
-marginal distrubtions [FIXME Gregor, what's the right wording here?]
+which we avoid due the potential confusion with the
+statistical concept of a marginal distributions indicating
+an integrated tree over many positions.
 
 Firstly, the internal nodes in the local trees must be labelled
 (i.e.\ marked with the identity of the corresponding ARG node).
@@ -1171,10 +1184,12 @@ sequences along the genome''. They view the ``full ARG'' as an
 eARG, and the ``series of tree sequences'' is their
 % jk: probably should delete this. It *is* muddled though
 (somewhat muddled)
-term for the sequence of local trees along the genome. We can see
-that their statement is true, \emph{if} the local trees contain
+term for the sequence of local trees along the genome.
+Their statement is true, \emph{if} the local trees are
+unlabelled and contain
 no unary nodes. However, as we have shown, if the local trees
-contain labelled unary nodes, then  there is precisely as
+contain labelled internal (possibly unary) nodes,
+then  there is precisely as
 much information in them as an ARG. Whether such unary nodes
 are \emph{observable} is an entirely separate question,
 of course.
@@ -1274,7 +1289,8 @@ It was originally developed as part of the \texttt{msprime}
 simulator~\citep{kelleher2016efficient} and subsequently been
 extended and applied to forward-time
 simulations~\citep{kelleher2018efficient,haller2018tree},
-calculation of population genetics statistics~\citep{ralph2020efficiently}.
+inference from data~\citep{kelleher2019inferring,wohns2022unified},
+and calculation of population genetics statistics~\citep{ralph2020efficiently}.
 The succinct tree sequence encoding extends the basic definition
 of a gARG provided here by stipulating a
 simple tabular representation and nodes and edges,
@@ -1558,7 +1574,8 @@ multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
 and effective population sizes of 100 and even
 less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
 Finally, the COVID-19 pandemic has provided an example of a dataset that
-is clearly a very poor fit for the coalescent with recombination, but which,
+is clearly a very poor fit for the coalescent with recombination,
+but for which,
 nevertheless, we would like to estimate ARGs.
 \cite{zhan2023towards} inferred an ARG for 1.27 million SARS-CoV-2 whole
 genomes, and showed how it accurately captures several known properties of
