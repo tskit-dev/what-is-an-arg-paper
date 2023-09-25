@@ -4,6 +4,7 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import tskit
+import msprime
 
 import argutils
 
@@ -108,7 +109,8 @@ def convert_argweaver(infile):
 
 def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
     """
-    Convert a KwARG output file to a tree sequence.
+    Convert a KwARG output file to a tree sequence. `infile` should be a filehandle,
+    e.g. as returned by the `open` command. 
     """
 
     tables = tskit.TableCollection(sequence_length=sequence_length)
@@ -142,9 +144,11 @@ def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
             breakpoint = int(line[6][:-1]) - 1
             n1 = node_ids[int(line[3]) - 1]
             time += 1
-            tsk_id_1 = tables.nodes.add_row(flags=0, time=time, metadata={"rec": line[3]})
+            tsk_id_1 = tables.nodes.add_row(
+                flags=msprime.NODE_IS_RE_EVENT, time=time, metadata={"rec": line[3]})
             node_ids[int(line[3]) - 1] = tsk_id_1
-            tsk_id_2 = tables.nodes.add_row(flags=0, time=time, metadata={"rec": line[11]})
+            tsk_id_2 = tables.nodes.add_row(
+                flags=msprime.NODE_IS_RE_EVENT, time=time, metadata={"rec": line[11]})
             node_ids[int(line[11]) - 1] = tsk_id_2
             tables.edges.add_row(0, breakpoint, tsk_id_1, n1)
             tables.edges.add_row(breakpoint, sequence_length, tsk_id_2, n1)
