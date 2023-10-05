@@ -1530,36 +1530,41 @@ descriptions of uncertainty. Other methods to capture, for example,
 uncertainty about node ages and breakpoint location, is an important
 aspect of future work.
 
-
-The necessity of complete precision about all recombination
-events under the eARG encoding has been
-conflated with the idea of a ``true'' or ``full'' ARG. [Cites]
-For example, \citet{brandt2021evaluation} define a ``full'' ARG as
-``a structure that encodes all
-coalescence and recombination events''. While there are certainly cases
-when inferring such fully precise ARGs is useful, for example when
-studying the details of a small number of recombination
-events~\citep{rasmussen2022espalier}, it is worth considering
-whether sufficient information exists to support such inferences
-and indeed whether this precision is required, or useful,
-for downstream applications.
-
-The amount of information about recombination that is inferrable
-is the subject of much research
-has a long history [summarise this in a couple of sentences?]
-[Cite: \citep{myers2002detection,hayman2023recoverability}
+Uncertainty is a central element of inference about recombination,
+and, even with small samples, we can only expect to uniquely identify
+lineages and breakpoints in special cases.
+[summarise info inferable about recomb in few sentenances here?
+Cite: \citep{myers2002detection,hayman2023recoverability}]
 % This might be where we mention Fisher's junctions and IBD?
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/121
-\cite{shipilina2023origin} discuss the idea of a ``haplotype block''
-(equivalent to the ``bricked tree sequence'' of
-\cite{nowbandegani2023extremely},
-% TODO look this up. I expect it's basically the same??
-and the block-based ARG data structure of
-\citep{palamara2016argon}),
-here we consider the unique sets of
-samples that coalesce at a node in the ARG over a particular
-genome interval, and the fundamental limitations they place
-on ARG inference.
+The fact that the classical ``event'' ARG (eARG) encoding
+\emph{requires} completely precise estimates about recombination
+is therefore a fundamental limitation, and a central message
+of this paper.
+
+% The necessity of complete precision about all recombination
+% events under the eARG encoding has been
+% conflated with the idea of a ``true'' or ``full'' ARG. [Cites]
+% For example, \citet{brandt2021evaluation} define a ``full'' ARG as
+% ``a structure that encodes all
+% coalescence and recombination events''. While there are certainly cases
+% when inferring such fully precise ARGs is useful, for example when
+% studying the details of a small number of recombination
+% events~\citep{rasmussen2022espalier}, it is worth considering
+% whether sufficient information exists to support such inferences
+% and indeed whether this precision is required, or useful,
+% for downstream applications.
+
+% \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
+% (equivalent to the ``bricked tree sequence'' of
+% \cite{nowbandegani2023extremely},
+% % TODO look this up. I expect it's basically the same??
+% and the block-based ARG data structure of
+% \citep{palamara2016argon}),
+% here we consider the unique sets of
+% samples that coalesce at a node in the ARG over a particular
+% genome interval, and the fundamental limitations they place
+% on ARG inference.
 
 % [FIXME find somewhere natural for this. The last clause is too vague - what
 % are the implications?]
@@ -1568,15 +1573,15 @@ on ARG inference.
 % multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
 
 % % Do downstream applications actually make use of such full ARGs?
-Besides the inherent limitations that exist on inferring fully precise ARGs
-from data,
+Besides the inherent limitations that exist on inferring fully
+precise ARGs from data,
 we should also consider the value that such precise estimates provide
 to downstream applications.
 To date, few downstream applications using estimated ARGs
-make use of such complete recombination information.
-The \relate\ selection statistic~\citep{speidel2019method}
-computes a $p$-value for selection [FIXME] for each
-local tree independently by comparing the rates of coalescence
+make use of complete recombination information.
+Most applications work by examining local trees independently.
+For example, the \relate\ selection statistic~\citep{speidel2019method}
+computes selection $p$-values by comparing the rates of coalescence
 at various time-points.
 In their method
 for estimating dispersal rates and the locations of genetic
@@ -1590,12 +1595,11 @@ type of machine learning algorithm
 that takes ``temporal'' correlations into account. Thus,
 while SIA does use some of the information about local tree correlation,
 clearly much of the detail about recombination
-events in a ``full'' ARG is lost.
+events in an ARG is lost.
 The \texttt{tsdate} algorithm (and related naive estimator
 for ancestral location) uses much more between-tree
 information~\citep{wohns2022unified}, explicitly using the gARG
 encoding to reason about ancestral nodes.
-[MORE applications]
 The main application for fully precise ARGs thus far has been
 to be to compute a likelihood under the coalescent with
 recombination~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian},
@@ -1610,8 +1614,6 @@ nevertheless, we would like to estimate ARGs.
 genomes, and showed how it accurately captures several known properties of
 the pathogen's evolution, and can efficiently and concisely
 encode this vast dataset.
-
-
 
 This view of ARGs,
 decoupled from generative models and
