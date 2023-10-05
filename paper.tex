@@ -1472,9 +1472,8 @@ The prospect of ARGs being used routinely in population
 and statistical genetics applications is tantalising,
 but in reality there is  substantial work to be done to
 enable this.
-
-A necessary first step towards this goal is some terminological
-clarity. As discussed in Appendix XXX, the term Ancestral Recombination
+A necessary first step is a degree of  terminological clarity.
+As discussed in Appendix XXX, the term Ancestral Recombination
 Graph has several
 subtly different interpretations depending on context.
 The trend to decouple ARGs from their origins as a stochastic
@@ -1490,6 +1489,47 @@ flexible and efficient.
 The flexibility of the gARG encoding contrasts with the classical
 ``event'' ARG (eARG), which, because of its origins in an idealised
 mathematical model, is more limited in what can be described.
+
+Fully decoupling the general concept of an ARG from the coalescent
+with recombination stochastic process is an important step.
+While it has proven to be a useful and
+robust
+model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
+many modern datasets have properties that grossly
+violate its assumptions.
+For example, several human datasets now consist of hundreds of thousands of
+% TODO cite GeL paper
+genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+and so sample size is substantially \emph{larger} than the
+usually assumed $N_e$ values.
+Agricultural datasets are an even more extreme departure from coalescent
+assumptions, with hundreds of thousands of samples embedded in
+multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
+and effective population sizes of 100 and even
+less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
+Even if sufficiently complex demographic models~\citep{gower2022demes}
+encompassing hundreds of populations, explosive growth rates and
+myriad interconnections of migration, were somehow estimated and
+provided as input, ARGs sampled from
+the coalescent cannot capture complexities of family structure which
+make, for example, polytomies a necessary feature of local trees.
+
+Given that there is no single model that can capture the complexities
+of modern datasets across species (and taxa; see discussion of SARS-CoV-2
+below), we cannot rely on sampling from a distribution to capture
+the uncertainty in our ARG estimates. Indeed, even if the coalescent
+were a suitable model for datasets such as UKB and we had a means of
+sampling from its distribution of ARGs at the scale of hundreds of thousands
+of samples, we could only explore the tiniest corner such an  incompehensibly
+large space of possibilities.
+It is therefore important to systematically
+describe and utilise uncertainty about ARG inference.
+One approach, enabled by the gARG encoding described here,
+is to use polytomies and stacked recombinations as direct topological
+descriptions of uncertainty. Other methods to capture, for example,
+uncertainty about node ages and breakpoint location, is an important
+aspect of future work.
+
 
 The necessity of complete precision about all recombination
 events under the eARG encoding has been
@@ -1562,21 +1602,6 @@ recombination~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian},
 which currently requires the details of all recombination
 events to be known.
 
-Fully decoupling the general concept of an ARG from the coalescent
-with recombination stochastic process is an important step.
-While it has proven to be a useful and
-robust model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting}
-many modern datasets have properties that grossly
-violate its assumptions.
-For example, several human datasets now consist of hundreds of thousands of
-genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-meaning that sample size is substantially larger than the
-usually assumed $N_e$ values.
-Agricultural datasets are an even more extreme departure from coalescent
-assumptions, with hundreds of thousands of samples embedded in
-multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
-and effective population sizes of 100 and even
-less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
 Finally, the COVID-19 pandemic has provided an example of a dataset that
 is clearly a very poor fit for the coalescent with recombination,
 but for which,
@@ -1585,6 +1610,8 @@ nevertheless, we would like to estimate ARGs.
 genomes, and showed how it accurately captures several known properties of
 the pathogen's evolution, and can efficiently and concisely
 encode this vast dataset.
+
+
 
 This view of ARGs,
 decoupled from generative models and
