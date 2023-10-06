@@ -27,7 +27,7 @@
 
 \begin{document}
 
-\linenumbers
+
 \title{\vspace{-1.5em} \bf A general and efficient representation of ancestral recombination graphs}
 
 % % First authors
@@ -78,7 +78,7 @@ Information and Discovery, University of Oxford, UK}
 \footnotetext[7]{Broad Institute of MIT and Harvard, Cambridge, USA}
 \footnotetext[8]{Department of Genetics, Stanford University School of Medicine, Stanford, USA}
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]{Shared second authorship, listed alphabetically}
+\footnotetext[1]{Joint second author, listed alphabetically}
 \footnotetext[2]{Correspondence: jerome.kelleher@bdi.ox.ac.uk}
 
 \vspace{-1em}
@@ -112,6 +112,7 @@ and forms the basis of an efficient computational framework.
 
 \textbf{Keywords:} Ancestral recombination graphs
 
+\linenumbers
 \section*{Introduction}
 Estimating the genetic genealogy of a set of genome sequences
 under the influence of recombination,
@@ -130,7 +131,7 @@ have raised the realistic prospect of ARG-based analysis becoming a standard par
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using inferred ARGs as input have begun to
 appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank,
-nowbandegani2023extremely}
+nowbandegani2023extremely,ignatieva2023distribution}
 and many more are sure to
 follow~\citep{harris2019database,harris2023using}.
 
@@ -154,7 +155,7 @@ and subfields use the term
 differently (see Appendix XXX).
 
 The word ``ARG'' is now widely used to refer to genetic genealogies in
-general~\citep[MORE][]{mathieson2020ancestry}, including
+general~\citep[][AND OTHERS]{mathieson2020ancestry}, including
 varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
@@ -192,7 +193,7 @@ information to understand the biological world.
 
 
 % What do we do?
-In this paper we attempt to address these problems by
+In this paper, we attempt to address these problems by
 providing a precise definition of an ARG that is general enough to encompass
 the output of popular simulation and inference methods.
 We propose a definition of genetic genealogy in terms of specific genomes
@@ -420,7 +421,7 @@ a recombination or coalescence event.''
 The common feature of these definitions is that they are expressed
 in terms of evolutionary \emph{events}, and so for the purposes of
 discussion we can label
-this prevailing interpretation as an ``Event ARG'', or eARG.
+this prevailing interpretation as an ``event ARG'', or eARG.
 (Many definitions also emphasise
 the necessity of exhaustively capturing \emph{all} events, which we
 examine in later sections.)
@@ -600,7 +601,7 @@ by specifying recombination events and breakpoints.
 % FIXME this sentence is problematic. We should recast to talk about
 % the outcomes of events, not talk about simulateousness (which will
 % confuse people
-Thus, we have the means of encoding the \emph{effects} of
+Thus, we have the means to encode the \emph{effects} of
 multiple evolutionary events, and to
 systematically describe the uncertainty around their
 ordering (see Section XXX).
@@ -787,7 +788,7 @@ between the two is subtle and important.
 % their genome coordinates,
 % some specific properties of the ARG and the trees are required.
 Note that many authors use the term ``marginal''
-trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping} [more]
+trees~\citep[e.g.][AND OTHERS]{griffiths1996ancestral,minichiello2006mapping}
 which we avoid due the potential confusion with the
 statistical concept of marginal distributions
 (which could lead to interpretation as an integrated tree over many positions).
@@ -832,7 +833,7 @@ the tree nodes are explicitly labelled with the identity of the
 corresponding ARG node)
 along with the genome interval covered by each tree,
 then we can recover precisely the same ARG. Thus, there
-is a one-to-one correspondance between an ARG and
+is a one-to-one correspondence between an ARG and
 the sequence of local trees that it encodes.
 
 The internal nodes of trees, however, are usually
@@ -854,7 +855,7 @@ is also the root of the first tree.
 
 \cite{shipilina2023origin} discuss the same ideas,
 and note that the
-``full ARG ... contains more information than the series of tree
+``full ARG...~contains more information than the series of tree
 sequences along the genome''.
 Their statement that an ARG
 contains more information than its local trees is true only if
@@ -930,7 +931,7 @@ These arise in several different ways.
 Nodes with one child are not a standard feature of evolutionary trees;
 we are usually interested in
 nodes that have at least two children, because these
-are in principle detectable from mutational differences
+are, in principle, detectable from mutational differences
 arising in the respective subtrees.
 A tree branch may correspond to many generations
 of individuals
@@ -1005,7 +1006,7 @@ local trees to the left of position $44$, and is therefore
 unary in these three trees.
 
 The first level of simplification that we can perform is to remove
-graph topology that is invisible to the samples.
+parts of the graph topology that are invisible to the samples.
 An example of such topology is a
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
@@ -1041,7 +1042,7 @@ As we see in Fig.~\ref{fig-simplification}C,
 removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \noderef{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than two children (e.g.~node \noderef{s}). These represent a ``stacking up'' of
+more than two children (e.g.~node \noderef{s}). These represent merging
 the \emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes representing those events.
 
@@ -1338,12 +1339,12 @@ The efficiency with which we can store and analyse these inferred
 ARGs is therefore of great importance, and a key factor
 in the ultimate success of downstream ARG-based methods.
 Another key factor in how important ARG-based methods become
-across the wide range of predicted application
+across the wide range of possible applications
 % TODO more?
 areas~\citep{rasmussen2014genome,harris2019database,
 hejase2020summary,schaefer2021ancestral,
 fan2022genealogical,wohns2022unified,harris2023using,
-nowbandegani2023extremely}
+nowbandegani2023extremely,ignatieva2023duration}
 is how well inference methods and downstream analysis applications
 interoperate. Without a well-defined and efficient shared format
 for ARG data interchange,
@@ -1644,9 +1645,9 @@ ground truth data from highly idealised simulations, with sample sizes limited t
 The effects of the richness of real data
 on modern biobank-scale or multi-generational pedigree datasets
 are almost entirely unknown (beyond studies using very simplistic error models).
-A suite of ARG evaluation metrics, that take into account more of the
-global topology and can be applied to large ARGs, would be a
-valuable addition to the field.
+The development of ARG evaluation metrics that take into account more of the
+global topology and can be applied to large ARGs would be a
+valuable and timely addition to the field.
 
 Interest in ARG inference methods and downstream applications is 
 burgeoning, with exciting developments arriving at ever-increasing pace.
@@ -1658,7 +1659,7 @@ from generative processes, and have shown that the
 gARG encoding enables flexible description of 
 contemporary datasets with varying levels of precision and integral
 handling of some important forms of temporal uncertainty.
-For ARG based methods to achieve mainstream status, we require
+For ARG-based methods to achieve mainstream status, we require
 a rich supporting software ecosystem. 
 Ideally, this would comprise a wide range of different 
 inference methods specialised to different organisms, types 
@@ -1828,8 +1829,8 @@ wilton2015smc,griffiths2016coalescent},
 as well as, more commonly, the concrete realisation of ancestry from a
 process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
 \cite{minichiello2006mapping} explicitly distinguished the ARG as a
-stochastic process from the ARG as a data structure. We have followed them in
-using the term in the latter sense, to mean a specific realised ancestral history.
+stochastic process from the ARG as a data structure. We have followed them and
+used the term in the latter sense, to mean a specific realised ancestral history.
 
 
 % FIXME putting this here for now just to see if this will work.
@@ -2066,15 +2067,16 @@ In order to evaluate these rates, and hence the sampling probability
 (see e.g.\ \cite[Equation (3)]{mahmoudi2022bayesian}),
 it is necessary to know the number of lineages and number of extant links
 available for recombination in each time interval.
-This may not be obvious. For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
+Some representations may not provide this information.
+For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
 it is clear that a recombination takes place between nodes \textsf{b} and
 \textsf{d} as well as \textsf{e}, but the exact time of the event is ambiguous,
 and thus so is the number of lineages during the time interval. In fact, this
-information cannot be recovered from the gARG encoding use in that figure,
-so alternative conventions must be introduced to resolve such ambiguities;
-for the likelihood-based inference algorithms for the coalescent with recombination,
-the two parent nodes are typically created at the time of the recombination event.
-See the appendix of \cite{baumdicker2021efficient} for details of evaluating
+information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C,
+and alternative conventions must be introduced to resolve such ambiguities.
+For the likelihood-based inference algorithms for the coalescent with recombination,
+it is sufficient to create \emph{two} gARG nodes at the time of the recombination event:
+see the appendix of \cite{baumdicker2021efficient} for details of evaluating
 coalescent with recombination likelihoods using this convention.
 This is also the interpretation depicted in
 Figure \ref{hudson_vs_bigARG}, but it means that the two edges above node \textsf{b}
@@ -2390,8 +2392,8 @@ in principle, but choosing the right data structure can still have a dramatic
 effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
 in the Bayesian case, $p(G)$ is typically specified as the sampling
 distribution of a stochastic process, such as the coalescent with
-recombination. Two contemporary examples are \cite{mahmoudi2022bayesian,
-guo2022recombination}. Evaluating the distribution of the coalescent with
+recombination. Two contemporary examples are \citet{mahmoudi2022bayesian} and
+\citet{guo2022recombination}. Evaluating the distribution of the coalescent with
 recombination (or related models) requires knowledge of the number of extant
 lineages and number of links available for recombination (i.e.\ ones at which a
 recombination would split ancestral material) at each time \citep[Eq.\
