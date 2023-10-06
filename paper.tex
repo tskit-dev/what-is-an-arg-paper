@@ -96,14 +96,9 @@ agreement on the concrete details.
 We propose a concrete definition of ARGs
 in terms of genomes and their intervals of genetic inheritance (gARG)
 and contrast this with the classical event-based definition (eARG).
-The eARG definition is derived from on a stochastic process, 
-the coalescent with recombination, 
-and we show how the assumptions of that process
-place limitations on the patterns of inheritance that can be
-represented, which are inadequate for modern large-scale datasets.
-The eARG representation also requires complete precision about the ordering
-of all recombination events, which we will rarely have sufficient
-information to infer.
+We show that eARGs are limited in the patterns
+of genetic inheritance that can be represented,
+and require complete precision about all recombination events.
 We show, in contrast, that the gARG definition
 can fully capture the richness of modern large-scale datasets,
 enables fine-grained
@@ -208,7 +203,7 @@ eARG approach, being flexible, efficient and, in particular,
 allowing us to systematically encode uncertainty about the
 time ordering of recombination events.
 For a recent and more biologically oriented introduction to
-the topic, see \citet{lewanski2023era}.
+ARGs, see \citet{lewanski2023era}.
 
 
 \section*{Genome ARGs}
@@ -776,7 +771,7 @@ the need to resolve ancestral material ``on the fly'' for eARG traversals
 holds.
 
 \section*{ARGs and local trees}
-% TODO mention Yamato here? I'm sure there were some interesting points 
+% TODO mention Yamato here? I'm sure there were some interesting points
 % about local trees in that paper
 Local trees, describing the genetic genealogy of a sample
 at a particular location along the genome, are
@@ -1044,7 +1039,7 @@ As we see in Fig.~\ref{fig-simplification}C,
 removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \noderef{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than two children (e.g.~node \noderef{s}). These represent the 
+more than two children (e.g.~node \noderef{s}). These represent the
 merged
 \emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes representing those events.
@@ -1418,7 +1413,7 @@ statistics~\citep{kelleher2016efficient,ralph2020efficiently},
 implementing the Li and Stephens
 model~\citep{kelleher2019inferring,wohns2022unified}
 and likely many more.
- 
+
 
 
 % \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
@@ -1479,7 +1474,7 @@ and likely many more.
 \section*{Discussion}
 Recent breakthroughs have finally made large-scale ARG inference
 feasible in practice, leading to a surge of interest
-in development of ARG-based inference methods, their evaluation 
+in development of ARG-based inference methods, their evaluation
 and application.
 The prospect of ARGs being used routinely within population
 and statistical genetics is tantalising,
@@ -1489,7 +1484,7 @@ A necessary first step is a degree of terminological clarity.
 As discussed in Appendix XXX, the term ``ancestral recombination
 graph" has several
 subtly different interpretations, depending on context.
-The trend to decouple ARGs from their original definition 
+The trend to decouple ARGs from their original definition
 within the context of stochastic
 processes and instead use the term as a more general representation of any
 recombinant genetic ancestry seems useful, and we have
@@ -1538,7 +1533,7 @@ Therefore, it is important to systematically
 describe and utilise uncertainty about ARG inference.
 One approach, enabled by the gARG encoding described here, is to allow
 nodes to have (rootward) in-degree greater than two (polytomies
-representing uncertainty over the ordering of coalescence events) or 
+representing uncertainty over the ordering of coalescence events) or
 out-degree greater than two (representing uncertainty over the ordering
 of multiple recombination events). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
@@ -1602,9 +1597,9 @@ multiple mergers), non-leaf sample nodes (sequences with descendants
 also present in the dataset) and unary nodes (samples that have
 one other sampled descendant). Recombination is known
 to be an important factor in the evolution of SARS-CoV-2~\citep{vaninsberghe2021recombinant,jackson2021generation,ignatieva2022ongoing},
-and the ARGs also contain recombination nodes. 
+and the ARGs also contain recombination nodes.
 Because parental sequences
-are generally never sampled themselves, and often 
+are generally never sampled themselves, and often
 a recombinant strain is the product of multiple recombination events,
 uncertainty around this is captured by recording the ancestry
 of each part of the recombinant sequence without arbitrarily assigning
@@ -1633,10 +1628,10 @@ Tree distance metrics usually have $O(n^2)$ time complexity and therefore cannot
 applied to the very large sample sizes currently of interest.
 A recent trend has been to move away from such tree distance-based approaches and to examine more properties of the inferred ARGs.
 \citet{brandt2021evaluation} focussed on the
-distributions of pairwise MRCA times; \citet{deng2021distribution} derived an approximation to the distribution of the 
+distributions of pairwise MRCA times; \citet{deng2021distribution} derived an approximation to the distribution of the
 waiting distances between local trees; \citet{ignatieva2023distribution}
 derived the distribution of the genomic span of an edge and that of a
-clade of samples. In each case, simulation studies demonstrated 
+clade of samples. In each case, simulation studies demonstrated
 substantial differences between these quantities in simulated and reconstructed ARGs,
 that were not captured using tree-by-tree comparisons.
 % Not sure this is the right place for this sentence
@@ -1649,37 +1644,37 @@ The development of ARG evaluation metrics that take into account more of the
 global topology and can be applied to large ARGs would be a
 valuable and timely addition to the field.
 
-Interest in ARG inference methods and downstream applications is 
+Interest in ARG inference methods and downstream applications is
 burgeoning, with exciting developments arriving at ever-increasing pace.
 Without agreement on basic terminology and some standardisation
 on data formats, however, the ARG revolution may falter.
 Here, we have advocated
 for decoupling the data structures used to represent ARGs
-from generative processes, and have shown that the 
-gARG encoding enables flexible description of 
+from generative processes, and have shown that the
+gARG encoding enables flexible description of
 contemporary datasets with varying levels of precision and integral
 handling of some important forms of temporal uncertainty.
 For ARG-based methods to achieve mainstream status, we require
-a rich supporting software ecosystem. 
-Ideally, this would comprise a wide range of different 
-inference methods specialised to different organisms, types 
-and scales of data and 
+a rich supporting software ecosystem.
+Ideally, this would comprise a wide range of different
+inference methods specialised to different organisms, types
+and scales of data and
 % I'm thinking about things like Espalier specifically wanting
-% to characterise the recombs, vs Relate mainly wanting to 
+% to characterise the recombs, vs Relate mainly wanting to
 % get good local trees
-specific inference goals, sharing a common ARG interchange format. 
-The output of these diverse inference methods could then be 
-processed by numerous downstream applications, 
-enabling users to freely compare the outputs of different 
+specific inference goals, sharing a common ARG interchange format.
+The output of these diverse inference methods could then be
+processed by numerous downstream applications,
+enabling users to freely compare the outputs of different
 inference methods on their data, and the result of different
 analyses on these inferences.
-Earlier efforts to standardise ARG interchange shared 
-this vision, 
+Earlier efforts to standardise ARG interchange shared
+this vision,
 but did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
 Today, however, we have the benefit of a pre-existing ARG
-interchange format, already widely used and accompanied 
-by high-quality, high-performance software (see Section XXX for details). 
-Adopting the \texttt{tskit} library 
+interchange format, already widely used and accompanied
+by high-quality, high-performance software (see Section XXX for details).
+Adopting the \texttt{tskit} library
 as a community standard,
 utilising its rich suite of operations,
 may accelerate progress and help to
