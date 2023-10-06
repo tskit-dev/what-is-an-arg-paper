@@ -107,7 +107,7 @@ def ancestry_resolution():
                 rotate=False,
                 font_weight="normal" if full else "bold",
                 alpha=0.5 if full else None,
-                font_size=16,
+                font_size=24,
                 edge_labels={k: l for k, l in lab.items() if (l == full_edge) is full},
                 horizontalalignment="center",
                 bbox=dict(
@@ -129,6 +129,7 @@ def ancestry_resolution():
     pos, G = argutils.viz.draw(
         ts,
         ax1,
+        tweak_x={7: 15, 3: -12, 4: -8, 6: -6},
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
         node_size=100,
         max_edge_width=2,
@@ -181,7 +182,7 @@ def ancestry_resolution():
     for n in G.nodes:
         if G.nodes[n]["flags"] & argutils.ancestry.NODE_IS_RECOMB:
             col = 'tab:red'
-            size = (1, 1)
+            size = (1.2, 1.2)
             breaks = (edges.left[edges.child == n], edges.right[edges.child == n])
             breaks = np.unique(np.concatenate(breaks))
             assert len(breaks == 3)
@@ -200,7 +201,7 @@ def ancestry_resolution():
                 0.4, 0.2,
                 str(int(breakpoint)),
                 fontname="Trebuchet MS",
-                fontsize=30,
+                fontsize=40,
             )
 
     # Panel (b)
@@ -216,7 +217,7 @@ def ancestry_resolution():
             fontname="Trebuchet MS",
             verticalalignment="bottom",
             loc="center",
-            fontsize=20,
+            fontsize=24,
         )
 
     # Panel (c)
@@ -560,12 +561,14 @@ def arg_in_pedigree():
 
     ts_used = ts  # argutils.remove_unused_nodes(ts)  # use this to remove unused nodes
 
-    fig, ax = plt.subplots(1, 1, figsize=(3.8, 5))
-    col = mpl.colors.to_hex(plt.cm.tab20(1))
+    fig, ax = plt.subplots(1, 1, figsize=(3.8, 4.35))
+    col = mpl.colors.to_hex("lightgray")
     pos, G = argutils.viz.draw(
         ts_used, ax,
         reverse_x_axis=True,
         draw_edge_widths=False,
+        node_size=400,
+        font_size=14,
         node_color=col,
         tweak_x={l:(-13 if l< 12 else -20) for l in range(8,16)},
         max_edge_width=2)
@@ -578,24 +581,50 @@ def arg_in_pedigree():
     plt.close(fig)
     ts_simp = ts_used.simplify(keep_unary=True)
     pedigree_ts = ts_simp.draw_svg(
-        size=(500, 500), node_labels={n.id: n.metadata["name"] for n in ts_simp.nodes()}
+        size=(350, 305),
+        node_labels={n.id: n.metadata["name"] for n in ts_simp.nodes()},
+        style=(
+            ".x-axis .tick .lab {font-weight: normal; font-size:12px}"
+            " .x-axis .title .lab {font-size:10px}"
+        )
     )
+    # Hack the labels, as inkscape conversion doens't like CSS transforms
+
+    pedigree_ts = pedigree_ts.replace(
+        '<line x1="0" x2="0" y1="0" y2="5" /><g transform="translate(0 6)">',
+        '<line x1="0" x2="0" y1="0" y2="-5" /><g transform="translate(0 -17)">'
+    )
+    pedigree_ts = pedigree_ts.replace(
+        '<text class="lab" text-anchor="middle" transform="translate(0 -11)">Genome position</text>',
+        '<text class="lab" text-anchor="middle" transform="translate(0 -30)">Genome position</text>'
+    )
+    pedigree_ts = pedigree_ts.replace(
+        '<text class="lab rgt" transform="translate(3 -7.0)">g</text>',
+        '<text class="lab lft" transform="translate(-3.5 -7.0)">g</text>'
+    )
+    pedigree_ts = pedigree_ts.replace(
+        '<text class="lab lft" transform="translate(-3 -7.0)">g</text>',
+        '<text class="lab rgt" transform="translate(3.5 -7.0)">g</text>'
+    )
+   
 
     svg = [
-        '<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="1100" height="435" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
         "<style>.tree-sequence text {font-family: sans-serif}</style>"
-        '<text font-size="2em" font-family="serif" transform="translate(5, 30)">'
+        '<text font-size="2em" font-family="serif" transform="translate(100, 25)">'
         "A</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(250, 30)">'
+        '<text font-size="2em" font-family="serif" transform="translate(380, 25)">'
         "B</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(590, 30)">'
+        '<text font-size="2em" font-family="serif" transform="translate(830, 25)">'
         "C</text>",
-        '<g transform="translate(10, 60)">',
+        #'<text font-size="2em" font-family="serif" transform="translate(1250, 25)">'
+        #"D</text>",
+        '<g transform="translate(10, 40)">',
     ]
     svg.append('<g transform="scale(0.36)">' + pedigree_svg + "</g>")
-    svg.append('<g transform="translate(240 -10) scale(0.83)">' + pedigree_ARG + "</g>")
-    svg.append('<g transform="translate(580) scale(0.83)">' + pedigree_ts + "</g>")
+    svg.append('<g transform="translate(240) scale(0.82)">' + pedigree_ARG + "</g>")
+    svg.append('<g transform="translate(580 -10) scale(1.43)">' + pedigree_ts + "</g>")
     svg.append("</g></svg>")
 
     top_svg = (

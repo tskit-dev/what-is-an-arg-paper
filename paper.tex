@@ -234,15 +234,11 @@ inheritance intervals $I$.
 
 \begin{figure}
 \begin{center}
-    % FIXME making this 0.75 textwidth for now because it's too tall.
-    % https://github.com/tskit-dev/what-is-an-arg-paper/issues/321
-    \includegraphics[width=0.75\textwidth]{illustrations/arg-in-pedigree}
+    \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
 \caption{\label{fig-arg-in-pedigree}
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
-[FIXME Update fig to make wider and less tall, and change $I$ to $D$.
-Also possibly add some tabular encoding of gARG data.]
 An example genome ARG embedded in a pedigree.
 (A) Diploid individuals, visualised in a highly inbred pedigree and
 labelled $D_1$ to $D_8$,
@@ -252,7 +248,7 @@ genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestor
 Genomes \textsf{a} and \textsf{c} are the product of two independent
 recombination events between
 the paternal genomes \textsf{e}
-and \textsf{f}, and regions of genome inherited are shown.
+and \textsf{f} (with breakpoints in red), and regions of genome inherited are shown.
 Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker.
 (B) The corresponding gARG along with inheritance annotations on all edges
