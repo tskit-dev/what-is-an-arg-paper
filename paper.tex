@@ -83,7 +83,8 @@ Information and Discovery, University of Oxford, UK}
 
 \vspace{-1em}
 
-% FIXME this is weak, but gives the basic outline
+% FIXME abstract needs some rewriting, we're placing too much emphasis
+% on the coalescent there.
 \begin{abstract}
 New developments have made it possible to infer genetic genealogies in
 the presence of recombination at scale, enabling many
@@ -95,8 +96,8 @@ agreement on the concrete details.
 We propose a concrete definition of ARGs
 in terms of genomes and their intervals of genetic inheritance (gARG)
 and contrast this with the classical event-based definition (eARG).
-The eARG definition is based on the coalescent with recombination
-stochastic process,
+The eARG definition is derived from on a stochastic process, 
+the coalescent with recombination, 
 and we show how the assumptions of that process
 place limitations on the patterns of inheritance that can be
 represented, which are inadequate for modern large-scale datasets.
@@ -177,7 +178,7 @@ assess success, and the expected limitations on the precision
 and accuracy of our inferences.
 % Thanks Gideon and Alex!
 If not addressed, these problems will
-impede progress on applying genetic genealogical
+impede progress in applying genetic genealogical
 information to understand the biological world.
 
 % Evidence of confusion to cite above in "problem" para?
@@ -206,6 +207,9 @@ We show that the gARG encoding has a range of advantages over the
 eARG approach, being flexible, efficient and, in particular,
 allowing us to systematically encode uncertainty about the
 time ordering of recombination events.
+For a recent and more biologically oriented introduction to
+the topic, see \citet{lewanski2023era}.
+
 
 \section*{Genome ARGs}
 We define a genome as the complete set of genetic material that a child
@@ -242,8 +246,6 @@ In order to capture the effects of recombination
  we ``annotate'' the edges with the genome
 coordinates over which inheritance occurs.
 We can define a gARG formally as follows.
-% TODO we should change the notation for inheritance intervals here,
-% as we use I to index individuals.
 Let $N \subset \mathbb{N}$ be the set of nodes representing
 the genomes in the gARG, and $E$ be the set of edges.
 We will usually define a set of nodes $S \subseteq N$
@@ -388,7 +390,7 @@ Genome ARGs are composed by
 describing the details of genetic inheritance
 between specific ancestor and descendant genomes.
 In contrast, ARGs are classically defined
-by the evolutionary \emph{events} in the history of a sample.
+by the evolutionary \emph{events} in the history of a sample of genomes.
 The difference between gARGs and this prevalent view of
 what defines an ARG is subtle and difficult to distinguish.
 It is therefore useful to first survey some representative
@@ -428,7 +430,7 @@ examine in later sections.)
 Another common feature of these definitions is that they do not explicitly
 discuss the mechanism by which genealogical trees vary along the genome.
 The topology of an eARG defines the common ancestor and
-recombination events that occured,
+recombination events that occurred,
 but the graph structure alone is not sufficient to define the local trees,
 or equivalently, how ``ancestral material'' (Section XXX) flows along
 the edges of the ARG.
@@ -869,7 +871,7 @@ is an entirely separate question, of course.
 
 These properties have interesting consequences when we
 consider the inference strategy of estimating local trees
-independently and subsequently stitching them together
+sequentially along the genome, and subsequently stitching them together
 into an ARG.
 Two recent methods take this approach,
 \relate~\citep{speidel2019method} and
@@ -1042,8 +1044,9 @@ As we see in Fig.~\ref{fig-simplification}C,
 removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \noderef{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than two children (e.g.~node \noderef{s}). These represent merging
-the \emph{effects} of multiple evolutionary events in a single node (genome), and the
+more than two children (e.g.~node \noderef{s}). These represent the 
+merged
+\emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes representing those events.
 
 % JK: Text moved from an earlier section. See if we want to reuse this here
@@ -1344,11 +1347,11 @@ across the wide range of possible applications
 areas~\citep{rasmussen2014genome,harris2019database,
 hejase2020summary,schaefer2021ancestral,
 fan2022genealogical,wohns2022unified,harris2023using,
-nowbandegani2023extremely,ignatieva2023duration}
+nowbandegani2023extremely,ignatieva2023distribution}
 is how well inference methods and downstream analysis applications
 interoperate. Without a well-defined and efficient shared format
 for ARG data interchange,
-users will suffer from problems of converting data from one programs
+users will suffer from problems with converting data from one program's
 output to another, an unfortunate hallmark of population genetics
 software for many years~\citep{excoffier2006computer}.
 While current methods tend to tightly couple downstream analysis
@@ -1366,7 +1369,7 @@ The succinct tree sequence data structure (usually known as a ``tree sequence''
 for brevity)
 is a concrete encoding of a gARG, as discussed in this article.
 It was originally developed as part of the \texttt{msprime}
-simulator~\citep{kelleher2016efficient} and subsequently been
+simulator~\citep{kelleher2016efficient} and has subsequently been
 extended and applied to forward-time
 simulations~\citep{kelleher2018efficient,haller2018tree},
 inference from data~\citep{kelleher2019inferring,wohns2022unified},
@@ -1393,7 +1396,7 @@ terasaki2021geonomics,
 baumdicker2021efficient,
 fan2022genealogical,korfmann2022weak,
 mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
-zhang2023biobank,nowbandegani2023extremely}.
+zhang2023biobank,nowbandegani2023extremely,ignatieva2023distribution}.
 
 % FIXME this needs more work and doesn't really fit into the
 % narrative right now, but we do need to make this point.
@@ -1416,11 +1419,7 @@ implementing the Li and Stephens
 model~\citep{kelleher2019inferring,wohns2022unified}
 and likely many more.
  
-[TODO discussion of haplotype block based storage
-like ARGON. Basically: this is useful for some applications,
-but ultimately it's a derived property of the actual ARG
-topology that can be recovered efficiently, as demonstrated by 
-\cite{nowbandegani2023extremely}]
+
 
 % \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
 % (equivalent to the ``bricked tree sequence'' of
@@ -1506,7 +1505,7 @@ The flexibility of the gARG encoding contrasts with the classical
 
 Fully decoupling the general concept of an ARG from the coalescent
 with recombination stochastic process is an important step.
-While it has proven to be a useful and
+While this has proven to be a useful and
 robust
 model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
 many modern datasets have properties that grossly
@@ -1548,6 +1547,7 @@ aspect of future work.
 Uncertainty is a central element of inference about recombination,
 and, even with small samples, we can only expect to uniquely identify
 lineages and breakpoints in special cases.
+% Keeping comments here - otherwise this para is clearly missing stuff
 [summarise info inferable about recomb in few sentenances here?
 Cite: \citep{myers2002detection,hayman2023recoverability}]
 % This might be where we mention Fisher's junctions and IBD?
@@ -1566,7 +1566,7 @@ To date, few downstream applications using estimated ARGs
 make use of complete recombination information.
 Most applications work by examining local trees independently.
 For example, the \relate\ selection test~\citep{speidel2019method}
-computes selection $p$-values by computing clade size probabilities conditional on the timing of coalescence events in a given local tree.
+obtains $p$-values by computing clade size probabilities conditional on the timing of coalescence events in a given local tree.
 In their method
 for estimating dispersal rates and the locations of genetic
 ancestors,
@@ -1682,8 +1682,8 @@ by high-quality, high-performance software (see Section XXX for details).
 Adopting the \texttt{tskit} library 
 as a community standard,
 utilising its rich suite of operations,
-would substantially accelerate progress, and help 
-establish ARG methods as mainstream genetics.
+may accelerate progress and help to
+establish ARG methods within mainstream genetics.
 
 \section*{Acknowledgements}
 We are grateful to Gideon Bradburd and Alex Lewanski for helpful discussions
