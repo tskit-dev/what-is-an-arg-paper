@@ -371,7 +371,7 @@ def simplification():
     tables.sort()
     ts=tables.tree_sequence()
 
-    labels = {i: i for i in range(len(string.ascii_lowercase))}
+    labels = {i: a for i, a in enumerate(string.ascii_lowercase)}
     # relabel the nodes to get samples reading A B C D
     labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
     #labels = {i: i for i in range(26)}  # uncommment to get node IDs for re-positioning
