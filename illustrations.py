@@ -27,11 +27,11 @@ def ancestry_resolution():
     """
     Ancestry resolution on the WH99 graph.
     """
-    def plot_ellipse(ts, ax, xa, ya, burger_segments=None, trim_left=0):
+    def plot_ellipse(ts, ax, xa, ya, burger_segments=None, trim_left=0, rel_height=1):
         # trim_left is a hack to not show stuff above the root
         icon_size1 = (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.00029
         icon_center1 = icon_size1 / 2.0
-        icon_size2 = icon_size1 * 0.9
+        icon_size2 = icon_size1 * rel_height
         icon_center2 = icon_size2 / 2.0
         a = plt.axes([xa - icon_center1 - 0.005/2, ya - icon_center2+0.005/2, icon_size1 + 0.005, icon_size2-0.005])
         icon = patches.Ellipse(
@@ -117,10 +117,14 @@ def ancestry_resolution():
                 ),
             )
 
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 15), sharey=True)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(30, 10), sharey=True)
     fig.tight_layout()
+    plt.gca().set_axis_off()
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, 
+                hspace = 0, wspace = 0.2)
+    plt.margins(0,-0.04)
 
-    ax1.set_title("A", fontsize=32, family="serif", loc="left")
+    ax1.set_title("A", fontsize=32, family="serif", loc="center")
     ts = argutils.viz.label_nodes(argutils.wh99_example(one_node_recombination=True))
     pos, G = argutils.viz.draw(
         ts,
@@ -128,10 +132,10 @@ def ancestry_resolution():
         node_color=mpl.colors.to_hex(plt.cm.tab20(1)),
         node_size=100,
         max_edge_width=2,
-        font_size=14,
+        font_size=12,
     )
 
-    ax2.set_title("B", fontsize=32, family="serif", loc="left")
+    ax2.set_title("B", fontsize=32, family="serif", loc="center")
     pos, G = argutils.viz.draw(
         ts,
         ax2,
@@ -143,7 +147,7 @@ def ancestry_resolution():
     )
     add_edge_labels(ax2, ts, G, pos)
 
-    ax3.set_title("C", fontsize=32, family="serif", loc="left")
+    ax3.set_title("C", fontsize=32, family="serif", loc="center")
     edges = nx.draw_networkx_edges(
         G,
         pos,
@@ -177,7 +181,7 @@ def ancestry_resolution():
     for n in G.nodes:
         if G.nodes[n]["flags"] & argutils.ancestry.NODE_IS_RECOMB:
             col = 'tab:red'
-            size = (1, 0.8)
+            size = (1, 1)
             breaks = (edges.left[edges.child == n], edges.right[edges.child == n])
             breaks = np.unique(np.concatenate(breaks))
             assert len(breaks == 3)
@@ -193,10 +197,10 @@ def ancestry_resolution():
         a = plot_rect(ax1, xa, ya, size, col)
         if breakpoint is not None:
             a.text(
-                0.3, 0.2,
+                0.4, 0.2,
                 str(int(breakpoint)),
                 fontname="Trebuchet MS",
-                fontsize=36,
+                fontsize=30,
             )
 
     # Panel (b)
@@ -208,11 +212,11 @@ def ancestry_resolution():
         a = plot_ellipse(ts, ax2, xa, ya)
         a.set_title(
             G.nodes[n]["label"],
-            y=0.2,
+            y=0.05,
             fontname="Trebuchet MS",
             verticalalignment="bottom",
             loc="center",
-            fontsize="xx-large",
+            fontsize=20,
         )
 
     # Panel (c)
@@ -241,21 +245,22 @@ def ancestry_resolution():
             xa,
             ya,
             None if n == 16 else node_samples[n],
-            2 if n in {13, 14, 15} else 0)
+            2 if n in {13, 14, 15} else 0,
+            rel_height=1.25)
         a.set_title(
             G.nodes[n]["label"],
             fontname="Trebuchet MS",
             verticalalignment="bottom",
-            y=0.52,
+            y=0.45,
             loc="center",
             fontsize="x-large",
         )
     graph_io = io.StringIO()
-    plt.savefig(graph_io, format="svg", bbox_inches="tight")
+    plt.savefig(graph_io, format="svg", bbox_inches="tight", pad_inches=0)
     graph_svg = graph_io.getvalue()
 
     svg = [
-        # Could caoncatenate more SVG stuff here in <g> tags, e.g.
+        # Could concatenate more SVG stuff here in <g> tags, e.g.
         # if we wanted to draw the 2 plots as 2 separate svg plots\
         # rather than using plt.subplots
         graph_svg[graph_svg.find("<svg") :]
