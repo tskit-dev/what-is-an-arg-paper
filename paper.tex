@@ -9,7 +9,7 @@
 \usepackage[right]{lineno}
 \usepackage{subcaption}
 \usepackage{tikz}
-\usetikzlibrary{calc,positioning}
+\usetikzlibrary{math,calc,positioning}
 \usepackage{url}
 % JK: turning this off for the moment as I keep clicking through on links
 % to the bibliography while reading the text and it's intensely annoying.
@@ -442,40 +442,88 @@ into the
 encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
 
 \begin{figure}
-% FIXME add local trees in B
-% https://github.com/tskit-dev/what-is-an-arg-paper/issues/320
 \centering
-% \begin{tabular}{cc}
+\tikzmath{\x1 =0; \x2=8;\xx=12.5; \x3=14; \xt=18;}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
 
-\node (s0) [greynode] at (0, 0) {};
-\node (s1) [greynode] at (3, 0) {};
-\node (s2) [greynode] at (6, 0) {};
-\node (s3) [greynode] at (3, 1) {};
-\node (s4) [greynode] at (1, 2) {};
-\node (s5) [greynode] at (5, 3) {};
-\node (s6) [greynode] at (3, 4) {};
 
-\node [anchor=north west] at (0,6) {A};
-\node [nodelabel,anchor=north west] at ($(s3) + (0,0)$) {$x$};
-\foreach \u/\lab in {s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$} \node[nodelabel,anchor=north] at (\u) {\lab};
-\foreach \u/\lab in {s4/$\textsf{e}$} \node[nodelabel,anchor=south west] at (\u) {\lab};
-\foreach \u/\lab in {s5/$\textsf{f}$} \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$} \node[nodelabel,anchor=south] at (\u) {\lab};
+\node [anchor=north west] at (\x1,6) {A};
+\node [anchor=north west] at (\x2,6) {B};
+\node [anchor=north west] at (\xt,6) {C};
 
-%% Edges
+%%% (A) ARG
+
+\node (s0) [greynode] at (\x1 + 0, 0) {};
+\node (s1) [greynode] at (\x1 + 3, 0) {};
+\node (s2) [greynode] at (\x1 + 6, 0) {};
+\node (s3) [greynode] at (\x1 + 3, 1) {};
+\node (s4) [greynode] at (\x1 + 1, 2) {};
+\node (s5) [greynode] at (\x1 + 5, 3) {};
+\node (s6) [greynode] at (\x1 + 3, 4) {};
+
 \draw (s1) -- (s3);
 \draw (s0) |- (s4);
-\draw (s4) -- (2,2) |- (s3);
+\draw (s4) -- (\x1 + 2,2) |- (s3);
 \draw (s4) |- (s6);
-\draw (s3) -- (4,1) |- (s5);
+\draw (s3) -- (\x1 + 4,1) |- (s5);
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-\node [anchor=north west] at (8,6) {C};
-\node [nodelabel,anchor=north west] at ($(10,5)$) {
+%%% (B) Trees
+\node (l0) [greynode] at (\x2 + 0, 0) {};
+\node (l1) [greynode] at (\x2 + 2, 0) {};
+\node (l2) [greynode] at (\x2 + 3, 0) {};
+\node (l3) [greynode] at (\x2 + 1, 2) {};
+\node (l4) [greynode] at (\x2 + 2, 4) {};
+
+\draw (l0) |- (l3);
+\draw (l1) |- (l3);
+\draw (l2) |- (l4);
+\draw (l3) |- (l4);
+
+\node (r0) [greynode] at (\x3 + 0, 0) {};
+\node (r1) [greynode] at (\x3 + 1, 0) {};
+\node (r2) [greynode] at (\x3 + 3, 0) {};
+\node (r3) [greynode] at (\x3 + 2, 3) {};
+\node (r4) [greynode] at (\x3 + 1, 4) {};
+
+\draw (r0) |- (r4);
+\draw (r1) |- (r3);
+\draw (r2) |- (r3);
+\draw (r3) |- (r4);
+
+\foreach \u/\lab in {
+        s0/$\textsf{a}$, s1/$\textsf{b}$, s2/$\textsf{c}$,
+        r0/$\textsf{a}$, r1/$\textsf{b}$, r2/$\textsf{c}$,
+        l0/$\textsf{a}$, l1/$\textsf{b}$, l2/$\textsf{c}$}
+    \node[nodelabel,anchor=south] at ([yshift=-12pt]\u) {\lab};
+
+\foreach \u/\lab in {
+        s6/$\textsf{g}$,
+        l4/$\textsf{g}$,
+        r4/$\textsf{g}$}
+    \node[nodelabel,anchor=south] at (\u) {\lab};
+
+\node [nodelabel,anchor=north west] at ($(s3) + (\x1 + 0,0)$) {$x$};
+\foreach \u/\lab in {
+        s4/$\textsf{e}$,
+        l3/$\textsf{e}$}
+    \node[nodelabel,anchor=south west] at (\u) {\lab};
+\foreach \u/\lab in {
+        s5/$\textsf{f}$,
+        r3/$\textsf{f}$}
+    \node[nodelabel,anchor=south east] at (\u) {\lab};
+\foreach \u/\lab in {s3/$\textsf{d}$, s6/$\textsf{g}$}
+    \node[nodelabel,anchor=south] at (\u) {\lab};
+
+\draw[dashed] (\xx,0) -- (\xx, 4);
+\node[nodelabel,anchor=north] at (\xx,0) {$x$};
+
+
+%%% (C) Encoding
+\node [nodelabel,anchor=north west] at ($(\xt,5)$) {
 \begin{tabular}{c|c|l}
 % \multicolumn{2}{c}{Breakpoints}\\
 Node & Breakpoint & Parents\\
