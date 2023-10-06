@@ -423,7 +423,7 @@ def simplification():
     graph1_svg = graph1_svg[graph1_svg.find("<svg") :]    
 
     svg = [
-        '<svg width="900" height="900" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="900" height="820" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
         "<style>.tree-sequence text {font-family: sans-serif}</style>"
     ]
