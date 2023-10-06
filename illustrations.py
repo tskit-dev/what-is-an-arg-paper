@@ -406,7 +406,6 @@ def simplification():
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
-    ts3.dump("/Users/yan/ts3.trees")
     ts4, node_map = ts1.simplify(map_nodes=True)
     argutils.viz.draw(
         ts4,
