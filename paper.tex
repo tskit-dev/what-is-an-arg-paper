@@ -94,7 +94,7 @@ under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 % TODO say this better.
-From a high-level, an ARG describes the different paths of genetic inheritance
+From a high level, an ARG describes the different paths of genetic inheritance
 caused by recombination, and encodes a sequence of correlated genealogical
 trees along the genome.
 Recent breakthroughs
@@ -121,7 +121,7 @@ among ancestral lineages is formalised as a
 % Note: please don't add "mathematical graph". If a reader doesn't know what a
 % graph is they're not going to understand this paper.
 graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
-Subsequently, ARGs have come to be thought of as a data
+Subsequently, an ARG  has come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
 the outcome of such a random process or an inference
 of the genetic genealogy of a sample of genome sequences.
@@ -150,6 +150,22 @@ Such problems go much deeper than pedantic discussion over terminology;
 they directly inform what we should be attempting to estimate, how we
 assess success, and the expected limitations on the precision
 and accuracy of our inferences.
+% Thanks Gideon and Alex!
+If not addressed, these problems will
+impede progress on applying genetic genealogical
+information to understand the biological world.
+
+% Evidence of confusion to cite above in "problem" para?
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/334
+% The output of these programs is certainly not a collection of
+% \emph{unrelated} local trees, as implied by,
+% e.g.,
+% \citet{hejase2020summary} when they state that \tsinfer\
+% ``does not explicitly infer an ARG but rather a sequence of local
+% gene trees''.
+% More cites? Not worth harping on about now?
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
+
 
 % What do we do?
 In this paper we attempt to address these problems by
@@ -274,11 +290,10 @@ between genomes,
 arbitrary patterns of genetic inheritance such as
 gene conversions,
 multiple simultaneous recombinations
-(e.g.\ Fig.~\ref{fig-arg-in-pedigree}),
 and so on can be directly expressed.
 % Wilder: give forward ref to section on efficiency here, mention tree sequence
 Thirdly, local trees that we generate for a particular position on the
-genome can have nodes of any arity, including ``unary''
+genome can have nodes of any arity (number of child nodes), including ``unary''
 nodes with a single child (see Section XXX).
 % TODO should rephrase this from parent/child to ancestor/descendant?
 Fourth, recombination is modelled in terms of
@@ -351,14 +366,13 @@ and is agnostic to the details of those processes.
 Genome ARGs are composed by
 describing the details of genetic inheritance
 between specific ancestor and descendant genomes.
-In contrast, ARGs are classically seem defined
+In contrast, ARGs are classically defined
 by the evolutionary \emph{events} in the history of a sample.
 The difference between gARGs and this prevalent view of
-what defines an ARG is subtle and the distinctions sometimes porous.
+what defines an ARG is subtle and difficult to distinguish.
 It is therefore useful to first survey some representative
-definitions of
-an ARG from the literature, to allow us to capture the common features
-of these definitions
+recent definitions of
+an ARG from the literature, to allow us to capture their common features
 (see Appendix XXX for a full review).
 
 \citet{brandt2021evaluation} follow the original Griffiths definition of
@@ -366,25 +380,23 @@ an ARG by coupling it directly to a generative process, stating
 that the ``full ancestral recombination graph (ARG) is a structure that encodes all
 coalescence and recombination events resulting from the stochastic process of
 the coalescent with recombination.''
-\citet{shipilina2023origin} emphasise the true existance of the
+\citet{shipilina2023origin} emphasise the true existence of the
 corresponding events (rather than the generative process) by saying that
 ``[t]he ARG describes the complete
 ancestry of a sample of genomes through a series of real coalescence and
 recombination events.''
-Following this trend to decouple the concept of an ARG from
-generative processes~\citep{minichiello2006mapping},
 \cite{mathieson2020ancestry}
 define an ARG as ``a subset of the pedigree...
 contain[ing] only those edges along which inherited segments of DNA have been
 transmitted, and only those nodes corresponding to ancestors in which there was
 a recombination or coalescence event.''
-In contrast, ~\citet{gusfield2014recombinatorics} defines an ARG as [TODO]
-x
+% In contrast, ~\citet{gusfield2014recombinatorics} defines an ARG as [TODO]
 % Papers that do not discuss how positions work:
 % - Mathieson and Scally: no discussion of how it works concretely (but quite
 %   close to gARG, in some ways)
 % TODO list out some of these as examples of where people don't bother
 % getting into this important detail?
+
 The common feature of these definitions is that they are expressed
 in terms of evolutionary \emph{events}, and so for the purposes of
 discussion we can label
@@ -539,11 +551,12 @@ For example, Fig.~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
 $D_1$ and $D_2$ (genomes \textsf{a}--\textsf{d}).
+That is, only the inheritance
+history of the sample genomes is recorded in the ARG.
 % Gregor & Jerome think that "inheritance" is clearer here than "transmission"
 Genetic inheritance must have occurred between (e.g.)
 $D_8$ and her daughter $D_6$, but this is not recorded because
-% this is probably not true, given we know the complete pedigree?
-it is not relevant to the genetic ancestry of the samples.
+it is not relevant to the genetic ancestry of the sample
 
 Genome ARGs, on the hand,
 can be either retrospective or \emph{prospective}.
@@ -580,9 +593,11 @@ The ``simplify'' algorithm, which prunes away parts of the graph that
 are not ancestral to a sample, is the key enabling factor for
 this approach to forwards-time simulation and is
 described in detail by
-\citet{kelleher2018efficient}. It is a
-powerful tool with many other applications,
-some of which we discuss in the following sections.
+\citet{kelleher2018efficient}.
+It is a powerful tool for simulation and analysis, as it
+allows to efficiently subset ARGs both in terms of the
+samples and levels of detail about recombination retained,
+as we discuss in the following sections.
 
 \section*{Converting an eARG to a gARG}
 Any eARG can be converted to a gARG without loss of information,
@@ -593,7 +608,7 @@ Fig.~\ref{fig-ancestry-resolution}.
 The first step is straightforward
 (Fig.~\ref{fig-ancestry-resolution}B).
 We duplicate the nodes and
-edges from the input eARG, and the add inheritance annotations
+edges from the input eARG, and then add inheritance annotations
 to the output gARG's edges. If the node is a common ancestor node,
 we annotate the single outbound edge with the interval $[0,L)$,
 for a genome of length $L$.
@@ -703,8 +718,8 @@ between the two is subtle and important.
 Note that many authors use the term ``marginal''
 trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping} [more]
 which we avoid due the potential confusion with the
-statistical concept of a marginal distributions indicating
-an integrated tree over many positions.
+statistical concept of marginal distributions
+(which could lead to interpretation as an integrated tree over many positions).
 
 It is useful to have
 a concrete definition and explicit process for reconstruction.
@@ -741,14 +756,16 @@ in this way are \emph{labelled} (i.e.\ carry the identity
 of the corresponding ARG node), and this is fundamentally
 important to how a local tree relates to its parent ARG.
 If we are given the sequence of local trees for a gARG
-encoded as an oriented tree
-and along with the genome interval covered by each tree,
+encoded as an oriented tree (or in any other form in which
+the tree nodes are explicitly labelled with the identity of the
+corresponding ARG node)
+along with the genome interval covered by each tree,
 then we can recover precisely the same ARG. Thus, there
 is a one-to-one correspondance between an ARG and
 the sequence of local trees that it encodes.
 
-The internal nodes of trees, however, are usually
-seen as \emph{unlabelled}, since they most often correspond
+The internal nodes of trees, however, are usually \emph{unlabelled},
+because they most often correspond
 to anonymous hypothetical ancestors. Internal
 ARG nodes likewise correspond to anonymous hypothetical
 ancestors, but if we do not label them we lose the fact that
@@ -763,21 +780,19 @@ because it subtends identical subtrees in both,
 but it would not be straightforward to infer that it
 is also the root of the first tree.
 
-\cite{shipilina2023origin} discuss the same ideas, and note that
+\cite{shipilina2023origin} discuss the same ideas,
+and note that
 ``full ARG ... contains more information than the series of tree
-sequences along the genome''. They view the ``full ARG'' as an
-eARG, and the ``series of tree sequences'' is their
-% jk: probably should delete this. It *is* muddled though
-(somewhat muddled)
-term for the sequence of local trees along the genome.
-Their statement is true, \emph{if} the local trees are
-unlabelled and contain
-no unary nodes. However, as we have shown, if the local trees
+sequences along the genome''.
+Their statement that an ARG
+contains more information than its local trees is true only if
+the local trees are unlabeled.
+However, as we have shown, if the local trees
 contain labelled internal (possibly unary) nodes,
 then  there is precisely as
-much information in them as an ARG. Whether such unary nodes
-are \emph{observable} is an entirely separate question,
-of course.
+much information in them as an ARG.
+Whether such unary nodes are \emph{observable}
+is an entirely separate question, of course.
 
 These properties have interesting consequences when we
 consider the inference strategy of estimating local trees
@@ -787,7 +802,7 @@ Two recent methods take this approach,
 \relate\ and
 \espalier~\citep{rasmussen2022espalier},
 and have different strategies for reconciling the local trees into an ARG.
-\relate\ first infers local tree topologies, and the identifies
+\relate\ first infers local tree topologies, and then identifies
 edges that persist from tree to tree by reasoning about the sets of samples
 subtended. It does not attempt to be exhaustive.
 \espalier, on the other hand, is specifically interested
@@ -836,7 +851,7 @@ ARG simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
-revolves around the presence of nodes which appear
+revolves around the presence of nodes that appear
 ``unary'' in one or more local trees
 (where a node has exactly one child over a particular genomic region).
 These arise in several different ways.
@@ -951,7 +966,8 @@ removal of recombinant nodes can produce graph nodes with
 more than two parents (e.g.~node \noderef{e}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
 more than two children (e.g.~node \noderef{s}). These represent a ``stacking up'' of
-multiple---often indistinguishable---events into a single node.
+the \emph{effects} of multiple evolutionary events in a single node (genome), and the
+ARG no longer contains the intermediate genomes representing those events.
 
 % JK: Text moved from an earlier section. See if we want to reuse this here
 % if not already said.
@@ -971,7 +987,7 @@ some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
 local tree. For example, node  \noderef{k} is unary in the fourth tree
 of Fig.~\ref{fig-simplification}C, but is either binary
-or ternary in all subsequent trees (recall this is a Wright-Fisher
+or ternary in all other local trees (recall this is a Wright-Fisher
 simulation). The final level of simplification is to alter the edge annotations
 such that, although no nodes are removed from the graph, all
 unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
@@ -1215,9 +1231,8 @@ varies from 2 (\relate) to 17 (\argweaver).
 The ARGs inferred by the different methods also have major differences
 in how recombination information is represented.
 Essentially,
-\kwarg\ and \argweaver\ infer complete eARGs (section XXX),
-which contain specific causal recombination \emph{events}
-for each breakpoint.
+\kwarg\ and \argweaver\ infer eARGs that contain
+specific causal recombination \emph{events} for each breakpoint.
 On the other hand, \tsinfer\ and
 \relate\ do not infer causal events but rather
 infer gARGs with differing levels of precision about recombination.
@@ -1235,16 +1250,6 @@ the entire sequence.
 Therefore, they contain a level of detail about recombination
 that lies somewhere between a sequence of unrelated local trees on one
 extreme and a completely precise event ARG on the other.
-The output of these programs is certainly not a collection of
-\emph{unrelated} local trees, as implied by,
-e.g.,
-\citet{hejase2020summary} when they state that \tsinfer\
-``does not explicitly infer an ARG but rather a sequence of local
-gene trees''.
-
-% More cites? Not worth harping on about now?
-% https://github.com/tskit-dev/what-is-an-arg-paper/issues/38
-
 
 \section*{Computational efficiency and data interchange}
 ARG inference methods have been successfully applied to vast datasets,
@@ -1603,6 +1608,10 @@ In summary, we advocate for decoupling between generative models that give rise 
 % Alternative gARG encodings split transmitted intervals and associate each with
 % a new node, resulting in a single genome being represented by a group of
 % multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
+
+\section*{Acknowledgements}
+We are grateful to Gideon Bradburd and Alex Lewanski for helpful discussions
+and comments on the manuscript.
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
