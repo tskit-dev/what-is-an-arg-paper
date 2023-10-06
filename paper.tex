@@ -91,11 +91,12 @@ downstream applications in population and statistical genetics.
 The structure representing such recombinant genetic ancestry
 is usually referred to as an ancestral recombination graph (ARG),
 although there is some confusion about the interpretation and little
-agreement on concrete details.
+agreement on the concrete details.
 We propose a concrete definition of ARGs
 in terms of genomes and their intervals of genetic inheritance (gARG)
 and contrast this with the classical event-based definition (eARG).
-The eARG definition is based on the stochatic process of the coalescent with recombination,
+The eARG definition is based on the coalescent with recombination
+stochastic process,
 and we show how the assumptions of that process
 place limitations on the patterns of inheritance that can be
 represented, which are inadequate for modern large-scale datasets.
@@ -1639,13 +1640,11 @@ substantial differences between these quantities in simulated and reconstructed 
 that were not captured using tree-by-tree comparisons.
 % Not sure this is the right place for this sentence
 These evaluations have been based on
-ground truth data from highly idealised simulations, some 
-with small sample sizes,
-and the effects of the richness of real data
-(beyond simplistic error models)
-on modern biobank scale or multi-generational pedigree datasets
-are almost entirely unknown.
-A suite of true ARG evaluation metrics, that take into account more of the
+ground truth data from highly idealised simulations, with sample sizes limited to at most a few thousand (typically much fewer).
+The effects of the richness of real data
+on modern biobank-scale or multi-generational pedigree datasets
+are almost entirely unknown (beyond studies using very simplistic error models).
+A suite of ARG evaluation metrics, that take into account more of the
 global topology and can be applied to large ARGs, would be a
 valuable addition to the field.
 
@@ -2067,12 +2066,12 @@ In order to evaluate these rates, and hence the sampling probability
 (see e.g.\ \cite[Equation (3)]{mahmoudi2022bayesian}),
 it is necessary to know the number of lineages and number of extant links
 available for recombination in each time interval.
-This may not be obvious.  example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}
+This may not be obvious. For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
 it is clear that a recombination takes place between nodes \textsf{b} and
 \textsf{d} as well as \textsf{e}, but the exact time of the event is ambiguous,
-and thus so is the number of lineages during the time interval. This information cannot be recovered
-from the gARG encoding 
-Conventions can be introduced to resolve such ambiguities;
+and thus so is the number of lineages during the time interval. In fact, this
+information cannot be recovered from the gARG encoding use in that figure,
+so alternative conventions must be introduced to resolve such ambiguities;
 for the likelihood-based inference algorithms for the coalescent with recombination,
 the two parent nodes are typically created at the time of the recombination event.
 See the appendix of \cite{baumdicker2021efficient} for details of evaluating
