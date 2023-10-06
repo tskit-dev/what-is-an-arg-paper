@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[letterpaper,top=2cm,bottom=2.5cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 \usepackage[round]{natbib}
 \usepackage{amsmath,amssymb,amsfonts}%
 \usepackage{geometry}%
@@ -11,6 +12,7 @@
 \usepackage{tikz}
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
+\usepackage[symbol]{footmisc}
 % JK: turning this off for the moment as I keep clicking through on links
 % to the bibliography while reading the text and it's intensely annoying.
 % Can reinstate when we're ready to preprint
@@ -26,35 +28,60 @@
 \begin{document}
 
 \linenumbers
-\title{A general and efficient representation of Ancestral Recombination Graphs}
+\title{\vspace{-1.5em} \bf A general and efficient representation of ancestral recombination graphs}
 
-% First authors
-\author[1]{Yan Wong}
+% % First authors
+% \author[1]{Yan Wong}
 
-% Second authors
-\author[2,$\star$]{Anastasia Ignatieva}
-\author[3,4,$\star$]{Jere Koskela}
+% % Second authors
+% \author[2,$\star$]{Anastasia Ignatieva}
+% \author[3,4,$\star$]{Jere Koskela}
 
-% Middle Authors
-\author[5]{Gregor Gorjanc}
-\author[6,7]{Anthony W. Wohns}
+% % Middle Authors
+% \author[5]{Gregor Gorjanc}
+% \author[6,7]{Anthony W. Wohns}
 
-% Corresponding
-\author[1,$\dagger$]{Jerome Kelleher}
+% % Corresponding
+% \author[1,$\dagger$]{Jerome Kelleher}
 
-\affil[1]{Big Data Institute, Li Ka Shing Centre for Health Information and Discovery, University of Oxford, OX3 7LF, UK}
-\affil[2]{Department of Statistics, University of Oxford, OX1 3LB, UK}
-\affil[3]{School of Mathematics, Statistics and Physics, Newcastle University, NE1 7RU, UK}
-\affil[4]{Department of Statistics, University of Warwick, CV4 7AL, UK}
-\affil[5]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, EH25 9RG, UK}
-\affil[6]{Broad Institute of MIT and Harvard, Cambridge, MA 02142, USA}
-\affil[7]{Department of Genetics, Stanford University School of Medicine, Stanford, CA 94305, USA}
+% \affil[1]{Big Data Institute, Li Ka Shing Centre for Health Information and Discovery, University of Oxford, OX3 7LF, UK}
+% \affil[2]{Department of Statistics, University of Oxford, OX1 3LB, UK}
+% \affil[3]{School of Mathematics, Statistics and Physics, Newcastle University, NE1 7RU, UK}
+% \affil[4]{Department of Statistics, University of Warwick, CV4 7AL, UK}
+% \affil[5]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, EH25 9RG, UK}
+% \affil[6]{Broad Institute of MIT and Harvard, Cambridge, MA 02142, USA}
+% \affil[7]{Department of Genetics, Stanford University School of Medicine, Stanford, CA 94305, USA}
 
-\affil[$\star$]{Denotes shared second authorship, listed alphabetically}
-\affil[$\dagger$]{Denotes corresponding author}
+% \affil[$\star$]{Denotes shared second authorship, listed alphabetically}
+% \affil[$\dagger$]{Denotes corresponding author}
 
+\author[1]{Yan~Wong}
+\author[2,3$\star$]{Anastasia~Ignatieva}
+\author[4,5$\star$]{Jere~Koskela}
+\author[6]{Gregor~Gorjanc}
+\author[7,8]{Anthony~W.~Wohns}
+\author[1$\dagger$]{Jerome~Kelleher}
+\affil[ ]{\mbox{}\vspace{-2.5em}}
 
 \maketitle
+
+\setlength{\skip\footins}{1em}
+\setlength{\footnotemargin}{0.5em}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Big Data Institute, Li Ka Shing Centre for Health
+Information and Discovery, University of Oxford, UK}
+\footnotetext[2]{School of Mathematics and Statistics, University of Glasgow, UK}
+\footnotetext[3]{Department of Statistics, University of Oxford, UK}
+\footnotetext[4]{School of Mathematics, Statistics and Physics, Newcastle University, UK}
+\footnotetext[5]{Department of Statistics, University of Warwick, UK}
+\footnotetext[6]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, UK}
+\footnotetext[7]{Broad Institute of MIT and Harvard, Cambridge, USA}
+\footnotetext[8]{Department of Genetics, Stanford University School of Medicine, Stanford, USA}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{Shared second authorship, listed alphabetically}
+\footnotetext[2]{Correspondence: jerome.kelleher@bdi.ox.ac.uk}
+
+\vspace{-1em}
 
 % FIXME this is weak, but gives the basic outline
 \begin{abstract}
@@ -62,7 +89,7 @@ New developments have made it possible to infer genetic genealogies in
 the presence of recombination at scale, enabling many
 downstream applications in population and statistical genetics.
 The structure representing such recombinant genetic ancestry
-is usually referred to as an Ancestral Recombination Graph (ARG),
+is usually referred to as an ancestral recombination graph (ARG),
 although there is some confusion about the interpretation and little
 agreement on the concrete details.
 We propose a concrete definition of ARGs
@@ -1434,18 +1461,20 @@ and likely many more.
 % and ultimately worldwide~\citep{lewin2022earth}.
 
 \section*{Discussion}
-Recent breakthroughs have made ARG inference methods practical
-at scale for the first time, and there has been a surge of interest
-in inference methods, their evaluation and application.
-The prospect of ARGs being used routinely in population
-and statistical genetics applications is tantalising,
+Recent breakthroughs have finally made large-scale ARG inference
+feasible in practice, leading to a surge of interest
+in development of ARG-based inference methods, their evaluation 
+and application.
+The prospect of ARGs being used routinely within population
+and statistical genetics is tantalising,
 but in reality there is substantial work to be done to
 enable this.
 A necessary first step is a degree of terminological clarity.
-As discussed in Appendix XXX, the term Ancestral Recombination
-Graph has several
-subtly different interpretations depending on context.
-The trend to decouple ARGs from their origins as a stochastic
+As discussed in Appendix XXX, the term ``ancestral recombination
+graph" has several
+subtly different interpretations, depending on context.
+The trend to decouple ARGs from their original definiton 
+as a stochastic
 process and instead use the term as a more general representation of any
 recombinant genetic ancestry seems most useful, which we have
 tried to clarify and systematise here. Thus
@@ -1487,13 +1516,15 @@ below), we cannot rely on sampling from a distribution to capture
 the uncertainty in our ARG estimates. Indeed, even if the coalescent
 was a suitable model for datasets such as UKB and we had a means of
 sampling from its distribution of ARGs at the scale of hundreds of thousands
-of samples, we could only explore the tiniest corner of such an incompehensibly
+of samples, we could only explore the tiniest corner of such an incomprehensibly
 large space of possibilities.
 Therefore, it is important to systematically
 describe and utilise uncertainty about ARG inference.
-One approach, enabled by the gARG encoding described here,
-is to use polytomies and stacked recombinations as direct topological
-descriptions of uncertainty. Other methods to capture, for example,
+One approach, enabled by the gARG encoding described here, is to allow
+nodes to have (rootward) in-degree greater than two (polytomies
+representing uncertainty over the ordering of coalescence events) or 
+out-degree greater than two (representing uncertainty over the ordering
+of multiple recombination events). Other methods to capture, for example,
 uncertainty about node ages and breakpoint locations, is an important
 aspect of future work.
 
