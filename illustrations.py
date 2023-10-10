@@ -399,7 +399,6 @@ def simplification():
     )
     ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts1, map_nodes=True)
     tables = ts3.dump_tables()
-    ts3 = argutils.viz.label_nodes(ts3, labels)
     argutils.viz.draw(
         ts3,
         ax3,
