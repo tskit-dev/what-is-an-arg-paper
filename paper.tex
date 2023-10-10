@@ -965,7 +965,8 @@ Levels of ARG simplification.
 In all cases the graph visualization is shown on the left
 and the corresponding local trees on the right.
 Nodes are coloured by the number of parents and shaded
-according to the proportion of their span over which they are coalescent.
+according to the proportion of their span over which they are coalescent
+(legend in Fig.~\ref{fig-inferred-args})
 (A) A gARG simulated from a backward-time diploid Wright-Fisher
 model: genome \noderef{k} has three children, and the genomes
 \noderef{e} and \noderef{g} simultaneously have multiple parents and multiple children.
@@ -973,7 +974,7 @@ model: genome \noderef{k} has three children, and the genomes
 singly-connected graph components (e.g., diamonds such as \noderef{jlnm}).
 (C) Remove nodes that never represent coalescences,
 i.e.\ are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
-(D) Rewrite edges to bypass nodes where they are unary in local trees.
+(D) Rewrite edges to bypass nodes where they are locally unary.
 }
 \end{figure}
 
