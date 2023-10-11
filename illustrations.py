@@ -449,7 +449,7 @@ def simplification():
             tree_svg +
             "</g>"
         )
-    #svg.append('<g transform="translate(190, 580) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(190, 580) scale(0.5)">' + legend_svg() + "</g>")
     svg.append("</svg>")
 
 
