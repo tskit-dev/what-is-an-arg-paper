@@ -345,13 +345,7 @@ def legend_svg():
     legend_svg = legend_io.getvalue()
     return legend_svg[legend_svg.find("<svg") :]
 
-
-
-@click.command()
-def simplification():
-    """
-    Sequentially simplifying a WF simulation.
-    """
+def draw_simplification_stages(ax1, ax2, ax3, ax4):
     seed = 4517  # Chosen to give a diamond, 2 parents + 1 child node and a CA/noncoal
     t_x = {
         2: -30, 3: 30, 4: 15, 7: 10, 8: 4, 9: 20, 10: 10,
@@ -377,8 +371,6 @@ def simplification():
     #labels = {i: i for i in range(26)}  # uncommment to get node IDs for re-positioning
     ts1 = argutils.viz.label_nodes(ts, labels)
 
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 12))
-    col = mpl.colors.to_hex(plt.cm.tab20(1))
     pos, G = argutils.viz.draw(
         ts1,
         ax1,
@@ -414,6 +406,16 @@ def simplification():
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
+    return ts1, ts2, ts3, ts4
+
+@click.command()
+def simplification():
+    """
+    Sequentially simplifying a WF simulation.
+    """
+
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 12))
+    ts1, ts2, ts3, ts4 = draw_simplification_stages(ax1, ax2, ax3, ax4)
 
     graph1_io = io.StringIO()
     plt.savefig(graph1_io, format="svg", bbox_inches="tight")
@@ -672,7 +674,6 @@ def inference():
     # ts = argutils.simplify_keeping_unary_in_coal(ts)  # in case we want to compare with tsinfer
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
     tree_seqs["KwARG"] = argutils.viz.label_nodes(ts, labels=labels)
-
     # ARGweaver
     ts = tskit.load("examples/Kreitman_SNP_argweaver.trees")
     labels = {n.id: n.metadata["name"] if n.is_sample() else "" for n in ts.nodes()}
@@ -714,13 +715,16 @@ def inference():
     tree_seqs["Relate"] = argutils.viz.label_nodes(ts, labels=labels)
 
     widths = np.ones(len(tree_seqs))
-    heights = [1, 0.1]
-    fig, axes = plt.subplots(2, len(tree_seqs), figsize=(10, 6),
-                             gridspec_kw=dict(
-                             width_ratios=widths, height_ratios=heights))
+    heights = [1, 0.2]
+    fig, axes = plt.subplots(
+        2, len(tree_seqs), figsize=(10, 6),
+        gridspec_kw=dict(width_ratios=widths, height_ratios=heights),
+        # autoscale_on=False
+    )
     tree_seq_positions = []
     max_rank_by_ts = {}
-    for ax, ax_edges, (name, ts) in zip(reversed(axes[0]), reversed(axes[1]), tree_seqs.items()):
+    for lab, ax, ax_edges, name in zip("ABCD", axes[0], axes[1], tree_seqs.keys()):
+        ts = tree_seqs[name]
         subtitle = f"{ts.num_trees} trees"
         params = dict(
             # some of these can get overwritten
@@ -731,23 +735,32 @@ def inference():
             node_arity_colors=True,
             max_edge_width=2,
             tweak_x={},
-            use_ranked_times = False,  # By default use Y axis layout from graphviz dot
+            #use_ranked_times = False,  # By default use Y axis layout from graphviz dot
         )
+        path = pathlib.Path(f"illustrations/assets/{name}.json")
+        if path.is_file():
+            # We have some positions from the tskit_arg_visualiser:
+            # see https://github.com/kitchensjn/tskit_arg_visualizer/blob/main/plotting.md
+            tskit_arg_visualizer_json = json.loads(path.read_text())
+            params["pos"] = {}
+            for n in tskit_arg_visualizer_json["arg"]["nodes"]:
+                 params["pos"][n["id"]] = np.array([n["x"], -n["y"]])
+
         if name == "Tsinfer":
             params["tweak_x"] = {
             #    21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
             #    23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
             }
         if name == "ARGweaver":
-            subtitle = "(typical MCMC result) " + subtitle
+            #subtitle = "(typical MCMC result) " + subtitle
             params["tweak_x"] = {
-                54: 10, 48: 7, 49: 10, 26: 5, 30: 10, 32: -5, 31: 12, 15: -7, 40: 2,
-                44: -5, 39: -2, 45: -3, 52: -2, 51: -5, 42: 5,
+                #54: 10, 48: 7, 49: 10, 26: 5, 30: 10, 32: -5, 31: 12, 15: -7, 40: 2,
+                #44: -5, 39: -2, 45: -3, 52: -2, 51: -5, 42: 5,
             }
         if name == "KwARG":
             params["tweak_x"] = {
-                18: 5, 17: 7, 16: 5, 13: -2, 20: -7, 19: -8, 11: -5, 12: -5, 35: -3,
-                22: -5, 23: -5, 33: 10, 27: 5, 32: 8, 29: -2, 28: 2, 26: 5, 25: 3,
+            #    18: 5, 17: 7, 16: 5, 13: -2, 20: -7, 19: -8, 11: -5, 12: -5, 35: -3,
+            #    22: -5, 23: -5, 33: 10, 27: 5, 32: 8, 29: -2, 28: 2, 26: 5, 25: 3,
             }
         if name == "Relate JBOT":
             params["tweak_x"] = {
@@ -759,9 +772,9 @@ def inference():
         if name == "Relate":
             params["reverse_x_axis"]=True
             params["tweak_x"] = {
-                20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
-                6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
-                28: 5, 26: 16, 17: -15, 16: 5, 21: -2, 23: 2, 29: 5
+                #20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
+                #6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
+                #28: 5, 26: 16, 17: -15, 16: 5, 21: -2, 23: 2, 29: 5
             }
 
         edge_colors_by_node, edge_colors_by_id = get_edge_colors(ts)
@@ -774,13 +787,14 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
+        ax.text(270, -15, lab, fontsize=20, family="serif")
 
-        ax.set_title(name + "\n" + subtitle)
+        ax_edges.set_title(f"{name} ({subtitle})", y=1.05)
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
         ax_edges.axis("off")
-        left_coord = 0.1
-        width = 0.8
+        left_coord = 0.05
+        width = 0.9
 
         edges = {}
         times = ts.tables.nodes.time
@@ -817,18 +831,18 @@ def inference():
 
     graph_io = io.StringIO()
     fig.tight_layout()
-    # fig.subplots_adjust(bottom=0.1)
+    fig.subplots_adjust(bottom=0)
     plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
 
     
     svg = [
-        '<svg width="1000" height="600" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="960" height="580" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(300, 60) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(160, 30) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
