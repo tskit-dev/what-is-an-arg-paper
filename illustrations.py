@@ -566,8 +566,8 @@ def arg_in_pedigree():
         ts_used, ax,
         reverse_x_axis=True,
         draw_edge_widths=False,
-        node_size=400,
-        font_size=14,
+        node_size=500,
+        font_size=17,
         node_color=col,
         tweak_x={l:(-13 if l< 12 else -20) for l in range(8,16)},
         max_edge_width=2)
