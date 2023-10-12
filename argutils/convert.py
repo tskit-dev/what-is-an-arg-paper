@@ -86,7 +86,7 @@ def convert_argweaver(infile):
             tables.edges.add_row(0, L, parents[0], child)
         elif len(parents) == 2:
             # Recombination node.
-            # If we wanted a GARG here we'd add an extra node
+            # Note that this uses the 1-RE-node convention
             x = breakpoints[child]
             tables.edges.add_row(0, x, parents[0], child)
             tables.edges.add_row(x, L, parents[1], child)
@@ -107,7 +107,7 @@ def convert_argweaver(infile):
 
     return ts.simplify(keep_unary=True)
 
-def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
+def convert_kwarg(infile, num_samples, sequence_length, sample_names=None, two_re_nodes=False):
     """
     Convert a KwARG output file to a tree sequence. `infile` should be a filehandle,
     e.g. as returned by the `open` command. 
@@ -154,10 +154,36 @@ def convert_kwarg(infile, num_samples, sequence_length, sample_names=None):
             tables.edges.add_row(breakpoint, sequence_length, tsk_id_2, n1)
 
     tables.sort()
+
+    tables.simplify(filter_nodes=False, keep_unary=True)
     ts = tables.tree_sequence()
+    if not two_re_nodes:
+        ts = convert_2RE_to_1RE(ts)
+    return ts
 
-    return argutils.simplify_keeping_all_nodes(ts)
 
+def convert_2RE_to_1RE(ts, simplify=True):
+    tables = ts.dump_tables()
+    nodes = tables.nodes
+    node_map = np.arange(nodes.num_rows, dtype=tables.edges.child.dtype)
+    u = 0
+    while(u < nodes.num_rows):
+        if nodes.flags[u] & msprime.NODE_IS_RE_EVENT:
+            if u + 1 == nodes.num_rows or (nodes.flags[u + 1] & msprime.NODE_IS_RE_EVENT) == 0 or nodes.time[u] != nodes.time[u + 1]:
+                raise ValueError("2-RE node not followed by another 2-RE node with same time")
+            node_map[u + 1] = u
+            u += 1
+            print("merged node", u, u-1)
+            # TODO - merge metadata from the two nodes
+        u += 1
+    tables.nodes.flags = tables.nodes.flags & ~np.array([msprime.NODE_IS_RE_EVENT], dtype=tables.nodes.flags.dtype)  # zap the NODE_IS_RE_EVENT flags
+    tables.mutations.node = node_map[tables.mutations.node]
+    tables.edges.child = node_map[tables.edges.child]
+    tables.edges.parent = node_map[tables.edges.parent]
+    tables.sort()
+    if simplify:
+        tables.simplify(keep_unary=True, keep_input_roots=True, filter_populations=False, filter_individuals=False, filter_sites=False)
+    return tables.tree_sequence()
 
 def relate_ts_JBOT_to_ts(ts, additional_equivalents=None):
     """
