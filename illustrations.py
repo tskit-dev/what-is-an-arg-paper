@@ -160,8 +160,7 @@ def ancestry_resolution():
         width=1,
     )
 
-    ts_simp = argutils.simplify_keeping_all_nodes(
-        argutils.remove_edges_above_local_roots(ts))
+    ts_simp = argutils.remove_edges_above_local_roots(ts).simplify(filter_nodes=False, keep_unary=True)
     pos, G = argutils.viz.draw(
         ts_simp,
         ax3,
@@ -842,7 +841,7 @@ def inference():
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(160, 30) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(150, 30) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '

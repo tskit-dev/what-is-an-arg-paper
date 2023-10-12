@@ -59,8 +59,19 @@ def run_kwarg():
                 s.id: sample_data.individual(s.individual).metadata["name"]
                 for s in sample_data.samples()
             },
+            two_re_nodes=True
         )
-        # Label the samples
+        ts.dump("examples/Kreitman_SNP_kwarg-2RE.trees")
+    with open("examples/kreitman.kwarg") as f:
+        ts = argutils.convert_kwarg(
+            f,
+            11,
+            43,
+            sample_names={
+                s.id: sample_data.individual(s.individual).metadata["name"]
+                for s in sample_data.samples()
+            },
+        )
         ts.dump("examples/Kreitman_SNP_kwarg.trees")
 
 
