@@ -262,15 +262,15 @@ inheritance intervals $I$.
 % TODO caption needs another pass. One the full section has been written
 % it'll be clearer what we need to say in the caption vs the text.
 An example genome ARG embedded in a pedigree.
-(A) Diploid individuals, visualised in a highly inbred pedigree and
+(A) Diploid individuals (blue), visualised in a highly inbred pedigree and
 labelled $D_1$ to $D_8$,
 contain both paternal and maternal  genomes
 labelled \textsf{a} to \textsf{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\textsf{a} to \textsf{d}) with their ancestors.
 Genomes \textsf{a} and \textsf{c} are the product of two independent
-recombination events between
+recombination events (red) between
 the paternal genomes \textsf{e}
-and \textsf{f} (with breakpoints in red), and regions of genome inherited are shown.
+and \textsf{f}, and regions of genome inherited are shown.
 Genomes are shaded such that where, backwards in time,
 they merge into a common ancestor, the merged region is darker.
 (B) The corresponding gARG along with inheritance annotations on all edges
@@ -281,13 +281,14 @@ they merge into a common ancestor, the merged region is darker.
 
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
-In this diploid example, each genome is inherited from one
-of the individual's parents,
-and may be the recombined product of that parent's two genomes.
-For example, diploid individual $D_1$ in Fig.~\ref{fig-arg-in-pedigree}
-has two genomes \noderef{a} and \noderef{b},
-inherited from parents $D_3$ and $D_4$.
-Genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
+In this figure, diploid individuals are labelled $D_1, D_2...$, and
+rather than denoting their constituent genomes using the natural numbers
+we use lowercase alphabetical labels, to avoid confusion with genomic
+positions. Individual $D_1$ is therefore composed
+of two genomes \noderef{a} and \noderef{b}, which are inherited from its
+two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
+of the genomes contained within a parent. In this example,
+genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
 recombination, whereas
 \noderef{a} is the recombinant product of
 $D_2$'s two genomes \noderef{e} and \noderef{f} crossing over at position 2.
@@ -576,10 +577,10 @@ Whether we regard nodes as events or genomes is something of a
 philosophical question, and in most senses the two are equivalent
 (but see the discussion on ``unary nodes'' in section XXX).
 From a concrete data-structure encoding perspective, the only real
-difference between an eARG and a gARG is that we store recombination
+difference between an eARG and a gARG is that in an eARG we store recombination
 \emph{breakpoints} at nodes of out-degree two (recombination nodes)
-in an eARG and we store \emph{inheritance intervals} on the edges
-of a gARG. A key advantage of associating inheritance intervals with
+whereas in a gARG we store \emph{inheritance intervals} on edges.
+A key advantage of associating inheritance intervals with
 edges in a gARG is that it allows us to describe evolutionary events other
 than simple crossovers, such as multiple recombinations and
 gene-conversions. By explicitly stating the exact regions of genome
@@ -665,9 +666,9 @@ are not ancestral to a sample, is the key enabling factor for
 this approach to forwards-time simulation and is
 described in detail by
 \citet{kelleher2018efficient}.
-It is a powerful tool for simulation and analysis, as it
-allows to efficiently subset ARGs both in terms of the
-samples and levels of detail about recombination retained,
+It is a powerful tool for simulation and analysis as it
+allows efficient subsetting of ARGs, with the ability to
+remove both samples and certain levels of detail about recombination,
 as we discuss in the following sections.
 
 \section*{Converting an eARG to a gARG}
@@ -796,7 +797,7 @@ It is useful to have
 a concrete definition and explicit process for local tree extraction.
 We can describe a local tree as an
 oriented tree~\cite[p.\ 461]{knuth11combinatorial},
-a sequence of integers $\pi_1\pi_2\dots$ where $\pi_u$ denotes the parent of
+a sequence of integers $\pi_1, \pi_2\dots$ where $\pi_u$ denotes the parent of
 node $u$~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
 If $u$ is a root
 % I'm not sure if this reachability stuff is a helpful clarification, and whether it'll just
@@ -816,7 +817,7 @@ setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
 node in $S$ we trace its path rootwards through the
 ARG for position $x$, and record this path in $\pi$.
 Specifically, at a given node $u$,
-we an find edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
+we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
 $\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
 until either $\pi_u \neq -1$ (indicating we have traversed this section
 of the ARG already on the path from another sample) or there
@@ -846,11 +847,9 @@ Without labelled internal tree nodes,
 we must infer their identity
 from the tree topology, which is both
 expensive to compute and imprecise. For example
-we could infer that node \textsf{k} is shared in the second
-and third trees of in Fig.~\ref{fig-simplification}D
-because it subtends identical subtrees in both,
-but it would not be straightforward to infer that it
-is also the root of the first tree.
+using only the tree topologies it would not be straightforward to
+infer that node \noderef{i} in the first and last trees of
+Fig.~.\ref{fig-arg-in-pedigree}C is the same node.
 
 \cite{shipilina2023origin} discuss the same ideas,
 and note that the
