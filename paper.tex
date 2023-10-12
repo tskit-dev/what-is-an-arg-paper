@@ -977,48 +977,40 @@ Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
+Nodes with one child are not a standard feature of evolutionary trees
+or the ARG literature
+(although \citet{mathieson2020ancestry} show examples in which the ARGs
+contain unary nodes, and state that paths are
+``implicitly passing through points representing specific individuals.'').
+We are usually interested in
+nodes that have at least two children because these
+are in principle detectable from mutational differences
+arising in the respective subtrees.
+A tree branch may correspond to many generations
+of individuals (or indeed cell divisions; see Appendix XXX)
+and there is usually
+little information about these intermediates, or utility
+in modelling them.
+As we see in the next section, however, there is a range of
+different ways in which nodes can be unary in the local trees
+of an ARG. Furthermore, ARGs inferred by current methods contain
+locally unary nodes from several of them (see section XXX).
+
 \section*{Levels of simplification}\label{ARG_simplification}
-ARG simplification is a powerful tool, and can do much more
-besides removing unreachable nodes and edges in a prospective ARG
+ARG simplification is a powerful tool, and can do far more
+than removing unreachable nodes and edges in a prospective ARG
 and resolving ancestral material in an eARG.
 In general, we can think of
 ARG simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
-revolves around the presence of nodes that appear
-``unary'' in one or more local trees
-(where a node has exactly one child over a particular genomic region).
-These arise in several different ways.
-Nodes with one child are not a standard feature of evolutionary trees;
-we are usually interested in
-nodes that have at least two children, because these
-are, in principle, detectable from mutational differences
-arising in the respective subtrees.
-A tree branch may correspond to many generations
-of individuals
-% Following feedback from Wilder, this is more likely to confuse
-% people unless we properly explain
-% (or indeed cell divisions)
-and there is usually
-very little information about these intermediates, or utility
-in modelling them.
-% FIXME the bridge between the next few paragraphs is a bit weird, in
-% that we've just been talking about how interesting unary nodes are
-% but then go on about how to remove them. Just needs a bit of smoothing
-% out I think.
-ARGs, however, are different, and there
-can be significant information about evolutionary processes
-provided by nodes that are unary in one or more local trees.
-% Not sure what to do with this - should mention though.
-\citet{mathieson2020ancestry} show examples in which the ARGs
-contain unary nodes, and state that paths are
-``implicitly passing through points representing specific individuals.''
-% Full quote from fig caption:
-% Genetic ancestry in the form of the ARG for a single individual. Combining
-% genetic ancestry from different positions leads to a graph, incorporating all
-% realized genetic ancestry paths, implicitly passing through points representing
-% specific individuals.
+% We are interested in both graph and local unary, so qualifying this
+% would just make it less readable, IMO
+revolves around the presence unary nodes (see previous section),
+which we illustrate by an example simulation.
+[THIS SIMULATION...]
+
 
 \begin{figure}
 \centering
@@ -1048,6 +1040,7 @@ starting with a sample-resolved but unsimplified gARG, simulated under a
 backward-time Wright-Fisher
 model. We show the graph on the left, and the corresponding sequence of
 local trees on the right.
+
 In Fig.~\ref{fig-simplification}A the local trees (right)
 contain many unary nodes, and as we successively simplify,
 the local trees contain fewer
@@ -1110,18 +1103,6 @@ merged
 \emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes representing those events.
 
-% JK: Text moved from an earlier section. See if we want to reuse this here
-% if not already said.
-% Indeed a single node can have both multiple children
-% and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
-% for instance, node \noderef{a} were to have two children.
-% % It is a shame that this is not actually shown in fig 3, but I don't think
-% % we can do this unless we have 5 generations
-% Moreover, a single node can have more than 2 children, and (as we shall see in
-% the ``\nameref{ARG_simplification}'' section), more than 2 parents. Another way to
-% state this is that transitions between nodes in a gARG can encapsulate multiple
-% events in an eARG.
-
 The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
@@ -1135,10 +1116,13 @@ unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
 Note that although this last stage produces simpler local trees, by
 removing information about the exact paths taken by lineages through
 the graph, we lose potentially useful information about shared edges
-between trees. The extent to which this information can be inferred
-and utilised is an interesting open question.
-% I don't think there's an actual manuscript or title to refer to here
-% [CITE Ralph in prep.].
+between trees.
+The \texttt{msprime} simulator, and the version of Hudson's algorithm described
+by~\citet{kelleher2016efficient}, produces ARGs
+that are fully simplified (i.e., contain no locally unary nodes).
+It is not difficult, however, to update
+these methods to record information about the passage of ancestral
+material through genomes under a range conditions.
 
 An important consequence of simplifying ARGs to remove
 unary nodes in local trees is that we lose some information
