@@ -1009,39 +1009,86 @@ The redundancy that we are interested in
 % We are interested in both graph and local unary, so qualifying this
 % would just make it less readable, IMO
 revolves around the presence unary nodes (see previous section),
-which we illustrate by an example simulation.
-[THIS SIMULATION...]
-
+which we illustrate by an example simulated ARG, which
+undergoes a series of successive steps of simplification
+in Fig.~\ref{fig-simplification}.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
 Levels of ARG simplification.
-In all cases the graph visualization is shown on the left
-and the corresponding local trees on the right.
-Nodes are coloured by the number of parents and shaded
-according to the proportion of their span over which they are coalescent
-(legend in Fig.~\ref{fig-inferred-args})
-(A) A gARG simulated from a backward-time diploid Wright-Fisher
-model: genome \noderef{k} has three children, and the genomes
-\noderef{e} and \noderef{g} simultaneously have multiple parents and multiple children.
-(B) Simplified to remove all
+(A) An example ARG simulated from a diploid Wright-Fisher model.
+(B) Remove all
 singly-connected graph components (e.g., diamonds such as \noderef{jlnm}).
 (C) Remove nodes that never represent coalescences,
 i.e.\ are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
-(D) Rewrite edges to bypass nodes where they are locally unary.
+(D) Rewrite edges to bypass nodes in local trees in which they are unary.
+In each case, the graph is shown on the left
+and corresponding local trees on the right.
+Graph nodes are coloured by the number of parents and shaded
+according to the proportion of their span over which they are coalescent;
+see the text for more details.
 }
 \end{figure}
 
-Fig.~\ref{fig-simplification} shows a series of successive steps of
-simplification,
-% FIXME this doesn't explain anything - what did we store in the simulation?
-starting with a sample-resolved but unsimplified gARG, simulated under a
-backward-time Wright-Fisher
-model. We show the graph on the left, and the corresponding sequence of
-local trees on the right.
+The ARG in Fig.~\ref{fig-simplification}A is the output of a
+backwards-time Wright-Fisher simulation for a sample of 2 diploid
+individuals (population size $N=10$), and follows a similar process
+to the methods described by~\cite{nelson2020accounting}.
+As we proceed backwards in time, generation by generation, the
+extant lineages chose parents randomly.
+With a certain probability recombination occurs, and the ancestral
+material of a lineage is split between the two parental
+genomes. Local coalesence occurs
+when lineages with overlapping ancestral material choose the same
+parent genome.
+Note that in this simulation we do not explicitly
+model recombination \emph{events} via an ARG node, but simply record
+the \emph{effects} of a recombination via outbound edges to
+the parent individual's two genomes.
+Thus, a recombinant node may also correspond to a coalescence
+(e.g.~node \noderef{g} in Fig.~\ref{fig-simplification}).
+The distinction of
+using a single node to represent
+a recombination event (e.g.~Fig~\ref{fig-ancestry-resolution}),
+or two to represent the parent genomes is usually not important
+(either is possible in the gARG encoding)
+and the most convenient approach will vary by application.
+Note also that polytomies are a natural feature of such
+a Wright-Fisher model
+(e.g.~node \noderef{k} in Fig.~\ref{fig-simplification}).
 
+Fig.~\ref{fig-simplification} shows four ARGs (A--D), with
+the graph depicted on the left and corresponding sequence
+of local trees on the right. The graph visualisations have
+some novel features, which require some explanation.
+Firstly, edge weights (the thickness of the lines joining
+nodes) correspond to the size of the inheritance intervals
+they are annotated with. This allows us to distinguish
+edges that persist across many local trees from those that are
+less influential (contrast the edge
+$(\noderef{g}, \noderef{h})$
+with $(\noderef{g}, \noderef{i})$
+in Fig.~\ref{fig-simplification}A).
+% FIXME this needs some work
+Secondly, node colours denote the number of parents that they
+have in the graph, allowing us to easily see roots (those
+with zero parents), recombinanants (those with two parents)
+and more complex situations arising from simplification (see below).
+Thirdly, the shading intensity of a node denotes the
+fraction of the node's span (the length of genome in which it
+is reachable from the samples in the local trees)
+over which it is coalescent (has more than one child).
+% This is useful why? I can't come up with a quick way of saying
+% this. In some senses it's a measure of identifiability?
+
+Returning to the main topic of this section,
+Fig.~\ref{fig-simplification}A is the direct output of a Wright-Fisher
+simulation in which we retain all nodes involved in recombination
+or common ancestry events. This is the true history, and contains
+a very high level of detail, some of which may be considered
+redundant (or, from another perspective, unobservable).
 In Fig.~\ref{fig-simplification}A the local trees (right)
 contain many unary nodes, and as we successively simplify,
 the local trees contain fewer
@@ -1312,13 +1359,8 @@ The \argweaver\ example
 is a sample from the inferred posterior distribution.
 Edge colours are based on the time of the edge's child node
 (lighter: older; darker: younger).
-Line width corresponds to the genomic span of the edge.
 Position on the X and Y axes for the graph visualization is arbitrary.
- Node colour
-refers to the number of parents of the node.
-The fill colour intensity of a node is determined by the genomic span over which
-it has two or more children divided by the span where it has any
-children (the ``coalescent span'').
+Line width and node colour are as described in Fig.\ref{fig-simplification}.
 The genomic intervals associated with edges are shown below
 each ARG, where each row is an edge
 and the X axis reflects genomic position.
