@@ -223,7 +223,7 @@ more common sense of ``the genome'' of a species, denoting the full set
 of chromosomes and their coordinate spaces, and hope that the distinction
 will be clear from the context.
 
-A genome ARG (gARG) is a graph in which nodes represent
+A genome ARG (gARG) is a directed acyclic graph in which nodes represent
 haploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant.
 % This has two purposes: clarify that we're not talking about Shipilina
@@ -442,14 +442,14 @@ ancestral lineages.
 Recombination nodes are then
 annotated with
 the corresponding crossover breakpoint~\citep{griffiths1996ancestral}.
-Fig.~\ref{fig-arg-data-structure} shows an example of a classical
+Fig.~\ref{fig-event-arg} shows an example of a classical
 eARG with three samples (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event, along with an example concrete
 encoding of the data.  There is a single recombination event
 at node \noderef{d} with a breakpoint at position $x$. We
 assume that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
-As shown in Fig.~\ref{fig-arg-data-structure}B,
+As shown in Fig.~\ref{fig-event-arg}B,
 the local trees are embedded in the graph, and can be reconstructed
 in essentially the same manner as outlined the previous section for
 gARGs. The only difference is that decisions about which outbound
@@ -559,7 +559,7 @@ $\noderef{g}$ & $\varnothing$ & []\\
 \end{tabular}};
 
 \end{tikzpicture}
-\caption{\label{fig-arg-data-structure}
+\caption{\label{fig-event-arg}
 A classical event ARG. (A) Standard graph depiction with
 breakpoint $x$ associated with the recombination node \noderef{d}.
 Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
@@ -630,7 +630,7 @@ Genetic inheritance must have occurred between (e.g.)
 $D_8$ and her daughter $D_6$, but this is not recorded because
 it is not relevant to the genetic ancestry of the sample
 
-There is no particular reason, however, that ARGs must be 
+There is no particular reason, however, that ARGs must be
 retrospective. They can also be \emph{prospective}.
 The edges in a gARG represent a path of genetic inheritance from
 ancestor to descendant through some
@@ -809,8 +809,8 @@ in the local tree at position $x$, then $\pi_u = -1$ (by convention).
 % multiple disconnected trees, which occurs when all samples have not
 % found a most recent common ancestor.
 Oriented trees allow nodes
-to have  any number of children; from one (see section XXX for more
-discussion on such ``unary nodes'' in the local trees), to arbitrarily
+to have  any number of children; from one (see the next section for more
+discussion on such ``unary nodes''), to arbitrarily
 large polytomies.
 To recover the local tree $\pi$ at position $x$, we begin by
 setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
@@ -849,21 +849,19 @@ from the tree topology, which is both
 expensive to compute and imprecise. For example
 using only the tree topologies it would not be straightforward to
 infer that node \noderef{i} in the first and last trees of
-Fig.~.\ref{fig-arg-in-pedigree}C is the same node.
-
+Fig.~\ref{fig-arg-in-pedigree}C is the same node.
 \cite{shipilina2023origin} discuss the same ideas,
 and note that the
 ``full ARG...~contains more information than the series of tree
 sequences along the genome''.
 Their statement that an ARG
 contains more information than its local trees is true only if
-the local trees are unlabeled and/or do not contain unary nodes.
-However, as we have shown, if the local trees
-contain labelled internal (possibly unary) nodes,
+the local trees are unlabeled and/or do not contain unary nodes
+(see the next section for discussion on this point).
+However, if the local trees
+contain labelled internal nodes,
 then  there is precisely as
 much information in them as an ARG.
-Whether such unary nodes are \emph{observable}
-is an entirely separate question, of course.
 
 These properties have interesting consequences when we
 consider the inference strategy of estimating local trees
@@ -886,7 +884,6 @@ Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
 is a degree of internal node sharing between trees.
-
 
 % The equivalence between an ARG and a set of local trees
 % separated by SPRs is often mentioned [e.g. x y z], but
@@ -912,49 +909,109 @@ is a degree of internal node sharing between trees.
 % set of SPRs that reconcile independently inferred
 % trees from different regions of the genome.
 
+\section*{Locally unary nodes}
+We can define the arity of a node as the number of child nodes it has.
+There is an
+important distinction between the number of children a node has
+in the graph and the number of children it has in the local trees,
+because a (graph) child node is only a child in the local tree for position
+$x$ if $x$ is in the inheritance interval for the corresponding edge.
+Thus, for a given node $u$ and a genome position $x$ the arity
+of $u$ in that local tree is less than or equal to the graph arity of
+$u$. The arity
+of a node in the local trees can therefore change as we move along
+the genome.
+
+This distinction between graph and local tree arity is mainly
+of interest when we consider \emph{unary} nodes, those that have
+a single child.
+Returning to the example in Fig~\ref{fig-arg-in-pedigree}, nodes
+\noderef{g} and \noderef{h} are graph-unary, and are consequently
+also unary in the local trees.
+On the other hand, node \noderef{f} has two children
+in the graph (Fig~\ref{fig-arg-in-pedigree}B), but is only binary
+in the local tree covering the interval $[2, 7)$,
+representing the coalescence of samples \noderef{a} and \noderef{c}
+in this region of genome. Over the interval $[0, 2)$ no coalescence occurs,
+but we still record the fact that genome \noderef{c} inherits from \noderef{f}
+in the local tree. Thus, \noderef{c} has a single child in this
+interval and it is unary in this local tree.
+In another example, \noderef{e} is binary in the graph, but is
+unary in each of the local trees it is present in.
+This is because \noderef{a} and \noderef{c} are both recombinant
+offspring of \noderef{e} and \noderef{f}, and,
+in this example,
+\noderef{a} inherits from
+\noderef{e} over the interval $[0, 2)$,
+and \noderef{c} inherits from \noderef{e} over $[7, 10)$.
+The intervals over which
+we know that a node inherits from another, but where there
+is no local coalescence, are marked by unary nodes in the
+local trees.
+
+Outside of the context of simulation, graph-unary nodes are
+only like to occur in longitudinal datasets where genetic
+data is sampled at many timepoints and recombination
+is rare (e.g.~SARS-Cov-2; see Discussion).
+\emph{Locally} unary nodes, those which have one child
+in one or more local trees, are a common and important feature
+of many different types of ARG, and a recurring topic
+in this article. Without these nodes marking the passage
+of ancestral material through specific ancestors, the local trees
+lack information about events other than local coalescence.
+% Not sure if switching example will confuse people here, but would
+% like to contrast with example where we don't use unary nodes to
+% emphasise the point that we lose info
+For example, the local trees for the classical event ARG
+depicted in Fig.~\ref{fig-event-arg}B follow the usual conventions
+and do not include any information about the recombination
+that occurred at node \noderef{d}. Given these two local trees
+in isolation
+% (without further information about the corresponding ARG)
+we lack specific information about the recombination.
+Explicitly recording that node \noderef{d} lies on the
+branch joining \noderef{b} to \noderef{e} in the left hand
+tree, and \noderef{b} to \noderef{f} in the right hand tree
+resolves all ambiguity, and makes the collection of local
+trees exactly equivalent to the corresponding ARG (see previous section).
+Unary nodes are a vital link between ARGs and local trees, and we
+cannot fully reason about how a local tree is embedded in an ARG
+without them.
+
+Nodes with one child are not a standard feature of evolutionary trees
+or the ARG literature
+(although \citet{mathieson2020ancestry} show examples in which the ARGs
+contain unary nodes, and state that paths are
+``implicitly passing through points representing specific individuals.'').
+We are usually interested in
+nodes that have at least two children because these
+are in principle detectable from mutational differences
+arising in the respective subtrees.
+A tree branch may correspond to many generations
+of individuals (or indeed cell divisions; see Appendix XXX)
+and there is usually
+little information about these intermediates, or utility
+in modelling them.
+As we see in the next section, however, there is a range of
+different ways in which nodes can be unary in the local trees
+of an ARG. Furthermore, ARGs inferred by current methods contain
+locally unary nodes from several of them (see section XXX).
 
 \section*{Levels of simplification}\label{ARG_simplification}
-ARG simplification is a powerful tool, and can do much more
-besides removing unreachable nodes and edges in a prospective ARG
+ARG simplification is a powerful tool, and can do far more
+than removing unreachable nodes and edges in a prospective ARG
 and resolving ancestral material in an eARG.
 In general, we can think of
 ARG simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
-revolves around the presence of nodes that appear
-``unary'' in one or more local trees
-(where a node has exactly one child over a particular genomic region).
-These arise in several different ways.
-Nodes with one child are not a standard feature of evolutionary trees;
-we are usually interested in
-nodes that have at least two children, because these
-are, in principle, detectable from mutational differences
-arising in the respective subtrees.
-A tree branch may correspond to many generations
-of individuals
-% Following feedback from Wilder, this is more likely to confuse
-% people unless we properly explain
-% (or indeed cell divisions)
-and there is usually
-very little information about these intermediates, or utility
-in modelling them.
-% FIXME the bridge between the next few paragraphs is a bit weird, in
-% that we've just been talking about how interesting unary nodes are
-% but then go on about how to remove them. Just needs a bit of smoothing
-% out I think.
-ARGs, however, are different, and there
-can be significant information about evolutionary processes
-provided by nodes that are unary in one or more local trees.
-% Not sure what to do with this - should mention though.
-\citet{mathieson2020ancestry} show examples in which the ARGs
-contain unary nodes, and state that paths are
-``implicitly passing through points representing specific individuals.''
-% Full quote from fig caption:
-% Genetic ancestry in the form of the ARG for a single individual. Combining
-% genetic ancestry from different positions leads to a graph, incorporating all
-% realized genetic ancestry paths, implicitly passing through points representing
-% specific individuals.
+% We are interested in both graph and local unary, so qualifying this
+% would just make it less readable, IMO
+revolves around the presence unary nodes (see previous section),
+which we illustrate by an example simulation.
+[THIS SIMULATION...]
+
 
 \begin{figure}
 \centering
@@ -984,6 +1041,7 @@ starting with a sample-resolved but unsimplified gARG, simulated under a
 backward-time Wright-Fisher
 model. We show the graph on the left, and the corresponding sequence of
 local trees on the right.
+
 In Fig.~\ref{fig-simplification}A the local trees (right)
 contain many unary nodes, and as we successively simplify,
 the local trees contain fewer
@@ -1046,18 +1104,6 @@ merged
 \emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes representing those events.
 
-% JK: Text moved from an earlier section. See if we want to reuse this here
-% if not already said.
-% Indeed a single node can have both multiple children
-% and multiple parents. This would be the case in Fig~\ref{fig-arg-in-pedigree} if,
-% for instance, node \noderef{a} were to have two children.
-% % It is a shame that this is not actually shown in fig 3, but I don't think
-% % we can do this unless we have 5 generations
-% Moreover, a single node can have more than 2 children, and (as we shall see in
-% the ``\nameref{ARG_simplification}'' section), more than 2 parents. Another way to
-% state this is that transitions between nodes in a gARG can encapsulate multiple
-% events in an eARG.
-
 The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
@@ -1071,10 +1117,13 @@ unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
 Note that although this last stage produces simpler local trees, by
 removing information about the exact paths taken by lineages through
 the graph, we lose potentially useful information about shared edges
-between trees. The extent to which this information can be inferred
-and utilised is an interesting open question.
-% I don't think there's an actual manuscript or title to refer to here
-% [CITE Ralph in prep.].
+between trees.
+The \texttt{msprime} simulator, and the version of Hudson's algorithm described
+by~\citet{kelleher2016efficient}, produces ARGs
+that are fully simplified (i.e., contain no locally unary nodes).
+It is not difficult, however, to update
+these methods to record information about the passage of ancestral
+material through genomes under a range conditions.
 
 An important consequence of simplifying ARGs to remove
 unary nodes in local trees is that we lose some information
@@ -1542,7 +1591,7 @@ uncertainty about node ages and recombination breakpoint positions, is an import
 aspect of future work.
 
 The timing, positions, and even the number of recombination events is generally
-not possible to infer precisely from sequencing data. For ARGs under 
+not possible to infer precisely from sequencing data. For ARGs under
 coalescent-based models, the proportion of recombination events that change the
 ARG topology grows very slowly with sample size \citep{hein2004gene}, and of those
 events only a small proportion are actually detectable from the data, assuming
