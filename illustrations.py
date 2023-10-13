@@ -316,12 +316,13 @@ def legend_svg():
         if span:
             ax.text(7+label_sep, y-0.5, "...", va="center_baseline", fontsize=15)
             
-        
+    marker_params["marker"]="s"
+    marker_params["markersize"] *= 0.8
     ax.plot(
         [6],
         [-4],
         markeredgecolor=[mean_rgb]*3,
-        markerfacecolor=[0] * 3,
+        markerfacecolor=[1] * 3,
         **marker_params,
     )
     ax.text(6+label_sep, -4, "sample", va="center_baseline", fontsize=15)

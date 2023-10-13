@@ -182,47 +182,46 @@ def draw(
 
     # Draw just the nodes
     arity_edge_color = None
+    is_sample = np.array([ts.node(u).is_sample() for u in G.nodes()], dtype=bool)
     if node_arity_colors:
         # Isoluminant colours
         spans = collections.defaultdict(float)
         c_spans = collections.defaultdict(float)
         for tree in ts.trees():
             for node in tree.nodes():
-                if tree.num_children(node) > 0:
+                if tree.num_children(node) > 0 or tree.parent(node) >= 0:
                     spans[node] += tree.span
                 if tree.num_children(node) > 1:
                     c_spans[node] += tree.span
-        node_color = []
-        arity_edge_color = []
-        for n, deg in G.out_degree():
+        node_color = np.full(ts.num_nodes, "#000000", dtype="U7")
+        arity_edge_color = node_color.copy()
+        for i, (n, deg) in enumerate(G.out_degree()):
             col = arity_colors(deg)
-            # get span over which this is not unary
-            if spans[n] == 0:
-                assert ts.node(n).is_sample()
-                node_color.append("#000000")
-                arity_edge_color.append(make_color(col))
-            else:
-                arity_edge_color.append(make_color(col))
-                node_color.append(make_color(col, lighten= 1 - (c_spans[n] / spans[n])))
-        if not rotated_sample_labels:
-            # Sample nodes are filled black, so we need to change the label colour
-            labs = labels_by_colour[font_color]
-            labels_by_colour["w"] = {k: v for k, v in labs.items() if ts.node(k).is_sample()}
-            labs = {k: v for k, v in labs.items() if not ts.node(k).is_sample()}
+            arity_edge_color[i] = make_color(col)
+            node_color[i] = make_color(col, lighten= 1 - (c_spans[n] / spans[n]))
 
-    nx.draw(
-        G,
-        pos,
-        node_color=node_color,
-        edgecolors=arity_edge_color,
-        with_labels=False,
-        node_shape="o",
-        node_size=node_size,
-        font_size=font_size,
-        linewidths=2,
-        ax=ax,
-        edgelist=[],
-    )
+    for use, shape, size in zip((is_sample, ~is_sample), ("s", "o"), (node_size*0.8, node_size)):
+        try:
+            node_col = node_color[use]
+        except TypeError:
+            pass
+        try:
+            arity_edge_col = arity_edge_color[use]
+        except TypeError:
+            pass
+        nx.draw(
+            G, pos, ax,
+            node_color=node_col,
+            edgecolors=arity_edge_col,
+            node_shape=shape,
+            node_size=size,
+            font_size=font_size,
+            linewidths=2,
+            with_labels=False,
+            edgelist=[],
+            nodelist=np.where(use)[0],
+        )
+
     for font_color, labels in labels_by_colour.items():
         text = nx.draw_networkx_labels(
             G,
