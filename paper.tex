@@ -88,8 +88,7 @@ Estimating the genetic genealogy of a set of genome sequences
 under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
-% TODO say this better.
-From a high level, an ARG describes the different paths of genetic inheritance
+Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, and encodes a sequence of correlated genealogical
 trees along the genome.
 Recent breakthroughs
@@ -119,8 +118,8 @@ among ancestral lineages is formalised as a
 graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
 Subsequently, an ARG  has come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
-the outcome of such a stochastic process or of an inference
-of the genetic genealogy of a sample of genome sequences.
+the outcome of such a stochastic process or a
+genetic genealogy inferred from a sample of genome sequences.
 However, the distinction between process and data structure is not clear cut
 and subfields use the term
 differently (see Appendix XXX).
@@ -133,14 +132,14 @@ encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
 This broad usage means there is a lack of consensus on the
-exact object being defined. This causes problems, for example,
+exact object being defined, which causes problems, for example,
 when evaluating inferred ARGs, and even when defining
 what the criteria for success should be.
 It also means there is no shared format for interchanging ARG data between
 programs, resulting in the assorted negative consequences with which
 geneticists are only too familiar~\citep{excoffier2006computer,gower2022demes}.
-Perhaps most importantly, the direct linkage to
-the original stochastic process definition leads to an
+Perhaps most importantly, definitions linked to
+the original stochastic process lead to an
 overly narrow interpretation of ARGs, which is significantly
 out of step with modern methods and large-scale datasets, and
 can lead to missed opportunities in their application and usage.
@@ -260,11 +259,11 @@ they merge into a common ancestor, the merged region is darker.
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
 The pedigree relationship between the diploid individuals is
-shown, along with their constituent genomes and paths
-of genetic inheritance.
-We label nodes using using lowercase alphabetical letters
+shown, along with their paths
+of genetic inheritance and constituent genomes (labelled
+using using lowercase alphabetical letters
 rather than integer identifiers to avoid confusion with genomic
-positions and associated intervals.
+intervals).
 Thus, individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
@@ -945,14 +944,14 @@ branch joining \noderef{b} to \noderef{e} in the left hand
 tree, and \noderef{b} to \noderef{f} in the right hand tree
 resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG (see previous section).
-Locally unary nodes are a vital link between ARGs and local trees, and we
+Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
 Nodes with one child are not a standard feature of evolutionary trees
 or the ARG literature
 (although \citet{mathieson2020ancestry} show examples in which the ARGs
-contain locally unary nodes, and state that paths are
+contain unary nodes, and state that paths are
 ``implicitly passing through points representing specific individuals.'').
 We are usually interested in
 nodes that have at least two children because these
