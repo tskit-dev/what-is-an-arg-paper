@@ -1697,12 +1697,22 @@ In comparing tree-by-tree along the genome, the effects of recombination
 are only incorporated in an indirect manner through the correlations
 between the local trees, rather than through directly taking into account
 the persistence of nodes and edges across multiple trees.
-Tree distance metrics usually have $O(n^2)$ time complexity and therefore cannot be
+The performance of tree distance metrics varies by
+application~\citep{kuhner2015assessing}, and the correct approach
+to handling subtleties such as polytomies
+is an open question~\citep{kelleher2019inferring,zhang2023biobank}.
+% Is this true? These guys claim RF takes linear time:
+% https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-020-07011-0
+Tree distance metrics usually have at least $O(n^2)$ time complexity
+and therefore cannot be
 applied to the very large sample sizes currently of interest.
-A recent trend has been to move away from such tree distance-based approaches and to examine more properties of the inferred ARGs.
+A recent trend has been to move away from such
+tree distance-based approaches and to examine more properties of the inferred ARGs.
 \citet{brandt2021evaluation} focussed on the
-distributions of pairwise MRCA times; \citet{deng2021distribution} derived an approximation to the distribution of the
-waiting distances between local trees; \citet{ignatieva2023distribution}
+distributions of pairwise MRCA times;
+\citet{deng2021distribution} derived an approximation to the distribution of the
+waiting distances between local trees;
+\citet{ignatieva2023distribution}
 derived the distribution of the genomic span of an edge and that of a
 clade of samples. In each case, simulation studies demonstrated
 substantial differences between these quantities in simulated and reconstructed ARGs,
@@ -2310,8 +2320,16 @@ hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
 method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
 dozens of mammal-like genomes \citep{hubisz2020inference}.
 
-Methods to sample ARGs generate a ``cloud'' of estimates
-\citep{kuhner2017consensus} develop
+Methods to sample ARGs generate a ``cloud'' of estimates, and
+\citep{kuhner2017consensus} provide an approach to generate a
+set of consensus breakpoints and local trees from
+such a cloud.
+The approach is based on examining the recombination breakpoints
+in all of the input ARGS, and including those that are
+in at least $k$ of the input ARGs (with some additional
+filtering criteria) in the output.
+Within the resulting intervals, a consensus
+local tree is then generated using standard phylogenetic methods.
 
 % Not sure we want this content now? We're not really talking about
 % evaluation of liklihoods any more.
