@@ -851,10 +851,16 @@ def inference():
     with open(f"illustrations/inference.svg", "wt") as f:
         f.write(top_svg)
 
+@click.command()
+def cell_lines():
+    with open(f"illustrations/cell-lines.svg", "wt") as f:
+        f.write(pathlib.Path("illustrations/assets/cell-lines-full.svg").read_text())
+
 
 cli.add_command(arg_in_pedigree)
 cli.add_command(ancestry_resolution)
 cli.add_command(simplification)
+cli.add_command(cell_lines)
 cli.add_command(inference)
 
 if __name__ == "__main__":

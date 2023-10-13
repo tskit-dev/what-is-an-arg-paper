@@ -2348,4 +2348,72 @@ local tree is then generated using standard phylogenetic methods.
 % edges on different trees are easy to identify, and which encodes recombination
 % events and times explicitly, e.g.\ using nodes.
 
+\section{Cell lineages and ARGs}
+\label{cell-lineages-and-args}
+As we have argued, an important benefit of the gARG representation is that it
+can concatenate multiple events by encoding the outcome of their effects
+on a single node. In the case of recombination events, this manifests itself as
+a single node with three or more parents (e.g.\ Fig.~\ref{fig-simplification}C, node \noderef{e}).
+Here we make the argument that the same principle underlies ARGs containing
+coalescence points that involve three or more children. These ``polytomies'' are generated not only
+by Wright-Fisher dynamics such as those in Fig.~\ref{fig-simplification}C (see node \noderef{k}), but also
+by life histories that involve ``burst'' reproduction events, which are often modelled by a lambda
+coalecent process [AND OTHERS]\citep{wakely2008coalescent}.
+
+At the base of this concept is a subtle and important point about which genomes the nodes in a gARG represent. 
+In principle, we can interpret nodes as representing genomes
+at any point in the life cycle, for instance, \citet{hudson1983properties} views nodes as representing gametes,
+whereas in Fig.~\ref{fig-arg-in-pedigree}A, we present them as genomes within a diploid individual.
+In reality, however, recombination and replication of DNA occur at a cellular level,
+and correspond to the processes of meiosis and mitosis respectively. A comprehensive gARG would therefore
+trace the process of inheritance not between diploid individuals, but between each cell during the
+life cycle of an organism. This is illustrated in Fig.~\ref{fig-cell-lines}, where we show a simplified
+schematic of cellular inheritance in a diploid population over four partially overlapping generations.
+In this figure, thick black lines trace an ARG that describes the ancestry of the lower arm of the
+four sampled chromosomes. The potential ARG nodes are shown as green chromosomal regions, and the ``events''
+underlying the ARG are shown as red and blue squares.
+
+The unusual feature of this particular example is that three ARG lineages coalesce in one individual, $D_10$
+(who has three children). We know that the underlying coalescence process must consist of two successive bifurcations
+as the only known method of reproducing DNA is by (semi-conservative) duplication. However, if we take each node in the
+ARG to represents the generalised genome of an individual, rather than the specific genome of a cell within an individual,
+we can only represent this as a instantanous trifucation or polytomy.
+
+There is biological significance to this cellular-level inheritance process. Were a mutation to occur
+during the first cell division of $D_10$, the two gametes produced by the cells
+in the left half of $D_10$ could share a mutation not present in the right hand gamete. In other words,
+the relationship between three (or more) gametes that originate, without recombination, from the same parental
+chromosomes will nevertheless be strictly bifurcating; two of the gametes have a closer relationship with the
+third more distant. Of course, unless mutations occur between successive rounds of cell division, the between-cell
+relationships will be impossible to infer from the data, with subsequent implications for
+using the eARG representation to store the results of inference.
+
+As with concatenating multiple recombination events, the gARG representation allows us to concatenate within-individual
+coalescence events such that we are not obliged to represent precisely the underlying cellular process. In humans and
+other multicellular diploids, it seems most intuitive to take the nodes in the gARG to represent two haploid genomes within
+a newly fertilised diploid individual. If this individual has 3 or more children, and these children feature in the
+eventual ancestry of the samples, the gARG approach outlined in this paper means that they can be legitimately represented
+by a polytomy in the local trees.
+\begin{figure}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{illustrations/cell-lines}
+\end{center}
+\caption{\label{fig-cell-lines}
+Cellular inheritance of a single chromosome in a diploid population.
+Individuals (blue) contain diploid cells (white circles enclosing a homologous pair of chromosomes).
+For clarity, only two rounds of mitotic germ-line cell division are shown per individual, and
+meiosis is not illustrated in detail.
+Lines show prospective inheritance paths for all chromosomes. Solid lines show all possible
+retrospective ancestry paths for four chosen chromosomes (indicated by square black ``sampling events'')
+sampled from 3 diploid individuals ($D_1$, $D_2$, $D_3$) in the current generation.
+Ancestral recombination events and coalescence events are shown as red and blue squares respectively.
+The ARG paths for the lower arm of the sampled chromosomes (green) is highlighted as a
+think solid line and involves a single recombination event and four coalescence events
+(highlighted as deep red and blue squares within individuals $D_5$, $D_10$, and $D_13$).
+ARG lineages also show gametic genomes, contained within shaded circles.
+As in Fig.~\ref{fig-arg-in-pedigree}A, inherited regions within the sampled chromosome arm are
+shaded by the number of descendant samples.
+}
+\end{figure}
+
 \end{document}
