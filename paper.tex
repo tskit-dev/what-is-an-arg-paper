@@ -249,10 +249,10 @@ parent nodes and $I$ is the set of disjoint genomic intervals
 over
 which genome $c$ inherits from $p$. Thus, each topological connection between
  a parent and child node in the graph is ``annotated'' with a set of
-inheritance intervals $I$. 
-Here, the terms parent and child are used in graph sense; 
-these nodes can respectively represent an ancestor and a descendant genome, 
-which can be genetically separated by multiple meioses. 
+inheritance intervals $I$.
+Here, the terms parent and child are used in graph sense;
+these nodes can respectively represent an ancestor and a descendant genome,
+which can be genetically separated by multiple meioses.
 We will use these two sets of terms interchangeably.
 
 \begin{figure}
@@ -293,20 +293,20 @@ genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} withou
 recombination, whereas
 genome \noderef{a} is the recombinant of
 $D_2$'s genomes \noderef{e} and \noderef{f} crossing over at position 2.
-Specifically, genome \noderef{a} inherited the (half-closed) 
+Specifically, genome \noderef{a} inherited the (half-closed)
 interval $[0, 2)$ from genome \noderef{e} and $[2, 10)$ from genome \noderef{f}.
-These intervals are shown attached to the corresponding graph edges. 
-The figure shows the annotated pedigree with realised inheritance of genomes 
-between generations, the corresponding gARG, and finally the corresponding 
-sequence of local trees along the genome. 
-The local trees represent the genealogy of genomes \noderef{a}--\noderef{d}, 
-which changes between local trees due to recombination. 
-The local trees span the three genome regions delineated 
+These intervals are shown attached to the corresponding graph edges.
+The figure shows the annotated pedigree with realised inheritance of genomes
+between generations, the corresponding gARG, and finally the corresponding
+sequence of local trees along the genome.
+The local trees represent the genealogy of genomes \noderef{a}--\noderef{d},
+which changes between local trees due to recombination.
+The local trees span the three genome regions delineated
 by the two recombinations that gave rise to these genomes.
 % Following the above definitions, corresponding data for this gARG is shown in Supplementary? Table XXX.
 
-These definitions follow naturally from the outcome of events 
-associated with the inheritance of DNA between generations. 
+These definitions follow naturally from the outcome of events
+associated with the inheritance of DNA between generations.
 As such,
 there are some important consequences to these definitions.
 Firstly, there is
@@ -453,12 +453,12 @@ annotated with
 the corresponding crossover breakpoint~\citep{griffiths1996ancestral}.
 Fig.~\ref{fig-event-arg} shows an example of a classical
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c})
-and a single recombination event, 
-% Trying to emphasise here that this is just an example data encoding. 
+and a single recombination event,
+% Trying to emphasise here that this is just an example data encoding.
 % I can imagine
 % people nitpicking about how this specific way of doing it is bad
 % for reason X.
-along with an example encoding of the data. 
+along with an example encoding of the data.
 There is a single recombination event
 at node \noderef{d} with a breakpoint at position $x$. We
 assume that \noderef{d} inherits genetic material to the
@@ -474,8 +474,8 @@ is significant~\citep[e.g.][]{griffiths1991two},
 or by incorporating additional information to
 distinguish left and right parents
 into the
-encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}. 
-% JK: not sure what you're getting at here Gregor? The ordering matters 
+encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
+% JK: not sure what you're getting at here Gregor? The ordering matters
 % because you have to write each event down precisely.
 % Gregor: Importantly, the order of events matters to WHAT!?
 
@@ -818,8 +818,8 @@ If $u$ is a root
 (or not reachable from the samples)
 in the local tree at position $x$, then $\pi_u = -1$ (by convention).
 % This sentence needs another pass
-A node in an oriented tree can have 
-zero, one (see the next section for discussion of ``unary'' nodes), 
+A node in an oriented tree can have
+zero, one (see the next section for discussion of ``unary'' nodes),
 or many children (a node with more than two children is known as a polytomy).
 To recover the local tree $\pi$ at position $x$, we begin by
 setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
@@ -1018,7 +1018,7 @@ The redundancy that we are interested in
 % We are interested in both graph and local unary, so qualifying this
 % would just make it less readable, IMO
 revolves around the presence unary nodes (see previous section).
-We illustrate this successive removal of redundancy 
+We illustrate this successive removal of redundancy
 through a series simplification steps
 in Fig.~\ref{fig-simplification}.
 
@@ -1092,7 +1092,7 @@ over which it is coalescent (has more than one child).
 % This is useful why? I can't come up with a quick way of saying
 % this. In some senses it's a measure of identifiability?
 % JK: Hmm, not sure we want to jump into inferability here?
-All these features will impact what kind of an ARG we can 
+All these features will impact what kind of an ARG we can
 hope to infer from sampled genomes.
 
 Returning to the main topic of this section,
@@ -1188,7 +1188,7 @@ An important consequence of simplifying ARGs to remove
 unary nodes in local trees is that we lose some information
 about recombination
 events. This is related to the amount of \emph{precision} about
-recombination events that we store and 
+recombination events that we store and
 can hope to infer from sampled genomes, which is the topic of the next
 section.
 
@@ -1656,7 +1656,7 @@ positions can only be inferred approximately, depending on how much information
 can be elucidated from mutations in the surrounding genomic region. For general
 ARGs, for instance those representing pedigrees, or genealogies of organisms with
 low mutation rates and complex patterns of recombination, such inference can be
-even more challenging. The fact that the eARG encoding \emph{requires} 
+even more challenging. The fact that the eARG encoding \emph{requires}
 precise estimates about recombination is therefore a fundamental limitation, which
 is a central message of this paper.
 % This might be where we mention Fisher's junctions and IBD?
@@ -1791,11 +1791,11 @@ may accelerate progress and help to
 establish ARG methods within mainstream genetics.
 
 \section*{Acknowledgements}
-We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan 
+We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
 for helpful discussions and comments on the manuscript.
 
 % JK: I'd usually use "JK was supported by XX", but this form seems fine too?
-% I don't have an opinion about it, if others think something else is more 
+% I don't have an opinion about it, if others think something else is more
 % appropriate.
 GG acknowledges support from the BBSRC ISP grant to The Roslin Institute (BBS/E/D/30002275, BBS/E/RL/230001A, BBS/E/RL/230001C).
 Jerome Kelleher acknowledges support from the Robertson Foundation.
