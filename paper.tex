@@ -28,32 +28,8 @@
 \begin{document}
 
 
-\title{\vspace{-1.5em} \bf A general and efficient representation of ancestral recombination graphs}
-
-% % First authors
-% \author[1]{Yan Wong}
-
-% % Second authors
-% \author[2,$\star$]{Anastasia Ignatieva}
-% \author[3,4,$\star$]{Jere Koskela}
-
-% % Middle Authors
-% \author[5]{Gregor Gorjanc}
-% \author[6,7]{Anthony W. Wohns}
-
-% % Corresponding
-% \author[1,$\dagger$]{Jerome Kelleher}
-
-% \affil[1]{Big Data Institute, Li Ka Shing Centre for Health Information and Discovery, University of Oxford, OX3 7LF, UK}
-% \affil[2]{Department of Statistics, University of Oxford, OX1 3LB, UK}
-% \affil[3]{School of Mathematics, Statistics and Physics, Newcastle University, NE1 7RU, UK}
-% \affil[4]{Department of Statistics, University of Warwick, CV4 7AL, UK}
-% \affil[5]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, EH25 9RG, UK}
-% \affil[6]{Broad Institute of MIT and Harvard, Cambridge, MA 02142, USA}
-% \affil[7]{Department of Genetics, Stanford University School of Medicine, Stanford, CA 94305, USA}
-
-% \affil[$\star$]{Denotes shared second authorship, listed alphabetically}
-% \affil[$\dagger$]{Denotes corresponding author}
+\title{\vspace{-1.5em} \bf
+A general and efficient representation of ancestral recombination graphs}
 
 \author[1]{Yan~Wong}
 \author[2,3$\star$]{Anastasia~Ignatieva}
@@ -83,8 +59,6 @@ Information and Discovery, University of Oxford, UK}
 
 \vspace{-1em}
 
-% FIXME abstract needs some rewriting, we're placing too much emphasis
-% on the coalescent there.
 \begin{abstract}
 New developments have made it possible to infer genetic genealogies in
 the presence of recombination at scale, enabling many
@@ -171,7 +145,7 @@ Such problems go much deeper than pedantic discussion over terminology;
 they directly inform what we should be attempting to estimate, how we
 assess success, and the expected limitations on the precision
 and accuracy of our inferences.
-% Thanks Gideon and Alex!
+% Thanks for the phrase Gideon and Alex!
 If not addressed, these problems will
 impede progress in applying genetic genealogies to understand the biological world.
 
@@ -772,9 +746,9 @@ the ancestral material with respect to a sample.
 % you just end up running simplify lots of times, in your
 % downstream algs
 The gARG encoding
-allows us to perform this resolution of ancestral material once 
-and to store the result, 
-whereas the eARG encoding requires us to repeat the process 
+allows us to perform this resolution of ancestral material once
+and to store the result,
+whereas the eARG encoding requires us to repeat the process
 each time.
 
 Note that the \citet{wiuf1999recombination} eARG
@@ -807,7 +781,7 @@ which we avoid due to the potential confusion with the
 statistical concept of marginal distributions
 (which could lead to interpretation as an integrated tree over many positions).
 
-It is useful to have
+To make the following discussions precise, we require
 a concrete definition and explicit process for local tree extraction.
 We can describe a local tree as an
 oriented tree~\cite[p.\ 461]{knuth11combinatorial},
@@ -821,7 +795,7 @@ in the local tree at position $x$, then $\pi_u = -1$ (by convention).
 % This sentence needs another pass
 A node in an oriented tree can have
 zero, one (see the next section for discussion of ``unary'' nodes),
-or many children (a node with more than two children is known as a polytomy).
+or many children.
 To recover the local tree $\pi$ at position $x$, we begin by
 setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
 node in $S$ we trace its path rootwards through the
@@ -840,43 +814,53 @@ important to how a local tree relates to its ARG.
 If we are given the sequence of local trees for a gARG
 encoded as an oriented tree (or in any other form in which
 the tree nodes are explicitly labelled with the identity of the
-corresponding ARG node)
+corresponding ARG node),
 along with the genome interval covered by each tree,
-then we can recover precisely the same ARG. Thus, there
+then we can recover precisely the same ARG. Thus, under this
+definition, there
 is a one-to-one correspondence between an ARG and
 the sequence of local trees that it encodes.
 
-The internal nodes of trees, however, are usually
-considered to be \emph{unlabelled},
-because they most often correspond
-to anonymous hypothetical ancestors.
-Internal ARG nodes likewise correspond to anonymous hypothetical
-ancestors, but if we do not label them we lose the fact that
-the \emph{same} ancestors persist across multiple trees.
-Without labelled internal tree nodes,
-we must infer their identity
-from the tree topology, which is both
-expensive to compute and imprecise. For example
-using only the tree topologies it would not be straightforward to
-infer that node \noderef{i} in the first and last trees of
-Fig.~\ref{fig-arg-in-pedigree}C is the same node.
+This is not the prevailing view, however.
+\cite{kuhner2017consensus} argue that the
+``interval-tree'' representation of
+an ARG (the local trees and the genome intervals they cover)
+``does not contain all of the information in the underlying ARG: it lacks the
+number of recombinations occuring at each site, the times at which
+recombinations occurred, and the specific sequences involved as recombination
+partners.''
 \cite{shipilina2023origin} discuss the same ideas,
 and note that the
 ``full ARG...~contains more information than the series of tree
 sequences along the genome''.
-Their statement that an ARG
-contains more information than its local trees is true only if
-the local trees are unlabeled and/or do not contain unary nodes
-(see the next section for discussion on this point).
-However, if the local trees
-contain labelled internal nodes,
-then there is precisely as
+These statements that an ARG
+contains more information than its local trees is only true
+if we use a representation of the local trees that discards
+information about those local trees that can be derived from the ARG.
+The internal nodes of evolutionary trees are usually
+considered to be \emph{unlabelled}
+because they most often correspond
+to anonymous hypothetical ancestors.
+Internal ARG nodes may likewise correspond to anonymous hypothetical
+ancestors, but if we do not label the tree nodes we lose the fact that
+the \emph{same} ancestors persist across multiple trees.
+Besides having labelled nodes, the local trees must contain
+unary nodes (see the next section) marking recombinations
+and other processes that lead to lineages passing through a given
+ARG node without coalescence in the local trees (see section XXX).
+If the local trees contain labelled internal nodes, precisely
+describing the corresponding path through the graph for each
+genome interval, then there is exactly as
 much information in them as in an ARG.
 
 These properties have interesting consequences when we
 consider the inference strategy of estimating local trees
-sequentially along the genome, and subsequently stitching them together
-into an ARG.
+% JK: Relate is inferring trees independently within segments,
+% it's just using a dynamic algorithm to decide what those segments
+% are, right? That's how it differs from things like Espalier which
+% assume a set of input recomb breakpoints.
+independently within genome segments,
+and subsequently stitching them together into an ARG.
 Two recent methods take this approach,
 \relate~\citep{speidel2019method} and
 \espalier~\citep{rasmussen2022espalier},
@@ -894,30 +878,6 @@ Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
 is a degree of internal node sharing between trees.
-
-% The equivalence between an ARG and a set of local trees
-% separated by SPRs is often mentioned [e.g. x y z], but
-% it is important to note that while extracting local
-% trees from an ARG is straightforward, the converse
-% process of reconstructing precisely the same ARG from
-% these trees is more problematic. If the internal
-% nodes are consistently labelled and unary nodes are
-% included in the local trees (e.g., Fig~\ref{fig-simplification})
-% then it is easy to exactly reconstruct the ARG.
-% Otherwise, the problem is much more difficult and it
-% may not be possible to uniquely reconstruct the original ARG.
-% Without labels for the internal nodes, we are forced to
-% to reason about which subtrees remain the same and which
-% differ due to the SPR separating adjacent trees in order to
-% assign node identity. Without the internal unary nodes marking
-% recombinations, we must infer their existence. In
-% general, there will not be a unique solution to this problem,
-% and so there can be many possible ARGs compatible with
-% a given list of leaf-labelled binary trees.
-% This is the approach taken by the Espalier inference
-% method~\citep{rasmussen2022espalier}, which finds a
-% set of SPRs that reconcile independently inferred
-% trees from different regions of the genome.
 
 \section*{Locally unary nodes}
 We can define the arity of a node as the number of child nodes it has.
@@ -1724,7 +1684,9 @@ without the hard requirement
 of complete precision on all historical events, may clarify inference goals and improve
 methods for evaluation.
 In most cases,
-ARG inference is evaluated by simulating data from a known ground truth ARG, and comparing this to the inferred version via pairwise comparison of local trees along the genome, for example
+ARG inference is evaluated by simulating data from a known ground truth ARG,
+and comparing this to the inferred version via pairwise comparison of
+local trees along the genome, for example
 using tree distance
 metrics~\citep[e.g.][]{robinson1981comparison,kendall2016mapping},
 as described by \citet{kuhner2015assessing}.
@@ -2327,7 +2289,7 @@ method of \citet{rasmussen2022espalier}, can be used on megabase scale data and
 hundreds of thousands of samples under human-like parameters.
 
 TODO mention \citep{schaefer2021ancestral} somewhere.
-Also \citep{kuhner2017consensus}.
+
 
 % AI: just to note, these papers do not all agree in their definition of an
 % ARG. I guess this is one of the points of the present paper, but should we
@@ -2337,35 +2299,43 @@ Also \citep{kuhner2017consensus}.
 An alternative approach is to treat the ARG as a latent parameter to be
 averaged out by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
-or MCMC \citep{kuhner2000maximum, nielsen2000estimation, wang2008bayesian,
-fallon2013acg, mahmoudi2022bayesian}. These methods operate on representations
+or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
+wang2009population, fallon2013acg, mahmoudi2022bayesian}.
+These methods operate on representations
 of the ``little ARG'', and are extremely computationally expensive, being
 applicable to at most hundreds of samples consisting of tens or hundreds of
 kilobases with human-like parameters. State-of-the-art methods rely on cheaper,
 approximate models \citep{didelot2010inference, heine2018bridging,
 hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
 method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
-dozens of mammal-like genomes \citep{hubisz2020inference}. A central quantity
-in all of these sampling methods is the conditional sampling probability $p(G |
-D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization of
-genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
-of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
-frequentist regularizer for the ARG $G$.
+dozens of mammal-like genomes \citep{hubisz2020inference}.
 
-The likelihood $p(D | G)$ is effectively always the distribution of a Poisson
-process on the ancestral material along the edges of $G$ \citep[Eq.\
-(2)]{mahmoudi2022bayesian}. Hence it is typically straightforward to evaluate
-in principle, but choosing the right data structure can still have a dramatic
-effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
-in the Bayesian case, $p(G)$ is typically specified as the sampling
-distribution of a stochastic process, such as the coalescent with
-recombination. Two contemporary examples are \citet{mahmoudi2022bayesian} and
-\citet{guo2022recombination}. Evaluating the distribution of the coalescent with
-recombination (or related models) requires knowledge of the number of extant
-lineages and number of links available for recombination (i.e.\ ones at which a
-recombination would split ancestral material) at each time \citep[Eq.\
-(3)]{mahmoudi2022bayesian}. These require a data structure from which shared
-edges on different trees are easy to identify, and which encodes recombination
-events and times explicitly, e.g.\ using nodes.
-We will provide a more detailed discussion on sampling probability evaluation in the appendix.
+Methods to sample ARGs generate a ``cloud'' of estimates
+\citep{kuhner2017consensus} develop
+
+% Not sure we want this content now? We're not really talking about
+% evaluation of liklihoods any more.
+% A central quantity
+% in all of these sampling methods is the conditional sampling probability $p(G |
+% D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization of
+% genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
+% of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
+% frequentist regularizer for the ARG $G$.
+
+% The likelihood $p(D | G)$ is effectively always the distribution of a Poisson
+% process on the ancestral material along the edges of $G$ \citep[Eq.\
+% (2)]{mahmoudi2022bayesian}. Hence it is typically straightforward to evaluate
+% in principle, but choosing the right data structure can still have a dramatic
+% effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
+% in the Bayesian case, $p(G)$ is typically specified as the sampling
+% distribution of a stochastic process, such as the coalescent with
+% recombination. Two contemporary examples are \citet{mahmoudi2022bayesian} and
+% \citet{guo2022recombination}. Evaluating the distribution of the coalescent with
+% recombination (or related models) requires knowledge of the number of extant
+% lineages and number of links available for recombination (i.e.\ ones at which a
+% recombination would split ancestral material) at each time \citep[Eq.\
+% (3)]{mahmoudi2022bayesian}. These require a data structure from which shared
+% edges on different trees are easy to identify, and which encodes recombination
+% events and times explicitly, e.g.\ using nodes.
+
 \end{document}
