@@ -231,8 +231,8 @@ def draw(
             labels=labels,
             ax=ax,
         )
-        y_below_extra = 0.018 * np.diff(ax.get_ylim())  # 2% of the y range
         if rotated_sample_labels:
+            y_below_extra = 0.0145 * np.diff(ax.get_ylim())  # 2% of the y range
             for nd, t in text.items():
                 if is_sample[nd]:
                     x, y = t.get_position()
