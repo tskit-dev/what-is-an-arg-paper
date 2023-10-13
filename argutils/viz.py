@@ -204,11 +204,11 @@ def draw(
         try:
             node_col = node_color[use]
         except TypeError:
-            pass
+            node_col = node_color
         try:
             arity_edge_col = arity_edge_color[use]
         except TypeError:
-            pass
+            arity_edge_col = arity_edge_color
         nx.draw(
             G, pos, ax,
             node_color=node_col,

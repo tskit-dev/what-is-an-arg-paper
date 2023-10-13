@@ -345,7 +345,18 @@ def legend_svg():
     legend_svg = legend_io.getvalue()
     return legend_svg[legend_svg.find("<svg") :]
 
-def draw_simplification_stages(ax1, ax2, ax3, ax4):
+def make_edge_labels(ts):
+    edge_labels = {}
+    for e in ts.edges():
+        k = (e.child, e.parent)
+        label = f"[{e.left:.0f},{e.right:.0f})"
+        if k in edge_labels:
+            edge_labels[k] += ", " + label
+        else:
+            edge_labels[k] = label
+    return edge_labels
+
+def draw_simplification_stages(ax1, ax2, ax3, ax4, draw_edge_labels=False):
     seed = 4517  # Chosen to give a diamond, 2 parents + 1 child node and a CA/noncoal
     t_x = {
         2: -30, 3: 30, 4: 15, 7: 10, 8: 4, 9: 20, 10: 10,
@@ -362,6 +373,7 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
     left = tables.edges.left
     tables.edges.left = tables.sequence_length - tables.edges.right
     tables.edges.right = tables.sequence_length - left
+    tables.edges.squash()
     tables.sort()
     ts=tables.tree_sequence()
 
@@ -369,6 +381,12 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
     # relabel the nodes to get samples reading A B C D
     labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
     #labels = {i: i for i in range(26)}  # uncommment to get node IDs for re-positioning
+    edge_lab_params = {
+        "rotate": False,
+        "font_size": 9,
+        "font_family": "Helvetica", 
+        "bbox": {"boxstyle": "round,pad=0.05", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
+    }
     ts1 = argutils.viz.label_nodes(ts, labels)
 
     pos, G = argutils.viz.draw(
@@ -379,6 +397,11 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
         node_arity_colors=True,
         tweak_x=t_x,
     )
+    if draw_edge_labels:
+        lab = make_edge_labels(ts1)
+        nx.draw_networkx_edge_labels(
+            G=G, pos=pos, ax=ax1, edge_labels=lab, **edge_lab_params)
+        
     ts2, node_map = argutils.simplify_remove_pass_through(
         ts1, repeat=True, map_nodes=True
     )
@@ -389,6 +412,11 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
+    if draw_edge_labels:
+        lab = make_edge_labels(ts2)
+        nx.draw_networkx_edge_labels(
+            G=G, pos={node_map[i]: p for i, p in pos.items()}, ax=ax2, edge_labels=lab, **edge_lab_params)
+
     ts3, node_map = argutils.simplify_keeping_unary_in_coal(ts1, map_nodes=True)
     tables = ts3.dump_tables()
     argutils.viz.draw(
@@ -398,6 +426,11 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
+    if draw_edge_labels:
+        lab = make_edge_labels(ts3)
+        nx.draw_networkx_edge_labels(
+            G=G, pos={node_map[i]: p for i, p in pos.items()}, ax=ax3, edge_labels=lab, **edge_lab_params)
+
     ts4, node_map = ts1.simplify(map_nodes=True)
     argutils.viz.draw(
         ts4,
@@ -406,6 +439,11 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4):
         pos={node_map[i]: p for i, p in pos.items()},
         node_arity_colors=True,
     )
+    if draw_edge_labels:
+        lab = make_edge_labels(ts4)
+        nx.draw_networkx_edge_labels(
+            G=G, pos={node_map[i]: p for i, p in pos.items()}, ax=ax4, edge_labels=lab, **edge_lab_params)
+
     return ts1, ts2, ts3, ts4
 
 @click.command()
@@ -413,7 +451,6 @@ def simplification():
     """
     Sequentially simplifying a WF simulation.
     """
-
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 12))
     ts1, ts2, ts3, ts4 = draw_simplification_stages(ax1, ax2, ax3, ax4)
 
@@ -468,6 +505,15 @@ def simplification():
 
 
 @click.command()
+def simplification_with_edges():
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 15), gridspec_kw=dict(wspace=0, hspace=0))
+    ts1, ts2, ts3, ts4 = draw_simplification_stages(ax1, ax2, ax3, ax4, draw_edge_labels=True)
+    for lab, ax in zip("ABCD", (ax1, ax2, ax3, ax4)):
+        ax.text(75, 9.5, lab, fontsize=32)
+    plt.savefig(f"illustrations/simplification-with-edges.svg", format="svg", bbox_inches="tight")
+
+
+@click.command()
 def arg_in_pedigree():
     """
     The ARG as embedded in diploid pedigree.
@@ -484,7 +530,7 @@ def arg_in_pedigree():
                 ec=(1.0, 1.0, 1.0),
                 fc=(1.0, 1.0, 1.0)),
         }
-        edge_labels={(e.child, e.parent): f"[{e.left:.0f},{e.right:.0f})" for e in ts.edges()}
+        edge_labels = make_edge_labels(ts)
         full_edges = {k: v for k, v in edge_labels.items() if not argutils.is_recombinant(ts.node(k[0]).flags)}
         nx.draw_networkx_edge_labels(
             **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
@@ -770,7 +816,7 @@ def inference():
             }
 
         if name == "Relate":
-            params["reverse_x_axis"]=True
+            #params["reverse_x_axis"]=True
             params["tweak_x"] = {
                 #20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
                 #6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
@@ -862,6 +908,7 @@ cli.add_command(arg_in_pedigree)
 cli.add_command(ancestry_resolution)
 cli.add_command(simplification)
 cli.add_command(cell_lines)
+cli.add_command(simplification_with_edges)
 cli.add_command(inference)
 
 if __name__ == "__main__":

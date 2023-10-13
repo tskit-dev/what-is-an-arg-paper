@@ -13,6 +13,7 @@ ILLUSTRATIONS=\
 	illustrations/arg-in-pedigree.pdf \
 	illustrations/inference.pdf \
 	illustrations/cell-lines.pdf \
+	illustrations/simplification-with-edges.pdf \
 
 all: paper.pdf
 
