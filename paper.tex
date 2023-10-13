@@ -125,10 +125,11 @@ However, the distinction between process and data structure is not clear cut
 and subfields use the term
 differently (see Appendix XXX).
 
+% JK: this para need a major update, it's quite weak right now.
 The word ``ARG'' is now widely used to refer to genetic genealogies in
 general~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
-schaefer2021ancestral,harris2023using,zhang2023biobank}, including
-varied outputs from modern simulation and
+schaefer2021ancestral,harris2023using,zhang2023biobank},
+encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
 This broad usage means there is a lack of consensus on the
@@ -182,29 +183,17 @@ TODO: Provide a map of the paper's sections and how they tie together in support
 \section*{Genome ARGs}
 We define a genome as the complete set of genetic material that a child
 inherits from one parent (i.e.\ haploids have one genome, diploids two, etc.).
-% Talking about "haplotypes" probably just confuses more
-% In this usage a ``genome'' is equivalent to the definition of a
-% ``haplotype'' used by~\cite{shipilina2023origin}, which we avoid because
-% it already has many interpretations, and in particular carries the implication of
-% specific mutational patterns [CITES] that persist over
-% many generations.
-We are not concerned here with mutational processes or observed sequences,
-but consider only processes of inheritance,
-following the standard practice in coalescent theory.
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species, denoting the full set
 of chromosomes and their coordinate spaces, and hope that the distinction
 will be clear from the context.
+We are not concerned here with mutational processes or observed sequences,
+but consider only processes of inheritance,
+following the standard practice in coalescent theory.
 
 A genome ARG (gARG) is a directed acyclic graph in which nodes represent
 haploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant.
-% This has two purposes: clarify that we're not talking about Shipilina
-% et al's edges, and also get "Graph theory" in here
-(Note that we are using the term ``edge'' in its standard
-graph-theoretic sense
-and not the specialised interpretation of
-\cite{shipilina2023origin}.)
 The topology of a gARG specifies that genetic inheritance
 occurred between particular
 ancestors and descendants, but the graph connectivity
@@ -221,15 +210,27 @@ representing the sampled genomes
 (but see section XXX for some subtlety around this point).
 Each element of $E$ is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
 parent nodes and $I$ is the set of disjoint genomic intervals
-%$[\ell, r)$
-over
-which genome $c$ inherits from $p$. Thus, each topological connection between
- a parent and child node in the graph is ``annotated'' with a set of
+over which genome $c$ inherits from $p$.
+Thus, each topological connection between
+a parent and child node in the graph is ``annotated'' with a set of
 inheritance intervals $I$.
 Here, the terms parent and child are used in graph sense;
 these nodes can respectively represent an ancestor and a descendant genome,
 which can be genetically separated by multiple meioses.
 We will use these two sets of terms interchangeably.
+
+In many settings, nodes are dated, i.e.\
+each node $u\in N$ is associated with a time $\tau_u$.
+However, the topological relationships
+defined by the directed graph structure is sufficient for
+many applications, and we will assume that node dates are not
+known here.
+% This should be obvious, but seems like it needs to be said
+In practical settings, we will wish to associate additional
+metadata such as a sample identifiers or quality-control metrics
+with nodes; it is therefore best to think of the
+integers used here in the definition of a node as an \emph{identifier},
+with which arbitrary additional information can be associated.
 
 \begin{figure}
 \begin{center}
@@ -258,10 +259,13 @@ they merge into a common ancestor, the merged region is darker.
 
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
-In this figure, diploid individuals are labelled $D_1, D_2...$, and
-rather than denoting their constituent genomes using the natural numbers
-we use lowercase alphabetical labels, to avoid confusion with genomic
-positions and associated intervals. Individual $D_1$ is therefore composed
+The pedigree relationship between the diploid individuals is
+shown, along with their constituent genomes and paths
+of genetic inheritance.
+We label nodes using using lowercase alphabetical letters
+rather than integer identifiers to avoid confusion with genomic
+positions and associated intervals.
+Thus, individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
 of the genomes contained within a parent. In this example,
@@ -960,7 +964,7 @@ and there is usually
 little information about these intermediates, and hence limited utility
 in modelling them.
 As we see in the next section, however, there is a range of
-different ways in which ARG nodes can be locally unary. Furthermore, 
+different ways in which ARG nodes can be locally unary. Furthermore,
 several current ARG inference methods infer locally unary nodes (see section XXX).
 
 \section*{Levels of simplification}\label{ARG_simplification}
@@ -2384,7 +2388,7 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
-At the base of this concept is a subtle and important point about which genomes the nodes in a gARG represent. 
+At the base of this concept is a subtle and important point about which genomes the nodes in a gARG represent.
 In principle, we can interpret nodes as representing genomes
 at any point in the life cycle, for instance, \citet{hudson1983properties} views nodes as representing gametes,
 whereas in Fig.~\ref{fig-arg-in-pedigree}A, we present them as genomes within a diploid individual.
@@ -2399,7 +2403,7 @@ and the potential ARG nodes are shown as green chromosomal regions. Note that a 
 ``pass-through'' nodes with one parent and one child, and in practice these would normally be omitted.
 
 The unusual feature of this particular example is that three ARG lineages coalesce in one historical individual,
-$D_10$, whose three children all happen to be ancestors of the sampled chromosomes.
+$D_{10}$, whose three children all happen to be ancestors of the sampled chromosomes.
 We can see that the process that generates these three child lineages actually consists of two successive bifurcations:
 necessitated by the fact that the only known method of reproducing DNA is by (semi-conservative) duplication.
 However, if we take each node in the ARG to represents the generalised genome of an individual (rather than the specific
@@ -2419,5 +2423,5 @@ relationships will be impossible to infer from the data.
 % a newly fertilised diploid individual. If this individual has 3 or more children, and these children feature in the
 % eventual ancestry of the samples, the gARG approach outlined in this paper means that they can be legitimately represented
 % by a polytomy in the local trees.
- 
+
 \end{document}
