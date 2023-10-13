@@ -761,9 +761,9 @@ def inference():
     tree_seqs["Relate"] = argutils.viz.label_nodes(ts, labels=labels)
 
     widths = np.ones(len(tree_seqs))
-    heights = [1, 0.2]
+    heights = [1, 0.11]
     fig, axes = plt.subplots(
-        2, len(tree_seqs), figsize=(10, 6),
+        2, len(tree_seqs), figsize=(10, 5.2),
         gridspec_kw=dict(width_ratios=widths, height_ratios=heights),
         # autoscale_on=False
     )
@@ -833,7 +833,7 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
-        ax.text(270, -15, lab, fontsize=20, family="serif")
+        ax.text(270, -35, lab, fontsize=20, family="serif")
 
         ax_edges.set_title(f"{name} ({subtitle})", y=1.05)
 
@@ -884,11 +884,11 @@ def inference():
 
     
     svg = [
-        '<svg width="960" height="580" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="960" height="480" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
-    svg.append('<g transform="">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(150, 30) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(0, -19)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
+    svg.append('<g transform="translate(150, 5) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
