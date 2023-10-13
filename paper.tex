@@ -941,14 +941,14 @@ branch joining \noderef{b} to \noderef{e} in the left hand
 tree, and \noderef{b} to \noderef{f} in the right hand tree
 resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG (see previous section).
-Unary nodes are a vital link between ARGs and local trees, and we
+Locally unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
 Nodes with one child are not a standard feature of evolutionary trees
 or the ARG literature
 (although \citet{mathieson2020ancestry} show examples in which the ARGs
-contain unary nodes, and state that paths are
+contain locally unary nodes, and state that paths are
 ``implicitly passing through points representing specific individuals.'').
 We are usually interested in
 nodes that have at least two children because these
@@ -960,9 +960,8 @@ and there is usually
 little information about these intermediates, and hence limited utility
 in modelling them.
 As we see in the next section, however, there is a range of
-different ways in which nodes can be unary in the local trees
-of an ARG. Furthermore, ARGs inferred by current methods contain
-locally unary nodes from several of them (see section XXX).
+different ways in which ARG nodes can be locally unary. Furthermore, 
+several current ARG inference methods infer locally unary nodes (see section XXX).
 
 \section*{Levels of simplification}\label{ARG_simplification}
 ARG simplification is a powerful tool, and can do far more
@@ -2361,7 +2360,7 @@ Here we make the argument that the same principle underlies ARGs containing
 coalescence points that involve three or more children. These ``polytomies'' are generated not only
 by Wright-Fisher dynamics such as those in Fig.~\ref{fig-simplification}C (see node \noderef{k}), but also
 by life histories that involve ``burst'' reproduction events, which are often modelled by a lambda
-coalecent process [AND OTHERS]\citep{wakely2008coalescent}.
+coalescent process [AND OTHERS]\citep{wakely2008coalescent}.
 
 \begin{figure}
 \begin{center}
@@ -2395,14 +2394,16 @@ trace the process of inheritance not between diploid individuals, but between ea
 life cycle of an organism. This is illustrated in Fig.~\ref{fig-cell-lines}, where we show a simplified
 schematic of cellular inheritance in a diploid population over four partially overlapping generations.
 In this figure, thick black lines trace an ARG that describes the ancestry of the lower arm of the
-four sampled chromosomes. The potential ARG nodes are shown as green chromosomal regions, and the ``events''
-underlying the ARG are shown as red and blue squares.
+four sampled chromosomes. The ``events'' underlying the ARG are shown as red and blue squares,
+and the potential ARG nodes are shown as green chromosomal regions. Note that a number of these nodes are
+``pass-through'' nodes with one parent and one child, and in practice these would normally be omitted.
 
-The unusual feature of this particular example is that three ARG lineages coalesce in one individual, $D_{10}$
-(who has three children). We know that the underlying coalescence process must consist of two successive bifurcations
-as the only known method of reproducing DNA is by (semi-conservative) duplication. However, if we take each node in the
-ARG to represents the generalised genome of an individual, rather than the specific genome of a cell within an individual,
-we can only represent this as a instantaneous trifurcation or polytomy.
+The unusual feature of this particular example is that three ARG lineages coalesce in one historical individual,
+$D_10$, whose three children all happen to be ancestors of the sampled chromosomes.
+We can see that the process that generates these three child lineages actually consists of two successive bifurcations:
+necessitated by the fact that the only known method of reproducing DNA is by (semi-conservative) duplication.
+However, if we take each node in the ARG to represents the generalised genome of an individual (rather than the specific
+genome of a cell within an individual) we end up representing this as a instantaneous trifucation or polytomy.
 
 There is biological significance to this cellular-level inheritance process. Were a mutation to occur
 during the first cell division of $D_{10}$, the two gametes produced by the cells
@@ -2412,11 +2413,11 @@ chromosomes will nevertheless be strictly bifurcating; two of the gametes have a
 third more distant. Of course, unless mutations occur between successive rounds of cell division, the between-cell
 relationships will be impossible to infer from the data.
 
-As with concatenating multiple recombination events, the gARG representation allows us to concatenate within-individual
-coalescence events such that we are not obliged to represent precisely the underlying cellular process. In humans and
-other multicellular diploids, it seems most intuitive to take the nodes in the gARG to represent two haploid genomes within
-a newly fertilised diploid individual. If this individual has 3 or more children, and these children feature in the
-eventual ancestry of the samples, the gARG approach outlined in this paper means that they can be legitimately represented
-by a polytomy in the local trees.
+% As with concatenating multiple recombination events, the gARG representation allows us to concatenate within-individual
+% coalescence events such that we are not obliged to represent precisely the underlying cellular process. In humans and
+% other multicellular diploids, it seems most intuitive to take the nodes in the gARG to represent two haploid genomes within
+% a newly fertilised diploid individual. If this individual has 3 or more children, and these children feature in the
+% eventual ancestry of the samples, the gARG approach outlined in this paper means that they can be legitimately represented
+% by a polytomy in the local trees.
  
 \end{document}
