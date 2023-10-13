@@ -98,7 +98,7 @@ in terms of genomes and their intervals of genetic inheritance (gARG)
 and contrast this with the classical event-based definition (eARG).
 We show that eARGs are limited in the patterns
 of genetic inheritance that can be represented,
-and require complete precision about all recombination events.
+and require a precise description of the details of all recombination events.
 We show, in contrast, that the gARG definition
 can fully capture the richness of modern large-scale datasets,
 enables fine-grained
@@ -173,7 +173,7 @@ assess success, and the expected limitations on the precision
 and accuracy of our inferences.
 % Thanks Gideon and Alex!
 If not addressed, these problems will
-impede progress in applying genetic genealogies to understand the biological world \citep{lewanski2023era}.
+impede progress in applying genetic genealogies to understand the biological world.
 
 % Evidence of confusion to cite above in "problem" para?
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/334
@@ -772,8 +772,9 @@ the ancestral material with respect to a sample.
 % you just end up running simplify lots of times, in your
 % downstream algs
 The gARG encoding
-allows us to do this X once and to store the result, whereas
-the eARG encoding requires us to repeat the process of X
+allows us to perform this resolution of ancestral material once 
+and to store the result, 
+whereas the eARG encoding requires us to repeat the process 
 each time.
 
 Note that the \citet{wiuf1999recombination} eARG
@@ -1483,7 +1484,7 @@ sequence variation using the ``site'' and  ``mutation'' tables.
 (Technically, edges in tree sequence terminology would be better
 described as ``edge-intervals'', as each describes a single contiguous
 interval of genome inheritance between a pair of nodes. This
-denormalisation of the gARG data model is for efficiency purposes.)
+denormalisation of the gARG data model in \texttt{tskit} is for efficiency purposes.)
 The \texttt{tskit} library is a liberally
 licensed open source toolkit that provides a comprehensive suite
 of tools for working with gARGs (encoded as a succinct tree sequence).
