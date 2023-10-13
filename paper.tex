@@ -2286,14 +2286,11 @@ Reconstructing a most parsimonious ARG for a given data set is NP-hard
 \citep{wang2001perfect}, so parsimony-based methods resort to heuristics and
 are limited to analysing at most hundreds of sequences. Hence, a number of
 methods aim to balance computational efficiency with reconstruction of
-``reasonable", rather than parsimonious ARGs \citep{minichiello2006mapping,
+``reasonable'', rather than parsimonious ARGs or sampling from a
+distribution under a population genetics model
+\citep{minichiello2006mapping,
 parida2008estimating, kelleher2019inferring,  speidel2019method,
-zhang2023biobank}. The latter three methods, as well as the parsimony-based
-method of \citet{rasmussen2022espalier}, can be used on megabase scale data and
-hundreds of thousands of samples under human-like parameters.
-
-TODO mention \citep{schaefer2021ancestral} somewhere.
-
+schaefer2021ancestral, zhang2023biobank}.
 
 % AI: just to note, these papers do not all agree in their definition of an
 % ARG. I guess this is one of the points of the present paper, but should we
@@ -2304,18 +2301,19 @@ An alternative approach is to treat the ARG as a latent parameter to be
 averaged out by Monte Carlo methods, based either on importance sampling
 \citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
 or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
-wang2009population, fallon2013acg, mahmoudi2022bayesian}.
+wang2009population, fallon2013acg, vaughan2017inferring, mahmoudi2022bayesian}.
 These methods operate on representations
-of the ``little ARG'', and are extremely computationally expensive, being
+of the ``little ARG'', and are computationally expensive, being
 applicable to at most hundreds of samples consisting of tens or hundreds of
-kilobases with human-like parameters. State-of-the-art methods rely on cheaper,
+kilobases with human-like parameters.
+State-of-the-art methods rely on cheaper,
 approximate models \citep{didelot2010inference, heine2018bridging,
 hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
 method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
 dozens of mammal-like genomes \citep{hubisz2020inference}.
 
 Methods to sample ARGs generate a ``cloud'' of estimates, and
-\citep{kuhner2017consensus} provide an approach to generate a
+\cite{kuhner2017consensus} provide an approach to generate a
 set of consensus breakpoints and local trees from
 such a cloud.
 The approach is based on examining the recombination breakpoints
