@@ -627,13 +627,10 @@ for inferring ARGs should be, and how we evaluate the success
 of such inferences.
 
 \section*{Prospective vs retrospective ARGs}
-Event ARGs, as defined in the previous section as a way of encompassing
-the range of definitions provided in the literature, are
-inherently \emph{retrospective}.
-Event ARGs are defined in terms
-of the events that occured in the history of some set of sampled
-genomes.
-For example, Fig.~\ref{fig-arg-in-pedigree}
+The ARG concept arose from a \emph{retrospective} view of inheritance.
+For example the definition of an eARG, as discussed above, is invariably
+couched in terms of the events that occured in the history of some set of sampled
+genomes. Similarly, the genome ARG in Fig.~\ref{fig-arg-in-pedigree}
 is retrospective because it only includes information
 about genetic inheritance relative to the sample individuals
 $D_1$ and $D_2$ (genomes \noderef{a}--\noderef{d}).
@@ -645,31 +642,18 @@ $D_8$ and her daughter $D_6$, but this is not recorded because
 it is not relevant to the genetic ancestry of the sample genomes.
 
 There is no particular reason, however, that ARGs must be
-retrospective. They can also be \emph{prospective}.
-The edges in a gARG represent a path of genetic inheritance from
-ancestor to descendant through some
-number of generations
-% Wilder found cell-to-cell a little confusing here, we could delete
-% if necessary (it's tackled later on)
-(ultimately from cell to cell; see Appendix~\ref{cell-lineages-and-args}),
-and are annotated
-with genome coordinates over which inheritance occurs.
+retrospective. Recent advances in individual-based forward-time simulation
+~\citep{kelleher2018efficient,haller2018tree} depend upon the ability to
+record gARGs in a \emph{prospective} manner.
 In a prospective gARG, the inheritance intervals $I$
 on an edge joining ancestor genome $v$ and descendant $u$
-defines \emph{all} regions of genome that $u$ inherited from $v$.
+define \emph{all} regions of genome that $u$ inherited from $v$.
 Thus, these inheritance intervals are
 concerned only with the genetic relationship
 between the nodes in question, and are not defined with respect
-to any given set of samples. We are simply recording the
+to any given set of samples. They simply record the immediate
 genetic inheritance between two genomes
 (in the simplest case, between a parent and a child).
-
-Prospective ARGs arise in individual-based forwards-time
-simulations~\citep{kelleher2018efficient,haller2018tree},
-where the genetic inheritance between genomes is recorded
-exhaustively and periodically
-``simplified'' to retain only
-the ancestry relevant to the current population.
 \citet{kelleher2018efficient} refer to the structure
 recording all such forwards-in-time genetic relationships
 as an ``embellished pedigree`` (and suggest the term ``nedigree'' as a shorthand).
@@ -677,6 +661,13 @@ Describing this instead as a ``prospective ARG'', emphasising
 the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
+
+In a prospective ARG, the exhastive recording of all inheritance intervals from generation
+to generation leads to a rapid build-up of information, much of which
+may not be relevant to the genetic ancestry of the current population. 
+Redundant nodes and inheritance intervals can therefore be periodically
+``simplified'' to retain only
+the ancestry relevant to the current population.
 The ``simplify'' algorithm, which prunes away parts of the graph that
 are not ancestral to a sample, is the key enabling factor for
 this approach to forwards-time simulation and is
