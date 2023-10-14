@@ -771,7 +771,7 @@ def inference():
     max_rank_by_ts = {}
     for lab, ax, ax_edges, name in zip("ABCD", axes[0], axes[1], tree_seqs.keys()):
         ts = tree_seqs[name]
-        subtitle = f"{ts.num_trees} trees"
+        subtitle = f"{ts.num_trees-1} breakpoints"
         params = dict(
             # some of these can get overwritten
             node_size=30,
