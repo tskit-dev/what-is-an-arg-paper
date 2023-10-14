@@ -174,10 +174,28 @@ based on recording evolutionary events, which we call
 an ``event ARG'', or ``eARG''.
 We show that the gARG encoding has a range of advantages over the
 eARG approach, being flexible, efficient and, in particular,
-allowing us to systematically encode uncertainty about the
+allowing us to systematically encode uncertainty about
 the precise details of recombination events.
 
-TODO: Provide a map of the paper's sections and how they tie together in support of gARG as a way forward.
+% TODO: Provide a map of the paper's sections and how they tie together in support of gARG as a way forward.
+% Here is a rough draft - it would be good to state the most important message (in one sentence or so) from each of the sections to help with frontloading key messages
+% Genome ARGs &
+% Event ARGs
+In the following, we define the genome ARG (gARG) and contrast it with the event ARGs (eARG).
+% Retrospective vs prospective
+% TODO: This needs revision - see also https://github.com/tskit-dev/what-is-an-arg-paper/pull/380
+We continue with a description of the usually held retrospective view of ARGs, but note that ARGs can also be viewed as prospective, particularly in forwards-time simulations. In the context of forwards-time simulations, we mention the simplification operation, which removes ancestral genome material that was not inherited.
+% Converting and eARG to gARG &
+% ARGs and local trees &
+% Locally unary nodes &
+% Levels of simplification
+This simplification is closely related to operations needed to convert eARG and gARG, which opens a rich set of details about ARGs and local trees, local unary nodes, and levels of simplification.
+% Precision of recombination information
+We then highlight the important difference between the required level of precision about recombination information for eARGs compared to gARGs.
+% Computational efficiency and data interchange
+The way this recombination information is stored in eARGs and gARGs has important implications for computational efficiency, which is critical if we want to use ARGs for modern genomic datasets.
+% Discussion
+We wrap with a discussion highlighting that WHAT-IS-THE-KEY-SINGLE-MESSAGE-NOT-COVERED-ABOVE? Finally, the literature on ARGs and associated aspects is vast, particularly due to different definitions and implementations. We cover some important aspects in appendices, including a brief history of ancestral graphs (Appendix XXX), description of the big and little ARGs (Appendix ZZZ), survey of ARG inference methods (Appendix YYY), and ARGs at an individual vs cell lineage level (Appendix WWW).
 
 \section*{Genome ARGs}
 We define a genome as the complete set of genetic material that a child
@@ -214,8 +232,8 @@ Thus, each topological connection between
 a parent and child node in the graph is ``annotated'' with a set of
 inheritance intervals $I$.
 Here, the terms parent and child are used in graph sense;
-these nodes can respectively represent an ancestor and a descendant genome,
-which can be genetically separated by multiple meioses.
+these nodes can respectively represent ancestor and descendant genomes,
+which can be separated by multiple generations.
 We will use these two sets of terms interchangeably.
 
 In many settings, nodes are dated, i.e.\
@@ -226,7 +244,7 @@ many applications, and we will assume that node dates are not
 known here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
-metadata such as a sample identifiers or quality-control metrics
+metadata such as sample identifiers or quality-control metrics
 with nodes; it is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
 with which arbitrary additional information can be associated.
@@ -261,7 +279,7 @@ the gARG for a given set of individuals is embedded in their pedigree.
 The pedigree relationship between the diploid individuals is
 shown, along with their paths
 of genetic inheritance and constituent genomes (labelled
-using using lowercase alphabetical letters
+with lowercase alphabetical letters
 rather than integer identifiers to avoid confusion with genomic
 intervals).
 Thus, individual $D_1$ is composed
@@ -281,7 +299,7 @@ sequence of local trees along the genome.
 The local trees represent the genealogy of genomes \noderef{a}--\noderef{d},
 which changes between local trees due to recombination.
 The local trees span the three genome regions delineated
-by the two recombinations that gave rise to these genomes.
+by the two recombination breakpoints that gave rise to these genomes.
 % Following the above definitions, corresponding data for this gARG is shown in Supplementary? Table XXX.
 
 These definitions follow naturally from the outcome of events
@@ -781,7 +799,7 @@ which we avoid due to the potential confusion with the
 statistical concept of marginal distributions
 (potentially leading to interpretation as an integrated tree over many positions).
 
-To make the following discussions precise, we require
+To make the following discussions precise, we provide
 a concrete definition and explicit process for local tree extraction.
 We can describe a local tree as an
 oriented tree~\cite[p.\ 461]{knuth11combinatorial},
@@ -791,10 +809,10 @@ If $u$ is a root
 % I'm not sure if this reachability stuff is a helpful clarification, and whether it'll just
 % confuse people. It depends on some tricky details.
 (or not reachable from the samples)
-in the local tree at position $x$, then $\pi_u = -1$ (by convention).
+in the local tree at position $x$, then we adopt the convention that $\pi_u = -1$.
 % This sentence needs another pass
 A node in an oriented tree can have
-zero, one (see the next section for discussion of ``unary'' nodes),
+zero, one,
 or many children.
 To recover the local tree $\pi$ at position $x$, we begin by
 setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
@@ -848,9 +866,9 @@ Besides having labelled nodes, the local trees must contain
 unary nodes (see the next section) marking recombinations
 and other processes that lead to lineages passing through a given
 ARG node without coalescence in the local trees (see section XXX).
-If the local trees contain labelled internal nodes, precisely
+If the local trees contain labelled internal nodes, they precisely
 describing the corresponding path through the graph for each
-genome interval, then there is exactly as
+genome interval and there is exactly as
 much information in them as in an ARG.
 
 These properties have interesting consequences when we
@@ -907,7 +925,7 @@ but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, \noderef{c} has a single child in this
 interval and it is hence unary in this local tree.
 In another example, \noderef{e} is binary in the graph, but is
-unary in each of the local trees it is present in.
+unary in each of the local trees in which it is present.
 This is because \noderef{a} and \noderef{c} are both recombinant
 offspring of \noderef{e} and \noderef{f}, and,
 in this example,
@@ -977,7 +995,7 @@ to remove various types of redundancy.
 The redundancy that we are interested in
 % We are interested in both graph and local unary, so qualifying this
 % would just make it less readable, IMO
-revolves around the presence unary nodes (see previous section).
+revolves around the presence of unary nodes (see previous section).
 We illustrate this successive removal of redundancy
 through a series simplification steps
 in Fig.~\ref{fig-simplification}.
@@ -1585,7 +1603,7 @@ Even if sufficiently complex demographic models~\citep{gower2022demes}
 encompassing hundreds of populations, explosive growth rates and
 myriad interconnections of migration, were somehow estimated and
 provided as input, ARGs sampled from
-the coalescent cannot capture the complexities of realistic family structures. There are many species with sizeable to large number of progeny, making polytomies a necessary feature of local trees. Flexible ARG encoding should accommodate such cases.
+the coalescent cannot capture the complexities of realistic family structures, which often involve overlapping generations and extreme variation in lifetime reproductive success. Flexible ARG encoding should accommodate such cases.
 
 Given that there is no single model that can capture the complexities
 of modern datasets across species (and taxa; see discussion of SARS-CoV-2
@@ -1766,12 +1784,13 @@ establish ARG methods within mainstream genetics.
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
 for helpful discussions and comments on the manuscript.
 
-% JK: I'd usually use "JK was supported by XX", but this form seems fine too?
-% I don't have an opinion about it, if others think something else is more
-% appropriate.
-GG acknowledges support from the BBSRC ISP grant to The Roslin Institute (BBS/E/D/30002275, BBS/E/RL/230001A, BBS/E/RL/230001C).
-Jerome Kelleher acknowledges support from the Robertson Foundation.
+% FIXME: simplest to order this alphabetically by surname?
+% Anastasia TODO
 Jere Koskela was supported by EPSRC research grant EP/V049208/1.
+Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
+% Wilder TODO
+Jerome Kelleher acknowledges support from the Robertson Foundation.
+
 
 \bibliographystyle{plainnat}
 \bibliography{paper}
@@ -2387,19 +2406,19 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
-At the base of this concept is a subtle and important point about which genomes the nodes in a gARG represent.
+At the base of this concept is a subtle and important point about which genomes are represented by gARG nodes.
 In principle, we can interpret nodes as representing genomes
 at any point in the life cycle, for instance, \citet{hudson1983properties} views nodes as representing gametes,
 whereas in Fig.~\ref{fig-arg-in-pedigree}A, we present them as genomes within a diploid individual.
 In reality, however, recombination and replication of DNA occur at a cellular level,
-and correspond to the processes of meiosis and mitosis respectively. A comprehensive gARG would therefore
-trace the process of inheritance not between diploid individuals, but between each cell during the
-life cycle of an organism. This is illustrated in Fig.~\ref{fig-cell-lines}, where we show a simplified
+and respectively correspond to the processes of meiosis and mitosis. Therefore, a comprehensive gARG would not
+trace genetic inheritance between diploid individuals, but between cells during the
+life cycle of these individuals. This is illustrated in Fig.~\ref{fig-cell-lines}, where we show a simplified
 schematic of cellular inheritance in a diploid population over four partially overlapping generations.
 In this figure, thick black lines trace an ARG that describes the ancestry of the lower arm of the
 four sampled chromosomes. The ``events'' underlying the ARG are shown as red and blue squares,
 and the potential ARG nodes are shown as green chromosomal regions. Note that a number of these nodes are
-``pass-through'' nodes with one parent and one child, and in practice these would normally be omitted.
+``pass-through'' nodes with one parent and one child, which would normally be omitted.
 
 The unusual feature of this particular example is that three ARG lineages coalesce in one historical individual,
 $D_{10}$, whose three children all happen to be ancestors of the sampled chromosomes.
