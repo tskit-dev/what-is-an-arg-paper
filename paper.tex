@@ -662,49 +662,42 @@ the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
 
-In a prospective ARG, the exhastive recording of all inheritance intervals from generation
+The exhastive recording of full inheritance intervals from generation
 to generation leads to a rapid build-up of information, much of which
-may not be relevant to the genetic ancestry of the current population. 
-Redundant nodes and inheritance intervals can therefore be periodically
-``simplified'' to retain only
-the ancestry relevant to the current population.
-The ``simplify'' algorithm, which prunes away parts of the graph that
-are not ancestral to a sample, is the key enabling factor for
-this approach to forwards-time simulation and is
-described in detail by
-\citet{kelleher2018efficient}.
-It is a powerful tool for simulation and analysis as it
-allows efficient subsetting of ARGs, with the ability to
-remove both samples and certain levels of detail about recombination,
-as we discuss in the following sections.
+may not be relevant to the genetic ancestry of the current population.
+This redundancy can be periodically removed using the ``simplify'' algorithm,
+described in detail by \citet{kelleher2018efficient}. Simplification
+allows efficient subsetting of ARGs (removing both samples and certain
+levels of detail about recombination, as discussed in Section XXX),
+and is also the key enabling factor when incorporating propective ARGs into
+forward-time simulation.
+The core algorithm involves the concept of
+``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}:
+the genomic intervals ancestral to a set of samples,
+scattered across lineages (the edges of the graph)
+at some time in the past. In the next section, we outline how
+tracing ancestral material allows the identification and removal of nodes
+and inheritance intervals, such that
+only genetic ancestry relevant to the current population is retained.
 
 \section*{Converting an eARG to a gARG}
-Any eARG can be converted to a gARG without loss of information,
-and the conversion process is very similar to
-simplifying a prospective gARG with respect to a set of samples.
-The process involves two steps, and is illustrated in
-Fig.~\ref{fig-ancestry-resolution}.
-The first step is straightforward (Fig.~\ref{fig-ancestry-resolution}A,B):
-we duplicate the nodes and
-edges from the input eARG, and then add inheritance annotations
-to the output gARG's edges. If the node is a common ancestor node,
+Any eARG can be converted to a gARG without loss of information.
+The process is illustrated in Fig.~\ref{fig-ancestry-resolution} (A to B):
+we convert all event nodes to genome nodes and add inheritance annotations
+to the gARG's edges. If the node is a common ancestor node,
 we annotate the single outbound edge with the interval $[0,L)$,
 for a genome of length $L$.
 If the node is a recombination event with a breakpoint $x$,
 we annotate the two outbound edges respectively with the intervals $[0, x)$ and $[x, L)$.
 These inheritance interval annotations are clearly in one-to-one
-correspondence with the information in the input eARG,
-but they are a superset of the
-``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}
-of the sample.
-
+correspondence with the information in the input eARG.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
 Converting the \citet[][Fig.~1]{wiuf1999recombination} example
-to a gARG. (A) The original eARG; square nodes represent events, with
+to a sample-resolved gARG. (A) The original eARG; square nodes represent events, with
 each recombination (red) containing a breakpoint.
 (B) The corresponding gARG with breakpoints directly converted to
 edges annotated with inheritance intervals.
@@ -722,27 +715,27 @@ desired.
 }
 \end{figure}
 
-Ancestral material is a critical concept in a retrospective ARG,
-and refers to the genomic intervals ancestral to the samples
-scattered across lineages (the edges of the graph)
-at some time in the past. At recombination
-events, ancestral material is split between the ancestral lineages.
+This way of specifying inheritance intervals generates annotations equivalent to
+those produced in a prospective gARG, and which is similarly amenable to ``simplification'',
+by considering the genetic material that is ancestral to the samples \citep{kelleher2018efficient}.
+The outcome of this process, which is
+directly analogous to Hudson's simulation algorithm for the coalescent with
+recombination~\citep{hudson1983testing,kelleher2016efficient}, is shown in
+Fig.~\ref{fig-ancestry-resolution}C. We traverse from the samples rootwards through the graph
+keeping track of which material is ancestral to the samples.
+At recombination events, ancestral material is split between the ancestral lineages.
 As genome segments coalesce in a common
 ancestor the total amount of ancestral material is reduced, until
-eventually, as we traverse rootwards through the graph, all
-samples reach a most recent common ancestor at every location
-along the genome. The process of transmitting ancestral material
-along the edges of an ARG is directly analogous to Hudson's
-simulation algorithm for the coalescent with
-recombination~\citep{hudson1983testing,kelleher2016efficient}.
+eventually all samples reach a most recent common ancestor at every location
+along the genome.
 
-Fig.~\ref{fig-ancestry-resolution}C shows the graph that we obtain
-by resolving the ancestral material transmitted along each edge
-using the ``simplify'' algorithm~\citep{kelleher2018efficient},
-and highlights some important
-differences between the eARG and gARG encodings.
-Firstly, we can see that some nodes and edges are removed entirely
-from the graph by this conversion process.
+Fig.~\ref{fig-ancestry-resolution}C therefore represents a \emph{sample-resolved} gARG,
+% useful to say that we don't *need* to simulate an eARG and convert to a 
+% sample-resolved form, but can simulate a sample-resolved gARG directly
+of the sort that can be simulated directly by the Hudson algorithm.
+This differs in some important ways from its equivalent eARG (Fig.~\ref{fig-ancestry-resolution}A).
+Firstly, we can see that some nodes and edges have been removed entirely
+from the graph.
 The ``grand MRCA'' \noderef{q} is omitted from the
 sample-resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
@@ -750,7 +743,7 @@ between \noderef{g} and \noderef{j} is omitted because the recombination
 event at position $5$ (represented by node \noderef{g})
 fell in non-ancestral material.
 More generally, we can see that the sample resolved
-retrospective gARG of Fig.~\ref{fig-ancestry-resolution}C
+gARG of Fig.~\ref{fig-ancestry-resolution}C
 allows for ``local'' inspection
 of an ARG in a way that is not possible by storing
 common ancestor and recombination events in an eARG. Because
