@@ -59,6 +59,7 @@ def draw(
     font_size=None,
     node_color=None,
     font_color=None,
+    node_symbols="os",
     reverse_x_axis=None,
 ):
     """
@@ -118,6 +119,10 @@ def draw(
     directly. In particular this means that node_color can either be a single
     colour for all nodes (e.g. `mpl.colors.to_hex(mpl.pyplot.cm.tab20(1))`)
     or a list of colours (which is ignored if node_arity_colors is True)
+
+    node_symbols is a string of length 2, where the first character is the
+    matplotlib symbol used for nonsample nodes, and the second is the symbol
+    used for sample nodes. By default these are circles and squares ("o" and "s")
 
     if reverse_x_axis is True, the graph is reflected horizontally
 
@@ -200,7 +205,7 @@ def draw(
             arity_edge_color[i] = make_color(col)
             node_color[i] = make_color(col, lighten= 1 - (c_spans[n] / spans[n]))
 
-    for use, shape, size in zip((is_sample, ~is_sample), ("s", "o"), (node_size*0.8, node_size)):
+    for use, shape, size in zip((~is_sample, is_sample), node_symbols, node_size * np.array([1, 0.8])):
         try:
             node_col = node_color[use]
         except TypeError:
