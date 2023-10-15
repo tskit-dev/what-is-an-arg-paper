@@ -830,6 +830,10 @@ which we avoid due to the potential confusion with the
 statistical concept of marginal distributions
 (potentially leading to interpretation as an integrated tree over many positions).
 
+% TODO Need to make clear here what came from where. Basic combinatorial object
+% cite Knuth. Application to genetic ancestry, sim papers. Need to look
+% up what's said in favour of this integer based approach in which paper
+% and refer to tat.
 To make the following discussions precise, we provide
 a concrete definition and explicit process for local tree extraction.
 We can describe a local tree as an
@@ -841,10 +845,12 @@ If $u$ is a root
 % confuse people. It depends on some tricky details.
 (or not reachable from the samples)
 in the local tree at position $x$, then we adopt the convention that $\pi_u = -1$.
-% This sentence needs another pass
-A node in an oriented tree can have
-zero, one,
-or many children.
+% TODO Give example of an oriented tree from one of the figs?
+% TODO
+% A node in an oriented tree can have
+% zero, one,
+% or many children.
+
 To recover the local tree $\pi$ at position $x$, we begin by
 setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
 node in $S$ we trace its path rootwards through the
@@ -905,10 +911,10 @@ much information in them as in an ARG.
 
 These properties have interesting consequences when we
 consider the inference strategy of estimating local trees
-% JK: Relate is inferring trees independently within segments,
-% it's just using a dynamic algorithm to decide what those segments
-% are, right? That's how it differs from things like Espalier which
-% assume a set of input recomb breakpoints.
+% TODO rephrase this. Ana doesn't like the way it implies that the
+% trees are independent, because info from mutations outside the
+% window are shared. However, each tree *inference* is independent,
+% whether information is used multiple times in different trees or not
 independently within genome segments,
 and subsequently stitching them together into an ARG.
 Two recent methods take this approach,
