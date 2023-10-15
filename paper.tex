@@ -254,6 +254,12 @@ these nodes can respectively represent ancestor and descendant genomes,
 which can be separated by multiple generations.
 We will use these two sets of terms interchangeably.
 
+% TODO add a few sentences here on why defining nodes concretely as
+% integers has significant advantages.
+% 1) leads to direct link between the ARG and local trees in terms
+%    of a well-defined combinatorial object (local trees section)
+% 2) Definitions can be implemented directly in an efficient way
+%    (computational efficiency section.
 In many settings, nodes are dated, i.e.\
 each node $u\in N$ is associated with a time $\tau_u$.
 However, the topological relationships
@@ -303,10 +309,13 @@ intervals).
 Thus, individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
-of the genomes contained within a parent. In this example,
+of the genomes
+% FIXME "contained within" is a poor phrase here, use "constituent" or something
+contained within a parent.
+In this example,
 genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
 recombination, whereas
-genome \noderef{a} is the recombinant of
+genome \noderef{a} is the recombinant product of
 $D_2$'s genomes \noderef{e} and \noderef{f} crossing over at position 2.
 Specifically, genome \noderef{a} inherited the (half-closed)
 interval $[0, 2)$ from genome \noderef{e} and $[2, 10)$ from genome \noderef{f}.
@@ -323,6 +332,9 @@ this gARG is shown in Tab.~\ref{tab-gARG-data} (Appendix~\ref{sec-gARG-data}).
 
 These definitions follow naturally from the outcome of events
 associated with the inheritance of DNA between generations.
+% FIXME this sentance doesn't follow well from the first, needs a
+% different bridge before listing important properties.
+% Maybe the "listicle" format here isn't right anyway.
 As such,
 there are some important consequences to these definitions.
 Firstly, there is
@@ -338,6 +350,7 @@ gene conversions,
 multiple simultaneous recombinations,
 and so on.
 % Wilder: give forward ref to section on efficiency here, mention tree sequence
+% TODO, should probably drop this point.
 Thirdly, local trees that we generate for a particular position on the
 genome can have nodes of any arity (number of child nodes), including ``unary''
 nodes with a single child (see Section~\ref{sec-locally-unary-edges}).
@@ -408,6 +421,10 @@ and is agnostic to the details of those processes.
 
 \section{Event ARGs}
 \label{sec-eARG}
+% FIXME - this intro doesn't work at all now - we haven't defined what an
+% eARG *is* before discussing it.
+% Maybe best to skip this entirely, and make the quoted definitions with
+% a thin intro the way to start the section.
 Genome ARGs are defined by
 describing the details of genetic inheritance
 between ancestor and descendant genomes.
@@ -610,6 +627,9 @@ and two parents.
 }
 \end{figure}
 
+% TODO reference forward to the cell ARG appendix. Ultimately
+% every event corresponds to a particular genome in a particular
+% individual or cell.
 Whether we regard nodes as events or genomes is something of a
 philosophical question, and in most senses the two are equivalent
 (but see the discussion on ``unary nodes'' in Section~\ref{sec-locally-unary-edges}).
@@ -2488,7 +2508,7 @@ relationships will be impossible to infer from the data.
             $\noderef{i}$ & 1 & ~ & $\noderef{f}$ & $\noderef{k}$ & $\{[0,10)\}$\\
             $\noderef{k}$ & 2 & ~ & $\noderef{g}$ & $\noderef{i}$ & $\{[0,10)\}$\\
             $\noderef{n}$ & 3 & ~ & $\noderef{h}$ & $\noderef{k}$ & $\{[0,10)\}$\\
-            \multicolumn{2}{c}{~}& ~ & $\noderef{i}$ & $\noderef{n}$ & $\{[0,10)\}$\\ 
+            \multicolumn{2}{c}{~}& ~ & $\noderef{i}$ & $\noderef{n}$ & $\{[0,10)\}$\\
             \multicolumn{2}{c}{~}& ~ & $\noderef{k}$ & $\noderef{n}$ & $\{[0,10)\}$
         \end{tabular}
     \end{center}
