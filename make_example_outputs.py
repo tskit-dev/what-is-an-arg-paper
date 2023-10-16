@@ -7,7 +7,6 @@ import os
 import subprocess
 
 import tsinfer
-import tsdate
 import tskit
 import argutils
 import numpy as np
@@ -25,24 +24,22 @@ def cli():
 @click.command()
 def run_tsinfer():
     sample_data = tsinfer.load("examples/Kreitman_SNP.samples")
-    ts = tsinfer.infer(sample_data)
+    ts = tsinfer.infer(sample_data, num_threads=0)
     # For the moment, tsinfer uses byte metadata, so we need to convert it to json
     # so that we can label the nodes easily
     tables = ts.dump_tables()
     tables.nodes.metadata_schema = tskit.MetadataSchema.permissive_json()
+    time_map = {n.time: n.time for n in ts.nodes()}
     for n in ts.nodes():
         tables.nodes[n.id] = tables.nodes[n.id].replace(
-            metadata = json.loads(n.metadata.decode() or "{}"))
-    # temporary hack: remove the ultimate ancestor if it exists
-    oldest_node = np.argmax(tables.nodes.time)
-    if np.sum(tables.edges.parent==oldest_node) == 1:
-        # only a single edge connects to the root. This is a unary "ultimate ancestor"
-        # and can be removed (it will be removed in later tsinfer versions anyway)
-        use = np.arange(tables.nodes.num_rows)
-        use = use[use != oldest_node]
-        tables.subset(use)
+            metadata = json.loads(n.metadata.decode() or "{}"),
+            time = time_map[n.time],
+        )
+        if not n.is_sample():
+            time_map[n.time] = np.nextafter(time_map[n.time], np.inf)
+    # break ties by node order
+    tables.sort()
     ts = tables.tree_sequence()
-    ts = tsdate.date(ts, mutation_rate = mu, Ne = Ne)
     ts.dump("examples/Kreitman_SNP_tsinfer.trees")
 
 
