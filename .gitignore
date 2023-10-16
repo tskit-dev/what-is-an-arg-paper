@@ -1,6 +1,6 @@
 __pycache__
 .DS_Store
-notebooks/.ipynb_checkpoints
+notebooks
 illustrations/*.pdf
 references
 *.aux
