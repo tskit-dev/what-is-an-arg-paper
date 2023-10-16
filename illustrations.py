@@ -618,7 +618,9 @@ def arg_in_pedigree():
         font_size=17,
         node_color=col,
         tweak_x={l:(-13 if l< 12 else -20) for l in range(8,16)},
-        max_edge_width=2)
+        max_edge_width=2,
+        node_symbols="oo",
+    )
     add_edge_labels(ax, ts_used, G, pos, n)
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     with io.StringIO() as f:
@@ -653,7 +655,10 @@ def arg_in_pedigree():
         '<text class="lab lft" transform="translate(-3 -7.0)">g</text>',
         '<text class="lab rgt" transform="translate(3.5 -7.0)">g</text>'
     )
-   
+    pedigree_ts = pedigree_ts.replace(
+        '<rect class="sym"',
+        '<rect class="sym" rx="3"'
+    )
 
     svg = [
         '<svg width="1100" height="435" xmlns="http://www.w3.org/2000/svg" '
