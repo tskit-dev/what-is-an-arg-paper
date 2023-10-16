@@ -706,7 +706,7 @@ the use of the same data structures and the direct connection with
 the usual retrospective interpretation of an ARG, may be
 more useful.
 
-The exhastive recording of full inheritance intervals from generation
+The exhaustive recording of full inheritance intervals from generation
 to generation leads to a rapid build-up of information, much of which
 may not be relevant to the genetic ancestry of the current population.
 This redundancy can be periodically removed using the ``simplify'' algorithm,
@@ -905,7 +905,7 @@ and other processes that lead to lineages passing through a given
 ARG node without coalescence in the local trees
 (see Section~\ref{sec-locally-unary-edges}).
 If the local trees contain labelled internal nodes, they precisely
-describing the corresponding path through the graph for each
+describe the corresponding path through the graph for each
 genome interval and there is exactly as
 much information in them as in an ARG.
 
@@ -1038,8 +1038,10 @@ The redundancy that we are interested in
 % would just make it less readable, IMO
 revolves around the presence of unary nodes (see previous section).
 We illustrate this successive removal of redundancy
-through a series simplification steps
-in Fig.~\ref{fig-simplification}.
+through a series of simplification steps
+in Fig.~\ref{fig-simplification};
+the graph is shown on the left and the corresponding sequence
+of local trees on the right.
 
 \begin{figure}
 \centering
@@ -1068,7 +1070,7 @@ As we proceed backwards in time, generation by generation, the
 extant lineages chose parents randomly.
 With a certain probability recombination occurs, and the ancestral
 material of a lineage is split between the two parental
-genomes. Local coalesence occurs
+genomes. Local coalescence occurs
 when lineages with overlapping ancestral material choose the same
 parent genome.
 Note that in this simulation we do not explicitly
@@ -1087,9 +1089,7 @@ Note also that polytomies are a natural feature of such
 a Wright-Fisher model
 (e.g.~node \noderef{k} in Fig.~\ref{fig-simplification}).
 
-Fig.~\ref{fig-simplification} shows four ARGs (A--D), with
-the graph depicted on the left and the corresponding sequence
-of local trees on the right. The graph visualisations have
+The graph visualisations in Fig.~\ref{fig-simplification} have
 some novel features, which require some explanation.
 Firstly, edge weights (the thickness of the lines joining
 nodes) correspond to the length of the inheritance intervals
@@ -1102,7 +1102,7 @@ in Fig.~\ref{fig-simplification}A).
 % FIXME this needs some work
 Secondly, node colours denote the number of parents that they
 have in the graph, allowing us to easily see roots (those
-with zero parents), recombinanants (those with two parents)
+with zero parents), recombinants (those with two parents)
 and more complex situations arising from simplification (see below).
 Thirdly, the shading intensity of a node denotes the
 fraction of the node's span (the length of genome in which it
@@ -1696,7 +1696,7 @@ obtains $p$-values by computing clade size probabilities conditional on the timi
 In their method
 for estimating dispersal rates and the locations of genetic
 ancestors,
-\citep{osmond2021estimating} downsample trees along the genome
+\cite{osmond2021estimating} downsample trees along the genome
 so that they can be regarded as approximately independent.
 The SIA method for detecting selection~\citep{hejase2022deep}
 encodes local trees as a set of lineage counts at discrete
@@ -1878,7 +1878,7 @@ important to note that the Griffiths and Hudson formulations of
 the coalescent with recombination are not identical;
 in particular, a direct implementation of the ARG process
 as originally described requires exponential time to simulate
-(see Appendix~\ref{big-and-little-arg} for details). However, ARGs provided a way
+(see Appendix~\ref{sec-big-and-little-arg} for details). However, ARGs provided a way
 to reason about and infer recombinant ancestry as a single object,
 which was not possible within Hudson's framework, which emphasised
 the collection of local trees along the genome resulting from recombination.
