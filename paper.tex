@@ -328,7 +328,7 @@ which changes between local trees due to recombination.
 The local trees span the three genome regions delineated
 by the two recombination breakpoints that gave rise to these genomes.
 Following the above definitions, corresponding data encoding for
-this gARG is shown in Tab.~\ref{tab-gARG-data} (Appendix~\ref{sec-gARG-data}).
+this gARG is shown in Tab.~\ref{tab-gARG-data}.
 
 These definitions follow naturally from the outcome of events
 associated with the inheritance of DNA between generations.
@@ -1059,6 +1059,12 @@ i.e.\ are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
 (D) Rewrite edges to bypass nodes in local trees in which they are unary.
 In each case, the graph is shown on the left
 and corresponding local trees on the right.
+% Repetition here, but I'm thinking about the casual "I'm just reading
+% the captions reader" who might not realise that there's an essential
+% ingredient missing from the graph version
+In the interest of visual clarity, inheritance intervals are not shown
+on the graph edges; Supplementary Fig.~\ref{fig-simplification-with-edges}
+shows the graphs with these inheritance intervals included.
 Graph nodes are coloured by the number of parents and shaded
 according to the proportion of their span over which they are coalescent;
 see the text for more details.
@@ -2494,15 +2500,15 @@ relationships will be impossible to infer from the data.
 % by a polytomy in the local trees.
 
 \clearpage
-\section{Data encoding of the genome ARG}
-\label{sec-gARG-data}
+\renewcommand\thefigure{S\arabic{figure}}
+\setcounter{figure}{0}
+\renewcommand\thetable{S\arabic{table}}
+\setcounter{table}{0}
+
+\section*{Supplementary Material}
+
 
 \begin{table}[ht]
-    \caption{\label{tab-gARG-data}
-    Data encoding of the genome ARG shown in Fig.~\ref{fig-arg-in-pedigree} with the
-	node table on the left (having node and time columns) and the edge table on the
-	right (having child, parent, and intervals columns).
-    }
     \begin{center}
         \begin{tabular}{c|ccc|c|c}
 			\multicolumn{2}{c}{Node table}& ~ &\multicolumn{3}{c}{Edge table}\\
@@ -2523,20 +2529,24 @@ relationships will be impossible to infer from the data.
             \multicolumn{2}{c}{~}& ~ & $\noderef{k}$ & $\noderef{n}$ & $\{[0,10)\}$
         \end{tabular}
     \end{center}
+    % NOTE: I know  the "correct" placement for table captions is on top, but I
+    % always find this quite weird (since many of our figs are quite "table
+    % like" anyway. If anyone feels strongly about putting the caption above
+    % the table please just move it back.
+    \caption{\label{tab-gARG-data}
+    Data encoding of the genome ARG shown in Fig.~\ref{fig-arg-in-pedigree} with the
+	node table on the left (having node and time columns) and the edge table on the
+	right (having child, parent, and intervals columns).
+    }
 \end{table}
 
-\clearpage
-\section{TODO}
-\label{sec-x}
-
-% TODO: we don't seem to cite this figure at all!?
-
-\begin{figure}[ht]
+\begin{figure}[]
 	\begin{center}
 		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
 	\end{center}
 	\caption{\label{fig-simplification-with-edges}
-	The four levels of ARG simplification from Fig.~\ref{fig-simplification}A--D, with edge intervals shown.
+	Example ARGs Fig.~\ref{fig-simplification}A--D,
+    with edges annotated with inheritance intervals.
 	}
 \end{figure}
 
