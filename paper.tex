@@ -937,11 +937,13 @@ is a degree of internal node sharing between trees.
 
 \section{Locally unary nodes}
 \label{sec-locally-unary-edges}
+% TODO needs intro, giving some bit of warm-up for the reader.
 We can define the arity of a node as the number of child nodes it has.
 There is an
 important distinction between the number of children a node has
 in the graph and the number of children it has in the local trees,
 because a (graph) child node is only a child in the local tree for position
+% FIXME state this formally, as both Yan and Jere misunderstood here.
 $x$ if $x$ is in the inheritance interval for the corresponding edge.
 Thus, for a given node $u$ and a genome position $x$ the arity
 of $u$ in that local tree is less than or equal to the graph arity of
@@ -963,6 +965,7 @@ in this region of genome. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, \noderef{c} has a single child in this
 interval and it is hence unary in this local tree.
+% TODO note this is CA but not coalescent, and refer to where we discuss this.
 In another example, \noderef{e} is binary in the graph, but is
 unary in each of the local trees in which it is present.
 This is because \noderef{a} and \noderef{c} are both recombinant
@@ -1400,6 +1403,8 @@ Vertical lines indicate breakpoints between local trees.
 }
 \end{figure}
 
+% TODO add explanation of the bottom row.
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/386
 The example of successive simplification of a simulated ARG
 in Fig.~\ref{fig-simplification} illustrates the point
 that is is possible to \emph{store} arbitrary levels of precision
