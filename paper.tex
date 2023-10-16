@@ -101,7 +101,7 @@ have raised the realistic prospect of ARG-based analysis becoming a standard par
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using inferred ARGs as input have begun to
 appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank,
-nowbandegani2023extremely,ignatieva2023distribution}
+nowbandegani2023extremely,ignatieva2023distribution,fan2023likelihood}
 and many more are sure to
 follow~\citep{harris2019database,harris2023using}.
 See \citet{lewanski2023era} for a biologically oriented introduction to ARGs.
@@ -128,7 +128,7 @@ differently (see Appendix~\ref{sec-arg-history}).
 % JK: this para need a major update, it's quite weak right now.
 The word ``ARG'' is now widely used to refer to genetic genealogies in
 general~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
-schaefer2021ancestral,harris2023using,zhang2023biobank},
+schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
 encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
@@ -1528,7 +1528,8 @@ terasaki2021geonomics,
 baumdicker2021efficient,
 fan2022genealogical,korfmann2022weak,
 mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
-zhang2023biobank,nowbandegani2023extremely,ignatieva2023distribution}.
+zhang2023biobank,nowbandegani2023extremely,ignatieva2023distribution,
+fan2023likelihood}.
 
 % FIXME this needs more work and doesn't really fit into the
 % narrative right now, but we do need to make this point.
@@ -1699,16 +1700,19 @@ Besides the inherent limitations that exist on inferring fully
 precise ARGs from data,
 we should also consider the value that such precise estimates provide
 for downstream applications.
-To date, few downstream applications using estimated ARGs
-make use of complete recombination information.
+% To date, few make use such detailed recombination information.
 Most applications work by examining local trees independently.
 For example, the \relate\ selection test~\citep{speidel2019method}
-obtains $p$-values by computing clade size probabilities conditional on the timing of coalescence events in a given local tree.
+obtains $p$-values by computing clade size probabilities conditional
+on the timing of coalescence events in a given local tree.
 In their method
 for estimating dispersal rates and the locations of genetic
 ancestors,
 \cite{osmond2021estimating} downsample trees along the genome
 so that they can be regarded as approximately independent.
+Similarly, \cite{fan2023likelihood} compute the likelihood
+of an ARG under a particular demographic model as the product
+over a sample of widely-separated local trees, assumed to be independent.
 The SIA method for detecting selection~\citep{hejase2022deep}
 encodes local trees as a set of lineage counts at discrete
 time intervals, and uses these as feature for a
