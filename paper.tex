@@ -96,14 +96,21 @@ Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
 schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
-and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
+% and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
 have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using inferred ARGs as input have begun to
-appear~\citep{osmond2021estimating,fan2022genealogical,hejase2022deep,zhang2023biobank,
-nowbandegani2023extremely,ignatieva2023distribution,fan2023likelihood}
+appear~\citep{osmond2021estimating,
+fan2022genealogical,
+hejase2022deep,
+guo2022recombination,
+zhang2023biobank,
+nowbandegani2023extremely,
+ignatieva2023distribution,
+fan2023likelihood}
 and many more are sure to
 follow~\citep{harris2019database,harris2023using}.
+% TODO finish this sentence with "and more reasons why ARGs are cool"
 See \citet{lewanski2023era} for a biologically oriented introduction to ARGs.
 
 % TODO need to mention ARG-as-a-data-structure to clarify.
@@ -1475,7 +1482,7 @@ ARGs is therefore of great importance, and a key factor
 in the ultimate success of downstream ARG-based methods.
 Another key factor in how important ARG-based methods become
 across the wide range of possible applications
-% TODO more?
+% TODO get rid of this, it's a duplication of the introduction
 areas~\citep{rasmussen2014genome,harris2019database,
 hejase2020summary,schaefer2021ancestral,
 fan2022genealogical,wohns2022unified,harris2023using,
@@ -1526,9 +1533,15 @@ applications~\citep[e.g.,][]{haller2019slim,speidel2019method,
 adrion2020community,
 terasaki2021geonomics,
 baumdicker2021efficient,
-fan2022genealogical,korfmann2022weak,
-mahmoudi2022bayesian,petr2022slendr,rasmussen2022espalier,
-zhang2023biobank,nowbandegani2023extremely,ignatieva2023distribution,
+fan2022genealogical,
+guo2022recombination,
+korfmann2022weak,
+mahmoudi2022bayesian,
+petr2022slendr,
+rasmussen2022espalier,
+zhang2023biobank,
+nowbandegani2023extremely,
+ignatieva2023distribution,
 fan2023likelihood}.
 
 % FIXME this needs more work and doesn't really fit into the
@@ -1726,7 +1739,8 @@ information~\citep{wohns2022unified}, explicitly using the gARG
 encoding to reason about ancestral nodes.
 The main application for fully precise ARGs thus far has been
 to compute a likelihood under the coalescent with
-recombination~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian},
+recombination~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian,
+guo2022recombination},
 which currently requires the details of all recombination
 events to be known.
 
@@ -1843,8 +1857,10 @@ We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaugha
 for helpful discussions and comments on the manuscript.
 
 % Ordered alphabetically by surname
-Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
+Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
+(BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
 % Anastasia Ignatieva acknowledges support from TODO
+% TODO Jerome: add EPSRC and NIH grants.
 Jerome Kelleher acknowledges support from the Robertson Foundation.
 Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 % Anthony Wilder Wohns acknowledges support from TODO
