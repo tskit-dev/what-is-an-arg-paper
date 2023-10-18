@@ -150,8 +150,12 @@ def convert_kwarg(infile, num_samples, sequence_length, sample_names=None, two_r
             tsk_id_2 = tables.nodes.add_row(
                 flags=msprime.NODE_IS_RE_EVENT, time=time, metadata={"rec": line[11]})
             node_ids[int(line[11]) - 1] = tsk_id_2
-            tables.edges.add_row(0, breakpoint, tsk_id_1, n1)
-            tables.edges.add_row(breakpoint, sequence_length, tsk_id_2, n1)
+            if line[7] == "suffix":
+                tables.edges.add_row(0, breakpoint, tsk_id_1, n1)
+                tables.edges.add_row(breakpoint, sequence_length, tsk_id_2, n1)
+            else:
+                tables.edges.add_row(0, breakpoint, tsk_id_2, n1)
+                tables.edges.add_row(breakpoint, sequence_length, tsk_id_1, n1)
 
     tables.sort()
 
