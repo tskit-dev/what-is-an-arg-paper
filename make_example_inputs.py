@@ -4,7 +4,7 @@ import numpy as np
 
 @click.group()
 def cli():
-    with tsinfer.SampleData(sequence_length=2731) as sd:
+    with tsinfer.SampleData(sequence_length=2420) as sd:
         # TODO - add provenance, citing the Kreitman paper and the chr (2L) and alignment
         # used and saying that this only includes the 43 SNPs and not the 6 indels
         # sd.add_provenance("2022-03-11T16:00:00+0000", )
@@ -24,6 +24,7 @@ def cli():
         sd.add_individual(ploidy=1, metadata={"name": "Wa-F"}, population=Wa)
         sd.add_individual(ploidy=1, metadata={"name": "Af-F"}, population=Af)
         sd.add_individual(ploidy=1, metadata={"name": "Ja-F"}, population=Ja)
+        sd.add_site(0,   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ["N"])  # add a monomorphic site at the start for tsinfer
         sd.add_site(61,   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], ["C", "T"])
         sd.add_site(62,   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], ["C", "G"])
         sd.add_site(63,   [1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0], ["G", "C"])
@@ -87,7 +88,7 @@ def kwarg_input():
     """
     # a simple 0/1 sites-by-samples matrix
     with open("examples/Kreitman_SNP.matrix", "wt") as file:
-        for row in sample_data.sites_genotypes[:].T:
+        for row in sample_data.sites_genotypes[:][1:, :].T:
             print("".join(str(g) for g in row), file=file)
 
 
@@ -109,6 +110,8 @@ def argweaver_input():
             file=file,
         )
         for variant in sample_data.variants():
+            if len(variant.alleles) == 1:
+                continue
             print(
                 int(variant.site.position),
                 "".join(np.array(variant.alleles)[variant.genotypes]),
@@ -124,6 +127,8 @@ def relate_input():
     """
     with open("examples/Kreitman_SNP.haps", "wt") as file:
         for v in sample_data.variants():
+            if len(v.alleles) == 1:
+                continue
             assert len(v.alleles) == 2
             print(
                 "2",
