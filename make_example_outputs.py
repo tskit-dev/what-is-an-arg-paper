@@ -46,8 +46,16 @@ def run_tsinfer():
 @click.command()
 def run_kwarg():
     sample_data = tsinfer.load("examples/Kreitman_SNP.samples") # to get the sample names
-    # TODO - run kwarg on Kreitman_SNP.matrix here to create examples/kreitman.kwarg
-    with open("examples/kreitman.kwarg") as f:
+    seed = 9999
+    with open("examples/Kreitman_SNP.matrix") as f:
+        subprocess.run([
+            "tools/kwarg/source/kwarg",
+            "-bexamples/Kreitman_SNP.kwarg",
+            "-S-1",  # don't allow sequencing errors
+            "-M-1",  # don't allow recurrent mutations
+            f"-Z{seed}",
+        ], stdin=f)
+    with open("examples/Kreitman_SNP.kwarg") as f:
         ts = argutils.convert_kwarg(
             f,
             11,
@@ -59,7 +67,7 @@ def run_kwarg():
             two_re_nodes=True
         )
         ts.dump("examples/Kreitman_SNP_kwarg-2RE.trees")
-    with open("examples/kreitman.kwarg") as f:
+    with open("examples/Kreitman_SNP.kwarg") as f:
         ts = argutils.convert_kwarg(
             f,
             11,
