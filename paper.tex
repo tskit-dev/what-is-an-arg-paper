@@ -1402,19 +1402,20 @@ at position 87 has been lost entirely.
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} Inference of an 11 sample ARG over a 2.4kb
-region of the \textit{Drosophila melanogaster} ADH locus~\citep{kreitman1983nucleotide}.
+\caption{\label{fig-inferred-args} Inference of sample-resolved ARGs for 11
+\textit{Drosophila melanogaster} genetic sequences over a 2.4kb
+region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods based on
-(A) parsimony, (B) sampling the SMC$\prime$, (C) copying from
+(A) parsimony, (B) sampling the SMC$^\prime$, (C) copying from
 inferred ancestral haplotypes, and (D) correlated local tree estimation.
 Edge colours are based on the time of the edge's child node
 (lighter: older; darker: younger).
-Position on the X and Y axes for the graph visualization is arbitrary.
-Line width and node colour are as described in Fig.~\ref{fig-simplification}.
-The graphic below each ARG shows the genomic intervals for each graph edge in the
-corresponding ARGs: edges are horizontal lines, stacked in time order
-(edges with youngest children at the bottom), with vertical dashed lines indicating
-breakpoints between local trees.
+X and Y positions of graph nodes are arbitrary;
+line width and node colour are as described in Fig.~\ref{fig-simplification}.
+Graphics on the bottom row show the genomic positions, relative to the start of the ADH gene,
+for each graph edge from the corresponding ARG. Edge intervals are drawn as horizontal lines,
+stacked in time order (edges with youngest children at the bottom);
+vertical dashed lines indicate breakpoints between local trees.
 }
 \end{figure}
 
@@ -1423,7 +1424,7 @@ The scalability gains made by recent ARG inference methods have been, in part, d
 lower levels of precision about recombination. Indeed, a common statement in the literature is
 that modern tools such as \tsinfer~\citep{kelleher2019inferring} and \relate~\citep{speidel2019method}
 construct not an ARG but ``only'' a sequence of local 
-trees [TODO cite examples from \#38]. While this statement
+trees \citep{hejase2020summary, ignatieva2021kwarg}. While this statement
 is correct inasmuch as neither method attempts to infer the explicit recombination events that cause
 adjacent trees to differ, it is certainly not the case that they infer independent local trees.
 In fact, both methods take advantage of genome-wide mutation information to construct genealogies,
@@ -1442,9 +1443,9 @@ mutation is 7~\citep{song2003parsimonious}. This dataset comprises 43 biallelic 
 \emph{D.~melanogaster} ADH locus on chromosome 2L. Where required for inference purposes we
 assume a mutation rate of 
 % per site per generation may be easier to follow?
-\SI{5.49e-9}{site^{-1}generation^{-1}} and a recombination rate of
-\SI{8.4e-9}{site^{-1}generation^{-1}} [CITE stdpopsim] and a constant effective population size of 
-1,000,000.
+\SI{5.49e-9}{per site per generation} and a recombination rate of
+\SI{8.4e-9}{per site per generation} \citep{lauterbur2022expanding}, together with
+a constant effective population size of 1,000,000.
 The version numbers of inference software, together with the specific inference parameters
 needed to reproduce the ARGs, are available from our GitHub repository.
 
@@ -1453,8 +1454,8 @@ Note that both \kwarg\ and \argweaver\ produce many ARGs
 This stems from the fact that \kwarg\ searches the space of plausible ARGs,
 outputting minimal ones using heuristics, and \argweaver\ samples 
 from the posterior distribution over
-ARGs given the data and a fixed model (the SMC$\prime$, an approximation of the full coalescent
-with recombination) [TODO CITE]. 
+ARGs given the data and a fixed model (the SMC$^\prime$, an approximation of the full coalescent
+with recombination \citep{marjoram2006fast}).
 In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args} C \& D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
