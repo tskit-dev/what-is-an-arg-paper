@@ -768,7 +768,7 @@ def inference():
     widths = np.ones(len(tree_seqs))
     heights = [1, 0.11]
     fig, axes = plt.subplots(
-        2, len(tree_seqs), figsize=(10, 5.2),
+        2, len(tree_seqs), figsize=(10, 5.55),
         gridspec_kw=dict(width_ratios=widths, height_ratios=heights),
         # autoscale_on=False
     )
@@ -838,14 +838,15 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
-        ax.text(270, -35, lab, fontsize=20, family="serif")
+        ax.text(260, -38, lab, fontsize=20, family="serif")
 
         ax_edges.set_title(f"{name} ({subtitle})", y=1.05)
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
-        ax_edges.axis("off")
-        left_coord = 0.05
-        width = 0.9
+        #ax_edges.axis("off")
+        ax_edges.get_yaxis().set_visible(False)
+        left_coord = 0
+        width = 1
 
         edges = {}
         times = ts.tables.nodes.time
@@ -879,17 +880,18 @@ def inference():
                 (1 / ts.num_edges), linewidth=1,
                 facecolor=edge_colors_by_id[edge_id])
             ax_edges.add_patch(rect)
-
+        ax_edges.tick_params(axis='x', which='major', pad=1, length=2) 
+        ax_edges.set_xticks([0, 1], ["-63", "2357"], fontsize=8)
+        ax_edges.set_xlabel("Genomic position (bp)", fontsize=8, labelpad=-7)
     graph_io = io.StringIO()
     fig.tight_layout()
-    fig.subplots_adjust(bottom=0)
     plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
 
     
     svg = [
-        '<svg width="960" height="480" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="960" height="500" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="translate(0, -19)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
