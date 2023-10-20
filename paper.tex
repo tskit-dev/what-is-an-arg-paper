@@ -1421,8 +1421,9 @@ breakpoints between local trees.
 
 The scalability gains made by recent ARG inference methods have been, in part, due to inferring
 lower levels of precision about recombination. Indeed, a common statement in the literature is
-that modern tools such as \tsinfer \citep{kelleher2019inferring} and \relate \citep{speidel2019method}
-construct not an ARG but "only" a sequence of local trees \[cite examples from \#38\]. While this statement
+that modern tools such as \tsinfer~\citep{kelleher2019inferring} and \relate~\citep{speidel2019method}
+construct not an ARG but ``only'' a sequence of local 
+trees [TODO cite examples from \#38]. While this statement
 is correct inasmuch as neither method attempts to infer the explicit recombination events that cause
 adjacent trees to differ, it is certainly not the case that they infer independent local trees.
 In fact, both methods take advantage of genome-wide mutation information to construct genealogies,
@@ -1431,29 +1432,36 @@ Their results can therefore be thought of as an inheritance graph, and represent
 
 To illustrate the varying levels of information that can be captured in a gARG,
 Fig.~\ref{fig-inferred-args} presents graph representations of genealogies output by two tools that
-\emph{do} explicitly infer recombination events, namely \kwarg \citep{ignatieva2021kwarg} and \argweaver
-\citep{rasmussen2014genome}, and two which do not (tsinfer and Relate). All inferences are based on the
+\emph{do} explicitly infer recombination events, namely \kwarg~\citep{ignatieva2021kwarg} and 
+\argweaver~\citep{rasmussen2014genome}, 
+and two which do not (\tsinfer\ and \relate). 
+All inferences are based on the
 same underlying dataset from \citet{kreitman1983nucleotide}, a standard benchmark in the classical
 ARG literature, for which the minimum number of recombination breakpoints in the absence of recurrent
 mutation is 7~\citep{song2003parsimonious}. This dataset comprises 43 biallelic SNPs spanning 2.4Kb of the
 \emph{D.~melanogaster} ADH locus on chromosome 2L. Where required for inference purposes we
-assume a mutation rate of \SI{5.49e-9}{site^{-1}generation^{-1}} and a recombination rate of
-\SI{8.4e-9}{site^{-1}generation^{-1}} [CITE stdpopsim] and a constant effective population size of 1000,000.
+assume a mutation rate of 
+% per site per generation may be easier to follow?
+\SI{5.49e-9}{site^{-1}generation^{-1}} and a recombination rate of
+\SI{8.4e-9}{site^{-1}generation^{-1}} [CITE stdpopsim] and a constant effective population size of 
+1,000,000.
 The version numbers of inference software, together with the specific inference parameters
 needed to reproduce the ARGs, are available from our GitHub repository.
 
-Note that both \kwarg and \argweaver produce many ARGs
+Note that both \kwarg\ and \argweaver\ produce many ARGs
 (those shown in Fig.~\ref{fig-inferred-args} A\& B are arbitrarily selected examples).
-This stems from the fact that \kwarg searches the space of plausible ARGs,
-outputting minimal ones using heuristics, and ARGweaver samples from the posterior distribution over
+This stems from the fact that \kwarg\ searches the space of plausible ARGs,
+outputting minimal ones using heuristics, and \argweaver\ samples 
+from the posterior distribution over
 ARGs given the data and a fixed model (the SMC$\prime$, an approximation of the full coalescent
-with recombination). In contrast, \tsinfer and \relate (Fig.~\ref{fig-inferred-args} C \& D) are
+with recombination) [TODO CITE]. 
+In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args} C \& D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
 than having to precisely specify each event, is a important contributor to this aim,
 as most recombination events cannot be uniquely identified from the data.
 Indeed, there is considerable variation in the number of recombinations inferred by
-different methods, with e.g.~\argweaver (Fig.~\ref{fig-inferred-args} B) suggesting
+different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args} B) suggesting
 far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-inferred-args} A).
 
 A rough feel for the amount of recombination in each ARG is given by the distribution
@@ -1467,7 +1475,7 @@ than two parents, indicating deliberate imprecision: these are cases where multi
 have been ``pushed down'' onto a single more recent node. Note, however, that the number
 of breakpoints in these two ARGs is smaller than the number of ARG nodes with multiple parents,
 because those nodes frequently share breakpoint positions. The sharing of breakpoint locations
-between multiple-parent nodes indicates that in \tsinfer and \relate ARGs it may be
+between multiple-parent nodes indicates that in \tsinfer\ and \relate\ ARGs it may be
 difficult to condense each transition between trees into a set of simple SPR moves. 
 
 Shading by coalescent span reveals that many non-recombinant (green) nodes are
@@ -1475,18 +1483,19 @@ Shading by coalescent span reveals that many non-recombinant (green) nodes are
 in some regions of the genome, these nodes are present in the ancestry but do
 not correspond to coalescence. As argued previously, this can provide potentially useful
 information about shared ancestry. Note however, that such unary segments are not inferred
-in the \relate ARG: other than the samples it has entirely solid nodes.
-Only the \tsinfer results have nodes with more than two children (polytomies);
+in the \relate\ ARG: other than the samples it has entirely solid nodes.
+Only the \tsinfer\ results have nodes with more than two children (polytomies);
 in Appendix \ref{sec-cell-lineages-and-args} we argue that this reflects
 uncertainty in the order of coalescent events, in an equivalent
 manner to the lack of precision in recombination nodes with more
 than two parents. The clearest example is the polytomy involving the nodes
 \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}, which happen to
-have identical sequences. \kwarg, \argweaver, and \relate require
+have identical sequences. \kwarg, \argweaver, and \relate\ require
 bifurcating trees, so are forced
 to pick an arbitrary order of branching
 (hence Fig.~\ref{fig-inferred-args} A and Fig.~\ref{fig-inferred-args} B disagree on the
-relationship between these samples). TsThe number of nodes in Fig.~\ref{fig-inferred-args} C
+relationship between these samples). 
+The number of nodes in Fig.~\ref{fig-inferred-args} C
 that have more than two children also hints at considerable uncertainty in
 the order of branching elsewhere in the ARG.
 % TODO add explanation of the bottom row.
