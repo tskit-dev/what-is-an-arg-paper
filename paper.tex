@@ -190,7 +190,7 @@ the precise details of recombination events.
 % Here is a rough draft - it would be good to state the most important message (in one sentence or so) from each of the sections to help with frontloading key messages
 % Genome ARGs &
 % Event ARGs
-In the following, we define the genome ARG (gARG) and contrast it with the event ARGs (eARG).
+In the following, we define a genome ARG (gARG) and contrast it with event ARGs (eARGs).
 % Retrospective vs prospective
 % TODO: This needs revision - see also https://github.com/tskit-dev/what-is-an-arg-paper/pull/380
 We continue with a description of the usually held retrospective view of ARGs,
@@ -1475,40 +1475,44 @@ far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-in
 % Here we describe recombination features
 A rough feel for the amount of recombination in each ARG is given by the distribution
 of number of parents per node, as highlighted by the node colour scheme.
-In Fig.~\ref{fig-inferred-args} A \& B, each recombination node has exactly 2 parents,
-corresponding to a single recombination event with a specific breakpoint. Assuming that each
-breakpoint occurs a a different location (the "infinite breakpoints" model), then the
+In Fig.~\ref{fig-inferred-args} A \& B, each recombination event is tagged by
+a node with exactly 2 parents and one child. Assuming that the breakpoint for each event
+occurs at a different location (the "infinite breakpoints" model), then the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
-In contrast, Figure Fig.~\ref{fig-inferred-args} C \& D have ARG nodes with greater
-than two parents, indicating deliberate imprecision: these are cases where multiple recombination events
-have been ``pushed down'' onto a single more recent node.
-Note, however, that the number
-of breakpoints in these two ARGs is smaller than the number of ARG nodes with multiple parents,
-because those nodes frequently share breakpoint positions. The sharing of breakpoint locations
-between multiple-parent nodes indicates that in \tsinfer\ and \relate\ ARGs it may be
+In contrast, Figure Fig.~\ref{fig-inferred-args} C \& D have ARG nodes with multiple
+parents and multiple children. These indicate deliberate imprecision, where one
+or more recombinations have been ``pushed down'' onto a more recent, identifiable node.
+Several of these nodes have more than two parents (in red), representing
+multiple recombinations inferred to have occurred in an unresolvable order.
+Nevertheless, the number of breakpoints in these two ARGs is smaller than the
+number of multiple-parent ARG nodes, showing that several multiple-parent nodes
+must share breakpoint positions. The sharing of breakpoint locations
+between these nodes indicates that in \tsinfer\ and \relate\ ARGs it may be
 difficult to condense each transition between trees into a set of simple SPR moves. 
+Overall, Fig.~\ref{fig-inferred-args} shows that \tsinfer\ and \relate\ ARGs contain a level
+of detail about recombination that lies somewhere between a sequence of unrelated local
+trees on one extreme and an ARG with precisely specified recombination events on the other.
 
 % Here we move on to coalescence
-As for coalescence in these inferred ARGs, the shading (``coalescent span'')
+As for inferred coalescences, the shading (``coalescent span'')
 reveals that many non-recombinant (green) nodes are
 locally unary (see section \ref{sec-locally-unary-edges}). In other words,
 in some regions of the genome these nodes are present in the ancestry without
 corresponding to coalescence of ancestral material. As argued previously, this can provide useful
 information about shared ancestry. Note however, that such unary segments are not inferred
 in the \relate\ ARG: other than the samples it has entirely solid nodes.
-Only the \tsinfer\ results have nodes with more than two children (polytomies);
+Another clear difference involves coalescent nodes with more than two children (polytomies);
 in Appendix \ref{sec-cell-lineages-and-args} we argue that this reflects
 uncertainty in the order of coalescent events, in an equivalent
 manner to the imprecision associated with recombination nodes having more
-than two parents. The clearest example is the polytomy involving the nodes
-\noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}, which happen to
-have identical sequences. \kwarg, \argweaver, and \relate\ require
-bifurcating trees, so are forced
-to pick an arbitrary order of branching
+than two parents. Only \tsinfer\ creates such polytomies, the clearest of which
+involves the nodes \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}. These
+happen to have identical sequences, but because \kwarg, \argweaver, and \relate\ require
+bifurcating trees, they are forced to pick an arbitrary order of branching
 (hence Fig.~\ref{fig-inferred-args} A and Fig.~\ref{fig-inferred-args} B disagree on the
 relationship between these samples). 
-The number of nodes in Fig.~\ref{fig-inferred-args} C
-that have more than two children also hints at considerable uncertainty in
+More generally, the number of nodes in Fig.~\ref{fig-inferred-args} C
+that have more than two children hints at considerable uncertainty in
 the order of branching elsewhere in the ARG.
 
 %% possible TODO - mention something about multiple local roots in
@@ -1555,22 +1559,22 @@ the order of branching elsewhere in the ARG.
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/386
 The bottom row of Fig~\ref{fig-inferred-args} shows the extent along
 the genome to which graph edges are shared between multiple trees.
-We can see that both \tsinfer and (to a lesser extent) \relate have edges
-that span multiple tree boundaries, indicating that they certainly
-do not infer a series of \emph{unrelated} local trees.
+This illustrates that both \tsinfer\ and (to a lesser extent) \relate\ have edges
+that span multiple tree boundaries, indicating that they are not inferring
+a series of \emph{unrelated} local trees.
 %(i.e., with either unlabelled internal
 %nodes or differently labelled nodes in each tree).
 For example, both infer that \noderef{Af-f}, \noderef{Fr-f} and \noderef{Wa-f}
 share a common ancestor along
-the entire sequence. They do not, however, show extensive node sharing in the
-oldest time periods, reflecting the fact that they do not encode topology
-above the local tree roots (i.e. they do not go back to a
-"grand MRCA"). This is also seen in the fact they their ARGs contain multiple roots
-(nodes with zero parents, in blue), whereas \kwarg and \argweaver have a
-single ARG root.
-These two methods contain a level of detail about recombination
-that lies somewhere between a sequence of unrelated local trees on one
-extreme and a completely precise event ARG on the other.
+the entire sequence. However, in comparison to \kwarg\ and \argweaver\ neither
+method results in extensive node sharing in the
+oldest time periods. This primarily reflects the fact that they do not encode topology
+above the local MRCAs, also indicated by multiple roots in the ARG
+(nodes with zero parents, in blue), compared to the
+single ARG root in the \kwarg\ and \argweaver\ genealogies. In terms of inference,
+\tsinfer\ and \relate\ show a more pragmatic representation: we do not expect
+genetic variation to be very informative about topological relationships
+between nodes that that are older than the local MRCAs. 
 
 \section{Computational efficiency and data interchange}
 \label{sec-efficiency}
