@@ -786,6 +786,7 @@ def inference():
             node_arity_colors=True,
             max_edge_width=2,
             tweak_x={},
+            font_size=8.5,
             #use_ranked_times = False,  # By default use Y axis layout from graphviz dot
         )
         path = pathlib.Path(f"illustrations/assets/{name}.json")
@@ -881,8 +882,10 @@ def inference():
             ax_edges.add_patch(rect)
 
     graph_io = io.StringIO()
+    # Add the central label for all plots
+    fig.text(0.5, 0.015, "Genomic position (kb)", ha="center", va="center")
     fig.tight_layout()
-    fig.subplots_adjust(bottom=0)
+    fig.subplots_adjust(bottom=0.035)
     plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
