@@ -1,4 +1,11 @@
-all: argweaver relate relate_lib
+all: kwarg argweaver relate relate_lib
+
+kwarg: 
+	git clone https://github.com/a-ignatieva/kwarg
+	cd kwarg && \
+	  git checkout 961304b86472373cf6cd2ca45d13eb66e4b5bcca && \
+	  cd source && \
+	  make
 
 argweaver: 
 	git clone https://github.com/CshlSiepelLab/argweaver
@@ -29,6 +36,7 @@ relate_lib:
 	  make
 
 clean:
+	rm -rf kwarg
 	rm -rf argweaver
 	rm -rf relate
 	rm -rf relate_lib

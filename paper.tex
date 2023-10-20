@@ -9,6 +9,7 @@
 \usepackage{nameref}
 \usepackage[right]{lineno}
 \usepackage{subcaption}
+\usepackage{siunitx}
 \usepackage{tikz}
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
@@ -1396,70 +1397,144 @@ at position 87 has been lost entirely.
 % such levels of information are useful, even if only for computational
 % efficiency.
 
+\section{Example inferred ARGs}
+\label{sec-example-inferred-args}
+
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
-\caption{\label{fig-inferred-args} Inference results for
-(A) \kwarg, (B) \argweaver, (C) \tsinfer,
-and (D) \relate\
-for 11 samples of a 2.7kb region of the \textit{Drosophila melanogaster} ADH
-locus~\citep{kreitman1983nucleotide}.
-The \argweaver\ example
-is a sample from the inferred posterior distribution.
+\caption{\label{fig-inferred-args} Inference of an 11 sample ARG over a 2.4kb
+region of the \textit{Drosophila melanogaster} ADH locus~\citep{kreitman1983nucleotide}.
+Results for four different methods based on
+(A) parsimony, (B) sampling the SMC$\prime$, (C) copying from
+inferred ancestral haplotypes, and (D) correlated local tree estimation.
 Edge colours are based on the time of the edge's child node
 (lighter: older; darker: younger).
 Position on the X and Y axes for the graph visualization is arbitrary.
-Line width and node colour are as described in Fig.\ref{fig-simplification}.
-The genomic intervals associated with edges are shown below
-each ARG, where each row is an edge
-and the X axis reflects genomic position.
-Vertical lines indicate breakpoints between local trees.
+Line width and node colour are as described in Fig.~\ref{fig-simplification}.
+The graphic below each ARG shows the genomic intervals for each graph edge in the
+corresponding ARGs: edges are horizontal lines, stacked in time order
+(edges with youngest children at the bottom), with vertical dashed lines indicating
+breakpoints between local trees.
 }
 \end{figure}
 
+
+The scalability gains made by recent ARG inference methods have been, in part, due to inferring
+lower levels of precision about recombination. Indeed, a common statement in the literature is
+that modern tools such as \tsinfer \citep{kelleher2019inferring} and \relate \citep{speidel2019method}
+construct not an ARG but "only" a sequence of local trees \[cite examples from \#38\]. While this statement
+is correct inasmuch as neither method attempts to infer the explicit recombination events that cause
+adjacent trees to differ, it is certainly not the case that they infer independent local trees.
+In fact, both methods take advantage of genome-wide mutation information to construct genealogies,
+and as a result nodes and edges persist across multiple local trees.
+Their results can therefore be thought of as an inheritance graph, and represented in the gARG format.
+
+To illustrate the varying levels of information that can be captured in a gARG,
+Fig.~\ref{fig-inferred-args} presents graph representations of genealogies output by two tools that
+\emph{do} explicitly infer recombination events, namely \kwarg \citep{ignatieva2021kwarg} and \argweaver
+\citep{rasmussen2014genome}, and two which do not (tsinfer and Relate). All inferences are based on the
+same underlying dataset from \citet{kreitman1983nucleotide}, a standard benchmark in the classical
+ARG literature, for which the minimum number of recombination breakpoints in the absence of recurrent
+mutation is 7~\citep{song2003parsimonious}. This dataset comprises 43 biallelic SNPs spanning 2.4Kb of the
+\emph{D.~melanogaster} ADH locus on chromosome 2L. Where required for inference purposes we
+assume a mutation rate of \SI{5.49e-9}{site^{-1}generation^{-1}} and a recombination rate of
+\SI{8.4e-9}{site^{-1}generation^{-1}} [CITE stdpopsim] and a constant effective population size of 1000,000.
+The version numbers of inference software, together with the specific inference parameters
+needed to reproduce the ARGs, are available from our GitHub repository.
+
+Note that both \kwarg and \argweaver produce many ARGs
+(those shown in Fig.~\ref{fig-inferred-args} A\& B are arbitrarily selected examples).
+This stems from the fact that \kwarg searches the space of plausible ARGs,
+outputting minimal ones using heuristics, and ARGweaver samples from the posterior distribution over
+ARGs given the data and a fixed model (the SMC$\prime$, an approximation of the full coalescent
+with recombination). In contrast, \tsinfer and \relate (Fig.~\ref{fig-inferred-args} C \& D) are
+deterministic methods, aiming to find a single ``best guess'' ARG.
+The ability of a gARG to encode the effects of recombination, rather
+than having to precisely specify each event, is a important contributor to this aim,
+as most recombination events cannot be uniquely identified from the data.
+Indeed, there is considerable variation in the number of recombinations inferred by
+different methods, with e.g.~\argweaver (Fig.~\ref{fig-inferred-args} B) suggesting
+far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-inferred-args} A).
+
+A rough feel for the amount of recombination in each ARG is given by the distribution
+of number of parents per node, as highlighted by the node colour scheme.
+In Fig.~\ref{fig-inferred-args} A \& B, each recombination node has exactly 2 parents,
+corresponding to a single recombination event with a specific breakpoint. Assuming that each
+breakpoint occurs a a different location (the "infinite breakpoints" model), then the
+number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
+In contrast, Figure Fig.~\ref{fig-inferred-args} C \& D have ARG nodes with greater
+than two parents, indicating deliberate imprecision: these are cases where multiple recombination events
+have been ``pushed down'' onto a single more recent node. Note, however, that the number
+of breakpoints in these two ARGs is smaller than the number of ARG nodes with multiple parents,
+because those nodes frequently share breakpoint positions. The sharing of breakpoint locations
+between multiple-parent nodes indicates that in \tsinfer and \relate ARGs it may be
+difficult to condense each transition between trees into a set of simple SPR moves. 
+
+Shading by coalescent span reveals that many non-recombinant (green) nodes are
+``locally unary'' (see section \ref{sec-locally-unary-edges}). In other words,
+in some regions of the genome, these nodes are present in the ancestry but do
+not correspond to coalescence. As argued previously, this can provide potentially useful
+information about shared ancestry. Note however, that such unary segments are not inferred
+in the \relate ARG: other than the samples it has entirely solid nodes.
+Only the \tsinfer results have nodes with more than two children (polytomies);
+in Appendix \ref{sec-cell-lineages-and-args} we argue that this reflects
+uncertainty in the order of coalescent events, in an equivalent
+manner to the lack of precision in recombination nodes with more
+than two parents. The clearest example is the polytomy involving the nodes
+\noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}, which happen to
+have identical sequences. \kwarg, \argweaver, and \relate require
+bifurcating trees, so are forced
+to pick an arbitrary order of branching
+(hence Fig.~\ref{fig-inferred-args} A and Fig.~\ref{fig-inferred-args} B disagree on the
+relationship between these samples). TsThe number of nodes in Fig.~\ref{fig-inferred-args} C
+that have more than two children also hints at considerable uncertainty in
+the order of branching elsewhere in the ARG.
 % TODO add explanation of the bottom row.
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/386
-The example of successive simplification of a simulated ARG
-in Fig.~\ref{fig-simplification} illustrates the point
-that is is possible to \emph{store} arbitrary levels of precision
-about recombination in a gARG.
-It is also possible to \emph{infer} various levels of precision about
-recombination.
-To illustrate this, and to demonstrate the structural
-heterogeneity of the ARGs inferred  by current methods,
-Fig.~\ref{fig-inferred-args} shows the results of ARG inference
+%The example of successive simplification of a simulated ARG
+%in Fig.~\ref{fig-simplification} illustrates the point
+%that is is possible to \emph{store} arbitrary levels of precision
+%about recombination in a gARG.
+%It is also possible to \emph{infer} various levels of precision about
+%recombination.
+%To illustrate this, and to demonstrate the structural
+%heterogeneity of the ARGs inferred  by current methods,
+%Fig.~\ref{fig-inferred-args} shows the results of ARG inference
 % To illustrate these points and to emphasise the heterogeneity
 % of the ARGs inferred by current methods, we inferred ARGs for the
-for the classical \citet{kreitman1983nucleotide} benchmark dataset
-using  \kwarg~\citep{ignatieva2021kwarg},
-\argweaver~\citep{rasmussen2014genome,hubisz2020inference},
-\tsinfer~\citep{kelleher2019inferring},
-and \relate~\citep{speidel2019method}.
+%for the classical \citet{kreitman1983nucleotide} benchmark dataset
+%using  \kwarg~\citep{ignatieva2021kwarg},
+%\argweaver~\citep{rasmussen2014genome,hubisz2020inference},
+%\tsinfer~\citep{kelleher2019inferring},
+%and \relate~\citep{speidel2019method}.
 % While there is some consistency among the inferred ARGs (such as the samples
 % FR-F, WA-F and Af-F being grouped into the same clade), there
 % are also considerable differences.
-The minimum number
-of recombination breakpoints required in the absence of recurrent mutation
-is 7 for this dataset~\citep{song2003parsimonious},
-and the number of inferred breakpoints
-under the input mutation and recombination rates
-varies from 2 (\relate) to 17 (\argweaver).
+%The minimum number
+%of recombination breakpoints required in the absence of recurrent mutation
+%is 7 for this dataset~\citep{song2003parsimonious},
+%and the number of inferred breakpoints
+%under the input mutation and recombination rates
+%varies from 2 (\relate) to 17 (\argweaver).
 % TODO this needs a bit of rewriting with the rest of the paper in mind
 % kwarg and argweaver are inferring eARGs, but we need to be careful
 % not to confuse people.
-The ARGs inferred by the different methods also have major differences
-in how recombination information is represented.
-Essentially,
-\kwarg\ and \argweaver\ infer eARGs that contain
-specific recombination \emph{events} for each breakpoint.
-On the other hand, \tsinfer\ and
-\relate\ do not infer events but rather
-infer gARGs with by differing levels of precision about recombination.
+%The ARGs inferred by the different methods also have major differences
+%in how recombination information is represented.
+%Essentially,
+%\kwarg\ and \argweaver\ infer eARGs that contain
+%specific recombination \emph{events} for each breakpoint.
+%On the other hand, \tsinfer\ and
+%\relate\ do not infer events but rather
+%infer gARGs with by differing levels of precision about recombination.
+
 The bottom row of Fig~\ref{fig-inferred-args} shows the extent along
 the genome to which graph edges are shared between multiple trees.
 We can see, for example, that the \relate\ trees ``share'' less topology
 than other methods, but it certainly does not infer a series of
-\emph{unrelated} local trees (i.e., with either unlabelled internal
-nodes or differently labelled nodes in each tree).
+\emph{unrelated} local trees
+%(i.e., with either unlabelled internal
+%nodes or differently labelled nodes in each tree).
 The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
 information about node sharing across trees; for example,
 both infer that Af-f, Fr-f and Wa-f share a common ancestor along
