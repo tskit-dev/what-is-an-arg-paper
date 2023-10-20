@@ -789,7 +789,7 @@ of the sort that can be simulated directly by the Hudson algorithm.
 This differs in some important ways from its equivalent eARG (Fig.~\ref{fig-ancestry-resolution}A).
 Firstly, we can see that some nodes and edges have been removed entirely
 from the graph.
-The ``grand MRCA'' \noderef{q} is omitted from the
+The ``grand MRCA'' \noderef{q} is normally omitted from the
 sample-resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
 between \noderef{g} and \noderef{j} is omitted because the recombination
@@ -1121,10 +1121,14 @@ Secondly, node colours denote the number of parents that they
 have in the graph, allowing us to easily see roots (those
 with zero parents), recombinants (those with two parents)
 and more complex situations arising from simplification (see below).
-Thirdly, the shading intensity of a node denotes the
+Thirdly, the shading intensity of a node denotes the ``coalescent span'', the
 fraction of the node's span (the length of genome in which it
 is reachable from the samples in the local trees)
-over which it is coalescent (has more than one child).
+over which it is coalescent (has more than one child). Nodes which
+are never locally unary therefore have a coalescent span of 100\%,
+whereas nodes in which ancestral material never coalesces have a
+coalescent span of 0\% (such nodes will be extremely difficult to
+identify from the distribution of shared mutations in the samples).
 % This is useful why? I can't come up with a quick way of saying
 % this. In some senses it's a measure of identifiability?
 % JK: Hmm, not sure we want to jump into inferability here?
@@ -1412,7 +1416,7 @@ Edge colours are based on the time of the edge's child node
 (lighter: older; darker: younger).
 X and Y positions of graph nodes are arbitrary;
 line width and node colour are as described in Fig.~\ref{fig-simplification}.
-Graphics on the bottom row show the genomic positions, relative to the start of the ADH gene,
+Graphics on the bottom row show the genome positions, relative to the start of the ADH gene,
 for each graph edge from the corresponding ARG. Edge intervals are drawn as horizontal lines,
 stacked in time order (edges with youngest children at the bottom);
 vertical dashed lines indicate breakpoints between local trees.
@@ -1432,7 +1436,7 @@ and as a result nodes and edges persist across multiple local trees.
 Their results can therefore be thought of as an inheritance graph, and represented in the gARG format.
 
 To illustrate the varying levels of information that can be captured in a gARG,
-Fig.~\ref{fig-inferred-args} presents graph representations of genealogies output by two tools that
+Fig.~\ref{fig-inferred-args} presents graphical representations of genealogies output by two tools that
 \emph{do} explicitly infer recombination events, namely \kwarg~\citep{ignatieva2021kwarg} and 
 \argweaver~\citep{rasmussen2014genome}, 
 and two which do not (\tsinfer\ and \relate). 
@@ -1446,16 +1450,19 @@ assume a mutation rate of
 \SI{5.49e-9}{per site per generation} and a recombination rate of
 \SI{8.4e-9}{per site per generation} \citep{lauterbur2022expanding}, together with
 a constant effective population size of 1,000,000.
-The version numbers of inference software, together with the specific inference parameters
-needed to reproduce the ARGs, are available from our GitHub repository.
+To focus on the ARG topology rather than estimates of node times, the Y position of each node
+is arbitrary, taken from the ranked order of nodes output by each software method.
+The version numbers of inference software, the specific inference parameters
+needed to reproduce the ARGs, and (where necessary) functions to convert outputs to the
+\texttt{tskit} gARG format, are available from our GitHub repository.
 
 Note that both \kwarg\ and \argweaver\ produce many ARGs
 (those shown in Fig.~\ref{fig-inferred-args} A\& B are arbitrarily selected examples).
 This stems from the fact that \kwarg\ searches the space of plausible ARGs,
 outputting minimal ones using heuristics, and \argweaver\ samples 
 from the posterior distribution over
-ARGs given the data and a fixed model (the SMC$^\prime$, an approximation of the full coalescent
-with recombination \citep{marjoram2006fast}).
+ARGs given the data and a fixed model (the SMC$^\prime$ \citep{marjoram2006fast},
+an approximation of the full coalescent with recombination).
 In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args} C \& D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
@@ -1465,6 +1472,7 @@ Indeed, there is considerable variation in the number of recombinations inferred
 different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args} B) suggesting
 far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-inferred-args} A).
 
+% Here we describe recombination features
 A rough feel for the amount of recombination in each ARG is given by the distribution
 of number of parents per node, as highlighted by the node colour scheme.
 In Fig.~\ref{fig-inferred-args} A \& B, each recombination node has exactly 2 parents,
@@ -1473,22 +1481,25 @@ breakpoint occurs a a different location (the "infinite breakpoints" model), the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
 In contrast, Figure Fig.~\ref{fig-inferred-args} C \& D have ARG nodes with greater
 than two parents, indicating deliberate imprecision: these are cases where multiple recombination events
-have been ``pushed down'' onto a single more recent node. Note, however, that the number
+have been ``pushed down'' onto a single more recent node.
+Note, however, that the number
 of breakpoints in these two ARGs is smaller than the number of ARG nodes with multiple parents,
 because those nodes frequently share breakpoint positions. The sharing of breakpoint locations
 between multiple-parent nodes indicates that in \tsinfer\ and \relate\ ARGs it may be
 difficult to condense each transition between trees into a set of simple SPR moves. 
 
-Shading by coalescent span reveals that many non-recombinant (green) nodes are
-``locally unary'' (see section \ref{sec-locally-unary-edges}). In other words,
-in some regions of the genome, these nodes are present in the ancestry but do
-not correspond to coalescence. As argued previously, this can provide potentially useful
+% Here we move on to coalescence
+As for coalescence in these inferred ARGs, the shading (``coalescent span'')
+reveals that many non-recombinant (green) nodes are
+locally unary (see section \ref{sec-locally-unary-edges}). In other words,
+in some regions of the genome these nodes are present in the ancestry without
+corresponding to coalescence of ancestral material. As argued previously, this can provide useful
 information about shared ancestry. Note however, that such unary segments are not inferred
 in the \relate\ ARG: other than the samples it has entirely solid nodes.
 Only the \tsinfer\ results have nodes with more than two children (polytomies);
 in Appendix \ref{sec-cell-lineages-and-args} we argue that this reflects
 uncertainty in the order of coalescent events, in an equivalent
-manner to the lack of precision in recombination nodes with more
+manner to the imprecision associated with recombination nodes having more
 than two parents. The clearest example is the polytomy involving the nodes
 \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}, which happen to
 have identical sequences. \kwarg, \argweaver, and \relate\ require
@@ -1499,8 +1510,10 @@ relationship between these samples).
 The number of nodes in Fig.~\ref{fig-inferred-args} C
 that have more than two children also hints at considerable uncertainty in
 the order of branching elsewhere in the ARG.
-% TODO add explanation of the bottom row.
-% https://github.com/tskit-dev/what-is-an-arg-paper/issues/386
+
+%% possible TODO - mention something about multiple local roots in
+% tsinfer and Relate versus the other two.
+
 %The example of successive simplification of a simulated ARG
 %in Fig.~\ref{fig-simplification} illustrates the point
 %that is is possible to \emph{store} arbitrary levels of precision
@@ -1538,18 +1551,24 @@ the order of branching elsewhere in the ARG.
 %\relate\ do not infer events but rather
 %infer gARGs with by differing levels of precision about recombination.
 
+% TODO add additional explanation of the bottom row, if enough isn't written below
+% https://github.com/tskit-dev/what-is-an-arg-paper/issues/386
 The bottom row of Fig~\ref{fig-inferred-args} shows the extent along
 the genome to which graph edges are shared between multiple trees.
-We can see, for example, that the \relate\ trees ``share'' less topology
-than other methods, but it certainly does not infer a series of
-\emph{unrelated} local trees
+We can see that both \tsinfer and (to a lesser extent) \relate have edges
+that span multiple tree boundaries, indicating that they certainly
+do not infer a series of \emph{unrelated} local trees.
 %(i.e., with either unlabelled internal
 %nodes or differently labelled nodes in each tree).
-The ARGs inferred by \relate\ and \tsinfer\ both contain substantial
-information about node sharing across trees; for example,
-both infer that Af-f, Fr-f and Wa-f share a common ancestor along
-the entire sequence.
-They contain a level of detail about recombination
+For example, both infer that \noderef{Af-f}, \noderef{Fr-f} and \noderef{Wa-f}
+share a common ancestor along
+the entire sequence. They do not, however, show extensive node sharing in the
+oldest time periods, reflecting the fact that they do not encode topology
+above the local tree roots (i.e. they do not go back to a
+"grand MRCA"). This is also seen in the fact they their ARGs contain multiple roots
+(nodes with zero parents, in blue), whereas \kwarg and \argweaver have a
+single ARG root.
+These two methods contain a level of detail about recombination
 that lies somewhere between a sequence of unrelated local trees on one
 extreme and a completely precise event ARG on the other.
 
