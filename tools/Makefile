@@ -21,9 +21,11 @@ argweaver:
 relate: 
 	git clone ${RELATE_GITREPO}
 	# checkout a specific revision (latest as of Mar 2022)
+	# NB: removes gzstream version file which causes recent compilations to fail
 	cd relate && \
 	  git checkout ${RELATE_VERSION} && \
-	  mkdir build && \
+	  rm -f include/src/gzstream/version && \
+	  mkdir -p build && \
 	  cd build && \
 	  cmake .. && \
 	  make
@@ -31,9 +33,11 @@ relate:
 relate_lib: 
 	git clone ${RELATELIB_GITREPO}
 	# checkout a specific revision (latest dev as of Mar 2022)
+	# NB: removes gzstream version file which causes recent compilations to fail
 	cd relate_lib && \
 	  git checkout ${RELATELIB_VERSION} && \
-	  mkdir build && \
+	  rm -f include/src/gzstream/version && \
+	  mkdir -p build && \
 	  cd build && \
 	  cmake .. && \
 	  make

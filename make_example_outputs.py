@@ -150,14 +150,16 @@ def run_relate():
     subprocess.run(params, cwd=dir)
 
     # Convert to JBOT tree sequence format
-    subprocess.run([
+    params = [
         "tools/relate_lib/bin/Convert",
         "--mode", "ConvertToTreeSequence",
         "--anc", f"{dir}{outfiles}.anc",
         "--mut", f"{dir}{outfiles}.mut",
         "-o", f"examples/Kreitman_SNP_relate_jbot",
         *conf["tools"]["RELATELIB_PARAMS"].split(),
-    ])
+    ]
+    print(f"running `{' '.join(params)}`")
+    subprocess.run(params)
     
     # Convert to time-uncalibrated tree sequence format
     ts_jbot = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")
