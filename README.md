@@ -15,21 +15,25 @@ Then to recreate plots used in the paper, type `make clean && make`
 
 ### Re-running inferences
 
-To also re-run the software used for the inference plots, first install the
-necessary inference tools by:
+To also re-run the software used for the inference plots, the
+necessary inference tools need to be installed by running the makefile
+in the tools directory (note that this
+requires `python2` to be installed, to run ARGweaver conversion software)
 
 ```
-cd tools
-make  # This will require python2 to be installed, to run ARGweaver conversion software
+make -C tools
 ```
 
 Version of these software tools and parameters used to create the plot
 of inference results are all listed in [tools.config](./tools.config).
 
 You can then force a re-run by removing everything in the `examples` directory, then
-in the top level, repeating
+recreating them by making the example inputs and outputs, followed by
+repeating the graphics creating commands in the top level directory:
 
 ```
+rm -rf examples/*
 make clean
+make inference_outputs
 make
 ```
