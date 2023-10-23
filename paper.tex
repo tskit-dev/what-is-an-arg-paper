@@ -216,7 +216,7 @@ Finally, the literature on ARGs and associated aspects is vast, particularly
 due to different definitions and implementations. We cover some important aspects
 in appendices, including
 a brief history of ancestral graphs (Appendix~\ref{sec-arg-history}),
-description of the big and little ARGs (Appendix~\ref{sec-big-and-little-arg}),
+description of the Big and Little ARGs (Appendix~\ref{sec-big-and-little-arg}),
 survey of ARG inference methods (Appendix~\ref{sec-survey-arg-infer}), and
 ARGs at an individual vs cell lineage level (Appendix~\ref{sec-cell-lineages-and-args}).
 
@@ -792,17 +792,18 @@ are unproductive.
 
 \section{Ancestral material and sample resolution}
 \label{sec-ancestral-material}
-Ancestral material~\citep{wiuf1999ancestry,wiuf1999recombination},
-denoting the genomic intervals ancestral to a set of samples
-on the edges of an ARG, is a key concept. In
-Fig.~\ref{fig-arg-in-pedigree}, for example, we have
+Ancestral material~\citep{wiuf1999ancestry,wiuf1999recombination}
+is a key concept in understanding the overall inheritance structure
+of an ARG. It denotes the genomic intervals ancestral to a set of samples
+on the edges of an ARG.
+In Fig.~\ref{fig-arg-in-pedigree}, for example, we have
 four sample genomes, \noderef{a}--\noderef{d}. As we
 trace their genetic ancestry into the previous generation
 (\noderef{e}--\noderef{h}), we can think of the ancestral
-material of the sample propagating through the graph
+material of the samples propagating through the graph
 backwards in time. In the interval $[2, 7)$, there is a
 local coalescence where nodes \noderef{a} and \noderef{c}
-find common ancestor in \noderef{f}. Thus, in this interval,
+find a common ancestor in \noderef{f}. Thus, in this interval,
 the total number of genome segments that are ancestral to the
 sample is reduced from four to three. Note that in the same
 interval, node \noderef{e} is not ancestral to any
@@ -816,7 +817,7 @@ segments of ancestral material is a core element of
 Hudson's seminal simulation
 algorithm~\citep{hudson1983testing,kelleher2016efficient},
 and the key distinguishing feature between the
-``big'' and ``little'' ARG stochastic processes
+``Big'' and ``Little'' ARG stochastic processes
 (see Appendix~\ref{sec-big-and-little-arg}).
 The ability to \emph{store} the resolved ancestral material
 for a sample
@@ -892,7 +893,7 @@ differs in some important ways to the
 original eARG (Fig.~\ref{fig-ancestry-resolution}A).
 Firstly, we can see that some nodes and edges have been removed entirely
 from the graph.
-The ``grand MRCA'' \noderef{q} is normally omitted from the
+The ``grand MRCA'' \noderef{q} is omitted from the
 sample-resolved gARG because all segments of the genome have
 fully coalesced before it is reached. Likewise, the edge
 between \noderef{g} and \noderef{j} is omitted because the recombination
@@ -1127,7 +1128,7 @@ On the other hand, node \noderef{f} has two children
 in the graph, but is binary only
 in the local tree covering the interval $[2, 7)$,
 representing the coalescence of samples \noderef{a} and \noderef{c}
-in this region of genome. Over the interval $[0, 2)$ no coalescence occurs,
+in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, \noderef{c} has a single child in this
 interval and it is unary in this local tree.
@@ -1146,7 +1147,7 @@ is no local coalescence, are marked by unary nodes in the
 local trees.
 
 Outside of the context of simulation, ARG-unary nodes are
-only like to occur in longitudinal datasets where genetic
+only likely to occur in longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
 \emph{Locally} unary nodes, those which have one child
@@ -1174,6 +1175,7 @@ Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
+% FIXME: move to top of section
 Nodes with one child are not a standard feature of evolutionary trees
 or the ARG literature
 (although \citet{mathieson2020ancestry} show examples in which the ARGs
@@ -1265,7 +1267,7 @@ a Wright-Fisher model
 (e.g.~node \noderef{k} in Fig.~\ref{fig-simplification}).
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
-some novel features, which require some explanation.
+three novel features.
 Firstly, edge weights (the thickness of the lines joining
 nodes) correspond to the length of the inheritance intervals
 they are annotated with. This allows us to distinguish
@@ -1565,9 +1567,11 @@ at position 87 has been lost entirely.
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} Inference of sample-resolved ARGs for 11
-\textit{Drosophila melanogaster} genetic sequences over a 2.4kb
+\textit{Drosophila melanogaster} DNA sequences over a 2.4kb
 region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods based on
+% FIXME: this is the wrong place to be summarising. Name the methods
+% here and summarise in the text
 (A) parsimony, (B) sampling the SMC$^\prime$, (C) copying from
 inferred ancestral haplotypes, and (D) correlated local tree estimation.
 Edge colours are based on the time of the edge's child node
@@ -1626,7 +1630,7 @@ an approximation of the full coalescent with recombination).
 In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args}C,D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
-than having to precisely specify each event, is a important contributor to this aim,
+than having to precisely specify each event, is an important contributor to this aim,
 as most recombination events cannot be uniquely identified from the data.
 Indeed, there is considerable variation in the number of recombinations inferred by
 different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args} B) suggesting
@@ -1637,7 +1641,9 @@ A rough feel for the amount of recombination in each ARG is given by the distrib
 of number of parents per node, as highlighted by the node colour scheme.
 In Fig.~\ref{fig-inferred-args}A,B, each recombination event is tagged by
 a node with exactly 2 parents and one child. Assuming that the breakpoint for each event
-occurs at a different location (the ``infinite breakpoints" model), then the
+% TODO "infinite breakpoints" is goign to confuse people. What are we
+% clarifying here? Citation necessary if we keep.
+occurs at a different location (the ``infinite breakpoints'' model), then the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
 In contrast, Figure Fig.~\ref{fig-inferred-args}C,D have ARG nodes with multiple
 parents and multiple children. These indicate deliberate imprecision, where one
@@ -1724,7 +1730,7 @@ that span multiple tree boundaries, indicating that they are not inferring
 a series of \emph{unrelated} local trees.
 %(i.e., with either unlabelled internal
 %nodes or differently labelled nodes in each tree).
-For example, both infer that \noderef{Af-f}, \noderef{Fr-f} and \noderef{Wa-f}
+For example, both infer that \noderef{Af-f}, \noderef{Fr-f}, and \noderef{Wa-f}
 share a common ancestor along
 the entire sequence. However, in comparison to \kwarg\ and \argweaver\ neither
 method results in extensive node sharing in the
@@ -1732,7 +1738,7 @@ oldest time periods. This primarily reflects the fact that they do not encode to
 above the local MRCAs, also indicated by multiple roots in the ARG
 (nodes with zero parents, in blue), compared to the
 single ARG root in the \kwarg\ and \argweaver\ genealogies. In terms of inference,
-\tsinfer\ and \relate\ show a more pragmatic representation: we do not expect
+\tsinfer\ and \relate\ show a pragmatic representation: we do not expect
 genetic variation to be very informative about topological relationships
 between nodes that that are older than the local MRCAs.
 
@@ -1916,7 +1922,10 @@ made explicit here is one way we can concretely
 define such recombinant ancestry, which we have shown is both
 flexible and efficient.
 The flexibility of the gARG encoding contrasts with the classical
-``event'' ARG (eARG), which is more limited in what can be described, because of its origins in an idealised mathematical model.
+``event'' ARG (eARG), which is more limited in what can be described,
+because of its origins in an idealised mathematical model,
+and the assumption of having complete information about
+recombination events.
 
 Fully decoupling the general concept of an ARG from the coalescent
 with recombination stochastic process is an important step.
@@ -1970,7 +1979,7 @@ can be elucidated from mutations in the surrounding genomic region. For general
 ARGs, for instance those representing pedigrees, or genealogies of organisms with
 low mutation rates and complex patterns of recombination, such inference can be
 even more challenging. The fact that the eARG encoding \emph{requires}
-precise estimates about recombination is therefore a fundamental limitation, which
+precise information about recombination is therefore a fundamental limitation, which
 is a central message of this paper.
 % This might be where we mention Fisher's junctions and IBD?
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/121
@@ -2286,15 +2295,15 @@ used the term in the latter sense, to mean a specific realised ancestral history
 \label{sec-big-and-little-arg}
 Here we review the two predominant stochastic processes which construct ARGs:
 the ``big" ARG process of \cite{griffiths1997ancestral}, and the ``little" ARG process of
- \cite{hudson1983properties}. The big ARG process is mathematically simpler
+ \cite{hudson1983properties}. The Big ARG process is mathematically simpler
  but is computationally intractable due to generating a vast number of ancestors
  which contribute no genetic material to the initial sample.
-The little ARG process avoids non-genetic ancestors at the cost of more complex
+The Little ARG process avoids non-genetic ancestors at the cost of more complex
 dynamics and state space. We also demonstrate that evaluating the sampling probability
 of either process---a key quantity in many statistical approaches---requires that the
 gARG (or eARG) data structure be interpreted in a model-specific way.
 
-A generic state of the little ARG process consists of a finite collection of lineages $L$,
+A generic state of the Little ARG process consists of a finite collection of lineages $L$,
 each of which is a list of disjoint ancestry segments $(\ell, r, a)$, where
 $[\ell, r)$ is a half-closed genomic interval and $a$ is an integer
 tracking the number of samples to which the lineage is ancestral over that interval.
@@ -2329,7 +2338,7 @@ Non-overlapping intervals from the two lineages are included
 we find resultant lineages in which all segments have fully coalesced,
 and so the number of extant lineages gradually falls to zero.
 
-In the Griffiths formulation (the big ARG process), each edge in the graph corresponds to an extant
+In the Griffiths formulation (the Big ARG process), each edge in the graph corresponds to an extant
 lineage and nodes are events in the process. The $n$ initial leaf nodes are
 sampling events. Common ancestor events occur at rate $\binom{|L|}{2}$.
 When a common ancestor event happens, two uniformly chosen lineages
@@ -2341,22 +2350,22 @@ then continues until there is only one lineage left (the Grand Most Recent
 Common Ancestor, GMRCA), which is guaranteed to
 happen in finite time because of the quadratic rate of coalescing vs.\ linear rate of branching.
 
-The state-space of the big ARG process is much simpler than that of the little ARG process,
+The state-space of the Big ARG process is much simpler than that of the Little ARG process,
 which greatly facilitates mathematical reasoning. This simplicity comes at a
 substantial cost, however, if we wish to use it as a practical means of
 simulating recombinant ancestries.
-The number of events in the big ARG all the way back to the GMRCA
+The number of events in the Big ARG all the way back to the GMRCA
 is $O(e^\rho)$~\citep{griffiths1997ancestral}, whereas the number
-of events required to simulate the little ARG is
+of events required to simulate the Little ARG is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
-This disparity arises because the majority of the events in the big ARG are
+This disparity arises because the majority of the events in the Big ARG are
 recombination events which occur outside of ancestral material,
 and this do not have any bearing on the ancestry of the initial sample.
 Because we don't keep track of the distribution of ancestral material during the process,
 we generate a vastly larger graph.
 
 Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
-of the little ARG process, as well as the extra events which occur in the big ARG process.
+of the Little ARG process, as well as the extra events which occur in the Big ARG process.
 Moreover, it depicts the rates of common ancestors and recombination events in each
 interval of time of the realisations.
 In order to evaluate these rates, and hence the sampling probability
@@ -2382,7 +2391,7 @@ The lineage then splits into two at the time of nodes \noderef{d} and \noderef{e
 Nodes \noderef{k}, \noderef{l}, and \noderef{m} in Figure \ref{fig-ancestry-resolution}
 demonstrate that the same issue can affect the number of links available for recombination:
 without an external convention, the exact time at which the trapped ancestral material on
-node \noderef{k} ceases to be available for an effective recombination in the little ARG process.
+node \noderef{k} ceases to be available for an effective recombination in the Little ARG process.
 
 \begin{figure}[t]
 \centering
@@ -2610,7 +2619,7 @@ The non-ancestral segment $[v, w)$ above
 is trapped between ancestral segments. The two columns titled CA and RE
 are the respective rates of mergers and recombinations when
 the recombination rate is $\rho$.
-(B) A corresponding realisation of a big ARG, which augments Hudson's algorithm
+(B) A corresponding realisation of a Big ARG, which augments Hudson's algorithm
 by tracking nonancestral lineages. The result is a simpler state space and
 dynamics, at the cost of extra nodes and edges, highlighted in red, which do
 not affect the local tree at any site.
@@ -2671,7 +2680,7 @@ averaged out by Monte Carlo methods, based either on importance sampling
 or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
 wang2009population, fallon2013acg, vaughan2017inferring, mahmoudi2022bayesian}.
 These methods operate on representations
-of the ``little ARG'', and are computationally expensive, being
+of the ``Little ARG'', and are computationally expensive, being
 applicable to at most hundreds of samples consisting of tens or hundreds of
 kilobases with human-like parameters.
 State-of-the-art methods rely on cheaper,
