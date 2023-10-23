@@ -272,8 +272,7 @@ In practical settings, we will wish to associate additional
 metadata such as sample identifiers or quality-control metrics
 with nodes; it is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
-with which arbitrary additional information can be associated.
-Concretely defining nodes as integers in this way has some
+with which arbitrary additional information can be associated.Concretely defining nodes as integers in this way has some
 significant advantages. In particular, it provides a direct link
 between an ARG and its local trees in terms of a well-defined
 combinatorial object (Section~\ref{sec-ARG-and-local-trees}),
@@ -1615,13 +1614,13 @@ needed to reproduce the ARGs, and (where necessary) functions to convert outputs
 \texttt{tskit} gARG format, are available from our GitHub repository.
 
 Note that both \kwarg\ and \argweaver\ produce many ARGs
-(those shown in Fig.~\ref{fig-inferred-args} A\& B are arbitrarily selected examples).
+(those shown in Fig.~\ref{fig-inferred-args}A,B are arbitrarily selected examples).
 This stems from the fact that \kwarg\ searches the space of plausible ARGs,
 outputting minimal ones using heuristics, and \argweaver\ samples
 from the posterior distribution over
 ARGs given the data and a fixed model (the SMC$^\prime$ \citep{marjoram2006fast},
 an approximation of the full coalescent with recombination).
-In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args} C \& D) are
+In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args}C,D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
 than having to precisely specify each event, is a important contributor to this aim,
@@ -1633,11 +1632,11 @@ far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-in
 % Here we describe recombination features
 A rough feel for the amount of recombination in each ARG is given by the distribution
 of number of parents per node, as highlighted by the node colour scheme.
-In Fig.~\ref{fig-inferred-args} A \& B, each recombination event is tagged by
+In Fig.~\ref{fig-inferred-args}A,B, each recombination event is tagged by
 a node with exactly 2 parents and one child. Assuming that the breakpoint for each event
 occurs at a different location (the "infinite breakpoints" model), then the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
-In contrast, Figure Fig.~\ref{fig-inferred-args} C \& D have ARG nodes with multiple
+In contrast, Figure Fig.~\ref{fig-inferred-args}C,D have ARG nodes with multiple
 parents and multiple children. These indicate deliberate imprecision, where one
 or more recombinations have been ``pushed down'' onto a more recent, identifiable node.
 Several of these nodes have more than two parents (in red), representing
@@ -1667,7 +1666,8 @@ than two parents. Only \tsinfer\ creates such polytomies, the clearest of which
 involves the nodes \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}. These
 happen to have identical sequences, but because \kwarg, \argweaver, and \relate\ require
 bifurcating trees, they are forced to pick an arbitrary order of branching
-(hence Fig.~\ref{fig-inferred-args} A and Fig.~\ref{fig-inferred-args} B disagree on the
+(hence Fig.~\ref{fig-inferred-args}A,B disagrees with Fig.~\ref{fig-inferred-args}D
+in this order)
 More generally, the number of nodes in Fig.~\ref{fig-inferred-args} C
 that have more than two children hints at considerable uncertainty in
 the order of branching elsewhere in the ARG.
