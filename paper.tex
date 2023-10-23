@@ -272,7 +272,7 @@ In practical settings, we will wish to associate additional
 metadata such as sample identifiers or quality-control metrics
 with nodes; it is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
-with which arbitrary additional information can be associated.Concretely defining nodes as integers in this way has some
+with which arbitrary additional information can be associated. Concretely defining nodes as integers in this way has some
 significant advantages. In particular, it provides a direct link
 between an ARG and its local trees in terms of a well-defined
 combinatorial object (Section~\ref{sec-ARG-and-local-trees}),
@@ -306,7 +306,7 @@ they merge into a common ancestor, the merged region is darker.
 
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
-The pedigree relationships between the diploid individuals is
+The pedigree relationships between the diploid individuals are
 shown, along with their paths
 of genetic inheritance and constituent genomes (labelled
 with lowercase alphabetical letters
@@ -645,7 +645,7 @@ different types of event that are not simple crossover recombination
 or common ancestry.
 Processes such as gene conversion, for example, can in principle
 be included, but either require additional node types
-or (e.g.) multiple recombination nodes joined by a zero-length edge.
+or, for instance, multiple recombination nodes joined by a zero-length edge.
 Modelling multiple recombinant offspring of the same parents
 (while keeping track of their identity as siblings)
 as occurs
@@ -876,7 +876,7 @@ outbound edge with the interval $[0,L)$, for a genome of length $L$. If the
 node is a recombination event with a breakpoint $x$, we annotate the two
 outbound edges respectively with the intervals $[0, x)$ and $[x, L)$. These
 inheritance interval annotations are clearly in one-to-one correspondence with
-the information in the input eARG. They are also also analogous to the
+the information in the input eARG. They are also analogous to the
 inheritance intervals we get on the edges in a prospective ARG
 produced by a forwards-time simulation, which are concerned with recording
 the local genetic relationship between a parent and child genome and not
