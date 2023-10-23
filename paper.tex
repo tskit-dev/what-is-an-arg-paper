@@ -9,7 +9,6 @@
 \usepackage{nameref}
 \usepackage[right]{lineno}
 \usepackage{subcaption}
-\usepackage{siunitx}
 \usepackage{tikz}
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
@@ -1603,9 +1602,11 @@ ARG literature, for which the minimum number of recombination breakpoints in the
 mutation is 7~\citep{song2003parsimonious}. This dataset comprises 43 biallelic SNPs spanning 2.4Kb of the
 \emph{D.~melanogaster} ADH locus on chromosome 2L. Where required for inference purposes we
 assume a mutation rate of
-% per site per generation may be easier to follow?
-\SI{5.49e-9}{per site per generation} and a recombination rate of
-\SI{8.4e-9}{per site per generation} \citep{lauterbur2022expanding}, together with
+$5.49\times10^{-9}$ per site per generation
+and a recombination rate of
+$8.4\times10^{-9}$ per site per generation
+\citep{adrion2020community,lauterbur2022expanding},
+together with
 a constant effective population size of 1,000,000.
 To focus on the ARG topology rather than estimates of node times, the Y position of each node
 is arbitrary, taken from the ranked order of nodes output by each software method.
