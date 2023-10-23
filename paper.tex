@@ -223,7 +223,10 @@ ARGs at an individual vs cell lineage level (Appendix~\ref{sec-cell-lineages-and
 \section{Genome ARGs}
 \label{sec-gARG}
 We define a genome as the complete set of genetic material that a child
-inherits from one parent (i.e.\ haploids have one genome, diploids two, etc.).
+inherits from one parent. A diploid individual  (we assume diploids here
+for clarity, but the definitions apply to organisms of arbitrary ploidy)
+% Q: will someone nitpick that we're assuming diploid obligate sexual species?
+therefore carries two genomes, one inherited from each parent.
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species, denoting the full set
 of chromosomes, and hope that the distinction
@@ -244,7 +247,7 @@ does not tell us which \emph{parts} of their genomes were inherited.
 In order to capture the effects of recombination
 (and other processes that lead to the partial genome inheritance)
  we ``annotate'' the edges with the genome
-coordinates over which inheritance occurs.
+coordinates over which inheritance occured.
 We can define a gARG formally as follows.
 Let $N \subset \mathbb{N}$ be the set of nodes representing
 the genomes in the gARG, $S \subseteq N$ be the set of sampled genomes.
@@ -269,10 +272,11 @@ defined by the directed graph structure, however,
 and we will assume that node dates are not known here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
-metadata such as sample identifiers or quality-control metrics
-with nodes; it is therefore best to think of the
+metadata with nodes such as sample identifiers or quality-control metrics;
+It is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
-with which arbitrary additional information can be associated. Concretely defining nodes as integers in this way has some
+with which arbitrary additional information can be associated.
+Concretely defining nodes as integers in this way has some
 significant advantages. In particular, it provides a direct link
 between an ARG and its local trees in terms of a well-defined
 combinatorial object (Section~\ref{sec-ARG-and-local-trees}),
@@ -306,12 +310,11 @@ they merge into a common ancestor, the merged region is darker.
 
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
-The pedigree relationships between the diploid individuals are
-shown, along with their paths
-of genetic inheritance and constituent genomes (labelled
-with lowercase alphabetical letters
-rather than integer identifiers to avoid confusion with genomic
-intervals).
+The figure shows the pedigree of eight diploid individuals, along with paths
+of genetic inheritance and constituent genomes.
+To avoid confusion with genomic intervals, nodes are
+labelled with lowercase alphabetical letters
+rather than integer identifiers.
 Thus, individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
@@ -438,14 +441,14 @@ how the local trees are embedded in an ARG.
 The genome ARG framework defined in the previous section is
 in many ways a clarification of existing treatments
 \cite[e.g.][]{mathieson2020ancestry,shipilina2023origin},
-adding concrete details to the mechanisms by which
-differential inheritance of genetic material are modelled.
+adding concrete details to describe the
+differential inheritance of genetic material between genomes.
 % This is definitely needed for the Nicks, who are always thinking
 % about the deeper processes and are quite happy being loosey-goosey
 % with representation details
 Note that here, and throughout, we are not questioning the form of the
 actual ancestral processes that occur in nature, but rather how we
-\emph{represent} such realised histories in a practical sense.
+\emph{represent} the outcomse of such processes in a practical sense.
 % Again, need to remind the reader that there's an actual point
 % to all this getting stuck into the details.
 These practical details,
@@ -622,8 +625,8 @@ At common ancestor nodes, the inbound lineages merge into a
 single ancestral lineage with one parent, and at recombination
 nodes a single lineage is split into two independent
 ancestral lineages. Recombination nodes are annotated with
-the corresponding crossover breakpoint, and these breakpoints
-are used to reconstruct the local trees.
+the corresponding crossover breakpoints. These breakpoints
+are used to construct the local trees.
 This is done by tracing rootwards through the graph from the samples,
 taking decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
