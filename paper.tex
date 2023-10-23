@@ -872,21 +872,21 @@ desired.
 
 Any eARG can be converted to a sample-resolved gARG using the same machinery,
 and the two-step process is illustrated in Fig.~\ref{fig-ancestry-resolution}.
-The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}A)
-and convert all event nodes to genome nodes and add inheritance annotations to
-the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B).
-If the node is a common ancestor node, we annotate the single
+The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}A),
+duplicate its graph topology, and then add inheritance annotations
+to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B).
+If a given node is a common ancestor event, we annotate the single
 outbound edge with the interval $[0,L)$, for a genome of length $L$. If the
 node is a recombination event with a breakpoint $x$, we annotate the two
 outbound edges respectively with the intervals $[0, x)$ and $[x, L)$. These
 inheritance interval annotations are clearly in one-to-one correspondence with
 the information in the input eARG. They are also analogous to the
-inheritance intervals we get on the edges in a prospective ARG
+inheritance intervals we get on the edges in a prospective gARG
 produced by a forwards-time simulation, which are concerned with recording
 the local genetic relationship between a parent and child genome and not
 necessarily minimal in terms of the resolved ancestral material of a sample.
 Thus, the final step is to use the ``simplify'' algorithm to perform this
-resolution~(Fig.\ref{fig-ancestry-resolution}C).
+resolution (Fig.~\ref{fig-ancestry-resolution}C).
 
 The sample-resolved gARG of Fig.~\ref{fig-ancestry-resolution}C
 differs in some important ways to the
@@ -906,14 +906,15 @@ of an ARG in a way that is not possible by storing
 common ancestor and recombination events in an eARG. Because
 the ancestral material is stored with each edge, the
 cumulative effects of events over time can be reasoned
-about, without first ``replaying'' those events. Many computations
+about, without first ``replaying'' those events.
+Many computations
 that we wish to perform on an ARG will require resolving
 the ancestral material with respect to a sample.
 % this is weak, but would be good to emphasise this point.
 % you just end up running simplify lots of times, in your
 % downstream algs
 The gARG encoding
-allows us to perform this resolution of ancestral material once
+allows us to perform this once
 and to store the result,
 whereas the eARG encoding requires us to repeat the process
 each time.
@@ -986,60 +987,63 @@ holds.
 
 \section{ARGs and local trees}
 \label{sec-ARG-and-local-trees}
-Local trees, describing the genetic genealogy of a sample
-at a particular location along the genome, are
-embedded within an ARG, and the relationship
-between the two is subtle and important.
-Note that many authors use the term ``marginal''
-% could list loads here, but not much point.
-trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping,kelleher2016efficient}
-which we avoid due to the potential confusion with the
-statistical concept of marginal distributions
-(potentially leading to interpretation as an integrated tree over many positions).
+% (We use ``local'' rather than
+% ``marginal''
+% % could list loads here, but not much point.
+% trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping,kelleher2016efficient}
+% to avoid the potential confusion with the
+% statistical concept of marginal distributions.)
+A fundamental property of genetics is that a
+% TODO is this (genome) clarification helpful or confusing?
+given DNA nucleotide is inherited from exactly one parent (genome),
+both at an organismal and cell-by-cell level
+(Appendix~\ref{sec-cell-lineages-and-args}).
+These chains of single-parent inheritance over time give rise,
+by definition, to a tree structure.
+As a result of recombination, adjacent nucleotides can have
+different chains of inheritance, and
+an ARG encodes the entire ensemble of local trees along the
+genome for a given set of sample genomes.
+The relationship between an ARG and its corresponding
+local trees is subtle and important. To make the following
+discussions precise, we will define a concrete combinatorial encoding
+for local trees and an explicit procedure for constructing them.
 
-% TODO Need to make clear here what came from where. Basic combinatorial object
-% cite Knuth. Application to genetic ancestry, sim papers. Need to look
-% up what's said in favour of this integer based approach in which paper
-% and refer to tat.
-To make the following discussions precise, we provide
-a concrete definition and explicit process for local tree extraction.
-We can describe a local tree as an
-oriented tree~\cite[p.\ 461]{knuth11combinatorial},
-a sequence of integers $\pi_1, \pi_2\dots$ where $\pi_u$ denotes the parent of
-node $u$~\citep{kelleher2013coalescent,kelleher2014coalescent,kelleher2016efficient}.
-If $u$ is a root
-% I'm not sure if this reachability stuff is a helpful clarification, and whether it'll just
-% confuse people. It depends on some tricky details.
-(or not reachable from the samples)
-in the local tree at position $x$, then we adopt the convention that $\pi_u = -1$.
-% TODO Give example of an oriented tree from one of the figs?
-% TODO
-% A node in an oriented tree can have
-% zero, one,
-% or many children.
-
-To recover the local tree $\pi$ at position $x$, we begin by
-setting $\pi_u = -1$ for each $u\in N$. Then, for each sample
+Oriented trees provide a
+convenient formalism to capture these relationships in a well-defined
+combinatorial object.
+% There's no need for a comma
+Let $\pi_1\dots\pi_n$ be a sequence of integers, such that $\pi_u$
+denotes the parent of node $u$, and $\pi_u = 0$ if $u$ is a
+root~\cite[p.\ 461]{knuth11combinatorial}.
+This encoding is particularly useful to describe
+evolutionary trees because parent-child relationships are
+important but the ordering of children at a node is
+not~\citep{kelleher2013coalescent,kelleher2014coalescent,
+kelleher2016efficient}.
+Thus, for a given gARG with nodes $\{1, \dots, n\}$ and
+edges $E$, we recover the local tree as follows.
+We begin by
+setting $\pi_u = 0$ for each $1 \leq u \leq n$. Then, for each sample
 node in $S$ we trace its path rootwards through the
 ARG for position $x$, and record this path in $\pi$.
 Specifically, at a given node $u$,
 we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
 $\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
-until either $\pi_u \neq -1$ (indicating we have traversed this section
+until either $\pi_u \neq 0$ (indicating we have traversed this section
 of the ARG already on the path from another sample) or there
 is no matching outbound edge (indicating we are at a root).
+Note that the trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
+because many ancestral nodes will not be reachable from the
+samples at a given position.
 
-The nodes in a local tree encoded
-in this way are \emph{labelled} (i.e.\ carry the identity
-of the corresponding ARG node), and this is fundamentally
-important to how a local tree relates to its ARG.
+This combinatorial approach provides at least
+one novel insight into the relationship between ARGs and local trees.
 If we are given the sequence of local trees for a gARG
-encoded as an oriented tree (or in any other form in which
-the tree nodes are explicitly labelled with the identity of the
-corresponding ARG node),
-along with the genome interval covered by each tree,
-then we can recover precisely the same ARG. Thus, under this
-definition, there
+encoded as an oriented tree along with the genome interval
+covered by each tree, then we can recover precisely the same ARG.
+% I guess we should be a bit more formal here?
+Thus, under this definition, there
 is a one-to-one correspondence between an ARG and
 the sequence of local trees that it encodes.
 
@@ -1055,12 +1059,27 @@ partners.''
 and note that the
 ``full ARG...~contains more information than the series of tree
 sequences along the genome''.
+% Could cite some more? E.g. KwARG paper says
+% "We note that ARGs contain more information than local trees"
+% If even Ana and Jotun are wrong about this it then it must be
+% significant! ;)
 These statements that an ARG
 contains more information than its local trees is only true
 if we use a representation of the local trees that discards
 information about those local trees that can be derived from the ARG.
-The internal nodes of evolutionary trees are usually
-considered to be \emph{unlabelled}
+
+There are two properties of how evolutionary trees are conventionally
+represented that lead to this
+% Yes, OK, we can rephrase. It is a misunderstanding though
+misunderstanding of the relationship between local trees and an ARG.
+Firstly, the internal nodes of evolutionary trees are usually
+considered to be \emph{unlabelled}.
+Defining ARG nodes as integers and using the oriented tree encoding
+explicitly labels internal nodes, and makes the relationship between
+tree and ARG nodes explicit.
+
+[WIP]
+
 because they most often correspond
 to anonymous hypothetical ancestors.
 Internal ARG nodes may likewise correspond to anonymous hypothetical
