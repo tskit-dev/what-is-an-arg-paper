@@ -5,7 +5,12 @@ Run tools and convert output to tree sequences
 import json
 import os
 import subprocess
+import configparser
+import sys
 
+# look for local tool versions of e.g. tsinfer in preference to installed ones
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "tools")))
+print(sys.path)
 import tsinfer
 import tskit
 import argutils
@@ -15,6 +20,14 @@ import click
 mu = 5.49e-09  # From stdpopsim
 rho = 8.4e-09  # From stdpopsim
 Ne = 1e6  # Random guess
+
+def read_tool_config(filename):
+    with open(filename) as f:
+        file_content = '[tools]\n' + f.read()
+        config_parser = configparser.ConfigParser()
+        config_parser.read_string(file_content)
+    return config_parser
+
 
 @click.group()
 def cli():
@@ -46,15 +59,16 @@ def run_tsinfer():
 @click.command()
 def run_kwarg():
     sample_data = tsinfer.load("examples/Kreitman_SNP.samples") # to get the sample names
-    seed = 9999
+    conf = read_tool_config("tools.config")
+    params = [
+        "tools/kwarg/source/kwarg",
+        "-bexamples/Kreitman_SNP.kwarg",
+        *conf["tools"]["KWARG_PARAMS"].split(),
+    ]
+    print(f"running `{' '.join(params)}`")
     with open("examples/Kreitman_SNP.matrix") as f:
-        subprocess.run([
-            "tools/kwarg/source/kwarg",
-            "-bexamples/Kreitman_SNP.kwarg",
-            "-S-1",  # don't allow sequencing errors
-            "-M-1",  # don't allow recurrent mutations
-            f"-Z{seed}",
-        ], stdin=f)
+        subprocess.run(params, stdin=f)
+
     with open("examples/Kreitman_SNP.kwarg") as f:
         ts = argutils.convert_kwarg(
             f,
@@ -83,26 +97,24 @@ def run_kwarg():
 @click.command()
 def run_argweaver():
     os.makedirs("examples/argweaver_output", exist_ok=True)
-    subprocess.run([
+    conf = read_tool_config("tools.config")
+    params = [
         "tools/argweaver/bin/arg-sample",
         "--sites", "examples/Kreitman_SNP.sites",
         "--output", "examples/argweaver_output/arg-sample",
         "--overwrite",
-        "--smc-prime",
-        "--popsize", str(Ne),
-        "--mutrate", str(mu),
-        "--recombrate", str(rho),
-        "--randseed", "111",
-        "--iters", "3",
-        "--sample-step", "10000",
-        "--no-compress-output",
-    ])
-    subprocess.run([
+        *conf["tools"]["ARGWEAVER_PARAMS"].split(),
+    ]
+    print(f"running `{' '.join(params)}`")
+    subprocess.run(params)
+
+    params = [
         "python2",
         "tools/argweaver/bin/smc2arg",
         "examples/argweaver_output/arg-sample.0.smc",
         "examples/argweaver_output/arg-sample.0.arg",
-    ])
+    ]
+    subprocess.run(params)
     with open("examples/argweaver_output/arg-sample.0.arg") as f:
         ts = argutils.convert_argweaver(f)
         ts.dump("examples/Kreitman_SNP_argweaver.trees")
@@ -110,13 +122,14 @@ def run_argweaver():
 
 @click.command()
 def run_relate():
+    conf = read_tool_config("tools.config")
     sample_data = tsinfer.load("examples/Kreitman_SNP.samples")  # just for the seq len
     dir = "examples/Relate_output/"
     outfiles = "Kreitman_SNP"
     os.makedirs(dir, exist_ok=True)
     map_name = "Kreitman_SNP.map"
     with open(f"examples/{map_name}", "wt") as file:
-        cM_per_MB = rho * 1e8
+        cM_per_MB = float(conf["tools"]["RHO"]) * 1e8
         print("pos", "COMBINED_rate", "Genetic_Map", sep=" ", file=file)
         print(0, f"{cM_per_MB:.5f}", 0, sep=" ", file=file)
         print(
@@ -125,29 +138,28 @@ def run_relate():
             sample_data.sequence_length / 1e6 * cM_per_MB,
             sep=" ",
             file=file)
-    subprocess.run(
-        [
+    params = [
             "../../tools/relate/bin/Relate",
-            "--mode", "All",
-            "-m", str(mu),
-            "-N", str(Ne),
             "--haps", "../Kreitman_SNP.haps",
             "--sample", "../Kreitman_SNP.sample",
             "--map", f"../{map_name}",
-            "--seed",  "111",
             "-o", outfiles,
-        ],
-        cwd=dir,
-    )
+            *conf["tools"]["RELATE_PARAMS"].split(),
+    ]
+    print(f"running `{' '.join(params)}`")
+    subprocess.run(params, cwd=dir)
 
     # Convert to JBOT tree sequence format
-    subprocess.run([
+    params = [
         "tools/relate_lib/bin/Convert",
         "--mode", "ConvertToTreeSequence",
         "--anc", f"{dir}{outfiles}.anc",
         "--mut", f"{dir}{outfiles}.mut",
         "-o", f"examples/Kreitman_SNP_relate_jbot",
-    ])
+        *conf["tools"]["RELATELIB_PARAMS"].split(),
+    ]
+    print(f"running `{' '.join(params)}`")
+    subprocess.run(params)
     
     # Convert to time-uncalibrated tree sequence format
     ts_jbot = tskit.load("examples/Kreitman_SNP_relate_jbot.trees")

@@ -895,7 +895,7 @@ def inference():
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="translate(0, -19)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(150, 5) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(140, 5) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '

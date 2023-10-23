@@ -1,38 +1,52 @@
-all: kwarg argweaver relate relate_lib
+CONFIG = ../tools.config
+include ${CONFIG}
+
+all: kwarg argweaver relate relate_lib tsinfer
 
 kwarg: 
-	git clone https://github.com/a-ignatieva/kwarg
+	git clone ${KWARG_GITREPO}
 	cd kwarg && \
-	  git checkout 961304b86472373cf6cd2ca45d13eb66e4b5bcca && \
+	  git checkout tags/${KWARG_VERSION} && \
 	  cd source && \
 	  make
 
 argweaver: 
-	git clone https://github.com/CshlSiepelLab/argweaver
-	# checkout a specific revision (latest as of Mar 2022)
+	git clone ${ARGWEAVER_GITREPO}
+	# checkout a specific revision
 	cd argweaver && \
-	  git checkout 7191343c1d43c02de04e4e0a150d77b0612728c6 && \
+	  git checkout ${ARGWEAVER_VERSION} && \
 	  make && \
-	  python2 setup.py install --user
+	  python2 setup.py install --user  # annoyingly python2 is required for smc2arg
 
 relate: 
-	git clone https://github.com/MyersGroup/relate
+	git clone ${RELATE_GITREPO}
 	# checkout a specific revision (latest as of Mar 2022)
+	# NB: removes gzstream version file which causes recent compilations to fail
 	cd relate && \
-	  git checkout eea4a89b1d5eba5561f64d2a96eb64aaab6cd91c && \
-	  mkdir build && \
+	  git checkout ${RELATE_VERSION} && \
+	  rm -f include/src/gzstream/version && \
+	  mkdir -p build && \
 	  cd build && \
 	  cmake .. && \
 	  make
 
 relate_lib: 
-	git clone https://github.com/leospeidel/relate_lib
+	git clone ${RELATELIB_GITREPO}
 	# checkout a specific revision (latest dev as of Mar 2022)
+	# NB: removes gzstream version file which causes recent compilations to fail
 	cd relate_lib && \
-	  git checkout 0b461f3c7282d784e5a65122c029bf4a857cbee5 && \
-	  mkdir build && \
+	  git checkout ${RELATELIB_VERSION} && \
+	  rm -f include/src/gzstream/version && \
+	  mkdir -p build && \
 	  cd build && \
 	  cmake .. && \
+	  make
+
+tsinfer: 
+	git clone ${TSINFER_GITREPO}
+	# checkout a specific revision (latest dev as of Mar 2022)
+	cd tsinfer && \
+	  git checkout tags/${TSINFER_VERSION} && \
 	  make
 
 clean:
@@ -40,3 +54,4 @@ clean:
 	rm -rf argweaver
 	rm -rf relate
 	rm -rf relate_lib
+	rm -rf tsinfer

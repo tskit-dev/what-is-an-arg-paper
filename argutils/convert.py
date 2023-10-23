@@ -192,7 +192,7 @@ def convert_2RE_to_1RE(ts, simplify=True):
 def relate_ts_JBOT_to_ts(ts, additional_equivalents=None):
     """
     Convert a tree sequence from Relate (converted via relate_lib/bin/Convert, which
-    provides equivalenet via metadata, into a tree sequence in which the nodes
+    provides equivalent nodes via metadata, into a tree sequence in which the nodes
     have been merged, and new times allocated that are consistent with the ARG
     
     the additional_equivalents parameter is a hack because relate_lib doesn't
