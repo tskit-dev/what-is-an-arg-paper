@@ -272,7 +272,7 @@ defined by the directed graph structure, however,
 and we will assume that node dates are not known here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
-metadata with nodes such as sample identifiers or quality-control metrics;
+metadata with nodes such as sample identifiers or quality-control metrics.
 It is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
 with which arbitrary additional information can be associated.
@@ -448,7 +448,7 @@ differential inheritance of genetic material between genomes.
 % with representation details
 Note that here, and throughout, we are not questioning the form of the
 actual ancestral processes that occur in nature, but rather how we
-\emph{represent} the outcomse of such processes in a practical sense.
+\emph{represent} the outcomes of such processes in a practical sense.
 % Again, need to remind the reader that there's an actual point
 % to all this getting stuck into the details.
 These practical details,
@@ -1586,7 +1586,7 @@ The scalability gains made by recent ARG inference methods have been, in part, d
 lower levels of precision about recombination. Indeed, a common statement in the literature is
 that modern tools such as \tsinfer~\citep{kelleher2019inferring} and \relate~\citep{speidel2019method}
 construct not an ARG but ``only'' a sequence of local
-trees \citep{hejase2020summary, ignatieva2021kwarg}. While this statement
+trees \citep[e.g.][]{hejase2020summary, brandt2021evaluation, ignatieva2021kwarg}. While this statement
 is correct inasmuch as neither method attempts to infer the explicit recombination events that cause
 adjacent trees to differ, it is certainly not the case that they infer independent local trees.
 In fact, both methods take advantage of genome-wide mutation information to construct genealogies,
@@ -1621,7 +1621,7 @@ Note that both \kwarg\ and \argweaver\ produce many ARGs
 This stems from the fact that \kwarg\ searches the space of plausible ARGs,
 outputting minimal ones using heuristics, and \argweaver\ samples
 from the posterior distribution over
-ARGs given the data and a fixed model (the SMC$^\prime$ \citep{marjoram2006fast},
+ARGs given the data and a fixed model (a discretised version of the SMC$^\prime$ \citep{marjoram2006fast},
 an approximation of the full coalescent with recombination).
 In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args}C,D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
@@ -1637,7 +1637,7 @@ A rough feel for the amount of recombination in each ARG is given by the distrib
 of number of parents per node, as highlighted by the node colour scheme.
 In Fig.~\ref{fig-inferred-args}A,B, each recombination event is tagged by
 a node with exactly 2 parents and one child. Assuming that the breakpoint for each event
-occurs at a different location (the "infinite breakpoints" model), then the
+occurs at a different location (the ``infinite breakpoints" model), then the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
 In contrast, Figure Fig.~\ref{fig-inferred-args}C,D have ARG nodes with multiple
 parents and multiple children. These indicate deliberate imprecision, where one
@@ -1816,7 +1816,7 @@ fan2023likelihood}.
 % narrative right now, but we do need to make this point.
 The key insight that makes the succinct tree sequence encoding
 an efficient substrate for defining analysis algorithms is that
-it allows us to generate the local trees along the genome
+it allows us to recover the local trees along the genome
 in a way that allows us to reason about the \emph{differences}
 between those trees.
 Sequentially generating the local trees along the genome
