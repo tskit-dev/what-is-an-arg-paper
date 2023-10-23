@@ -1128,7 +1128,7 @@ On the other hand, node \noderef{f} has two children
 in the graph, but is binary only
 in the local tree covering the interval $[2, 7)$,
 representing the coalescence of samples \noderef{a} and \noderef{c}
-in this region of genome. Over the interval $[0, 2)$ no coalescence occurs,
+in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, \noderef{c} has a single child in this
 interval and it is unary in this local tree.
@@ -1147,7 +1147,7 @@ is no local coalescence, are marked by unary nodes in the
 local trees.
 
 Outside of the context of simulation, ARG-unary nodes are
-only like to occur in longitudinal datasets where genetic
+only likely to occur in longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
 \emph{Locally} unary nodes, those which have one child
@@ -1175,6 +1175,7 @@ Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
+% FIXME: move to top of section
 Nodes with one child are not a standard feature of evolutionary trees
 or the ARG literature
 (although \citet{mathieson2020ancestry} show examples in which the ARGs
@@ -1266,7 +1267,7 @@ a Wright-Fisher model
 (e.g.~node \noderef{k} in Fig.~\ref{fig-simplification}).
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
-some novel features, which require some explanation.
+three novel features.
 Firstly, edge weights (the thickness of the lines joining
 nodes) correspond to the length of the inheritance intervals
 they are annotated with. This allows us to distinguish
@@ -1566,9 +1567,11 @@ at position 87 has been lost entirely.
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} Inference of sample-resolved ARGs for 11
-\textit{Drosophila melanogaster} genetic sequences over a 2.4kb
+\textit{Drosophila melanogaster} DNA sequences over a 2.4kb
 region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods based on
+% FIXME: this is the wrong place to be summarising. Name the methods
+% here and summarise in the text
 (A) parsimony, (B) sampling the SMC$^\prime$, (C) copying from
 inferred ancestral haplotypes, and (D) correlated local tree estimation.
 Edge colours are based on the time of the edge's child node
@@ -1627,7 +1630,7 @@ an approximation of the full coalescent with recombination).
 In contrast, \tsinfer\ and \relate\ (Fig.~\ref{fig-inferred-args}C,D) are
 deterministic methods, aiming to find a single ``best guess'' ARG.
 The ability of a gARG to encode the effects of recombination, rather
-than having to precisely specify each event, is a important contributor to this aim,
+than having to precisely specify each event, is an important contributor to this aim,
 as most recombination events cannot be uniquely identified from the data.
 Indeed, there is considerable variation in the number of recombinations inferred by
 different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args} B) suggesting
@@ -1638,7 +1641,9 @@ A rough feel for the amount of recombination in each ARG is given by the distrib
 of number of parents per node, as highlighted by the node colour scheme.
 In Fig.~\ref{fig-inferred-args}A,B, each recombination event is tagged by
 a node with exactly 2 parents and one child. Assuming that the breakpoint for each event
-occurs at a different location (the ``infinite breakpoints" model), then the
+% TODO "infinite breakpoints" is goign to confuse people. What are we
+% clarifying here? Citation necessary if we keep.
+occurs at a different location (the ``infinite breakpoints'' model), then the
 number of breakpoints should exactly equal the number of 2-parent (brown) nodes in the plot.
 In contrast, Figure Fig.~\ref{fig-inferred-args}C,D have ARG nodes with multiple
 parents and multiple children. These indicate deliberate imprecision, where one
@@ -1725,7 +1730,7 @@ that span multiple tree boundaries, indicating that they are not inferring
 a series of \emph{unrelated} local trees.
 %(i.e., with either unlabelled internal
 %nodes or differently labelled nodes in each tree).
-For example, both infer that \noderef{Af-f}, \noderef{Fr-f} and \noderef{Wa-f}
+For example, both infer that \noderef{Af-f}, \noderef{Fr-f}, and \noderef{Wa-f}
 share a common ancestor along
 the entire sequence. However, in comparison to \kwarg\ and \argweaver\ neither
 method results in extensive node sharing in the
@@ -1733,7 +1738,7 @@ oldest time periods. This primarily reflects the fact that they do not encode to
 above the local MRCAs, also indicated by multiple roots in the ARG
 (nodes with zero parents, in blue), compared to the
 single ARG root in the \kwarg\ and \argweaver\ genealogies. In terms of inference,
-\tsinfer\ and \relate\ show a more pragmatic representation: we do not expect
+\tsinfer\ and \relate\ show a pragmatic representation: we do not expect
 genetic variation to be very informative about topological relationships
 between nodes that that are older than the local MRCAs.
 
@@ -1917,7 +1922,10 @@ made explicit here is one way we can concretely
 define such recombinant ancestry, which we have shown is both
 flexible and efficient.
 The flexibility of the gARG encoding contrasts with the classical
-``event'' ARG (eARG), which is more limited in what can be described, because of its origins in an idealised mathematical model.
+``event'' ARG (eARG), which is more limited in what can be described,
+because of its origins in an idealised mathematical model,
+and the assumption of having complete information about
+recombination events.
 
 Fully decoupling the general concept of an ARG from the coalescent
 with recombination stochastic process is an important step.
@@ -1971,7 +1979,7 @@ can be elucidated from mutations in the surrounding genomic region. For general
 ARGs, for instance those representing pedigrees, or genealogies of organisms with
 low mutation rates and complex patterns of recombination, such inference can be
 even more challenging. The fact that the eARG encoding \emph{requires}
-precise estimates about recombination is therefore a fundamental limitation, which
+precise information about recombination is therefore a fundamental limitation, which
 is a central message of this paper.
 % This might be where we mention Fisher's junctions and IBD?
 % https://github.com/tskit-dev/what-is-an-arg-paper/issues/121
