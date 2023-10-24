@@ -1788,45 +1788,14 @@ single ARG root in the \kwarg\ and \argweaver\ genealogies. In terms of inferenc
 genetic variation to be very informative about topological relationships
 between nodes that that are older than the local MRCAs.
 
-\section{Computational efficiency and data interchange}
+\section{Implementation and efficiency}
 \label{sec-efficiency}
-ARG inference methods have been successfully applied to vast datasets,
-including 500,000 genotyped humans~\citep{kelleher2019inferring,zhang2023biobank}
-from UK Biobank~\citep{bycroft2018genome}
-and over a million SARS-Cov-2 whole genomes~\citep{zhan2023towards}.
-Even larger datasets are
-available~\citep[e.g.][]{halldorsson2022sequences} % TODO more
-and it seems inevitable that ARGs will be inferred for them.
-The efficiency with which we can store and analyse these inferred
-ARGs is therefore of great importance, and a key factor
-in the ultimate success of downstream ARG-based methods.
-Another key factor in how important ARG-based methods become
-across the wide range of possible applications
-% TODO get rid of this, it's a duplication of the introduction
-areas~\citep{rasmussen2014genome,harris2019database,
-hejase2020summary,schaefer2021ancestral,
-fan2022genealogical,wohns2022unified,harris2023using,
-nowbandegani2023extremely,ignatieva2023distribution}
-is how well inference methods and downstream analysis applications
-interoperate. Without a well-defined and efficient shared format
-for ARG data interchange,
-users will suffer from problems with converting data from one program's
-output to another, an unfortunate hallmark of population genetics
-software for many years~\citep{excoffier2006computer}.
-While current methods tend to tightly couple downstream analysis
-of the inferred ARG with the inference
-itself within the same software package,
-this approach scales poorly in terms of software development
-effort, and is ultimately not compatible with the widespread use
-of ARGs for routine data analysis, and a healthy and diverse
-software ecosystem.
-
-The gARG encoding discussed and concretely defined in this manuscript
+The gARG encoding discussed defined here
 leads to highly efficient storage and processing of ARG data,
 and has already been in use for several years.
-The succinct tree sequence data structure (usually known as a ``tree sequence''
-for brevity)
-is a concrete encoding of a gARG, as discussed in this article.
+The succinct tree sequence data structure
+(usually known as a ``tree sequence'' for brevity)
+is a practical gARG implementation focused on efficiency.
 It was originally developed as part of the \texttt{msprime}
 simulator~\citep{kelleher2016efficient} and has subsequently been
 extended and applied to forward-time
@@ -1836,12 +1805,15 @@ and calculation of population genetics statistics~\citep{ralph2020efficiently}.
 The succinct tree sequence encoding extends the basic definition
 of a gARG provided here by stipulating a
 simple tabular representation and nodes and edges,
-and also defining a concise and lossless representation of
+and also defining a concise representation of
 sequence variation using the ``site'' and  ``mutation'' tables.
-(Technically, edges in tree sequence terminology would be better
-described as ``edge-intervals'', as each describes a single contiguous
-interval of genome inheritance between a pair of nodes. This
-denormalisation of the gARG data model in \texttt{tskit} is for efficiency purposes.)
+The key property of the succinct tree sequence encoding
+that makes it an efficient substrate for defining analysis
+algorithms is that it allows us to sequentially
+recover the local trees along the genome very efficiently,
+and in a way that allows us to reason about the \emph{differences}
+between those trees~\citep{kelleher2016efficient,ralph2020efficiently}.
+
 The \texttt{tskit} library is a liberally
 licensed open source toolkit that provides a comprehensive suite
 of tools for working with gARGs (encoded as a succinct tree sequence).
@@ -1863,29 +1835,29 @@ zhang2023biobank,
 nowbandegani2023extremely,
 ignatieva2023distribution,
 fan2023likelihood}.
+The technical details of \texttt{tskit}, and how it provides an
+efficient and portable platform for ARG-based analysis, are beyond
+the scope of this manuscript.
+In the interest of avoiding confusion, however, we list a
+few minor details in which the formal details of gARGs
+provided here differ from their practical implementation in
+\texttt{tskit}.
+Firstly, ``edges'' in tree sequence terminology would be perhaps better be
+described as ``edge-intervals'', as each describes a single contiguous
+interval of genome inheritance between a pair of nodes.
+This denormalisation of the gARG data model in is for efficiency purposes.
+Secondly, $-1$ is used to denote the presence of
+roots in an oriented tree, rather than $0$ as used here for notational
+simplicity.
 
-% FIXME this needs more work and doesn't really fit into the
-% narrative right now, but we do need to make this point.
-The key insight that makes the succinct tree sequence encoding
-an efficient substrate for defining analysis algorithms is that
-it allows us to recover the local trees along the genome
-in a way that allows us to reason about the \emph{differences}
-between those trees.
-Sequentially generating the local trees along the genome
-is also fundamental, and is necessary whenever we need to
-perform calculations that are contingent on more than just the
-isolated properties of an edge. \cite{kelleher2016efficient}
-showed how all trees can be sequentially generated in
-constant time per tree transition in a fully simplified gARG.
-Furthermore, we can easily reason about how tree topologies
-change (and stay the same), leading to efficient algorithms
-for computing population genetic
-statistics~\citep{kelleher2016efficient,ralph2020efficiently},
-implementing the Li and Stephens
-model~\citep{kelleher2019inferring,wohns2022unified}
-and likely many more.
-
-
+% Other representations of ARGs, beyond straightforward implementations
+% of a Griffiths-style
+% eARG~\citep[e.g.][]{ignatieva2021kwarg,rasmussen2014genome}
+% and \texttt{tskit}'s gARG format, are of course possible.
+% The ARGON simulator~\citep{palamara2016argon}, for example,
+% stores ARGs
+% ARG-Needle~\citep{zhan2023towards}, for example, uses a format based
+% on hap
 
 % \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
 % (equivalent to the ``bricked tree sequence'' of
@@ -1981,7 +1953,9 @@ model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
 many modern datasets have properties that grossly
 violate its assumptions.
 For instance, several human datasets now consist of hundreds of thousands of
-genomes~\citep{turnbull2018hundred, bycroft2018genome,karczewski2020mutational,tanjo2021practical},
+genomes~\citep{turnbull2018hundred, bycroft2018genome,
+karczewski2020mutational,tanjo2021practical,
+halldorsson2022sequences},
 and so sample size is substantially \emph{larger} than the
 usually assumed $N_e$ values.
 Agricultural datasets are an even more extreme departure from coalescent
@@ -2142,12 +2116,6 @@ Interest in ARG inference methods and downstream applications is
 burgeoning, with exciting developments arriving at ever-increasing pace.
 Without agreement on basic terminology and some standardisation
 on data formats, however, the ARG revolution may falter.
-Here, we have advocated
-for decoupling the data structures used to represent ARGs
-from generative processes, and have shown that the
-gARG encoding enables flexible description of
-contemporary datasets with varying levels of precision and integral
-handling of some important forms of temporal uncertainty.
 For ARG-based methods to achieve mainstream status, we require
 a rich supporting software ecosystem.
 Ideally, this would comprise a wide range of different
@@ -2162,16 +2130,27 @@ processed by numerous downstream applications,
 enabling users to freely compare the outputs of different
 inference methods on their data, and the result of different
 analyses on these inferences.
-Earlier efforts to standardise ARG interchange shared
-this vision,
+Earlier efforts to standardise ARG interchange shared this vision,
 but did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
-Today, however, we have the benefit of a pre-existing ARG
-interchange format, already widely used and accompanied
-by high-quality, high-performance software
-(see Section~\ref{sec-efficiency} for details).
-Adopting the \texttt{tskit} library
-as a community standard,
-utilising its rich suite of operations,
+Without a well-defined and efficient shared format
+for ARG data interchange,
+users will suffer from problems with converting data from one program's
+output to another, an unfortunate hallmark of population genetics
+software for many years~\citep{excoffier2006computer}.
+Current methods tend to tightly couple downstream analysis
+of the inferred ARG with the inference
+itself within the same software package,
+which is ultimately not compatible with the widespread use
+of ARGs for routine data analysis, and a healthy and diverse software ecosystem.
+The gARG encoding described here is a significant generalisation
+of classical concepts, capable of describing even the bewildering complexity
+of contemporary datasets and describing important forms of temporal uncertainty.
+The \texttt{tskit} library is a high-quality open-source gARG implementation,
+with proven efficiency and
+scalability~\citep[e.g.][]{anderson2022genes,zhan2023towards},
+that is already in widespread use.
+Adopting it as a community standard,
+and utilising its rich suite of operations,
 may accelerate progress and help to
 establish ARG methods within mainstream genetics.
 
