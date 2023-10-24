@@ -993,9 +993,10 @@ holds.
 % trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping,kelleher2016efficient}
 % to avoid the potential confusion with the
 % statistical concept of marginal distributions.)
+The relationship between an ARG and its corresponding
+local trees is subtle and important.
 A fundamental property of genetics is that a
-% TODO is this (genome) clarification helpful or confusing?
-given DNA nucleotide is inherited from exactly one parent (genome),
+given DNA nucleotide is inherited from exactly one parent genome,
 both at an organismal and cell-by-cell level
 (Appendix~\ref{sec-cell-lineages-and-args}).
 These chains of single-parent inheritance over time give rise,
@@ -1003,15 +1004,19 @@ by definition, to a tree structure.
 As a result of recombination, adjacent nucleotides can have
 different chains of inheritance, and
 an ARG encodes the entire ensemble of local trees along the
-genome for a given set of sample genomes.
-The relationship between an ARG and its corresponding
-local trees is subtle and important. To make the following
-discussions precise, we will define a concrete combinatorial encoding
-for local trees and an explicit procedure for constructing them.
+% Said "sample of genomes" originally, but using term "genome" in two
+% different ways in the same sentence then.
+genome for a given sample.
+% This is for Yan - to me this is a given, but maybe some people feel
+% the following is overly formal?
+Precisely defining the process by which local trees are extracted
+from an ARG is essential to our understanding of how they
+are related, and we require a concrete mathematical structure
+to describe the local trees.
 
 Oriented trees provide a
-convenient formalism to capture these relationships in a well-defined
-combinatorial object.
+convenient formalism to capture these parent-child relationships
+in a well-defined combinatorial object.
 % There's no need for a comma
 Let $\pi_1\dots\pi_n$ be a sequence of integers, such that $\pi_u$
 denotes the parent of node $u$, and $\pi_u = 0$ if $u$ is a
@@ -1022,10 +1027,10 @@ important but the ordering of children at a node is
 not~\citep{kelleher2013coalescent,kelleher2014coalescent,
 kelleher2016efficient}.
 Thus, for a given gARG with nodes $\{1, \dots, n\}$ and
-edges $E$, we recover the local tree as follows.
-We begin by
-setting $\pi_u = 0$ for each $1 \leq u \leq n$. Then, for each sample
-node in $S$ we trace its path rootwards through the
+edges $E$ (Section~\ref{sec-gARG}), we recover the local tree
+at position $x$ as follows.
+We begin by setting $\pi_u = 0$ for each $1 \leq u \leq n$.
+Then, for each sample node in $S$ we trace its path rootwards through the
 ARG for position $x$, and record this path in $\pi$.
 Specifically, at a given node $u$,
 we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
@@ -1033,7 +1038,7 @@ $\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
 until either $\pi_u \neq 0$ (indicating we have traversed this section
 of the ARG already on the path from another sample) or there
 is no matching outbound edge (indicating we are at a root).
-Note that the trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
+Note that the local trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
 because many ancestral nodes will not be reachable from the
 samples at a given position.
 
@@ -1042,7 +1047,16 @@ one novel insight into the relationship between ARGs and local trees.
 If we are given the sequence of local trees for a gARG
 encoded as an oriented tree along with the genome interval
 covered by each tree, then we can recover precisely the same ARG.
-% I guess we should be a bit more formal here?
+% We do this site-by-site for simplicity, but hopefully it's obvious
+% that this isn't necessary?
+More formally, suppose we are given the local tree $\pi^x_1\dots\pi^x_n$
+for each nucleotide position $1 \leq x \leq L$ on a genome of length $L$.
+Then, the edges of the ``local ARG'' for this tree is given by
+$E^x = \{(u, \pi_u^x, \{x\} \mid \pi_u^x \neq 0\}$. Since the ARG
+edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
+the positions over which node $c$ inherits from parent $p$, we can
+then simply combine the ``local ARGs'' for each position $x$
+to recover precisely the same set of edges as the original ARG.
 Thus, under this definition, there
 is a one-to-one correspondence between an ARG and
 the sequence of local trees that it encodes.
@@ -1064,84 +1078,97 @@ sequences along the genome''.
 % If even Ana and Jotun are wrong about this it then it must be
 % significant! ;)
 These statements that an ARG
-contains more information than its local trees is only true
+contains more information than its local trees are only true
 if we use a representation of the local trees that discards
 information about those local trees that can be derived from the ARG.
 
 There are two properties of how evolutionary trees are conventionally
 represented that lead to this
-% Yes, OK, we can rephrase. It is a misunderstanding though
-misunderstanding of the relationship between local trees and an ARG.
+% We can rephrase... suggestions?
+disagreement about the relationship between local trees and an ARG.
 Firstly, the internal nodes of evolutionary trees are usually
 considered to be \emph{unlabelled}.
-Defining ARG nodes as integers and using the oriented tree encoding
-explicitly labels internal nodes, and makes the relationship between
-tree and ARG nodes explicit.
-
-[WIP]
-
+Evolutionary trees usually regard internal nodes as unlabelled
 because they most often correspond
 to anonymous hypothetical ancestors.
 Internal ARG nodes may likewise correspond to anonymous hypothetical
 ancestors, but if we do not label the tree nodes we lose the fact that
-the \emph{same} ancestors persist across multiple trees.
-Besides having labelled nodes, the local trees must contain
-unary nodes marking recombinations
-and other processes that lead to lineages passing through a given
-ARG node without coalescence in the local trees
-(see Section~\ref{sec-locally-unary-edges}).
-If the local trees contain labelled internal nodes, they precisely
-describe the corresponding path through the graph for each
-genome interval and there is exactly as
-much information in them as in an ARG.
+the \emph{same} ancestors sometimes persist across multiple trees.
+Defining ARG nodes as integers and using the oriented tree encoding
+explicitly labels internal nodes, and makes the relationship between
+tree and ARG nodes clear.
 
-These properties have interesting consequences when we
-consider the inference strategy of estimating local trees
-% TODO rephrase this. Ana doesn't like the way it implies that the
-% trees are independent, because info from mutations outside the
-% window are shared. However, each tree *inference* is independent,
-% whether information is used multiple times in different trees or not
-independently within genome segments,
-and subsequently stitching them together into an ARG.
-Two recent methods take this approach,
-\relate~\citep{speidel2019method} and
-\espalier~\citep{rasmussen2022espalier},
-and have different strategies for reconciling the local trees into an ARG.
-\relate\ first infers local tree topologies, and then identifies
-edges that persist from tree to tree by reasoning about the sets of samples
-subtended. It does not attempt to be exhaustive.
-\espalier, on the other hand, is specifically interested
-in the details of recombination events (among a small number of samples)
-and therefore attempts to infer
+The second property of how evolutionary trees
+are conventionally represented that is unhelpful in the context of ARGs is their
+focus on branching points (coalescences), i.e.\
+nodes that have two or more children.
+As the introductory paragraph of this section emphasised,
+parent-child relationships are what fundamentally define a tree,
+and branching points can be seen as incidental. This is reflected
+by the oriented tree encoding which simply stores the local
+parent-child relationships, and does not, for example,
+directly tell us how many children a particular node has.
+The local tree at a given position records the \emph{path} through
+the ARG, and if we discard sections of that path that are not
+branching points in the local tree, we lose information about the ARG.
+We return to this important point in the following two sections.
+
+It is important that we make the distinction here between the local
+trees that we can derive from a known ARG (as just discussed),
+and the ARGs that we can derive from a sequence of \emph{estimated}
+local trees.
+The recent
+\espalier~\citep{rasmussen2022espalier} ARG inference method
+is illustrative in this context.
+\espalier\ works by splitting an input sequence alignment into
+segments that are assumed to be non-recombining. Within
+each segment, an initial local tree is estimated using
+standard phylogenetic methods. By necessity, these local
+trees will contain internal nodes that are unlabelled and
+consist only of branching points: there is no information
+shared between the independent tree estimation steps
+across segments. Part of the task of stitching
+these trees together
+into an ARG is then, essentially, to generate labels for
+the internal nodes, and decide which nodes persist
+across multiple local trees.
+\espalier\ is specifically interested
+in the details of recombination events,
+and also attempts to infer
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
-induced by recombination.
+induced by recombination between these partially reconciled local trees.
 Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
 is a degree of internal node sharing between trees.
+% I don't really know if this is true, it's just a way of wrapping the
+% section up by saying that other things we thought were settled might
+% be worth thinking about again.
+The combinatorial formulation of ARGs and local trees provided here
+may help clarify these fundamental questions.
 
 \section{Locally unary nodes}
 \label{sec-locally-unary-edges}
-% TODO needs intro, giving some bit of warm-up for the reader.
-We can define the arity of a node as the number of child nodes it has.
-There is an
-important distinction between the number of children a node has
-in the graph and the number of children it has in the local trees,
-because a (graph) child node is only a child in the local tree for position
-% FIXME state this formally, as both Yan and Jere misunderstood here.
-$x$ if $x$ is in the inheritance interval for the corresponding edge.
-Thus, for a given node $u$ and a genome position $x$ the arity
-of $u$ in that local tree is less than or equal to the graph arity of
-$u$. The arity
-of a node in the local trees can therefore change as we move along
-the genome.
+As discussed in the previous section, the local tree at a given position
+$x$ is best seen as the path through the ARG at that position, defined
+by the oriented tree $\pi^x_1\dots\pi^x_n$. This path does not directly
+contain information about branching points, and so it is helpful
+to define the ``arity''.
+The ``local arity'' of a node is the number of children it has
+in the local tree at position $x$, i.e., $a^x_u = |\{v : \pi^x_v = u\}|$
+for each $1 \leq u \leq n$. The ``ARG arity'' of a node $u$ is the
+number of children it has in the graph topology, i.e.,
+$a_u = |\{v: (v, u, I) \in E\}|$. Thus, the local arity is less than
+or equal to the ARG arity (more precisely, $0 \leq a^x_u \leq a_u$),
+and the local arity of a node may change as we move along the genome.
 
-This distinction between graph and local tree arity is mainly
+This distinction between ARG and local tree arity is mainly
 of interest when we consider \emph{unary} nodes, those that have
 a single child.
 Returning to the example in Fig~\ref{fig-arg-in-pedigree}, nodes
-\noderef{g} and \noderef{h} are ARG-unary (Fig~\ref{fig-arg-in-pedigree}B), and are consequently
+\noderef{g} and \noderef{h}
+are ARG-unary (Fig~\ref{fig-arg-in-pedigree}B), and are consequently
 also unary in the local trees (Fig~\ref{fig-arg-in-pedigree}C).
 On the other hand, node \noderef{f} has two children
 in the graph, but is binary only
@@ -1171,8 +1198,9 @@ data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
 \emph{Locally} unary nodes, those which have one child
 in one or more local trees, are a common and important feature
-of many different types of ARG, and a recurring topic
-in this article. Without these nodes marking the passage
+of many different types of ARG.
+As discussed in the previous section,
+without these nodes marking the passage
 of ancestral material through specific ancestors, the local trees
 lack information about events other than local coalescence.
 % Not sure if switching example will confuse people here, but would
@@ -1194,7 +1222,6 @@ Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
 without them.
 
-% FIXME: move to top of section
 Nodes with one child are not a standard feature of evolutionary trees
 or the ARG literature
 (although \citet{mathieson2020ancestry} show examples in which the ARGs
@@ -1211,7 +1238,7 @@ little information about these intermediates, and hence limited utility
 in modelling them.
 As we see in the next section, however, there is a range of
 different ways in which ARG nodes can be locally unary. Furthermore,
-several current ARG inference methods infer locally unary nodes
+several inference methods infer ARGs containing locally unary nodes
 (see Section~\ref{sec-precision}).
 
 \section{Levels of simplification}
