@@ -24,6 +24,7 @@
 \newcommand{\argweaver}[0]{\texttt{ARGweaver}}
 \newcommand{\relate}[0]{\texttt{Relate}}
 \newcommand{\espalier}[0]{\texttt{Espalier}}
+\newcommand{\arbores}[0]{\texttt{Arbores}}
 
 \begin{document}
 
@@ -245,13 +246,13 @@ occurred between particular
 ancestors and descendants, but the graph connectivity
 does not tell us which \emph{parts} of their genomes were inherited.
 In order to capture the effects of recombination
-(and other processes that lead to the partial genome inheritance)
+(and other processes that lead to partial genome inheritance)
  we ``annotate'' the edges with the genome
 coordinates over which inheritance occured.
 We can define a gARG formally as follows.
-Let $N \subset \mathbb{N}$ be the set of nodes representing
-the genomes in the gARG, $S \subseteq N$ be the set of sampled genomes.
-% (but see Section~\ref{sec-retro-pro} for some subtlety around this point).
+Let $N = \{1, \dots, n\}$ be the set of nodes representing
+the genomes in the gARG, 
+and  $S \subseteq N$ be the set of sampled genomes.
 Then, $E$ is the set of edges, where each element
 is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
 parent nodes and $I$ is the set of disjoint genomic intervals
@@ -276,6 +277,8 @@ metadata with nodes such as sample identifiers or quality-control metrics.
 It is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
 with which arbitrary additional information can be associated.
+% We can delete then next two sentances if we want, but nodes are
+% integers and this is a vital element of the model.
 Concretely defining nodes as integers in this way has some
 significant advantages. In particular, it provides a direct link
 between an ARG and its local trees in terms of a well-defined
@@ -1117,10 +1120,9 @@ It is important that we make the distinction here between the local
 trees that we can derive from a known ARG (as just discussed),
 and the ARGs that we can derive from a sequence of \emph{estimated}
 local trees.
-The recent
-\espalier~\citep{rasmussen2022espalier} ARG inference method
-is illustrative in this context.
-\espalier\ works by splitting an input sequence alignment into
+The ARG inference methods \arbores~\citep{heine2018bridging} and
+\espalier~\citep{rasmussen2022espalier} are illustrative in this context.
+Both begin by splitting an input sequence alignment into
 segments that are assumed to be non-recombining. Within
 each segment, an initial local tree is estimated using
 standard phylogenetic methods. By necessity, these local
@@ -1131,7 +1133,9 @@ across segments. Part of the task of stitching
 these trees together
 into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
-across multiple local trees.
+across multiple local trees. \arbores~bridges the gaps 
+between the inferred local trees via a coalescent-based 
+sampling scheme.
 \espalier\ is specifically interested
 in the details of recombination events,
 and also attempts to infer
@@ -1845,7 +1849,7 @@ provided here differ from their practical implementation in
 Firstly, ``edges'' in tree sequence terminology would be perhaps better be
 described as ``edge-intervals'', as each describes a single contiguous
 interval of genome inheritance between a pair of nodes.
-This denormalisation of the gARG data model in is for efficiency purposes.
+This denormalisation of the gARG data model is for efficiency purposes.
 Secondly, $-1$ is used to denote the presence of
 roots in an oriented tree, rather than $0$ as used here for notational
 simplicity.
