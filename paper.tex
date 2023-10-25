@@ -66,6 +66,9 @@ the presence of recombination at scale, enabling many
 downstream applications in population and statistical genetics.
 The structure representing such recombinant genetic ancestry
 is usually referred to as an ancestral recombination graph (ARG),
+% FIXME this sentance needs to change. We want to capture more of the
+% idea of the formalisms falling behind actual practise and the
+% confusion this is causing
 although there is some confusion about the interpretation and little
 agreement on specific details.
 We propose a concrete definition of ARGs
@@ -98,7 +101,6 @@ Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
 schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
-% and data representation~\citep{kelleher2016efficient,kelleher2018efficient}
 have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using inferred ARGs as input have begun to
@@ -116,19 +118,16 @@ follow~\citep{harris2019database,harris2023using}.
 and further discuss their potential impacts.
 
 % Para 2: What are they, though?
-Although it is widely accepted that ARGs are important, there is significant
+Although it is widely accepted that ARGs are important, there is some
 confusion about what, precisely, an ARG \emph{is}.
-Originally, ARGs were defined by Griffiths and colleagues as an alternative
+Originally, Griffiths and colleagues defined the ARG as an alternative
 formulation of the coalescent with recombination~\citep{hudson1983properties},
 where the stochastic process of coalescence and recombination
 among ancestral lineages is formalised as a
-% Note: please don't add "mathematical graph". If a reader doesn't know what a
-% graph is they're not going to understand this paper.
 graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
-Subsequently, an ARG has come to be thought of as a data
+Subsequently, ARGs have come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
-the \emph{outcome} of such a random process or an
-% Note on earlier version: introducing a different term for ARG here is just confusing
+a \emph{realisation} of such a random process or an
 inference from a sample of genome sequences.
 The distinction between stochastic process
 and data structure is not clear cut, however,
@@ -142,84 +141,76 @@ as a data structure
 encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
-This broad usage seems a useful generalisation,
-but is not compatible with the usual concrete definition of an ARG.
-This mismatch has led to a range of problems that, if unchecked,
+This broad usage is a useful generalisation,
+but is not, however, compatible with the available formal definitions
+derived from the original Griffiths approach.
+This mismatch between usage and definition has led to significant
+problems, which if not addressed,
 may impede progress in applying ARGs to understand the biological world.
 
-% Para 3: what is the problem?
-% FIXME current version isn't great, but it's better than previous effort.
-[FIXME this paragrph needs a substantial update, need to reread the
-eARG and gARG sections again to be clear what we say we're doing.
-We should focus on the concrete interchange aspects rather than
-coalescenty type things.]
-The mismatch between the classical Griffiths definition of an ARG and the
-modern interpretation is the source of substantial confusion,
-and, we argue, a significant limiting factor for the field.
-% actual outputs of these modern methods is a central issue.
-As this definition is essentially a reformulation of the
-coalescent with recombination (henceforth ``the coalescent''; we
-will assume the incorporation of recombination for the purposes of
-this article) in graph-theoretic form,
-the distinction between the simplifying assumptions of the model
-and the necessary requirements for a data structure are not clear.
-The consequences of conflating model with data structure
-are subtle, varied, and deep.
-% TODO rephrase, not great currently
-We argue that the prevailing definition of an ARG
-imposes unnecessary limitations, and that with a broader definition
-we can reassess what we should be attempting to estimate,
-how we measure success, and the expected limitations on the precision
-and accuracy of our inferences.
+% % Para 3: what is the problem?
+The classical formal definition of an ARG is expressed in terms of
+genetic inheritance events: the coalescence and recombination events
+that occur in the history of a sample. We show that this approach
+to representing ARGs (which we refer to as the ``Event ARG'', or eARG
+encoding) is inherently limiting, insufficient to represent
+the complexities of modern datasets, and incompatible with
+the outputs of modern large-scale simulation and inference
+methods~\citep{kelleher2016efficient,speidel2019method,
+kelleher2019inferring,zhang2023biobank}.
+We address these problems by providing a more flexible formulation
+of an ARG data structure, which we refer to as the ``Genome ARG''
+or gARG encoding. We show that it is fully compatible with the
+classical eARG approach, while providing much more flexibility
+in the types of genetic inheritance structures that can be encompassed,
+including the outputs of modern simulation and inference methods.
+In particular, we show that in contrast to the eARG encoding which
+requires fully precise estimates of each recombination event,
+the gARG encoding allows us to systematically describe uncertainty
+the temporal ordering of multiple recombinations.
 
-% What do we do?
-In this paper, we attempt to address these problems by
-providing a precise definition of an ARG that is general enough to encompass
-the output of popular simulation and inference methods.
-We propose a definition of genetic genealogy in terms of specific genomes
-and their intervals of genetic inheritance, and refer to this as
-a ``genome ARG'', or ``gARG''.
-This contrasts with the classical Griffiths approach,
-based on recording evolutionary events, which we call
-an ``event ARG'', or ``eARG''.
-We show that the gARG encoding has a range of advantages over the
-eARG approach, being flexible, efficient and, in particular,
-allowing us to systematically encode uncertainty about
-the precise details of recombination events.
-
-% TODO: Provide a map of the paper's sections and how they tie together in support of gARG as a way forward.
-% Here is a rough draft - it would be good to state the most important message (in one sentence or so) from each of the sections to help with frontloading key messages
-% Genome ARGs &
-% Event ARGs
-In the following, we first define the genome ARG encoding
-and contrast it with the event ARG approach.
-We then discuss the important concept of ancestral material in
-Section~\ref{sec-ancestral-material}
-and [DO SOME STUFF].
-% Converting and eARG to gARG &
-% ARGs and local trees &
-% Locally unary nodes &
-% Levels of simplification
-This simplification is closely related to operations needed to convert eARGs to
-various forms of gARGs,
-which opens a rich set of details about ARGs and local trees, local unary nodes, and
-levels of simplification.
-% Precision of recombination information
-We then highlight the important difference between the required level of precision
-about recombination information for eARGs compared to gARGs.
-% Computational efficiency and data interchange
-The way this recombination information is stored in eARGs and gARGs has important
-implications for computational efficiency, which is critical if we want to use ARGs
-for modern genomic datasets.
-% Discussion
-We wrap with a discussion highlighting that WHAT-IS-THE-KEY-SINGLE-MESSAGE-NOT-COVERED-ABOVE?
-Finally, the literature on ARGs and associated aspects is vast, particularly
-due to different definitions and implementations. We cover some important aspects
+% This is nice to have, but probably won't work in the final version
+% without section numbers. Let's deal with that when we get there I guess.
+We begin in Section~\ref{sec-gARG} by providing a precise formal definition
+of a gARG, illustrated by an example ARG embedded in pedigree.
+We then provide a similar definition of the classical eARG
+approach in Section~\ref{sec-eARG}, and consider its limitations
+in the context of contemporary datasets.
+We then discuss the import concept of ``ancestral material''
+in Section~\ref{sec-ancestral-material}, and how this relates
+to the process of converting an eARG to a gARG.
+Using this new definition for the remainder of the paper,
+we continue
+in Section\ref{sec-ARG-and-local-trees} by considering the relationship
+between an ARG and its local trees and show (contrary to the
+% I want to put a (suitably encoded) here somewhere, but the sentence is
+% very long already.
+prevailing view) that the sequence of local trees contains
+precisely as much information as the corresponding ARG.
+The gARG view also opens a rich new set of details about ARGs,
+including the ideas of locally unary nodes
+(Section~\ref{sec-locally-unary-edges}),
+the levels of detail that can be represented in an ARG
+(Section~\ref{sec-ARG-simplification}),
+and (relatedly) the degrees of precision about recombination
+that can be stored (Section~\ref{sec-precision}).
+These ideas have important practical considerations,
+which we illustrate by examining the qualitative properties of the
+ARGs inferred by four recent methods for a classical benchmark
+dataset in Section~\ref{sec-example-inferred-args}.
+We then discuss how the gARG framework can be
+efficiently implementated in Section~\ref{sec-efficiency},
+and finish with an assessment of the key challenges facing
+the field in the Discussion.
+Finally, the literature on ARGs and associated aspects is large and
+confusing, and we cover some important aspects
 in appendices, including
 a brief history of ancestral graphs (Appendix~\ref{sec-arg-history}),
-description of the Big and Little ARGs (Appendix~\ref{sec-big-and-little-arg}),
-survey of ARG inference methods (Appendix~\ref{sec-survey-arg-infer}), and
-ARGs at an individual vs cell lineage level (Appendix~\ref{sec-cell-lineages-and-args}).
+a description of the Big and Little ARG stochastic processes
+ (Appendix~\ref{sec-big-and-little-arg}),
+a survey of ARG inference methods (Appendix~\ref{sec-survey-arg-infer}),
+and a discussion of ARGs at an individual vs cell
+lineage level (Appendix~\ref{sec-cell-lineages-and-args}).
 
 \section{Genome ARGs}
 \label{sec-gARG}
