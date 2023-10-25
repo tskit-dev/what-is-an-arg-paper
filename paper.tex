@@ -251,7 +251,7 @@ In order to capture the effects of recombination
 coordinates over which inheritance occured.
 We can define a gARG formally as follows.
 Let $N = \{1, \dots, n\}$ be the set of nodes representing
-the genomes in the gARG, 
+the genomes in the gARG,
 and  $S \subseteq N$ be the set of sampled genomes.
 Then, $E$ is the set of edges, where each element
 is a tuple $(c, p, I)$ such that $c, p \in N$ are the child and
@@ -1133,8 +1133,8 @@ across segments. Part of the task of stitching
 these trees together
 into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
-across multiple local trees. \arbores~bridges the gaps 
-between the inferred local trees via a coalescent-based 
+across multiple local trees. \arbores~bridges the gaps
+between the inferred local trees via a coalescent-based
 sampling scheme.
 \espalier\ is specifically interested
 in the details of recombination events,
@@ -2214,16 +2214,20 @@ important to note that the Griffiths and Hudson formulations of
 the coalescent with recombination are not identical;
 in particular, a direct implementation of the ARG process
 as originally described requires exponential time to simulate
-(see Appendix~\ref{sec-big-and-little-arg} for details). However, ARGs provided a way
+(see Appendix~\ref{sec-big-and-little-arg} for details).
+However, ARGs provided a way
 to reason about and infer recombinant ancestry as a single object,
-which was not possible within Hudson's framework, which emphasised
-the collection of local trees along the genome resulting from recombination.
+in a way that not possible within Hudson's framework, which emphasised
+instead the collection of local trees along the genome
+resulting from recombination.
 
-Subsequent work on ARGs proceeded in broadly three main directions: focussing on (1)
-exploring the mathematical properties of the coalescent with recombination and
-related stochastic processes, (2) inferring evolutionary parameters under
+Subsequent work on ARGs proceeded in broadly three main directions:
+(1) exploring the mathematical properties of the coalescent with recombination and
+related stochastic processes;
+(2) inferring evolutionary parameters under
 (approximations to) this model, either with or without explicitly reconstructing the
-genealogy of the sample, and (3) treating the ARG as a discrete graph, ignoring the
+genealogy of the sample;
+and (3) treating the ARG as a discrete graph, ignoring the
 generating stochastic process, and studying its properties from a computational and
 algorithmic perspective.
 
@@ -2277,8 +2281,8 @@ computationally; progress in explicitly inferring genealogies at scale
 has similarly been achieved through resorting to principled
 approximations~\citep{rasmussen2014genome,mahmoudi2022bayesian},
 or moving away from the coalescent with recombination altogether and seeking
-to infer a single plausible ARG~\citep[e.g.][]{speidel2019method} or ARG
-topology~\citep[e.g.][]{minichiello2006mapping,kelleher2019inferring}.
+to infer a single plausible ARG~\citep[e.g.][]{
+minichiello2006mapping,kelleher2019inferring,speidel2019method}.
 
 % Optimisation problems to do with ARGs and other phylogenetic networks
 There has also been substantial interest in formulating and answering
@@ -2316,14 +2320,11 @@ recombination~\citep[e.g.][]{nordborg2000linkage,birkner2013ancestral,
 wilton2015smc,griffiths2016coalescent},
 as well as, more commonly, the concrete realisation of ancestry from a
 process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
-\cite{minichiello2006mapping} explicitly distinguished the ARG as a
-stochastic process from the ARG as a data structure. We have followed them and
-used the term in the latter sense, to mean a specific realised ancestral history.
 
 \section{The Big and Little ARG}
 \label{sec-big-and-little-arg}
-Here we review the two predominant stochastic processes which construct ARGs:
-the ``big" ARG process of \cite{griffiths1997ancestral}, and the ``little" ARG process of
+Here we review two important stochastic processes that construct ARGs:
+the ``Big" ARG process of \cite{griffiths1997ancestral}, and the ``Little" ARG process of
  \cite{hudson1983properties}. The Big ARG process is mathematically simpler
  but is computationally intractable due to generating a vast number of ancestors
  which contribute no genetic material to the initial sample.
@@ -2389,40 +2390,11 @@ of events required to simulate the Little ARG is
 $O(\rho^2)$~\citep{hein2004gene,baumdicker2021efficient}.
 This disparity arises because the majority of the events in the Big ARG are
 recombination events which occur outside of ancestral material,
-and this do not have any bearing on the ancestry of the initial sample.
+and these do not have any bearing on the ancestry of the initial sample.
 Because we don't keep track of the distribution of ancestral material during the process,
 we generate a vastly larger graph.
 
-Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
-of the Little ARG process, as well as the extra events which occur in the Big ARG process.
-Moreover, it depicts the rates of common ancestors and recombination events in each
-interval of time of the realisations.
-In order to evaluate these rates, and hence the sampling probability
-\cite[see e.g.][Equation (3)]{mahmoudi2022bayesian},
-it is necessary to know the number of lineages and number of extant links
-available for recombination in each time interval.
-Some representations may not provide this information.
-For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
-it is clear that a recombination takes place between nodes \noderef{b} and
-\noderef{d} as well as \noderef{e}, but the exact time of the event is ambiguous,
-and thus so is the number of lineages during the time interval. In fact, this
-information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C,
-and alternative conventions must be introduced to resolve such ambiguities.
-For the likelihood-based inference algorithms for the coalescent with recombination,
-it is sufficient to create \emph{two} gARG nodes at the time of the recombination event:
-see the appendix of \cite{baumdicker2021efficient} for details of evaluating
-coalescent with recombination likelihoods using this convention.
-This is also the interpretation depicted in
-Figure \ref{hudson_vs_bigARG}, but it means that the two edges above node \noderef{b}
-in Figure \ref{fig-ancestry-resolution} should correspond to only one lineage,
-along which all $m-1$ links are available for recombination.
-The lineage then splits into two at the time of nodes \noderef{d} and \noderef{e}.
-Nodes \noderef{k}, \noderef{l}, and \noderef{m} in Figure \ref{fig-ancestry-resolution}
-demonstrate that the same issue can affect the number of links available for recombination:
-without an external convention, the exact time at which the trapped ancestral material on
-node \noderef{k} ceases to be available for an effective recombination in the Little ARG process.
-
-\begin{figure}[t]
+\begin{figure}
 \centering
 % FIXME this is a quick nasty hack to make the figure a bit smaller and
 % prevent flushing all the other figures to the end of the document.
@@ -2659,6 +2631,36 @@ There are two separate recombination events at link $w$.
 \label{hudson_vs_bigARG}
 \end{figure}
 
+Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
+of the Little ARG process, as well as the extra events which occur in the Big ARG process.
+Moreover, it depicts the rates of common ancestors and recombination events in each
+interval of time of the realisations.
+In order to evaluate these rates, and hence the sampling probability
+\cite[see e.g.][Equation (3)]{mahmoudi2022bayesian},
+it is necessary to know the number of lineages and number of extant links
+available for recombination in each time interval.
+Some representations may not provide this information.
+For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
+it is clear that a recombination takes place between nodes \noderef{b} and
+\noderef{d} as well as \noderef{e}, but the exact time of the event is ambiguous,
+and thus so is the number of lineages during the time interval. In fact, this
+information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C,
+and alternative conventions must be introduced to resolve such ambiguities.
+For the likelihood-based inference algorithms for the coalescent with recombination,
+it is sufficient to create \emph{two} gARG nodes at the time of the recombination event:
+see the appendix of \cite{baumdicker2021efficient} for details of evaluating
+coalescent with recombination likelihoods using this convention.
+This is also the interpretation depicted in
+Figure \ref{hudson_vs_bigARG}, but it means that the two edges above node \noderef{b}
+in Figure \ref{fig-ancestry-resolution} should correspond to only one lineage,
+along which all $m-1$ links are available for recombination.
+The lineage then splits into two at the time of nodes \noderef{d} and \noderef{e}.
+Nodes \noderef{k}, \noderef{l}, and \noderef{m} in Figure \ref{fig-ancestry-resolution}
+demonstrate that the same issue can affect the number of links available for recombination:
+without an external convention, the exact time at which the trapped ancestral material on
+node \noderef{k} ceases to be available for an effective recombination in the Little ARG process.
+
+
 % Full quote:
 % This process simplifies mathematics on the account that the notion of an
 % ancestor will have a less restrictive meaning than usual:
@@ -2672,28 +2674,30 @@ There are two separate recombination events at link $w$.
 The problem of reconstructing ARGs for samples of recombining sequences has
 been of interest since the ARG was first defined. Early methods focused on
 finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
-recombination events \citep{hein1990reconstructing}. Two main approaches
-emerged: \emph{backwards-in-time} \citep{lyngso2005minimum} and
-\emph{along-the-genome} \citep{song2003parsimonious, song2005constructing}. The
-former starts with a data matrix and reduces it to an empty matrix through row
+recombination events~\citep{hein1990reconstructing}. Two main approaches
+emerged: ``backwards-in-time''~\citep{lyngso2005minimum} and
+``along-the-genome'' \citep{song2003parsimonious, song2005constructing}.
+Backwards-in-time approaches
+start with a data matrix and reduce it to an empty matrix through row
 and column operations corresponding to coalescence, mutation, and recombination
-events, which construct an ARG from the bottom up. The latter begins from an
-initial local tree at a single focal site. Moving the focal site along the
-genome changes the local tree via a \emph{subtree prune and regraft} (SPR)
-operation whenever a recombination is encountered. Methods based the
-backwards-in-time approach are described by \citet{song2005efficient,
-wu2008association, thao2019hybrid, ignatieva2021kwarg}, while
-\citet{hein1993heuristic, wu2011new, mirzaei2017rent} describe along-the-genome
-methods. \citet{rasmussen2022espalier} focuses on parsimonious fusion of local
-trees into an ARG, while \citet{camara2016inference} is based on topological
-data analysis.
-
-Reconstructing a most parsimonious ARG for a given data set is NP-hard
+events, which construct an ARG from the bottom up~\citep{song2005efficient,
+wu2008association,thao2019hybrid,ignatieva2021kwarg}.
+Along-the-genome approaches
+begin from an initial local tree at a single focal site.
+Moving the focal site along the
+genome changes the local tree via a subtree prune and regraft
+operation whenever a recombination is encountered~\citep{hein1993heuristic,
+wu2011new, mirzaei2017rent}.
+\citet{rasmussen2022espalier} focus on parsimonious fusion of local
+trees into an ARG, while the method described by
+\citet{camara2016inference} is based on topological data analysis.
+% The "most" is understood here, surely
+Reconstructing a parsimonious ARG for a given data set is NP-hard
 \citep{wang2001perfect}, so parsimony-based methods resort to heuristics and
 are limited to analysing at most hundreds of sequences. Hence, a number of
 methods aim to balance computational efficiency with reconstruction of
-``reasonable'', rather than parsimonious ARGs or sampling from a
-distribution under a population genetics model
+``reasonable'', rather than parsimonious ARGs
+% distribution under a population genetics model
 \citep{minichiello2006mapping,
 parida2008estimating, kelleher2019inferring,  speidel2019method,
 schaefer2021ancestral, zhang2023biobank}.
@@ -2832,39 +2836,7 @@ relationships will be impossible to infer from the data.
 
 \section*{Supplementary Material}
 
-% \begin{table}[ht]
-%     \begin{center}
-%         \begin{tabular}{c|ccc|c|c}
-% 			\multicolumn{2}{c}{Node table}& ~ &\multicolumn{3}{c}{Edge table}\\
-% 			\cline{1-2} \cline{4-6}
-%             Node & Time & ~ & Child & Parent & Intervals\\
-%             \cline{1-2} \cline{4-6}
-%             $\noderef{a}$ & 0 & ~ & $\noderef{a}$ & $\noderef{e}$ & $\{[0,2)\}$\\
-%             $\noderef{b}$ & 0 & ~ & $\noderef{a}$ & $\noderef{f}$ & $\{[2,10)\}$\\
-%             $\noderef{c}$ & 0 & ~ & $\noderef{b}$ & $\noderef{g}$ & $\{[0,10)\}$\\
-%             $\noderef{d}$ & 0 & ~ & $\noderef{c}$ & $\noderef{f}$ & $\{[0,7)\}$\\
-%             $\noderef{e}$ & 1 & ~ & $\noderef{c}$ & $\noderef{e}$ & $\{[7,10)\}$\\
-%             $\noderef{f}$ & 1 & ~ & $\noderef{d}$ & $\noderef{h}$ & $\{[0,10)\}$\\
-%             $\noderef{g}$ & 1 & ~ & $\noderef{e}$ & $\noderef{i}$ & $\{[0,10)\}$\\
-%             $\noderef{i}$ & 1 & ~ & $\noderef{f}$ & $\noderef{k}$ & $\{[0,10)\}$\\
-%             $\noderef{k}$ & 2 & ~ & $\noderef{g}$ & $\noderef{i}$ & $\{[0,10)\}$\\
-%             $\noderef{n}$ & 3 & ~ & $\noderef{h}$ & $\noderef{k}$ & $\{[0,10)\}$\\
-%             \multicolumn{2}{c}{~}& ~ & $\noderef{i}$ & $\noderef{n}$ & $\{[0,10)\}$\\
-%             \multicolumn{2}{c}{~}& ~ & $\noderef{k}$ & $\noderef{n}$ & $\{[0,10)\}$
-%         \end{tabular}
-%     \end{center}
-%     % NOTE: I know  the "correct" placement for table captions is on top, but I
-%     % always find this quite weird (since many of our figs are quite "table
-%     % like" anyway. If anyone feels strongly about putting the caption above
-%     % the table please just move it back.
-%     \caption{\label{tab-gARG-data}
-%     Data encoding of the genome ARG shown in Fig.~\ref{fig-arg-in-pedigree} with the
-% 	node table on the left (having node and time columns) and the edge table on the
-% 	right (having child, parent, and intervals columns).
-%     }
-% \end{table}
-
-\begin{figure}
+\begin{figure}[ht]
 	\begin{center}
 		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
 	\end{center}
