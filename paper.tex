@@ -570,7 +570,7 @@ find a common ancestor in \noderef{f}. Thus, in this interval,
 the total number of genome segments that are ancestral to the
 sample is reduced from four to three. Note that in the same
 interval, node \noderef{e} is not ancestral to any
-of the samples: it carries \emph{non ancestral} material.
+of the samples: it carries non ancestral material.
 This process of local coalescence continues through the
 graph, until all samples reach their most recent common
 ancestor in node \noderef{n}.
@@ -598,7 +598,7 @@ simulations~\citep{kelleher2018efficient,haller2018tree}.
 In contrast to the usual ``retrospective'' view of ARGs
 discussed so far, these methods record an ARG forwards in
 time in a ``prospective'' manner. Genetic inheritance relationships
-are recorded exhaustively, generation-by-generation
+are recorded exhaustively, generation-by-generation,
 leading to a rapid build-up of information, much of which
 will not be relevant to the genetic ancestry of the current population.
 This redundancy is periodically removed using the ``simplify''
@@ -637,7 +637,7 @@ Any eARG can be converted to a sample-resolved gARG using the same machinery,
 and the two-step process is illustrated in Fig.~\ref{fig-ancestry-resolution}.
 The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}A),
 duplicate its graph topology, and then add inheritance annotations
-to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B).
+to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B) as follows.
 If a given node is a common ancestor event, we annotate the single
 outbound edge with the interval $[0,L)$, for a genome of length $L$. If the
 node is a recombination event with a breakpoint $x$, we annotate the two
@@ -649,7 +649,8 @@ produced by a forwards-time simulation, which are concerned with recording
 the local genetic relationship between a parent and child genome and not
 necessarily minimal in terms of the resolved ancestral material of a sample.
 Thus, the final step is to use the ``simplify'' algorithm to perform this
-resolution (Fig.~\ref{fig-ancestry-resolution}C).
+resolution and produce the sample-resolved
+gARG (Fig.~\ref{fig-ancestry-resolution}C).
 
 The sample-resolved gARG of Fig.~\ref{fig-ancestry-resolution}C
 differs in some important ways to the
@@ -665,9 +666,8 @@ fell in non-ancestral material.
 More generally, we can see that the sample resolved
 gARG of Fig.~\ref{fig-ancestry-resolution}C
 allows for ``local'' inspection
-of an ARG in a way that is not possible by storing
-common ancestor and recombination events in an eARG. Because
-the ancestral material is stored with each edge, the
+of an ARG in a way that is not possible in an eARG.
+Because the ancestral material is stored with each edge, the
 cumulative effects of events over time can be reasoned
 about, without first ``replaying'' those events.
 Many computations
@@ -806,7 +806,8 @@ because many ancestral nodes will not be reachable from the
 samples at a given position (so their corresponding entries in $\pi$ will be zero).
 
 This combinatorial approach provides at least
-one novel insight into the relationship between ARGs and local trees.
+one novel insight, clarifying the fundamental relationship between
+ARGs and local trees.
 If we are given the sequence of local trees for a gARG
 encoded as an oriented tree along with the genome interval
 covered by each tree, then we can recover precisely the same ARG.
@@ -915,8 +916,8 @@ may help clarify these fundamental questions.
 As discussed in the previous section, the local tree at a given position
 $x$ is best seen as the path through the ARG at that position, defined
 by the oriented tree $\pi^x_1\dots\pi^x_n$. This path does not directly
-contain information about branching points, and so it is helpful
-to define the ``arity''.
+contain information about branching points, and defining a
+node's arity (number of child nodes) is therefore useful.
 The ``local arity'' of a node is the number of children it has
 in the local tree at position $x$, i.e., $a^x_u = |\{v : \pi^x_v = u\}|$
 for each $1 \leq u \leq n$. The ``ARG arity'' of a node $u$ is the
@@ -926,7 +927,7 @@ or equal to the ARG arity (more precisely, $0 \leq a^x_u \leq a_u$),
 and the local arity of a node may change as we move along the genome.
 
 This distinction between ARG and local tree arity is mainly
-of interest when we consider \emph{unary} nodes, those that have
+of interest when we consider unary nodes, those that have
 a single child.
 Returning to the example in Fig~\ref{fig-arg-in-pedigree}, nodes
 \noderef{g} and \noderef{h}
@@ -950,7 +951,7 @@ in this example,
 \noderef{e} over the interval $[0, 2)$,
 and \noderef{c} inherits from \noderef{e} over $[7, 10)$.
 
-
+[FIXME this isn't true, add comment about eARG conversion]
 Outside of the context of simulation, ARG-unary nodes are
 only likely to occur in longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
@@ -978,34 +979,35 @@ resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG (see previous section).
 Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
-without them.
+without them. As we see in the next section, both ARG and locally
+unary nodes occur in a range of different scenarios.
 
-Nodes with one child are not a standard feature of evolutionary trees
-or the ARG literature
-(although \citet{mathieson2020ancestry} show examples in which the ARGs
-contain unary nodes, and state that paths are
-``implicitly passing through points representing specific individuals.'').
-We are usually interested in
-nodes that have at least two children because these
-are in principle detectable from mutational differences
-arising in the respective subtrees.
-A tree branch may correspond to many generations
-of individuals (or indeed cell divisions; see Appendix \ref{sec-cell-lineages-and-args})
-and there is usually
-little information about these intermediates, and hence limited utility
-in modelling them.
-As we see in the next section, however, there is a range of
-different ways in which ARG nodes can be locally unary. Furthermore,
-several inference methods infer ARGs containing locally unary nodes
-(see Section~\ref{sec-precision}).
+% NOTE: this para doesn't serve much purpose now I think.
+
+% Nodes with one child are not a standard feature of evolutionary trees
+% or the ARG literature
+% (although \citet{mathieson2020ancestry} show examples in which the ARGs
+% contain unary nodes, and state that paths are
+% ``implicitly passing through points representing specific individuals.'').
+% We are usually interested in
+% nodes that have at least two children because these
+% are in principle detectable from mutational differences
+% arising in the respective subtrees.
+% A tree branch may correspond to many generations
+% of individuals (or indeed cell divisions; see Appendix \ref{sec-cell-lineages-and-args})
+% and there is usually
+% little information about these intermediates, and hence limited utility
+% in modelling them.
+% As we see in the next section, however, there is a range of
+% different ways in which ARG nodes can be locally unary. Furthermore,
+% several inference methods infer ARGs containing locally unary nodes
+% (see Section~\ref{sec-precision}).
 
 \section{Levels of simplification}
 \label{sec-ARG-simplification}
-ARG simplification is a powerful tool, and can do far more
-than removing unreachable nodes and edges in a prospective ARG
-and resolving ancestral material in an eARG.
+ARG simplification is a powerful tool.
 In general, we can think of
-ARG simplification as the process
+simplification as the process
 of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy.
 The redundancy that we are interested in
