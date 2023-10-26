@@ -135,7 +135,7 @@ and data structure is not clear cut, however,
 and subfields use the term
 differently (see Appendix~\ref{sec-arg-history}).
 % pedantically, ARG is not really a "word"
-The term ``ARG'' is now most often used in quite a general
+The term ``ARG'' is now frequently used in a general
 sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
 as a data structure
@@ -154,14 +154,14 @@ The classical formal definition of an ARG is derived from the
 stochastic process, and expressed in terms of events:
 the coalescence and recombination events
 that occur in the history of a sample. We show that this approach
-to representing ARGs (which we refer to as the ``Event ARG'', or eARG
+to representing ARGs (which we refer to as the ``event ARG'', or eARG
 encoding) is inherently limiting, insufficient to represent
 the complexities of modern datasets, and incompatible with
 the outputs of modern large-scale simulation and inference
 methods~\citep{kelleher2016efficient,speidel2019method,
 kelleher2019inferring,zhang2023biobank}.
 We address these problems by providing a more flexible formulation
-of an ARG data structure, which we refer to as the ``Genome ARG''
+of an ARG data structure, which we refer to as the ``genome ARG''
 or gARG encoding. We show that it is fully compatible with the
 classical eARG approach, while providing much more flexibility
 in the types of genetic inheritance structures that can be encompassed,
@@ -215,10 +215,10 @@ lineage level (Appendix~\ref{sec-cell-lineages-and-args}).
 \section{Genome ARGs}
 \label{sec-gARG}
 We define a genome as the complete set of genetic material that a child
-inherits from one parent. A diploid individual  (we assume diploids here
-for clarity, but the definitions apply to organisms of arbitrary ploidy)
+inherits from one parent. A diploid individual  
 % Q: will someone nitpick that we're assuming diploid obligate sexual species?
-therefore carries two genomes, one inherited from each parent.
+therefore carries two genomes, one inherited from each parent (we assume diploids here
+for clarity, but the definitions apply to organisms of arbitrary ploidy).
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species,
 and hope that the distinction will be clear from the context.
@@ -238,7 +238,7 @@ does not tell us which \emph{parts} of their genomes were inherited.
 In order to capture the effects of recombination
 (and other processes that lead to partial genome inheritance)
  we ``annotate'' the edges with the genome
-coordinates over which inheritance occured.
+coordinates over which inheritance occurred.
 This is sufficient to capture the effects of any form of
 genetic inheritance (excluding structural variation).
 
@@ -260,10 +260,10 @@ We will use these two sets of terms interchangeably.
 
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
-The topological ordering
-defined by the directed graph structure, however,
+However, the topological ordering
+defined by the directed graph structure
  is sufficient for many applications
-and we will assume that node dates are not known here.
+thus we do not require node dates to be known.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
 metadata with nodes such as sample identifiers or quality-control metrics.
@@ -309,15 +309,13 @@ As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
 The figure shows the pedigree of eight diploid individuals, along with paths
 of genetic inheritance and constituent genomes.
-Here, and  throughout,
-nodes labelled with lowercase alphabetical letters
-rather than integer identifiers to avoid confusion with genomic intervals.
-Thus, individual $D_1$ is composed
+Here, and throughout,
+nodes are labelled with lowercase alphabetical letters
+rather than integer identifiers, to avoid confusion with genomic intervals.
+Thus individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
-two parents, $D_3$ and $D_4$. Each inherited genome may be the recombined product
-of the genomes
-% FIXME "contained within" is a poor phrase here, use "constituent" or something
-contained within a parent.
+two parents $D_3$ and $D_4$. Each inherited genome may be the recombined product
+of the two genomes belonging to an individual parent.
 In this example,
 genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
 recombination, whereas
@@ -328,16 +326,16 @@ interval $[0, 2)$ from genome \noderef{e} and $[2, 10)$ from genome \noderef{f}.
 These intervals are shown attached to the corresponding graph edges.
 The figure shows the annotated pedigree with realised inheritance of genomes
 between generations (A), the corresponding gARG (B), and finally the corresponding
-sequence of local trees  along the
+sequence of local trees along the
 genome (C).
 % Jerome: this feels unecessary and "genealogy" is often interpreted as
 % "pedigree" so needs to be used very carefully.
 % The local trees represent the genealogy of genomes \noderef{a}--\noderef{d},
 % which changes between local trees due to recombination.
 The local trees span the three genome regions delineated
-by the two recombination breakpoints that gave rise to these genomes.
-See Section~\ref{sec-ARG-and-local-trees} for further details on
-how the local trees are embedded in an ARG.
+by the two recombination breakpoints that gave rise to these genomes;
+further discussion on
+how local trees are embedded in an ARG is provided in Section~\ref{sec-ARG-and-local-trees}
 % Following the above definitions, corresponding data encoding for
 % this gARG is shown in Tab.~\ref{tab-gARG-data}.
 
@@ -384,7 +382,7 @@ for notable exceptions), and the majority of
 % Note the "an" here to avoid cases like ARGweaver
 ARG inference methods use it as an output format
 \citep[(TODO exhaustive list)][]{rasmussen2014genome,ignatieva2021kwarg}.
-In this Griffiths encoding, we have two different types of node in the graph
+In this Griffiths encoding, we have two different types of node in the graph,
 representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -398,7 +396,7 @@ making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}.
 Because it is focused on recording events and their properties,
-we will refer to this Griffiths encoding as the ``Event ARG'', or eARG
+we will refer to this Griffiths encoding as the ``event ARG'', or eARG
 encoding. Fig.~\ref{fig-event-arg} shows an example of a classical
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event (node \noderef{d}) with a breakpoint
@@ -1437,8 +1435,8 @@ The ability of a gARG to encode the effects of recombination, rather
 than having to precisely specify each event, is an important contributor to this aim,
 as most recombination events cannot be uniquely identified from the data.
 Indeed, there is considerable variation in the number of recombinations inferred by
-different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args} B) suggesting
-far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-inferred-args} A).
+different methods, with e.g.~\argweaver\ (Fig.~\ref{fig-inferred-args}B) suggesting
+far more than are required under minimal parsimony assumptions (Fig.~\ref{fig-inferred-args}A).
 
 % Here we describe recombination features
 A rough feel for the amount of recombination in each ARG is given by the distribution
@@ -1480,8 +1478,8 @@ involves the nodes \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F}. These
 happen to have identical sequences, but because \kwarg, \argweaver, and \relate\ require
 bifurcating trees, they are forced to pick an arbitrary order of branching
 (hence Fig.~\ref{fig-inferred-args}A,B disagrees with Fig.~\ref{fig-inferred-args}D
-in this order)
-More generally, the number of nodes in Fig.~\ref{fig-inferred-args} C
+in this order).
+More generally, the number of nodes in Fig.~\ref{fig-inferred-args}C
 that have more than two children hints at considerable uncertainty in
 the order of branching elsewhere in the ARG.
 
@@ -1562,7 +1560,7 @@ inference from data~\citep{kelleher2019inferring,wohns2022unified},
 and calculation of population genetics statistics~\citep{ralph2020efficiently}.
 The succinct tree sequence encoding extends the basic definition
 of a gARG provided here by stipulating a
-simple tabular representation and nodes and edges,
+simple tabular representation of nodes and edges,
 and also defining a concise representation of
 sequence variation using the ``site'' and  ``mutation'' tables.
 The key property of the succinct tree sequence encoding
@@ -1745,7 +1743,7 @@ we could only ever explore the tiniest corner of the incomprehensibly
 large space of likely ARGs.
 Therefore, it is important to systematically
 describe and utilise uncertainty about ARG inference, and to
-incorporates uncertainty encountered during inference into the returned ARG.
+incorporate uncertainty encountered during inference into the returned ARG.
 One approach, enabled by the gARG encoding described here, is to allow
 nodes to have (rootward) in-degree greater than two (polytomies
 representing uncertainty over the ordering of coalescence events) or
@@ -1760,7 +1758,7 @@ not possible to infer precisely from genome sequencing data. Under
 coalescent-based models, the proportion of recombination events that change the
 ARG topology grows very slowly with sample size \citep{hein2004gene}, and of those
 events only a small proportion are actually detectable from the data, assuming
-human-like mutation rates \citep{myers2002detection,hayman2023recoverability}.
+human-like mutation and recombination rates \citep{myers2002detection,hayman2023recoverability}.
 Even when a recombination event \emph{is} detectable, its timing and breakpoint
 position can only be inferred approximately, depending on how much information
 can be elucidated from mutations in the surrounding genomic region.
@@ -1846,8 +1844,8 @@ as described by \citet{kuhner2015assessing}.
 % it is not clear how well these tree distance metrics reflect
 % performance on real data.
 In comparing tree-by-tree along the genome, the effects of recombination
-are incorporated in quite an indirect manner through the correlations
-between the local trees, rather than through directly taking into account
+are incorporated in a rather indirect manner through the correlations
+between the local trees, instead of directly taking into account
 the persistence of nodes and edges across multiple trees.
 The performance of tree distance metrics varies by
 application~\citep{kuhner2015assessing}, and the correct approach
@@ -2475,7 +2473,7 @@ averaged out by Monte Carlo methods, based either on importance sampling
 or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
 wang2009population, fallon2013acg, vaughan2017inferring, mahmoudi2022bayesian}.
 These methods operate on representations
-of the ``Little ARG'', and are computationally expensive, being
+of the ``Little ARG'' (see Appendix \ref{sec-big-and-little-arg}), and are computationally expensive, being
 applicable to at most hundreds of samples consisting of tens or hundreds of
 kilobases with human-like parameters.
 State-of-the-art methods rely on cheaper,
