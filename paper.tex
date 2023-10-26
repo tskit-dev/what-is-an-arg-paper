@@ -181,11 +181,9 @@ in Section~\ref{sec-ancestral-material}, and how this relates
 to the process of converting an eARG to a gARG.
 Using this new definition for the remainder of the paper,
 we continue
-in Section\ref{sec-ARG-and-local-trees} by considering the relationship
-between an ARG and its local trees and show (contrary to the
-% I want to put a (suitably encoded) here somewhere, but the sentence is
-% very long already.
-prevailing view) that the sequence of local trees contains
+in Section~\ref{sec-ARG-and-local-trees} by considering the relationship
+between an ARG and its local trees. Contrary to the
+prevailing view, we show that a (suitably encoded) sequence of local trees contains
 precisely as much information as the corresponding ARG.
 The gARG view also opens a rich new set of details about ARGs,
 including the ideas of locally unary nodes
@@ -1081,12 +1079,8 @@ represented that lead to this
 % We can rephrase... suggestions?
 disagreement about the relationship between local trees and an ARG.
 Firstly, the internal nodes of evolutionary trees are usually
-considered to be \emph{unlabelled}.
-Evolutionary trees usually regard internal nodes as unlabelled
-because they most often correspond
-to anonymous hypothetical ancestors.
-Internal ARG nodes may likewise correspond to anonymous hypothetical
-ancestors, but if we do not label the tree nodes we lose the fact that
+considered to be \emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
+The same canonical labelling cannot be used for internal ARG nodes because the leaves they subtend will typically vary by genomic position. If we do not label the tree nodes in a way which is persistent across the sequence of local trees in the ARG, we lose the fact that
 the \emph{same} ancestors sometimes persist across multiple trees.
 Defining ARG nodes as integers and using the oriented tree encoding
 explicitly labels internal nodes, and makes the relationship between
