@@ -382,7 +382,8 @@ for notable exceptions), and the majority of
 % Note the "an" here to avoid cases like ARGweaver
 ARG inference methods use it as an output format
 \citep[(TODO exhaustive list)][]{rasmussen2014genome,ignatieva2021kwarg}.
-In this Griffiths encoding, we have two different types of node in the graph,
+In this Griffiths encoding, as well as sample nodes,
+we have two additional types of node in the graph,
 representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -396,7 +397,7 @@ making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}.
 Because it is focused on recording events and their properties,
-we will refer to this Griffiths encoding as the ``event ARG'', or eARG
+we will refer to this Griffiths encoding as the ``event ARG'' or eARG
 encoding. Fig.~\ref{fig-event-arg} shows an example of a classical
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event (node \noderef{d}) with a breakpoint
@@ -502,7 +503,7 @@ nodelabel/.style={font=\footnotesize}}
 
 \end{tikzpicture}
 \caption{\label{fig-event-arg}
-A classical event ARG. (A) Standard graph depiction with
+A classical event ARG (eARG). (A) Standard graph depiction with
 breakpoint $x$ associated with the recombination node \noderef{d}.
 Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 (B) Corresponding local trees to the left and right of breakpoint $x$
@@ -516,7 +517,7 @@ for a discussion of this important point).
 % eARGs are representationally for limited interchange
 While the Griffiths approach of annotating recombination nodes with a
 breakpoint in an eARG is a concise and elegant way of describing realisations
-of the coalescent, it has some significant issues when applied to the
+of the coalescent with recombination, it has some significant issues when applied to the
 complexities of present-day datasets. The eARG encoding explicitly models only
 two different types of event and thus anything that is not a single crossover
 recombination or common ancestor event, must be incorporated
@@ -557,18 +558,20 @@ Ancestral material~\citep{wiuf1999ancestry,wiuf1999recombination}
 is a key concept in understanding the overall inheritance structure
 of an ARG. It denotes the genomic intervals ancestral to a set of samples
 on the edges of an ARG.
-In Fig.~\ref{fig-arg-in-pedigree}, for example, we have
+For example, in Fig.~\ref{fig-arg-in-pedigree} we have
 four sample genomes, \noderef{a}--\noderef{d}. As we
 trace their genetic ancestry into the previous generation
-(\noderef{e}--\noderef{h}), we can think of the ancestral
-material of the samples propagating through the graph
-backwards in time. In the interval $[2, 7)$, there is a
+(\noderef{e}--\noderef{h}), we can think of their ancestral
+material propagating through the graph
+backwards in time. In the region $[2, 7)$, there is a
 local coalescence where nodes \noderef{a} and \noderef{c}
-find a common ancestor in \noderef{f}. Thus, in this interval,
+find a common ancestor in \noderef{f}. Thus, in this region,
 the total number of genome segments that are ancestral to the
-sample is reduced from four to three. Note that in the same
-interval, node \noderef{e} is not ancestral to any
-of the samples: it carries non ancestral material.
+sample is reduced from four to three. Fig.~\ref{fig-arg-in-pedigree}A
+illustrates this by (shaded) ancestral material being present
+in only three nodes (\noderef{f}, \noderef{g}, and \noderef{h}) in this region,
+while node \noderef{e} is blank
+as it carries \emph{non ancestral} material.
 This process of local coalescence continues through the
 graph, until all samples reach their most recent common
 ancestor in node \noderef{n}.
@@ -580,18 +583,17 @@ algorithm~\citep{hudson1983testing,kelleher2016efficient},
 and the key distinguishing feature between the
 ``Big'' and ``Little'' ARG stochastic processes
 (see Appendix~\ref{sec-big-and-little-arg}).
-The ability to \emph{store} the resolved ancestral material
-for a sample
-in an ARG is also a key distinction between the eARG and gARG
+The ability to \emph{store} resolved ancestral material
+is also a key distinction between the eARG and gARG
 encodings. Because an eARG stores only the graph topology and
 recombination breakpoints, there is no way to locally
-ascertain the ancestral material without traversing the graph
-rootwards from the samples,
+ascertain ancestral material without traversing the graph
+rootwards from the sample nodes,
 resolving the effects of recombination and common ancestor events.
 
 Efficiently propagating and resolving ancestral material for
 a sample through a pre-existing graph is a well-studied problem,
-and central to recent advances in individual-based forwards-time
+and central to recent advances in individual-based forward-time
 simulations~\citep{kelleher2018efficient,haller2018tree}.
 In contrast to the usual ``retrospective'' view of ARGs
 discussed so far, these methods record an ARG forwards in
@@ -605,7 +607,7 @@ resolves ancestral material.
 Simplification allows efficient subsetting of ARGs (removing both samples and
 certain levels of detail about recombination, as discussed in
 Section~\ref{sec-ARG-simplification}), and is also the key enabling factor when
-incorporating propective ARGs into
+incorporating prospective ARGs into
 forward-time simulation.
 
 \begin{figure}
@@ -925,8 +927,8 @@ or equal to the ARG arity (more precisely, $0 \leq a^x_u \leq a_u$),
 and the local arity of a node may change as we move along the genome.
 
 This distinction between ARG and local tree arity is mainly
-of interest when we consider unary nodes, those that have
-a single child.
+of interest when we consider those that have
+a single child: that are \emph{unary}.
 Returning to the example in Fig~\ref{fig-arg-in-pedigree}, nodes
 \noderef{g} and \noderef{h}
 are ARG-unary (Fig~\ref{fig-arg-in-pedigree}B), and are consequently
@@ -938,10 +940,10 @@ representing the coalescence of samples \noderef{a} and \noderef{c}
 in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, \noderef{f} has a single child in this
-interval and it is unary in this local tree: in other words is is a \emph{locally unary} node.
+interval and it is unary in this local tree: in other words it is a \emph{locally unary} node.
 % TODO note that node e is CA but not coalescent, and refer to where we discuss this.
 In another example, \noderef{e} is binary in the graph, but is
-locally unary in all local trees in which it is present.
+locally unary in all trees in which it is present.
 This is because \noderef{a} and \noderef{c} are both recombinant
 offspring of \noderef{e} and \noderef{f}, and,
 in this example,
@@ -1345,7 +1347,7 @@ trees on one extreme and an ARG with precisely specified recombination events on
 % Here we move on to coalescence
 As for inferred coalescences, the shading (``coalescent span'')
 reveals that many non-recombinant (green) nodes are
-locally unary (see section \ref{sec-locally-unary-edges}). In other words,
+locally unary (see Section \ref{sec-locally-unary-edges}). In other words,
 in some regions of the genome these nodes are present in the ancestry without
 corresponding to coalescence of ancestral material. As argued previously, this can provide useful
 information about shared ancestry. Note however, that such unary segments are not inferred
@@ -1970,8 +1972,7 @@ the ``Big" ARG process of \cite{griffiths1997ancestral}, and the ``Little" ARG p
  but is computationally intractable due to generating a vast number of ancestors
  which contribute no genetic material to the initial sample.
 The Little ARG process avoids non-genetic ancestors at the cost of more complex
-dynamics and state space. We also demonstrate that evaluating the sampling probability
-of either process---a key quantity in many statistical approaches---requires that the
+dynamics and state space. We also demonstrate that applications relying on the grouping of inheritance pathways into ancestral lineages, such as likelihood-based inference under the coalescent, requires that the
 gARG (or eARG) data structure be interpreted in a model-specific way.
 
 A generic state of the Little ARG process consists of a finite collection of lineages $L$,
@@ -2262,7 +2263,7 @@ is trapped between ancestral segments. The two columns titled CA and RE
 are the respective rates of mergers and recombinations when
 the recombination rate is $\rho$.
 (B) A corresponding realisation of a Big ARG, which augments Hudson's algorithm
-by tracking nonancestral lineages. The result is a simpler state space and
+by tracking non-ancestral lineages. The result is a simpler state space and
 dynamics, at the cost of extra nodes and edges, highlighted in red, which do
 not affect the local tree at any site.
 Recombination positions are labelled alphabetically in time, and their ordering
@@ -2276,30 +2277,21 @@ Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
 of the Little ARG process, as well as the extra events which occur in the Big ARG process.
 Moreover, it depicts the rates of common ancestors and recombination events in each
 interval of time of the realisations.
-In order to evaluate these rates, and hence the sampling probability
-\cite[see e.g.][Equation (3)]{mahmoudi2022bayesian},
+In order to evaluate these rates, e.g.\ for likelihood-based inference
+\citep{baumdicker2021efficient, mahmoudi2022bayesian},
 it is necessary to know the number of lineages and number of extant links
 available for recombination in each time interval.
 Some representations may not provide this information.
-For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C
-it is clear that a recombination takes place between nodes \noderef{b} and
-\noderef{d} as well as \noderef{e}, but the exact time of the event is ambiguous,
-and thus so is the number of lineages during the time interval. In fact, this
-information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C,
-and alternative conventions must be introduced to resolve such ambiguities.
-For the likelihood-based inference algorithms for the coalescent with recombination,
-it is sufficient to create \emph{two} gARG nodes at the time of the recombination event:
-see the appendix of \cite{baumdicker2021efficient} for details of evaluating
-coalescent with recombination likelihoods using this convention.
-This is also the interpretation depicted in
-Figure \ref{hudson_vs_bigARG}, but it means that the two edges above node \noderef{b}
-in Figure \ref{fig-ancestry-resolution} should correspond to only one lineage,
-along which all $m-1$ links are available for recombination.
-The lineage then splits into two at the time of nodes \noderef{d} and \noderef{e}.
-Nodes \noderef{k}, \noderef{l}, and \noderef{m} in Figure \ref{fig-ancestry-resolution}
-demonstrate that the same issue can affect the number of links available for recombination:
-without an external convention, the exact time at which the trapped ancestral material on
-node \noderef{k} ceases to be available for an effective recombination in the Little ARG process.
+For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C,
+it is clear that a recombination takes place between nodes \noderef{i}, \noderef{k} and \noderef{j}.
+But the exact time of the recombination event is ambiguous: it could take place at any time between node \noderef{i} and its parents and produce the same gARG.
+Because a recombination increases the number of extant lineages by one (in the rootward direction of time), the number of lineages during the same time interval is ambiguous as well.
+In fact, this information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C without an extrinsic convention.
+For the coalescent,
+it is sufficient to create \emph{two} gARG nodes at the time of the recombination event, with the interpretation that the two rootward edges from node \noderef{i} in Figure \ref{fig-ancestry-resolution}C belong to the same lineage until the time of nodes \noderef{k} and \noderef{j}, and split into two separate lineages at that time point.
+Similarly, the trapped, non-ancestral links along that lineage remain available for effective recombination (i.e.\ one which splits up ancestral material) for the same time interval.
+This interpretation is highlighted in
+Figure \ref{hudson_vs_bigARG} by drawing only one vertical edge between a recombinant child and its two parents.
 
 
 % Full quote:
