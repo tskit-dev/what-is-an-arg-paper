@@ -475,6 +475,7 @@ def simplification():
             x_label=None if i == 3 else "",
             style=(
                 #'.x-axis .tick .lab {font-weight: regular; font-size: 12; visibility: hidden} ' +
+                '.background path {fill: #444444}' +
                 '.x-axis .tick:first-child .lab, .x-axis .tick:last-child .lab {visibility: visible}' +
                 '.subfig3 .x-axis .tick .lab {visibility: visible}'
             ),
@@ -633,6 +634,7 @@ def arg_in_pedigree():
         size=(350, 305),
         node_labels={n.id: n.metadata["name"] for n in ts_simp.nodes()},
         style=(
+            ".background path {fill: #444444}"
             ".x-axis .tick .lab {font-weight: normal; font-size:12px}"
             " .x-axis .title .lab {font-size:10px}"
         )
@@ -670,8 +672,6 @@ def arg_in_pedigree():
         "B</text>",
         '<text font-size="2em" font-family="serif" transform="translate(830, 25)">'
         "C</text>",
-        #'<text font-size="2em" font-family="serif" transform="translate(1250, 25)">'
-        #"D</text>",
         '<g transform="translate(10, 40)">',
     ]
     svg.append('<g transform="scale(0.36)">' + pedigree_svg + "</g>")
