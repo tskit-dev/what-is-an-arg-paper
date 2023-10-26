@@ -1111,9 +1111,9 @@ It is important that we make the distinction here between the local
 trees that we can derive from a known ARG (as just discussed),
 and the ARGs that we can derive from a sequence of \emph{estimated}
 local trees.
-The ARG inference methods \arbores~\citep{heine2018bridging} and
-\espalier~\citep{rasmussen2022espalier} are illustrative in this context.
-Both begin by splitting an input sequence alignment into
+The ARG inference method
+\espalier~\citep{rasmussen2022espalier} is illustrative in this context.
+It begins by splitting an input sequence alignment into
 segments that are assumed to be non-recombining. Within
 each segment, an initial local tree is estimated using
 standard phylogenetic methods. By necessity, these local
@@ -1124,15 +1124,17 @@ across segments. Part of the task of stitching
 these trees together
 into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
-across multiple local trees. \arbores~bridges the gaps
-between the inferred local trees via a coalescent-based
-sampling scheme.
+across multiple local trees. 
+% TODO add a sentence here saying how it does this. 
+% that's what we're interested in illustrating here.
 \espalier\ is specifically interested
 in the details of recombination events,
 and also attempts to infer
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
 induced by recombination between these partially reconciled local trees.
+A similar problem is tackled by \arbores~\citep{heine2018bridging}, which explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing and resimulating candidate SPR moves connecting two fixed, leaf-labelled local trees.
+Exploration is done by varying the positions of these boundary trees along the sequence.
 Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
