@@ -1298,10 +1298,8 @@ $8.4\times10^{-9}$ per site per generation
 together with
 a constant effective population size of 1,000,000.
 To focus on the ARG topology rather than estimates of node times, the Y position of each node
-is arbitrary, taken from the ranked order of nodes output by each software method.
-The version numbers of inference software, the specific inference parameters
-needed to reproduce the ARGs, and (where necessary) functions to convert outputs to the
-\texttt{tskit} gARG format, are available from our GitHub repository.
+is arbitrary, taken from the ranked order of nodes output by each software method (see the ``Data Availability''
+section for details of inference software and conversion methods).
 
 Note that both \kwarg\ and \argweaver\ produce many ARGs
 (those shown in Fig.~\ref{fig-inferred-args}A,B are arbitrarily selected examples).
@@ -1798,6 +1796,15 @@ Adopting it as a community standard,
 and utilising its rich suite of operations,
 may accelerate progress and help to
 establish ARG methods within mainstream genetics.
+
+\section*{Data Availability}
+
+The public GitHub repository at \url{https://github.com/tskit-dev/what-is-an-arg-paper} can be
+used to reproduce all figures and tables in this paper. In particular this includes
+the ARG used in Fig.~\ref{fig-ancestry-resolution}; the simulation code and functions
+used to generate Fig.~\ref{fig-simplification}; and for Fig.~\ref{fig-inferred-args},
+the software versions, parameter settings, and (where necessary) functions to convert
+software outputs to the \texttt{tskit} gARG format.
 
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
