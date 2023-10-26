@@ -632,8 +632,14 @@ desired.
 \end{figure}
 
 Any eARG can be converted to a sample-resolved gARG using the same machinery,
-and the two-step process is illustrated in Fig.~\ref{fig-ancestry-resolution}.
-The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}A),
+and the two-step process is shown in Fig.~\ref{fig-ancestry-resolution}.
+In order to show a graph with non-ancestral material, rather than a simulated
+Little ARG (Appendix~\ref{sec-big-and-little-arg}), we use a
+classic example from the literature
+\citet{wiuf1999recombination}, hand-crafted to
+highlight several important ARG properties. The first conversion
+step is to take the input eARG 
+Fig.~\ref{fig-ancestry-resolution}A),
 duplicate its graph topology, and then add inheritance annotations
 to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B) as follows.
 If a given node is a common ancestor event, we annotate the single
@@ -679,17 +685,6 @@ allows us to perform this once
 and to store the result,
 whereas the eARG encoding requires us to repeat the process
 each time.
-
-Note that the \citet{wiuf1999recombination} eARG
-in Fig.~\ref{fig-ancestry-resolution} is not particularly
-representative, because inference or simulation methods will usually
-only generate ARGs containing nodes and edges ancestral to the sample
-(see the discussion of the ``Big ARG'' stochastic process in
-Appendix~\ref{sec-big-and-little-arg}, however).
-Nonetheless, it is an instructive example from the literature which highlights several
-important properties of ARGs, and the general point about
-the need to resolve ancestral material ``on the fly'' for eARG traversals
-holds.
 
 % \section{Retrospective vs prospective ARGs}
 % \label{sec-retro-pro}
