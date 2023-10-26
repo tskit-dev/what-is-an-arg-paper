@@ -366,22 +366,25 @@ how we set our goals for inference and evaluate the success of results.
 
 \section{Event ARGs}
 \label{sec-eARG}
-% The prevailing view is that ARGs are composed of events, and so we
-% characterise this view
-% Besides viewing ARGs as being composed of events, another
-% feature of the definitions given above is that they do not
-% explicitly describe
-% % TODO check this! Do they talk about how trees are embedded?
-% the details of how such events are represented.
-Where the concrete details of an ARG data structure
+% Trying to be totally, boringly, abundantly, blatantly clear here what we're
+% talking about.
+In this section we define the classical view of an ARG data structure,
+and illustrate its limitations. We are
+interested in the details of how ARGs are described mathematically,
+and as a consequence, how they are represented in a practical sense
+as the output of inference programs.
+Where such concrete details of an ARG data structure
 (the encoding) are
 % TODO more?
-specified~\citep[e.g.][]{
+mathematically defined~\citep[e.g.][]{
 rasmussen2014genome,gusfield2014recombinatorics,ignatieva2021kwarg}
-they follow the approach described by Griffiths and colleagues.
-Because it is focused on recording the details of events,
-we will refer to this Griffiths encoding as an ``Event ARG'', or eARG.
-In an eARG, we have two different types of node in the graph
+they follow the approach described by Griffiths and colleagues
+(but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
+for notable exceptions), and the majority of
+% Note the "an" here to avoid cases like ARGweaver
+ARG inference methods use it as an output format
+\citep[(TODO exhaustive list)][]{rasmussen2014genome,ignatieva2021kwarg}.
+In this Griffiths encoding, we have two different types of node in the graph
 representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -391,15 +394,18 @@ ancestral lineages. Recombination nodes are annotated with
 the corresponding crossover breakpoints. These breakpoints
 are used to construct the local trees.
 This is done by tracing rootwards through the graph from the samples,
-taking decisions about which outbound edge to follow through
+making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}.
-Fig.~\ref{fig-event-arg} shows an example of a classical
+Because it is focused on recording events and their properties,
+we will refer to this Griffiths encoding as the ``Event ARG'', or eARG
+encoding. Fig.~\ref{fig-event-arg} shows an example of a classical
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c})
 and a single recombination event (node \noderef{d}) with a breakpoint
 at position $x$.
 We assume here that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
+
 \begin{figure}
 \centering
 \tikzmath{\x1 =0; \x2=8;\xx=12.5; \x3=14; \xt=18;}
@@ -509,158 +515,43 @@ for a discussion of this important point).
 }
 \end{figure}
 
+% eARGs are representationally for limited interchange
+While the Griffiths approach of annotating recombination nodes with a
+breakpoint in an eARG is a concise and elegant way of describing realisations
+of the coalescent, it has some significant issues when applied to the
+complexities of present-day datasets. The eARG encoding explicitly models only
+two different types of event and thus anything that is not a single crossover
+recombination or common ancestor event, must be incorporated
+either in a roundabout way using these
+events, or by adding new types of event to the encoding. For example, gene
+conversion could be accommodated either by stipulating a third type of event
+(annotated by two breakpoints and corresponding traversal conventions for
+recovering the local trees) or by two recombination nodes joined by a
+zero-length edge. From the perspective of practical interchange of data between
+inference methods and downstream applications, both
+workarounds are problematic, and the gARG encoding described in the previous
+section offers a much simpler solution.
+Modern datasets contain many more complexities which the eARG encoding
+is ill-suited to represent (see Discussion).
 
-While the Griffiths approach of annotating recombination nodes
-with a breakpoint in an eARG is a concise and elegant way of describing
-realisations of the coalescent, it has some significant
-issues when applied to the complexities of present-day datasets.
-Because we are explicitly modelling the \emph{properties} of events,
-the encoding must be extended to incorporate
-different types of event that are not simple crossover recombination
-or common ancestry.
-Processes such as gene conversion, for example, can in principle
-be included, but either require additional node types
-or, for instance, multiple recombination nodes joined by a zero-length edge.
-Modelling multiple recombinant offspring of the same parents
-(while keeping track of their identity as siblings)
-as occurs
-in Wright-Fisher models (e.g.\ Fig.~\ref{fig-arg-in-pedigree}),
-or densely sampled multi-generational
-data~\citep[e.g.][]{turnbull2018hundred,hayes20191000,RosFreixedes2022}
-% circumlocutions isn't technically correct, but I like the roundabout
-% overly verbose feel it gives.
-would require more involved circumlocutions.
-These and other problems can be worked around
-(although, we would ideally like everyone to use the
-\emph{same} workarounds if methods are to interoperate; see the Discussion),
-but it is much simpler to use the gARG encoding described
-in the previous section.
-By recording the \emph{outcome} of events in terms of the
-intervals of genetic inheritance on edges instead of recording the
-properties of the events themselves, we remove the need to explicitly
-model different types of event in the data structure.
-More fundamentally, because gARGs
-allow us to directly describe
-genetic inheritance in multiple non-contiguous genome intervals
-between an ancestor and a descendant,
-we can encode the outcome of
-\emph{multiple} genetic inheritance events, and to
-systematically describe the uncertainty around their
-ordering (see Section~\ref{sec-precision}).
-
-There is also a certain clarity gained by explicitly modeling nodes
-in the inheritance graph as an individual's genomes.
+There is also a certain clarity gained by explicitly modelling nodes
+in the inheritance graph as genomes.
 Outside of the context of a
 % The point being, events are perfectly well defined in the models
 % but not in reality
 mathematical model, an ``event'' is a slippery concept.
 For example, \emph{which} genome along a chain of cell divisions should be
-regarded as the one where an event occured
+regarded as the one where an event occurred
 (Appendix~\ref{sec-cell-lineages-and-args}),
 or whether multiple recombinations
 within a single individual should be regarded as one or multiple events are
-debateable.
+debatable.
 % If we want to have an ARG software ecosystem then such fireside
 % discussions won't help.
 From the perspective of a concrete data structure,
 ideally forming the basis of an ecosystem of interoperable
 inference and analysis methods, such debates
 are unproductive.
-
-% By regarding nodes as an individual's genomes and
-% explicitly annotating edges with the intervals of genetic inheritance
-% between those genomes, we can capture the \emph{outcome} of a
-% range of different types of event without needing to explicitly model
-% the details of these events in the ARG data structure.
-% More fundamentally, because gARGs
-% allow us to directly describe
-% genetic inheritance in multiple non-contiguous genome intervals
-% between an ancestor and a descendant,
-% we can encode the outcome of
-% \emph{multiple} genetic inheritance events, and to
-% systematically describe the uncertainty around their
-% ordering (see Section~\ref{sec-precision}).
-
-% While the additional generality provided by the gARG representation
-% is useful, it is in reality a small change that does not
-% lead to significantly different time or space complexity in computational
-% tasks.
-% The vitally important and fundamental distinction between
-% a gARG and an eARG is that gARGs
-% allow us to directly describe
-% genetic inheritance in multiple non-contiguous genome intervals
-% between an ancestor and a descendant, which cannot be done
-% by specifying recombination events and breakpoints.
-% % FIXME this sentence is problematic. We should recast to talk about
-% % the outcomes of events, not talk about simulateousness (which will
-% % confuse people
-% Thus, we have the means to encode the \emph{outcome} of
-% multiple genetic inheritance events, and to
-% systematically describe the uncertainty around their
-% ordering (see Section~\ref{sec-precision}).
-% As we describe in the following sections, freeing ourselves from the requirement
-% of recording specific events and
-% the additional generality of the gARG encoding
-% has significant advantages. It also raises questions about what our goals
-% for inferring ARGs should be, and how we evaluate the success
-% of such inferences.
-
-% A common feature of these definitions is that they are expressed
-% in terms of evolutionary \emph{events}, and so for the purposes of
-% discussion we can label
-% this prevailing interpretation as an ``event ARG'', or eARG.
-% (Many definitions also emphasise
-% the necessity of exhaustively capturing \emph{all} events, which we
-% examine in later sections.)
-% Another common feature of these definitions is that they do not explicitly
-% discuss the mechanism by which local trees vary along the genome.
-% The topology of an eARG defines the common ancestor and
-% recombination events that occurred,
-% but the graph structure alone is not sufficient to define the local trees,
-% or equivalently, how ``ancestral material'' flows along
-% the edges of the ARG (see Section~\ref{sec-eARG-to-gARG}).
-
-% TODO reference forward to the cell ARG appendix. Ultimately
-% every event corresponds to a particular genome in a particular
-% individual or cell.
-% Whether we regard nodes as events or genomes is something of a
-% philosophical question, and in most senses the two are equivalent
-% (but see the discussion on ``unary nodes'' in Section~\ref{sec-locally-unary-edges}).
-% From a concrete data-structure encoding perspective, the only real
-% difference between an eARG and a gARG is that in an eARG we store recombination
-% \emph{breakpoints} at nodes of out-degree two (recombination nodes)
-% whereas in a gARG we store \emph{inheritance intervals} on edges.
-% A key advantage of associating inheritance intervals with
-% edges in a gARG is that it allows us to describe genetic inheritance events other
-% than simple crossovers, such as multiple recombinations and
-% gene conversions. By explicitly stating the exact regions of genome
-% that are transmitted along an edge, we generalise the representation
-% to encompass any process that leads to the differential inheritance of
-% genetic material along the genome.
-
-% While the additional generality provided by the gARG representation
-% is useful, it is in reality a small change that does not
-% lead to significantly different time or space complexity in computational
-% tasks.
-% The vitally important and fundamental distinction between
-% a gARG and an eARG is that gARGs
-% allow us to directly describe
-% genetic inheritance in multiple non-contiguous genome intervals
-% between an ancestor and a descendant, which cannot be done
-% by specifying recombination events and breakpoints.
-% % FIXME this sentence is problematic. We should recast to talk about
-% % the outcomes of events, not talk about simulateousness (which will
-% % confuse people
-% Thus, we have the means to encode the \emph{outcome} of
-% multiple genetic inheritance events, and to
-% systematically describe the uncertainty around their
-% ordering (see Section~\ref{sec-precision}).
-% As we describe in the following sections, freeing ourselves from the requirement
-% of recording specific events and
-% the additional generality of the gARG encoding
-% has significant advantages. It also raises questions about what our goals
-% for inferring ARGs should be, and how we evaluate the success
-% of such inferences.
 
 \section{Ancestral material and sample resolution}
 \label{sec-ancestral-material}
