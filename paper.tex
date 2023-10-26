@@ -1032,7 +1032,7 @@ of the ARG already on the path from another sample) or there
 is no matching outbound edge (indicating we are at a root).
 Note that the local trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
 because many ancestral nodes will not be reachable from the
-samples at a given position.
+samples at a given position (so their corresponding entries in $\pi$ will be zero).
 
 This combinatorial approach provides at least
 one novel insight into the relationship between ARGs and local trees.
@@ -1167,28 +1167,24 @@ in the local tree covering the interval $[2, 7)$,
 representing the coalescence of samples \noderef{a} and \noderef{c}
 in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
-in the local tree. Thus, \noderef{c} has a single child in this
-interval and it is unary in this local tree.
-% TODO note this is CA but not coalescent, and refer to where we discuss this.
+in the local tree. Thus, \noderef{f} has a single child in this
+interval and it is unary in this local tree: in other words is is a \emph{locally unary} node.
+% TODO note that node e is CA but not coalescent, and refer to where we discuss this.
 In another example, \noderef{e} is binary in the graph, but is
-unary in each of the local trees in which it is present.
+locally unary in all local trees in which it is present.
 This is because \noderef{a} and \noderef{c} are both recombinant
 offspring of \noderef{e} and \noderef{f}, and,
 in this example,
 \noderef{a} inherits from
 \noderef{e} over the interval $[0, 2)$,
 and \noderef{c} inherits from \noderef{e} over $[7, 10)$.
-The intervals over which
-we know that a node inherits from another, but where there
-is no local coalescence, are marked by unary nodes in the
-local trees.
+
 
 Outside of the context of simulation, ARG-unary nodes are
 only likely to occur in longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
-\emph{Locally} unary nodes, those which have one child
-in one or more local trees, are a common and important feature
+In contrast, locally unary nodes, are a common and important feature
 of many different types of ARG.
 As discussed in the previous section,
 without these nodes marking the passage
