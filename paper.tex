@@ -610,18 +610,18 @@ Simplification allows efficient subsetting of ARGs (removing both samples and
 certain levels of detail about recombination, as discussed in
 Section~\ref{sec-ARG-simplification}), and is also the key enabling factor when
 incorporating prospective ARGs into
-forward-time simulation. 
+forward-time simulation.
 % Define "sample-resolved" here for later use
-We refer to a gARG that has been simplified with respect to a set of 
+We refer to a gARG that has been simplified with respect to a set of
 samples, such that the inheritance annotations on its edges contain
-no non-ancestral material,  as sample-resolved.  
+no non-ancestral material,  as sample-resolved.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
 Converting the \citet[][Fig.~1]{wiuf1999recombination} example
-to a sample-resolved gARG. (A) The original eARG; square nodes 
+to a sample-resolved gARG. (A) The original eARG; square nodes
 represent sampling (black), common ancestor (blue), and recombination (red) events;
 the latter contain breakpoint positions.
 (B) The corresponding gARG with breakpoints directly converted to
@@ -769,8 +769,8 @@ A fundamental property of genetics is that a
 given DNA nucleotide is inherited from exactly one parent genome,
 both at an organismal and cell-by-cell level
 (Appendix~\ref{sec-cell-lineages-and-args}).
-By definition, these chains of single-parent inheritance give rise,
-over time, to a tree structure.
+These paths of single-parent inheritance give rise,
+by definition, to a tree structure.
 As a result of recombination, adjacent nucleotides can have
 different paths of inheritance, and
 an ARG encodes the entire ensemble of local trees along the
@@ -827,7 +827,7 @@ $E^x = \{(u, \pi_u^x, \{x\} \mid \pi_u^x \neq 0\}$. Since the ARG
 edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
 the positions over which node $c$ inherits from parent $p$, we can
 then simply combine the ``local ARGs'' for each position $x$
-% YW: The above "combining" operation isn't obviously lossless to me: 
+% YW: The above "combining" operation isn't obviously lossless to me:
 % we could potentially lose information in the different
 % combinations of intervals (e.g. if we use 2 non-combined intervals
 % to represent a diamond in a 1-RE-node ARG). It seems like we might
@@ -854,22 +854,29 @@ sequences along the genome''.
 % "We note that ARGs contain more information than local trees"
 % If even Ana and Jotun are wrong about this it then it must be
 % significant! ;)
-These statements that an ARG
-contains more information than its local trees are only true
-if we use a representation of the local trees that discards
-information about those local trees that can be derived from the ARG.
+These
+% and similar, \citep[e.g.][]{}
+statements that an ARG
+contains more information than its local trees are true
+if we represent local trees in their conventional form,
+but this form discards important information that is available from the ARG.
 
 There are two properties of how evolutionary trees are conventionally
 represented that lead to this
-% We can rephrase... suggestions?
 disagreement about the relationship between local trees and an ARG.
-Firstly, the internal nodes of evolutionary trees are usually
-considered to be \emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
-The same canonical labelling cannot be used for internal ARG nodes because the leaves they subtend will typically vary by genomic position. If we do not label the tree nodes in a way which is persistent across the sequence of local trees in the ARG, we lose the fact that
-the \emph{same} ancestors sometimes persist across multiple trees.
-Defining ARG nodes as integers and using the oriented tree encoding
-explicitly labels internal nodes, and makes the relationship between
-tree and ARG nodes clear.
+Firstly, the internal nodes of evolutionary trees are usually considered to be
+\emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
+The same canonical labelling cannot be used for internal ARG nodes because the
+leaves they subtend will typically vary by genomic position. If we do not label
+the tree nodes in a way which is persistent across the sequence of local trees
+in the ARG, we lose the fact that the \emph{same} ancestors sometimes persist
+across multiple trees.
+Defining ARG nodes as integers and using the oriented
+tree encoding explicitly labels internal nodes, and makes the relationship
+between tree and ARG nodes clear and precise.
+
+% Note: good to keep to paras here to logically separate the two important
+% points.
 The second property of how evolutionary trees
 are conventionally represented that is unhelpful in the context of ARGs is their
 focus on branching points (coalescences), i.e.\ nodes that have two or more children.
@@ -881,7 +888,7 @@ parent-child relationships, and does not, for example,
 directly tell us how many children a particular node has.
 The local tree at a given position records the \emph{path} through
 the ARG; if this path omits nodes that are not
-branching points in the local tree (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
+branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
 we lose information about the ARG.
 We return to this point in the following two sections,
 when we discuss ``locally unary'' nodes and the simplification process.
@@ -904,15 +911,21 @@ these trees together
 into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
 across multiple local trees.
-% TODO add a sentence here saying how it does this.
-% that's what we're interested in illustrating here.
-\espalier\ is specifically interested
-in the details of recombination events,
-and also attempts to infer
+\espalier\ approaches this task
+by identifying maximimal subtrees
+that do not change between pairs of adjacent
+local trees and then
+heuristically exploring the space of possible
+rearrangements of these subtrees.
+To derive precise details about recombination events,
+\espalier\ then attempts to infer
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
 induced by recombination between these partially reconciled local trees.
-A similar problem is tackled by \arbores~\citep{heine2018bridging}, which explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing and resimulating candidate SPR moves connecting two fixed, leaf-labelled local trees.
+% A similar problem is tackled by \arbores~\citep{heine2018bridging}, which
+% explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing
+% and resimulating candidate SPR moves connecting two fixed, leaf-labelled local
+% trees.
 Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
@@ -1055,10 +1068,10 @@ using a single node to represent
 a recombination event (e.g.~Fig.~\ref{fig-ancestry-resolution}),
 or two to represent the parent genomes is usually not important
 (either is possible in the gARG encoding)
-and the most convenient approach will vary by application 
+and the most convenient approach will vary by application
 (discussed e.g.\ in Appendix~\ref{sec-big-and-little-arg}).
 Note also that polytomies (e.g.~Fig.~\ref{fig-simplification} node \noderef{k})
-are a natural feature of such a Wright-Fisher model 
+are a natural feature of such a Wright-Fisher model
 (but see Appendix~\ref{sec-cell-lineages-and-args}).
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
@@ -1085,7 +1098,7 @@ whereas nodes in which ancestral material never coalesces have a
 coalescent span of 0\%.
 
 Returning to the main topic of this section,
-Fig.~\ref{fig-simplification}A is original simulation output in 
+Fig.~\ref{fig-simplification}A is original simulation output in
 which we retain all nodes involved in recombination
 or common ancestry events. This is the true history, and contains
 a very high level of detail, some of which may be considered
@@ -1487,7 +1500,7 @@ Firstly, ``edges'' in tree sequence terminology would be perhaps better be
 described as ``edge-intervals'', as each describes a single contiguous
 interval of genome inheritance between a pair of nodes.
 This denormalisation of the gARG data model is for efficiency purposes.
-Secondly, zero- rather than one-based indexing is used for 
+Secondly, zero- rather than one-based indexing is used for
 nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
 roots (rather than $0$ as used here for notational simplicity).
 
@@ -1621,7 +1634,7 @@ Even under strict parsimony conditions and for small sample sizes, the
 % Citation? This is something people have figured out, right?
 number of plausible ARGs compatible with a given dataset is vast.
 Thus, although it is clearly an oversimplification to arbitrarily
-choose \emph{one} best guess, 
+choose \emph{one} best guess,
 it is not clear that generating many guesses
 when sample sizes are large will achieve much.
 At the scale of millions of samples,
@@ -1816,15 +1829,15 @@ Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 % Anthony Wilder Wohns acknowledges support from TODO
 
 \section*{Data Availability}
-The public GitHub repository at 
+The public GitHub repository at
 \url{https://github.com/tskit-dev/what-is-an-arg-paper} can be
-used to reproduce all figures and tables in this paper. 
+used to reproduce all figures and tables in this paper.
 In particular this includes
-the ARG used in Fig.~\ref{fig-ancestry-resolution}; 
+the ARG used in Fig.~\ref{fig-ancestry-resolution};
 the simulation code and functions
-used to generate Fig.~\ref{fig-simplification}; 
+used to generate Fig.~\ref{fig-simplification};
 and for Fig.~\ref{fig-inferred-args},
-the software versions, parameter settings, and 
+the software versions, parameter settings, and
 (where necessary) functions to convert
 software outputs to the \texttt{tskit} gARG format.
 
