@@ -124,12 +124,13 @@ confusion about what, precisely, an ARG \emph{is}.
 In its original form, the ARG is an alternative
 formulation of the coalescent with recombination~\citep{hudson1983properties},
 where the stochastic process of coalescence and recombination
-among ancestral lineages was formalised by Griffiths and colleagues as a
-graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
+among ancestral lineages was formalised as a
+graph by Griffiths and colleagues~\citep{griffiths1991two,
+ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
 Subsequently, ARGs have come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
-a \emph{realisation} of such a random process or of an
-inference from a sample of genome sequences.
+a \emph{realisation} of such a random process,
+or an inference from a set of sampled genome sequences.
 The distinction between stochastic process
 and data structure is not clear cut, however,
 and subfields use the term
@@ -193,7 +194,7 @@ including the ideas of locally unary nodes
 the levels of detail that can be represented in an ARG
 (Section~\ref{sec-ARG-simplification}),
 and (relatedly) the degrees of precision about recombination
-that can be stored (Section~\ref{sec-precision}).
+that can be stored and we may seek to infer (Section~\ref{sec-precision}).
 These ideas have important practical considerations,
 which we illustrate by examining the qualitative properties of
 ARGs inferred by four recent methods for a classical benchmark
@@ -260,10 +261,9 @@ We will use these two sets of terms interchangeably.
 
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
-However, the topological ordering
-defined by the directed graph structure
- is sufficient for many applications
-thus we do not require node dates to be known.
+The topological ordering defined by the directed graph structure
+is sufficient for many applications, however,
+and node dates are not required for our purposes here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
 metadata with nodes such as sample identifiers or quality-control metrics.
@@ -310,7 +310,7 @@ and their sixteen constituent genomes (each consisting of a single chromosome),
 along with paths of genetic inheritance.
 Here, and throughout,
 nodes are labelled with lowercase alphabetical letters
-rather than integer identifiers, to avoid confusion with genomic intervals.
+rather than integer identifiers to avoid confusion with genomic intervals.
 Thus individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents $D_3$ and $D_4$. Each inherited genome may be the recombined product
@@ -327,16 +327,10 @@ The figure shows the annotated pedigree with realised inheritance of genomes
 between generations (A), the corresponding gARG (B), and finally the corresponding
 sequence of local trees along the
 genome (C).
-% Jerome: this feels unecessary and "genealogy" is often interpreted as
-% "pedigree" so needs to be used very carefully.
-% The local trees represent the genealogy of genomes \noderef{a}--\noderef{d},
-% which changes between local trees due to recombination.
 The local trees span the three genome regions delineated
 by the two recombination breakpoints that gave rise to these genomes;
-further discussion on
-how local trees are embedded in an ARG is provided in Section~\ref{sec-ARG-and-local-trees}.
-% Following the above definitions, corresponding data encoding for
-% this gARG is shown in Tab.~\ref{tab-gARG-data}.
+see Section~\ref{sec-ARG-and-local-trees} for details
+on how local trees are embedded in an ARG.
 
 % % I feel like sophisticated readers would at this point be saying,
 % % ah, yeah, that's basically what an ARG is just in different words;
