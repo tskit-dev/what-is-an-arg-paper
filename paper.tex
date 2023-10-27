@@ -124,12 +124,13 @@ confusion about what, precisely, an ARG \emph{is}.
 In its original form, the ARG is an alternative
 formulation of the coalescent with recombination~\citep{hudson1983properties},
 where the stochastic process of coalescence and recombination
-among ancestral lineages was formalised by Griffiths and colleagues as a
-graph~\citep{griffiths1991two,ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
+among ancestral lineages was formalised as a
+graph by Griffiths and colleagues~\citep{griffiths1991two,
+ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
 Subsequently, ARGs have come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
-a \emph{realisation} of such a random process or of an
-inference from a sample of genome sequences.
+a \emph{realisation} of such a random process,
+or an inference from a set of sampled genome sequences.
 The distinction between stochastic process
 and data structure is not clear cut, however,
 and subfields use the term
@@ -193,7 +194,7 @@ including the ideas of locally unary nodes
 the levels of detail that can be represented in an ARG
 (Section~\ref{sec-ARG-simplification}),
 and (relatedly) the degrees of precision about recombination
-that can be stored (Section~\ref{sec-precision}).
+that can be stored and we may seek to infer (Section~\ref{sec-precision}).
 These ideas have important practical considerations,
 which we illustrate by examining the qualitative properties of
 ARGs inferred by four recent methods for a classical benchmark
@@ -260,10 +261,9 @@ We will use these two sets of terms interchangeably.
 
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
-However, the topological ordering
-defined by the directed graph structure
- is sufficient for many applications
-thus we do not require node dates to be known.
+The topological ordering defined by the directed graph structure
+is sufficient for many applications, however,
+and node dates are not required for our purposes here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
 metadata with nodes such as sample identifiers or quality-control metrics.
@@ -285,8 +285,6 @@ with which arbitrary additional information can be associated.
     \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
 \caption{\label{fig-arg-in-pedigree}
-% TODO caption needs another pass. Once the full section has been written
-% it'll be clearer what we need to say in the caption vs the text.
 An example genome ARG (gARG) embedded in a pedigree.
 (A) Diploid individuals (blue), visualised in a highly inbred pedigree and
 labelled $D_1$ to $D_8$,
@@ -312,7 +310,7 @@ and their sixteen constituent genomes (each consisting of a single chromosome),
 along with paths of genetic inheritance.
 Here, and throughout,
 nodes are labelled with lowercase alphabetical letters
-rather than integer identifiers, to avoid confusion with genomic intervals.
+rather than integer identifiers to avoid confusion with genomic intervals.
 Thus individual $D_1$ is composed
 of genomes \noderef{a} and \noderef{b}, which are inherited from its
 two parents $D_3$ and $D_4$. Each inherited genome may be the recombined product
@@ -329,16 +327,10 @@ The figure shows the annotated pedigree with realised inheritance of genomes
 between generations (A), the corresponding gARG (B), and finally the corresponding
 sequence of local trees along the
 genome (C).
-% Jerome: this feels unecessary and "genealogy" is often interpreted as
-% "pedigree" so needs to be used very carefully.
-% The local trees represent the genealogy of genomes \noderef{a}--\noderef{d},
-% which changes between local trees due to recombination.
 The local trees span the three genome regions delineated
 by the two recombination breakpoints that gave rise to these genomes;
-further discussion on
-how local trees are embedded in an ARG is provided in Section~\ref{sec-ARG-and-local-trees}.
-% Following the above definitions, corresponding data encoding for
-% this gARG is shown in Tab.~\ref{tab-gARG-data}.
+see Section~\ref{sec-ARG-and-local-trees} for details
+on how local trees are embedded in an ARG.
 
 % % I feel like sophisticated readers would at this point be saying,
 % % ah, yeah, that's basically what an ARG is just in different words;
@@ -374,15 +366,17 @@ and as a consequence, how they are represented in a practical sense
 as the output of inference programs.
 Where such concrete details of an ARG data structure
 (the encoding) are
-% TODO more?
+% WIP - it's surprisingly hard to find papers where an ARG is defined
+% concretely
 mathematically defined~\citep[e.g.][]{
-rasmussen2014genome,gusfield2014recombinatorics,ignatieva2021kwarg}
+gusfield2014recombinatorics,ignatieva2021kwarg}
 they follow the approach described by Griffiths and colleagues
 (but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
 for notable exceptions), and a large number of
 % Note the "an" here to avoid cases like ARGweaver
 ARG inference methods use it as an output format
-\citep{song2004minimum,song2005efficient,rasmussen2014genome,heine2018bridging,ignatieva2021kwarg}.
+\citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
+heine2018bridging,ignatieva2021kwarg}.
 In this Griffiths encoding, as well as nodes marking sampling events,
 we have two additional node types in the graph,
 representing the common ancestor and recombination events
@@ -511,7 +505,6 @@ Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 (B) Corresponding local trees to the left and right of breakpoint $x$
 (note these are shown in the conventional form in which only coalescences
 within the local tree are included; see Section~\ref{sec-ARG-and-local-trees}
-% TODO: check above if we want to refer to sec-ARG-and-local-trees or some other!
 for a discussion of this important point).
 }
 \end{figure}
@@ -610,18 +603,18 @@ Simplification allows efficient subsetting of ARGs (removing both samples and
 certain levels of detail about recombination, as discussed in
 Section~\ref{sec-ARG-simplification}), and is also the key enabling factor when
 incorporating prospective ARGs into
-forward-time simulation. 
+forward-time simulation.
 % Define "sample-resolved" here for later use
-We refer to a gARG that has been simplified with respect to a set of 
+We refer to a gARG that has been simplified with respect to a set of
 samples, such that the inheritance annotations on its edges contain
-no non-ancestral material,  as sample-resolved.  
+no non-ancestral material,  as sample-resolved.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
 Converting the \citet[][Fig.~1]{wiuf1999recombination} example
-to a sample-resolved gARG. (A) The original eARG; square nodes 
+to a sample-resolved gARG. (A) The original eARG; square nodes
 represent sampling (black), common ancestor (blue), and recombination (red) events;
 the latter contain breakpoint positions.
 (B) The corresponding gARG with breakpoints directly converted to
@@ -769,8 +762,8 @@ A fundamental property of genetics is that a
 given DNA nucleotide is inherited from exactly one parent genome,
 both at an organismal and cell-by-cell level
 (Appendix~\ref{sec-cell-lineages-and-args}).
-By definition, these chains of single-parent inheritance give rise,
-over time, to a tree structure.
+These paths of single-parent inheritance give rise,
+by definition, to a tree structure.
 As a result of recombination, adjacent nucleotides can have
 different paths of inheritance, and
 an ARG encodes the entire ensemble of local trees along the
@@ -827,7 +820,7 @@ $E^x = \{(u, \pi_u^x, \{x\} \mid \pi_u^x \neq 0\}$. Since the ARG
 edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
 the positions over which node $c$ inherits from parent $p$, we can
 then simply combine the ``local ARGs'' for each position $x$
-% YW: The above "combining" operation isn't obviously lossless to me: 
+% YW: The above "combining" operation isn't obviously lossless to me:
 % we could potentially lose information in the different
 % combinations of intervals (e.g. if we use 2 non-combined intervals
 % to represent a diamond in a 1-RE-node ARG). It seems like we might
@@ -850,26 +843,34 @@ partners.''
 and note that the
 ``full ARG...~contains more information than the series of tree
 sequences along the genome''.
-% Could cite some more? E.g. KwARG paper says
-% "We note that ARGs contain more information than local trees"
-% If even Ana and Jotun are wrong about this it then it must be
-% significant! ;)
-These statements that an ARG
-contains more information than its local trees are only true
-if we use a representation of the local trees that discards
-information about those local trees that can be derived from the ARG.
+These
+% % Could cite some more? E.g. KwARG paper says
+% % "We note that ARGs contain more information than local trees"
+% % Would need a few more examples though, which would require some digging.
+%
+% and similar, \citep[e.g.][]{}
+statements that an ARG
+contains more information than its local trees are true
+if we represent local trees in their conventional forms,
+but these forms discard important information that is
+available in an ARG.
 
 There are two properties of how evolutionary trees are conventionally
 represented that lead to this
-% We can rephrase... suggestions?
 disagreement about the relationship between local trees and an ARG.
-Firstly, the internal nodes of evolutionary trees are usually
-considered to be \emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
-The same canonical labelling cannot be used for internal ARG nodes because the leaves they subtend will typically vary by genomic position. If we do not label the tree nodes in a way which is persistent across the sequence of local trees in the ARG, we lose the fact that
-the \emph{same} ancestors sometimes persist across multiple trees.
-Defining ARG nodes as integers and using the oriented tree encoding
-explicitly labels internal nodes, and makes the relationship between
-tree and ARG nodes clear.
+Firstly, the internal nodes of evolutionary trees are usually considered to be
+\emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
+The same canonical labelling cannot be used for internal ARG nodes because the
+leaves they subtend will typically vary by genomic position. If we do not label
+the tree nodes in a way which is persistent across the sequence of local trees
+in the ARG, we lose the fact that the \emph{same} ancestors sometimes persist
+across multiple trees.
+Defining ARG nodes as integers and using the oriented
+tree encoding explicitly labels internal nodes, and makes the relationship
+between tree and ARG nodes clear and precise.
+
+% Note: good to keep to paras here to logically separate the two important
+% points.
 The second property of how evolutionary trees
 are conventionally represented that is unhelpful in the context of ARGs is their
 focus on branching points (coalescences), i.e.\ nodes that have two or more children.
@@ -881,7 +882,7 @@ parent-child relationships, and does not, for example,
 directly tell us how many children a particular node has.
 The local tree at a given position records the \emph{path} through
 the ARG; if this path omits nodes that are not
-branching points in the local tree (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
+branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
 we lose information about the ARG.
 We return to this point in the following two sections,
 when we discuss ``locally unary'' nodes and the simplification process.
@@ -904,15 +905,22 @@ these trees together
 into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
 across multiple local trees.
-% TODO add a sentence here saying how it does this.
-% that's what we're interested in illustrating here.
-\espalier\ is specifically interested
-in the details of recombination events,
-and also attempts to infer
+\espalier\ approaches this task
+by identifying maximimal subtrees
+that do not change between pairs of adjacent
+local trees and then
+heuristically exploring the space of possible
+rearrangements of these subtrees.
+To derive precise details about recombination events,
+\espalier\ then attempts to infer
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
 induced by recombination between these partially reconciled local trees.
-A similar problem is tackled by \arbores~\citep{heine2018bridging}, which explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing and resimulating candidate SPR moves connecting two fixed, leaf-labelled local trees.
+% NOTE: dropping this because it doesn't clarify the actual point.
+% A similar problem is tackled by \arbores~\citep{heine2018bridging}, which
+% explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing
+% and resimulating candidate SPR moves connecting two fixed, leaf-labelled local
+% trees.
 Inferring the SPRs between leaf-labelled trees is
 NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
 but it is unclear what the complexity is when there
@@ -939,8 +947,8 @@ or equal to the ARG arity (more precisely, $0 \leq a^x_u \leq a_u$),
 and the local arity of a node may change as we move along the genome.
 
 This distinction between ARG and local arity is mainly
-of interest when we consider those that have
-a single child: that are \emph{unary}.
+of interest when we consider nodes that have
+a single child: those that are \emph{unary}.
 Returning to the example in Fig.~\ref{fig-arg-in-pedigree}, nodes
 \noderef{g} and \noderef{h}
 are ARG-unary (Fig.~\ref{fig-arg-in-pedigree}B), and are consequently
@@ -951,22 +959,34 @@ in the local tree covering the interval $[2, 7)$,
 representing the coalescence of samples \noderef{a} and \noderef{c}
 in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
-in the local tree. Thus, \noderef{f} has a single child in this
-interval: in other words it is a \emph{locally unary} node.
+in the local tree. Thus, node \noderef{f} has a single child in this
+interval: it is \emph{locally unary}.
 In another example, \noderef{e} is binary in the graph, being a common
 ancestor of \noderef{a} and \noderef{c}, but is
 locally unary in all trees in which it is present.
-This is because no ancestral material coalesces there:
+This is because no ancestral material coalesces in \noderef{e}:
 \noderef{a} inherits genetic material from the far left hand end of
 \noderef{e},
 while \noderef{c} only inherits the (disjoint) right hand end.
 
-[FIXME this isn't true, add comment about eARG conversion]
-Outside of the context of simulation, ARG-unary nodes are
-only likely to occur in longitudinal datasets where genetic
+ARG-unary nodes occur when an ARG node has one child and one or
+more parents.
+Nodes with one child and one parent (``pass-through'' nodes)
+occur where we wish the record the passage of ancestral material
+through a known node. For example, in simulations
+it is sometimes useful to record the passage of
+ancestral material through known pedigree individuals
+regardless of whether common ancestry occurs.
+ARG-unary nodes are also occur in inferences
+from longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
-In contrast, locally unary nodes, are a common and important feature
+Nodes with one child and two parents arise when
+we model a recombination event using a single node
+in the classical manner
+(e.g.\ Fig.~\ref{fig-ancestry-resolution}).
+
+Locally unary nodes are a common and important feature
 of many different types of ARG.
 As discussed in the previous section,
 without these nodes marking the passage
@@ -989,8 +1009,9 @@ resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG (see previous section).
 Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
-without them. As we see in the next section, both ARG and locally
-unary nodes occur in a range of different scenarios.
+without them. As we see in the next two sections, both ARG and locally
+unary nodes occur in various scenarios, and are
+produced by a range of current inference methods.
 
 \section{Levels of simplification}
 \label{sec-ARG-simplification}
@@ -1055,10 +1076,10 @@ using a single node to represent
 a recombination event (e.g.~Fig.~\ref{fig-ancestry-resolution}),
 or two to represent the parent genomes is usually not important
 (either is possible in the gARG encoding)
-and the most convenient approach will vary by application 
+and the most convenient approach will vary by application
 (discussed e.g.\ in Appendix~\ref{sec-big-and-little-arg}).
 Note also that polytomies (e.g.~Fig.~\ref{fig-simplification} node \noderef{k})
-are a natural feature of such a Wright-Fisher model 
+are a natural feature of such a Wright-Fisher model
 (but see Appendix~\ref{sec-cell-lineages-and-args}).
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
@@ -1085,7 +1106,7 @@ whereas nodes in which ancestral material never coalesces have a
 coalescent span of 0\%.
 
 Returning to the main topic of this section,
-Fig.~\ref{fig-simplification}A is original simulation output in 
+Fig.~\ref{fig-simplification}A is original simulation output in
 which we retain all nodes involved in recombination
 or common ancestry events. This is the true history, and contains
 a very high level of detail, some of which may be considered
@@ -1487,64 +1508,9 @@ Firstly, ``edges'' in tree sequence terminology would be perhaps better be
 described as ``edge-intervals'', as each describes a single contiguous
 interval of genome inheritance between a pair of nodes.
 This denormalisation of the gARG data model is for efficiency purposes.
-Secondly, zero- rather than one-based indexing is used for 
+Secondly, zero- rather than one-based indexing is used for
 nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
 roots (rather than $0$ as used here for notational simplicity).
-
-% \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
-% (equivalent to the ``bricked tree sequence'' of
-% \cite{nowbandegani2023extremely},
-% % TODO look this up. I expect it's basically the same??
-% and the block-based ARG data structure of
-% \citep{palamara2016argon}),
-% here we consider the unique sets of
-% samples that coalesce at a node in the ARG over a particular
-% genome interval, and the fundamental limitations they place
-% on ARG inference.
-% [FIXME find somewhere natural for this. The last clause is too vague - what
-% are the implications?]
-% Alternative gARG encodings split transmitted intervals and associate each with
-% a new node, resulting in a single genome being represented by a group of
-% multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
-
-%%%% Some old text about the coalescent we might still want to plunder
-% % If we want to use the coalescent, then really the assumptions
-% % need to make sense.
-% % n << Ne is a silly assumption in today's datasets
-% A core assumption of the coalescent is that the sample size $n$
-% is much less than the effective population size, $N_e$.
-% Several human datasets now consist of hundreds of thousands of
-% genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-% and so sample size is substantially \emph{larger} than $N_e$
-% (often assumed to be $10^4$ in humans).
-% Agricultural datasets are even more extreme.
-% For example,
-% the US dairy cattle database alone currently comprises more than 6 million
-% animals with SNP array
-% genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-% while the effective population size in modern dairy cattle breeds is
-% less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-% An extreme sign of these breeding practices is that there are only two ancestral
-% Y-chromosome lineages present in today's US Holstein dairy breed~\citep{Yue2015}.
-% Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
-% comprises close to 7000 genomes, which are part of multi-generation pedigrees
-% with millions of animals and extensive SNP array genotype and phenotype
-% data \citep[e.g.][]{Cesarani2022}.
-% In another example, genome and SNP array data for 440,610 individuals within
-% 7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
-% were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
-% Effective population size in modern pig breeds is also less than 100 due to
-% intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-% Another core assumption of the coalescent model is that the genome (or
-% at least the region under study) is short enough that the number of extant
-% lineages remains much smaller than $N_e$ at all times. Whole
-% genome sequences have been available for model organisms
-% for over a decade now, % True? Citation?
-% and indeed complete chromosome-level assemblies are possible
-% in humans~\citep{miga2020telomere}.
-% Projects are under way to obtain high-quality assemblies
-% for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-% and ultimately worldwide~\citep{lewin2022earth}.
 
 \section{Discussion}
 \label{sec-discussion}
@@ -1621,7 +1587,7 @@ Even under strict parsimony conditions and for small sample sizes, the
 % Citation? This is something people have figured out, right?
 number of plausible ARGs compatible with a given dataset is vast.
 Thus, although it is clearly an oversimplification to arbitrarily
-choose \emph{one} best guess, 
+choose \emph{one} best guess,
 it is not clear that generating many guesses
 when sample sizes are large will achieve much.
 At the scale of millions of samples,
@@ -1816,15 +1782,15 @@ Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 % Anthony Wilder Wohns acknowledges support from TODO
 
 \section*{Data Availability}
-The public GitHub repository at 
+The public GitHub repository at
 \url{https://github.com/tskit-dev/what-is-an-arg-paper} can be
-used to reproduce all figures and tables in this paper. 
+used to reproduce all figures and tables in this paper.
 In particular this includes
-the ARG used in Fig.~\ref{fig-ancestry-resolution}; 
+the ARG used in Fig.~\ref{fig-ancestry-resolution};
 the simulation code and functions
-used to generate Fig.~\ref{fig-simplification}; 
+used to generate Fig.~\ref{fig-simplification};
 and for Fig.~\ref{fig-inferred-args},
-the software versions, parameter settings, and 
+the software versions, parameter settings, and
 (where necessary) functions to convert
 software outputs to the \texttt{tskit} gARG format.
 
@@ -1833,7 +1799,6 @@ software outputs to the \texttt{tskit} gARG format.
 
 \setcounter{secnumdepth}{2} % Print out appendix section numbers
 
-% TODO revisit number here
 \section*{Appendix}
 \appendix
 
