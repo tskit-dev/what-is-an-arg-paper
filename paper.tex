@@ -923,6 +923,7 @@ To derive precise details about recombination events,
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
 induced by recombination between these partially reconciled local trees.
+% NOTE: dropping this because it doesn't clarify the actual point.
 % A similar problem is tackled by \arbores~\citep{heine2018bridging}, which
 % explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing
 % and resimulating candidate SPR moves connecting two fixed, leaf-labelled local
@@ -953,8 +954,8 @@ or equal to the ARG arity (more precisely, $0 \leq a^x_u \leq a_u$),
 and the local arity of a node may change as we move along the genome.
 
 This distinction between ARG and local arity is mainly
-of interest when we consider those that have
-a single child: that are \emph{unary}.
+of interest when we consider nodes that have
+a single child: those that are \emph{unary}.
 Returning to the example in Fig.~\ref{fig-arg-in-pedigree}, nodes
 \noderef{g} and \noderef{h}
 are ARG-unary (Fig.~\ref{fig-arg-in-pedigree}B), and are consequently
@@ -965,22 +966,34 @@ in the local tree covering the interval $[2, 7)$,
 representing the coalescence of samples \noderef{a} and \noderef{c}
 in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
-in the local tree. Thus, \noderef{f} has a single child in this
-interval: in other words it is a \emph{locally unary} node.
+in the local tree. Thus, node \noderef{f} has a single child in this
+interval: it is \emph{locally unary}.
 In another example, \noderef{e} is binary in the graph, being a common
 ancestor of \noderef{a} and \noderef{c}, but is
 locally unary in all trees in which it is present.
-This is because no ancestral material coalesces there:
+This is because no ancestral material coalesces in \noderef{e}:
 \noderef{a} inherits genetic material from the far left hand end of
 \noderef{e},
 while \noderef{c} only inherits the (disjoint) right hand end.
 
-[FIXME this isn't true, add comment about eARG conversion]
-Outside of the context of simulation, ARG-unary nodes are
-only likely to occur in longitudinal datasets where genetic
+ARG-unary nodes occur when an ARG node has one child and one or
+more parents.
+Nodes with one child and one parent (``pass-through'' nodes)
+occur where we wish the record the passage of ancestral material
+through a known node. For example, in simulations
+it is sometimes useful to record the passage of
+ancestral material through known pedigree individuals
+regardless of whether common ancestry occurs.
+ARG-unary nodes are also occur in inferences
+from longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
-In contrast, locally unary nodes, are a common and important feature
+Nodes with one child and two parents arise when
+we model a recombination event using a single node
+in the classical manner
+(e.g.\ Fig.~\ref{fig-ancestry-resolution}).
+
+Locally unary nodes are a common and important feature
 of many different types of ARG.
 As discussed in the previous section,
 without these nodes marking the passage
@@ -1003,8 +1016,9 @@ resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG (see previous section).
 Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
-without them. As we see in the next section, both ARG and locally
-unary nodes occur in a range of different scenarios.
+without them. As we see in the next two sections, both ARG and locally
+unary nodes occur in various scenarios, and are
+produced by a range of current inference methods.
 
 \section{Levels of simplification}
 \label{sec-ARG-simplification}
