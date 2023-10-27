@@ -285,8 +285,6 @@ with which arbitrary additional information can be associated.
     \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
 \caption{\label{fig-arg-in-pedigree}
-% TODO caption needs another pass. Once the full section has been written
-% it'll be clearer what we need to say in the caption vs the text.
 An example genome ARG (gARG) embedded in a pedigree.
 (A) Diploid individuals (blue), visualised in a highly inbred pedigree and
 labelled $D_1$ to $D_8$,
@@ -382,7 +380,8 @@ they follow the approach described by Griffiths and colleagues
 for notable exceptions), and a large number of
 % Note the "an" here to avoid cases like ARGweaver
 ARG inference methods use it as an output format
-\citep{song2004minimum,song2005efficient,rasmussen2014genome,heine2018bridging,ignatieva2021kwarg}.
+\citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
+heine2018bridging,ignatieva2021kwarg}.
 In this Griffiths encoding, as well as nodes marking sampling events,
 we have two additional node types in the graph,
 representing the common ancestor and recombination events
@@ -511,7 +510,6 @@ Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 (B) Corresponding local trees to the left and right of breakpoint $x$
 (note these are shown in the conventional form in which only coalescences
 within the local tree are included; see Section~\ref{sec-ARG-and-local-trees}
-% TODO: check above if we want to refer to sec-ARG-and-local-trees or some other!
 for a discussion of this important point).
 }
 \end{figure}
@@ -1519,61 +1517,6 @@ Secondly, zero- rather than one-based indexing is used for
 nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
 roots (rather than $0$ as used here for notational simplicity).
 
-% \cite{shipilina2023origin} discuss the idea of a ``haplotype block''
-% (equivalent to the ``bricked tree sequence'' of
-% \cite{nowbandegani2023extremely},
-% % TODO look this up. I expect it's basically the same??
-% and the block-based ARG data structure of
-% \citep{palamara2016argon}),
-% here we consider the unique sets of
-% samples that coalesce at a node in the ARG over a particular
-% genome interval, and the fundamental limitations they place
-% on ARG inference.
-% [FIXME find somewhere natural for this. The last clause is too vague - what
-% are the implications?]
-% Alternative gARG encodings split transmitted intervals and associate each with
-% a new node, resulting in a single genome being represented by a group of
-% multiple nodes (or ``blocks'' \citep{palamara2016argon}), with implications for
-
-%%%% Some old text about the coalescent we might still want to plunder
-% % If we want to use the coalescent, then really the assumptions
-% % need to make sense.
-% % n << Ne is a silly assumption in today's datasets
-% A core assumption of the coalescent is that the sample size $n$
-% is much less than the effective population size, $N_e$.
-% Several human datasets now consist of hundreds of thousands of
-% genomes~\citep{bycroft2018genome,karczewski2020mutational,tanjo2021practical},
-% and so sample size is substantially \emph{larger} than $N_e$
-% (often assumed to be $10^4$ in humans).
-% Agricultural datasets are even more extreme.
-% For example,
-% the US dairy cattle database alone currently comprises more than 6 million
-% animals with SNP array
-% genotypes\footnote{\url{https://queries.uscdcb.com/Genotype/counts.html}},
-% while the effective population size in modern dairy cattle breeds is
-% less than 100 and decreasing~\citep{MacLeod2013,Makanjuola2020}.
-% An extreme sign of these breeding practices is that there are only two ancestral
-% Y-chromosome lineages present in today's US Holstein dairy breed~\citep{Yue2015}.
-% Simlarly, the 1000 bull genomes project~\citep{hayes20191000}
-% comprises close to 7000 genomes, which are part of multi-generation pedigrees
-% with millions of animals and extensive SNP array genotype and phenotype
-% data \citep[e.g.][]{Cesarani2022}.
-% In another example, genome and SNP array data for 440,610 individuals within
-% 7 multi-generation pedigrees~\citep{whalen2018,Johnsson2021,Ros-Freixedes2020}
-% were combined to infer recombination in pigs~\citep{RosFreixedes2022}.
-% Effective population size in modern pig breeds is also less than 100 due to
-% intense selection and directed reproduction \citep{Hall2016,Porcnic2016}.
-% Another core assumption of the coalescent model is that the genome (or
-% at least the region under study) is short enough that the number of extant
-% lineages remains much smaller than $N_e$ at all times. Whole
-% genome sequences have been available for model organisms
-% for over a decade now, % True? Citation?
-% and indeed complete chromosome-level assemblies are possible
-% in humans~\citep{miga2020telomere}.
-% Projects are under way to obtain high-quality assemblies
-% for all eukaryotic species in Britain and Ireland~\citep{darwin2022sequence}
-% and ultimately worldwide~\citep{lewin2022earth}.
-
 \section{Discussion}
 \label{sec-discussion}
 Recent breakthroughs have finally made large-scale ARG inference
@@ -1861,7 +1804,6 @@ software outputs to the \texttt{tskit} gARG format.
 
 \setcounter{secnumdepth}{2} % Print out appendix section numbers
 
-% TODO revisit number here
 \section*{Appendix}
 \appendix
 
