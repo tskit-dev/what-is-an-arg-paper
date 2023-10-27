@@ -144,7 +144,7 @@ encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
 This broad usage is a useful generalisation,
-but is not, however, compatible with the available formal definitions
+but is not compatible with the available formal definitions
 derived from the original Griffiths approach.
 This mismatch between usage and definition has led to significant
 problems, which if not addressed
@@ -262,8 +262,9 @@ We will use these two sets of terms interchangeably.
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
 The topological ordering defined by the directed graph structure
+and an arrow of time (telling us which direction is pastwards)
 is sufficient for many applications, however,
-and node dates are not required for our purposes here.
+and we assume node dates are not known here.
 % This should be obvious, but seems like it needs to be said
 In practical settings, we will wish to associate additional
 metadata with nodes such as sample identifiers or quality-control metrics.
@@ -366,8 +367,6 @@ and as a consequence, how they are represented in a practical sense
 as the output of inference programs.
 Where such concrete details of an ARG data structure
 (the encoding) are
-% WIP - it's surprisingly hard to find papers where an ARG is defined
-% concretely
 mathematically defined~\citep[e.g.][]{
 gusfield2014recombinatorics,ignatieva2021kwarg}
 they follow the approach described by Griffiths and colleagues
@@ -377,8 +376,9 @@ for notable exceptions), and a large number of
 ARG inference methods use it as an output format
 \citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
 heine2018bridging,ignatieva2021kwarg}.
-In this Griffiths encoding, as well as nodes marking sampling events,
-we have two additional node types in the graph,
+% Griffiths never mentions "sampling events", so let's not get
+% into that. It's not an important detail.
+In this Griffiths encoding we have two types of internal node in the graph,
 representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -387,7 +387,7 @@ nodes a single lineage is split into two independent
 ancestral lineages. Recombination nodes are annotated with
 the corresponding crossover breakpoints. These breakpoints
 are used to construct the local trees.
-This is done by tracing rootwards through the graph from the samples,
+This is done by tracing pastwards through the graph from the samples,
 making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}.
@@ -583,7 +583,7 @@ is also a key distinction between the eARG and gARG
 encodings. Because an eARG stores only the graph topology and
 recombination breakpoints, there is no way to locally
 ascertain ancestral material without traversing the graph
-rootwards from the sample nodes,
+pastwards from the sample nodes,
 resolving the effects of recombination and common ancestor events.
 
 Efficiently propagating and resolving ancestral material for
@@ -693,61 +693,6 @@ important properties of ARGs, and the general point about
 the need to resolve ancestral material ``on the fly'' for eARG traversals
 holds.
 
-% \section{Retrospective vs prospective ARGs}
-% \label{sec-retro-pro}
-% The ARG concept arose from a \emph{retrospective} view of inheritance.
-% For example the definition of an eARG, as discussed above, is invariably
-% couched in terms of the events that occured in the history of some set of sampled
-% genomes. Similarly, the genome ARG in Fig.~\ref{fig-arg-in-pedigree}
-% is retrospective because it only includes information
-% about genetic inheritance relative to the sample individuals
-% $D_1$ and $D_2$ (genomes \noderef{a}--\noderef{d}).
-% That is, only the inheritance
-% history of the sample genomes \noderef{a}--\noderef{d} is recorded in the ARG.
-% % Gregor & Jerome think that "inheritance" is clearer here than "transmission"
-% Genetic inheritance must have occurred between (e.g.)
-% $D_8$ and her daughter $D_6$, but this is not recorded because
-% it is not relevant to the genetic ancestry of the sample genomes.
-
-% There is no particular reason, however, that ARGs must be
-% retrospective. Recent advances in individual-based forward-time simulation
-% ~\citep{kelleher2018efficient,haller2018tree} depend upon the ability to
-% record gARGs in a \emph{prospective} manner.
-% In a prospective gARG, the inheritance intervals $I$
-% on an edge joining ancestor genome $v$ and descendant $u$
-% define \emph{all} regions of genome that $u$ inherited from $v$.
-% Thus, these inheritance intervals are
-% concerned only with the genetic relationship
-% between the nodes in question, and are not defined with respect
-% to any given set of samples. They simply record the immediate
-% genetic inheritance between two genomes
-% (in the simplest case, between a parent and a child).
-% \citet{kelleher2018efficient} refer to the structure
-% recording all such forwards-in-time genetic relationships
-% as an ``embellished pedigree`` (and suggest the term ``nedigree'' as a shorthand).
-% Describing this instead as a ``prospective ARG'', emphasising
-% the use of the same data structures and the direct connection with
-% the usual retrospective interpretation of an ARG, may be
-% more useful.
-
-% The exhaustive recording of full inheritance intervals from generation
-% to generation leads to a rapid build-up of information, much of which
-% may not be relevant to the genetic ancestry of the current population.
-% This redundancy can be periodically removed using the ``simplify'' algorithm,
-% described in detail by \citet{kelleher2018efficient}. Simplification
-% allows efficient subsetting of ARGs (removing both samples and certain
-% levels of detail about recombination, as discussed in Section~\ref{sec-ARG-simplification}),
-% and is also the key enabling factor when incorporating propective ARGs into
-% forward-time simulation.
-% The core algorithm involves the concept of
-% ``ancestral material''~\citep{wiuf1999ancestry,wiuf1999recombination}:
-% the genomic intervals ancestral to a set of samples,
-% scattered across lineages (the edges of the graph)
-% at some time in the past. In the next section, we outline how
-% tracing ancestral material allows the identification and removal of nodes
-% and inheritance intervals, such that
-% only genetic ancestry relevant to the current population is retained.
-
 \section{ARGs and local trees}
 \label{sec-ARG-and-local-trees}
 % (We use ``local'' rather than
@@ -793,7 +738,7 @@ Thus, for a given gARG with nodes $\{1, \dots, n\}$ and
 edges $E$ (Section~\ref{sec-gARG}), we recover the local tree
 at position $x$ as follows.
 We begin by setting $\pi_u = 0$ for each $1 \leq u \leq n$.
-Then, for each sample node in $S$ we trace its path rootwards through the
+Then, for each sample node in $S$ we trace its path pastwards through the
 ARG for position $x$, and record this path in $\pi$.
 Specifically, at a given node $u$,
 we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
@@ -1067,19 +1012,18 @@ when lineages with overlapping ancestral material choose the same
 parent genome.
 Note that in this simulation we do not explicitly
 model recombination \emph{events} via an ARG node, but simply record
-the \emph{outcome} of a recombination via outbound edges to
+the \emph{outcome} of a recombination via edges to
 the parent's two genomes.
-Thus, a recombinant node may also correspond to a coalescence
-(e.g.~node \noderef{g} in Fig.~\ref{fig-simplification}).
+Thus, a recombinant node such as node \noderef{g} in Fig.~\ref{fig-simplification}
+may also correspond to a coalescence.
 The distinction of
 using a single node to represent
-a recombination event (e.g.~Fig.~\ref{fig-ancestry-resolution}),
-or two to represent the parent genomes is usually not important
-(either is possible in the gARG encoding)
-and the most convenient approach will vary by application
+a recombination event, as is done in ~Fig.~\ref{fig-ancestry-resolution},
+or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},  is usually not important.
+Either is possible in the gARG encoding, and the most convenient approach will vary by application
 (discussed e.g.\ in Appendix~\ref{sec-big-and-little-arg}).
-Note also that polytomies (e.g.~Fig.~\ref{fig-simplification} node \noderef{k})
-are a natural feature of such a Wright-Fisher model
+Note also that node \noderef{k} in Fig.~\ref{fig-simplification} has three children.
+Polytomies like this are a natural feature of such a Wright-Fisher model
 (but see Appendix~\ref{sec-cell-lineages-and-args}).
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
@@ -1100,13 +1044,13 @@ and more complex situations arising from simplification (see below).
 Thirdly, the shading intensity of a node denotes the ``coalescent span'', the
 fraction of the node's span (the length of genome in which it
 is reachable from the samples in the local trees)
-over which it is coalescent (has more than one child). Nodes which
+over which it has more than one child. Nodes which
 are never locally unary therefore have a coalescent span of 100\%,
 whereas nodes in which ancestral material never coalesces have a
 coalescent span of 0\%.
 
 Returning to the main topic of this section,
-Fig.~\ref{fig-simplification}A is original simulation output in
+Fig.~\ref{fig-simplification}A is the original simulation output, in
 which we retain all nodes involved in recombination
 or common ancestry events. This is the true history, and contains
 a very high level of detail, some of which may be considered
@@ -1279,7 +1223,8 @@ be described using the classical eARG formalisms (Section~\ref{sec-eARG}).
 % mistakes here? Hopefully the rich detail of reality will come through
 % and replace old ideas.
 Nonetheless, both methods produce estimates in which nodes and edges
-persist across multiple trees, naturally captured by the gARG approach.
+persist across multiple trees, creating
+inheritance graphs which fit naturally into the gARG formulation.
 To illustrate the varying levels of information captured
 by current methods, and some qualitative differences between them,
 Fig.~\ref{fig-inferred-args} shows graphical depictions of
@@ -1645,10 +1590,9 @@ that takes ``temporal'' correlations into account.
 Thus, while SIA takes advantage of information about local tree correlation,
 it is in quite an indirect way, and
 clearly much of the detail about recombination events in an ARG is lost.
-The \texttt{tsdate} algorithm (and related naive estimator
-of ancestral location) uses much more between-tree
-information~\citep{wohns2022unified}, explicitly using the gARG
-encoding to reason about ancestral nodes.
+The \texttt{tsdate} algorithm and related naive estimator
+of ancestral location explicitly use the gARG encoding
+to reason about ancestral nodes~\citep{wohns2022unified}.
 The main application for fully precise ARGs thus far has been
 to compute a likelihood under the
 coalescent~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian,
@@ -1738,7 +1682,7 @@ and scales of data and
 % I'm thinking about things like Espalier specifically wanting
 % to characterise the recombs, vs Relate mainly wanting to
 % get good local trees
-targetting particular inference goals, sharing a common ARG interchange format.
+targeting particular inference goals, sharing a common ARG interchange format.
 The output of these diverse inference methods could then be
 processed by numerous downstream applications,
 enabling users to freely compare the outputs of different
@@ -1771,13 +1715,14 @@ establish ARG methods within mainstream genetics.
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
 for helpful discussions and comments on the manuscript.
-
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
 (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
 % Anastasia Ignatieva acknowledges support from TODO
 % TODO Jerome: add EPSRC and NIH HG011395-0 grants.
-Jerome Kelleher acknowledges support from the Robertson Foundation.
+Jerome Kelleher acknowledges support from the Robertson Foundation,
+NIH (research grants HG011395 and HG012473) and 
+EPSRC (research grant EP/X024881/1).
 Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 % Anthony Wilder Wohns acknowledges support from TODO
 
@@ -2398,7 +2343,7 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
-In Fig.~\ref{fig-simplification} we provide a schematic of the events (coloured red and blue squares) and
+Fig.~\ref{fig-simplification} shows a schematic of the events (coloured red and blue squares) and
 the genomes (chromosome icons) that occur in the cellular germline of a simplified, diploid multicellular
 hermaphrodite eukaryote with partially overlapping generations. Here, events are not represented by a single
 genome: rather, a genome can be associated with (or ``tag'') an event above or below it.
