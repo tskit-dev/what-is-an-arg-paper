@@ -365,10 +365,10 @@ and illustrate its limitations. We are
 interested in the details of how ARGs are described mathematically,
 and as a consequence, how they are represented in a practical sense
 as the output of inference programs.
-Where such concrete details of an ARG data structure
-(the encoding) are
-mathematically defined~\citep[e.g.][]{
-gusfield2014recombinatorics,ignatieva2021kwarg}
+Where details of an ARG data structure (the encoding) are
+% Three papers 10 years apart will do here, right?
+provided~\citep[e.g.][]{
+wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability}
 they follow the approach described by Griffiths and colleagues
 (but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
 for notable exceptions), and a large number of
@@ -377,7 +377,9 @@ ARG inference methods use it as an output format
 \citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
 heine2018bridging,ignatieva2021kwarg}.
 % Griffiths never mentions "sampling events", so let's not get
-% into that. It's not an important detail.
+% into that. It's not an important detail, and we don't want to be
+% overly precise about something that people haven't actually written
+% down.
 In this Griffiths encoding we have two types of internal node in the graph,
 representing the common ancestor and recombination events
 in the history of a sample.
@@ -539,7 +541,7 @@ regarded as the one where an event occurred
 (Appendix~\ref{sec-cell-lineages-and-args}),
 or whether multiple recombinations
 within a single individual should be regarded as one or multiple events are
-debatable.
+debatable points.
 % If we want to have an ARG software ecosystem then such fireside
 % discussions won't help.
 From the perspective of a concrete data structure,
@@ -1721,7 +1723,7 @@ Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Insti
 % Anastasia Ignatieva acknowledges support from TODO
 % TODO Jerome: add EPSRC and NIH HG011395-0 grants.
 Jerome Kelleher acknowledges support from the Robertson Foundation,
-NIH (research grants HG011395 and HG012473) and 
+NIH (research grants HG011395 and HG012473) and
 EPSRC (research grant EP/X024881/1).
 Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 % Anthony Wilder Wohns acknowledges support from TODO
