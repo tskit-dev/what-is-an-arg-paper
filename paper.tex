@@ -914,22 +914,22 @@ This is because no ancestral material coalesces in \noderef{e}:
 \noderef{e},
 while \noderef{c} only inherits the (disjoint) right hand end.
 
-ARG-unary nodes occur when an ARG node has one child and one or
-more parents.
-Nodes with one child and one parent (``pass-through'' nodes)
-occur where we wish the record the passage of ancestral material
+An ARG node with one child and one or
+more parents is ARG-unary.
+If it has one child and only one parent, it represents a ``pass-through'' node:
+these occur where we wish the record the passage of ancestral material
 through a known node. For example, in simulations
 it is sometimes useful to record the passage of
 ancestral material through known pedigree individuals
 regardless of whether common ancestry occurs.
-ARG-unary nodes are also occur in inferences
-from longitudinal datasets where genetic
-data is sampled at many timepoints and recombination
-is rare (e.g.~SARS-CoV-2; see Discussion).
 Nodes with one child and two parents arise when
 we model a recombination event using a single node
 in the classical manner
 (e.g.\ Fig.~\ref{fig-ancestry-resolution}).
+It is also possible for sample nodes to be ARG-unary, for example
+in inferences from longitudinal datasets where genetic
+data is sampled at many timepoints and recombination
+is rare (e.g.~SARS-CoV-2; see Discussion).
 
 Locally unary nodes are a common and important feature
 of many different types of ARG.
