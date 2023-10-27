@@ -82,7 +82,7 @@ We propose an alternative ``genome ARG'' (gARG) encoding
 expressed in terms of
 % we haven't define a "genome" yet, so need to give a bit of context
 specific genomes and their intervals of genetic inheritance.
-We show it can fully capture the richness of modern large-scale datasets
+We show this can fully capture the richness of modern large-scale datasets
 and is compatible with modern simulation and inference methods.
 Moreover, we show that, unlike the eARG encoding which requires
 a precise estimate of all recombination events,
@@ -923,9 +923,12 @@ This is because no ancestral material coalesces in \noderef{e}:
 \noderef{e},
 while \noderef{c} only inherits the (disjoint) right hand end.
 
-An ARG node with one child and one or
-more parents is ARG-unary.
-If it has one child and only one parent, it represents a ``pass-through'' node:
+% We get discussion of ARG-unary nodes out of the way first: these are
+% relatively easy to understand (but it's worth emphasising that
+% eARG-like recombination nodes are ARG-unary, as that might not be clear
+By definition, ARG-unary nodes have one child but can have one or
+more parents.
+A node with one child and only one parent represents a ``pass-through'' node:
 these occur where we wish the record the passage of ancestral material
 through a known node. For example, in simulations
 it is sometimes useful to record the passage of
@@ -940,7 +943,10 @@ in inferences from longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
 is rare (e.g.~SARS-CoV-2; see Discussion).
 
-Locally unary nodes are a common and important feature
+% Moving on from ARG-unary to the more general case
+More generally, locally unary nodes,
+which can have one or more children in the graph,
+are a common and important feature
 of many different types of ARG.
 As discussed in the previous section,
 without these nodes marking the passage
@@ -1599,6 +1605,8 @@ that takes ``temporal'' correlations into account.
 Thus, while SIA takes advantage of information about local tree correlation,
 it is in quite an indirect way, and
 clearly much of the detail about recombination events in an ARG is lost.
+% You don't even need to define event nodes when using a graph-based
+% algorithm like tsdate
 The \texttt{tsdate} algorithm and related naive estimator
 of ancestral location explicitly use the gARG encoding
 to reason about ancestral nodes~\citep{wohns2022unified}.
@@ -2326,10 +2334,6 @@ local tree is then generated using standard phylogenetic methods.
 
 \section{Cell lineages and ARGs}
 \label{sec-cell-lineages-and-args}
-In eukaryotic organisms, ARGs are a result of the cellular processes of mitosis
-(which leads to common ancestry and coalescence)
-and meiosis (which leads to recombination, including both crossovers and gene conversion).
-
 \begin{figure}
 \begin{center}
     \includegraphics[width=0.8\textwidth]{illustrations/cell-lines}
@@ -2352,9 +2356,15 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
+In eukaryotic organisms, ARGs are a result of the cellular processes of mitosis
+(which leads to common ancestry and coalescence)
+and meiosis (which leads to recombination, including both crossovers and gene conversion).
 Fig.~\ref{fig-simplification} shows a schematic of the events (coloured red and blue squares) and
 the genomes (chromosome icons) that occur in the cellular germline of a simplified, diploid multicellular
-hermaphrodite eukaryote with partially overlapping generations. Here, events are not represented by a single
+hermaphrodite eukaryote with partially overlapping generations. 
+% It may be worth putting in something here about events being a slippery concept
+% (we have already mentioned this at the end of Section 3
+Here, an event is not represented by a specific
 genome: rather, a genome can be associated with (or ``tag'') an event above or below it.
 The gARG representation allows any such genome to be arbitrarily distant in time or number of cell
 divisions from the event itself (see Section~\ref{sec-precision}).
