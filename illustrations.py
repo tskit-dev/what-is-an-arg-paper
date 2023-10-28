@@ -838,7 +838,7 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
-        ax.text(260, -38, lab, fontsize=20, family="serif")
+        ax.text(250, -38, lab, fontsize=20, family="serif")
 
         ax_edges.set_title(f"{name} ({subtitle})", y=1.05)
 
@@ -895,7 +895,7 @@ def inference():
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
     svg.append('<g transform="translate(0, -19)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(140, 5) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(135, 5) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
