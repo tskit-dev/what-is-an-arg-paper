@@ -797,35 +797,11 @@ def inference():
             for n in tskit_arg_visualizer_json["arg"]["nodes"]:
                  params["pos"][n["id"]] = np.array([n["x"], -n["y"]])
 
-        if name == "Tsinfer":
-            params["tweak_x"] = {
-            #    21: 12, 18: -12, 22: 15, 19: 5, 12: -3, 13: 2, 25: 5,
-            #    23: 0, 11: 12, 23: 52, 5: 110, 25: 30, 20: 5, 24: 10, 17: -5
-            }
-        if name == "ARGweaver":
-            #subtitle = "(typical MCMC result) " + subtitle
-            params["tweak_x"] = {
-                #54: 10, 48: 7, 49: 10, 26: 5, 30: 10, 32: -5, 31: 12, 15: -7, 40: 2,
-                #44: -5, 39: -2, 45: -3, 52: -2, 51: -5, 42: 5,
-            }
-        if name == "KwARG":
-            params["tweak_x"] = {
-            #    18: 5, 17: 7, 16: 5, 13: -2, 20: -7, 19: -8, 11: -5, 12: -5, 35: -3,
-            #    22: -5, 23: -5, 33: 10, 27: 5, 32: 8, 29: -2, 28: 2, 26: 5, 25: 3,
-            }
         if name == "Relate JBOT":
             params["tweak_x"] = {
                 40: 25, 35: 27, 38: 48, 31: 15, 34: 23, 37: 39, 36: 33, 33: 15, 32: 12,
                 30: 35, 26: 5, 29: 25, 28: 25, 25: -5, 23: -10, 22: -15, 21: -2, 27: 25, 24: 20,
                 20: -10, 15: -42, 11: -5, 16: -10, 13: -40, 18: -10, 19: -10,
-            }
-
-        if name == "Relate":
-            #params["reverse_x_axis"]=True
-            params["tweak_x"] = {
-                #20: -25, 30: 10, 19: -20, 24: 20, 15: 7, 13: 5, 12: 5, 28: 15, 27: -30,
-                #6: -40, 0: 10, 1: 10, 2: 10, 3: 10, 14: 13, 11: 12, 25: 10,
-                #28: 5, 26: 16, 17: -15, 16: 5, 21: -2, 23: 2, 29: 5
             }
 
         edge_colors_by_node, edge_colors_by_id = get_edge_colors(ts)
@@ -853,17 +829,16 @@ def inference():
         for ((i, tree), (interval, edges_out, edges_in)) in zip(enumerate(
                 ts.trees()), ts.edge_diffs()):
 
-            relative_span = ((tree.interval.right - tree.interval.left) /
-                             ts.get_sequence_length())
-
             for edge in edges_in:
                 edges[edge.id] = (left_coord, -1, times[edge.child])
             for edge in edges_out:
                 edges[edge.id] = (edges[edge.id][0], left_coord, edges[edge.id][2])
+            left_coord += tree.interval.span / ts.sequence_length * width
+        
+        # plot breakpoints
+        for brk in ts.breakpoints(as_array=True)[1:-1]:
+            ax_edges.axvline(brk/ts.sequence_length * width, -0.2, 1.2, linestyle="--", linewidth=0.8)
 
-            ax_edges.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
-            left_coord += relative_span * width
-            ax_edges.axvline(left_coord, -0.2, 1.2, linestyle="--", linewidth=0.8)
         # Colormap normalization to the number of edges in each tree sequence (as above)
         norm = mpl.colors.Normalize(vmin=0, vmax=max_rank_by_ts[name])
 
