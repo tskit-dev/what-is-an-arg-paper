@@ -167,18 +167,20 @@ def run_relate():
         ts_jbot,
         # Hack here
         additional_equivalents={
-            24: 14, 34: 14,
-            21: 11,
-            22: 12, 32: 12,
-            23: 13, 33: 13,
-            29: 18,
-            })
+            21: 13, 33: 13,
+            24: 14,
+            23: 12, 32: 12,
+            31: 11,
+            25: 16,
+        }
+    )
+
     # See if we can get nicer times
     try:
         tables = ts.dump_tables()
         for n in ts.nodes():
             tables.nodes[n.id] = n.replace(
-                time=np.mean([v for v in n.metadata["Relate_times"].values()]))
+                time=np.min([v for v in n.metadata["Relate_times"].values()]))
         tables.sort()
         ts = tables.tree_sequence()
     except:
