@@ -69,7 +69,7 @@ is usually referred to as an ancestral recombination graph (ARG).
 % Be specific about what we're talking about.
 ARGs are classically defined by the graph of
 % We can play a bit loose here, please don't change to "common ancestor"
-coalescence and recombination events in the history of sample,
+coalescence and recombination events in the history of a sample,
 with the differential inheritance structure encoded by the
 crossover breakpoints associated with recombination events.
 We show that this ``event ARG'' (eARG) encoding
@@ -82,10 +82,11 @@ We propose an alternative ``genome ARG'' (gARG) encoding
 expressed in terms of
 % we haven't define a "genome" yet, so need to give a bit of context
 specific genomes and their intervals of genetic inheritance.
-We show this can fully capture the richness of modern large-scale datasets
+We show that the gARG encoding can fully capture the richness of modern large-scale datasets
 and is compatible with modern simulation and inference methods.
 Moreover, we show that, unlike the eARG encoding which requires
-a precise estimate of all recombination events,
+% TODO rephrase "to be detailed" is ambiguous
+all recombination events to be detailed,
 the gARG encoding enables fine-grained
 levels of precision about recombination to be represented,
 opening up a rich set of additional details.
@@ -1267,14 +1268,14 @@ region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods:
 (A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate. See the
 text for details of these methods.
-Edge colours are based on the time of the edge's child node
+Edge colours indicate time of the edge's child node
 (lighter: older; darker: younger).
 Vertical and horizontal positions of graph nodes are arbitrary.
 Line width and node colour are as described in Fig.~\ref{fig-simplification}.
-Graphics on the bottom row show the genome positions, relative to the start of
+Bottom row graphics show the genome positions, relative to the start of
 the ADH gene, for each graph edge from the corresponding ARG. Edge intervals
 are drawn as horizontal lines, stacked in time order (edges with youngest
-children at the bottom); vertical dashed lines indicate breakpoints between
+children at the bottom); vertical dashed lines denote breakpoints between
 local trees.
 }
 \end{figure}
@@ -1298,7 +1299,10 @@ quite different principles.
 \texttt{Tsinfer} works in a two-step process, first generating ancestral
 haplotypes via heuristics and then inferring inheritance relationships
 between them using the Li and Stephens model~\citep{li2003modeling}.
-\texttt{Relate} first reconstructs local tree topologies across the genome, using a variant of the Li and Stephens model to estimate the ordering of coalescence events in each tree, and then estimates branch lengths using MCMC with a coalescent-based prior.
+\texttt{Relate} first reconstructs local tree topologies across the genome,
+using a variant of the Li and Stephens model to estimate the
+ordering of coalescence events in each tree, and then estimates
+branch lengths using MCMC with a coalescent-based prior.
 See Appendix~\ref{sec-survey-arg-infer} for more details on these
 and other inference methods.
 
@@ -1306,20 +1310,20 @@ Inferred ARGs are based on the \citet{kreitman1983nucleotide} dataset,
 a standard benchmark in the classical ARG
 literature.
 It consists of 43 biallelic SNPs spanning 2.4Kb of the \emph{D.~melanogaster} ADH
-locus on chromosome 2L. Where required for inference purposes we assume a
-mutation rate of $5.49\times10^{-9}$
-and recombination rate of $8.4\times10^{-9}$ per site per generation
+locus on chromosome 2L. Where required for inference purposes we assume
+mutation and recombination rates of $5.49\times10^{-9}$
+and $2.40463\times10^{-9}$ per site per generation
 % NOTE: we should be citing the original sources here too.
-\citep{adrion2020community,lauterbur2023expanding},
-% Note: would have been simpler to use the stdposim estimate
-% of 1.7M from Li et al 2006. (not that it matters)
-and constant effective population size of $10^6$.
+\citep{schrider2013rates,comeron2012many}
+and a constant effective population size of $1720600$ \citep{li2006inferring}, all
+values being taken from the \texttt{stdpopsim} library
+\citep{adrion2020community,lauterbur2023expanding}.
 Full details of the software used and code to generate these
 figures are available on GitHub (see Data Availability).
 
 % Here we describe recombination features
-Considering~Fig.~\ref{fig-inferred-args}, we can see that
-there is considerable variation in the number of recombination breakpoints
+Considering Fig.~\ref{fig-inferred-args}, we can see that
+there is substantial variation in the number of recombination breakpoints
 inferred by different methods, with e.g.~\argweaver\ suggesting
 far more than the 7 required for this dataset under minimal parsimony
 assumptions~\citep{song2003parsimonious}.
@@ -1333,7 +1337,7 @@ breakpoint, the number of breakpoints equals the number of 2-parent
 In contrast, Fig.~\ref{fig-inferred-args}C,D do not have this
 straightforward
 relationship between the number of nodes with multiple parents
-and breakpoints along the genome.
+and number of breakpoints along the genome.
 In both ARGs the number of breakpoints is smaller
 than the number of multiple-parent ARG nodes, showing
 that several multiple-parent nodes must share breakpoint positions.
@@ -1369,15 +1373,16 @@ Fig.~\ref{fig-inferred-args}A,B and C demonstrates that
 \kwarg, \argweaver\ and \tsinfer\ all contain locally unary nodes.
 Another difference between methods highlighted in this figure
 is the presence of polytomies, which only
-\tsinfer\ creates. The most obvious example involves
+\tsinfer\ creates. The most obvious example
 involves nodes \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F},
-which happen happen to have identical sequences.
+which happen to have identical sequences.
 Because \kwarg, \argweaver, and \relate\ require
 bifurcating trees by design, each picks an arbitrary order of branching
-(hence Fig.~\ref{fig-inferred-args}A,B disagrees
-with Fig.~\ref{fig-inferred-args}D in this order).
-% JK: I don't quite get this, so readers probably won't either. Let's
-% stick a few clear messages.
+(hence Fig.~\ref{fig-inferred-args}A and B disagree
+in this order, and Fig.~\ref{fig-inferred-args}D even shows different
+orders in different trees).
+% JK: I don't quite get the commented out sentence below, so readers probably
+% won't either. Let's stick to a few clear messages.
 % More generally, the number of nodes in Fig.~\ref{fig-inferred-args}C
 % that have more than two children hints at considerable uncertainty in
 % the order of branching elsewhere in the ARG.
@@ -1562,8 +1567,11 @@ representing uncertainty over the ordering of coalescence events) or
 out-degree greater than two (representing uncertainty over the ordering
 of multiple recombination events). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
-aspect of future work. Fully utilising such uncertainty in downstream
-applications is also vital, of course.
+aspect of future work. 
+% Obvious, but nobody is doing it, so needs to be said. 
+% TODO rephrase to say this is an open question.
+Fully utilising such uncertainty in downstream
+applications is also vital.
 
 The timing, positions, and even the number of recombination events is generally
 not possible to infer precisely from genome sequencing data. Under
@@ -2356,7 +2364,7 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
-In eukaryotic organisms, ARGs are a result of the cellular processes of mitosis
+In eukaryotes, ARGs are a result of the cellular processes of mitosis
 (which leads to common ancestry and coalescence)
 and meiosis (which leads to recombination, including both crossovers and gene conversion).
 Fig.~\ref{fig-simplification} shows a schematic of the events (coloured red and blue squares) and
@@ -2365,12 +2373,13 @@ hermaphrodite eukaryote with partially overlapping generations.
 % It may be worth putting in something here about events being a slippery concept
 % (we have already mentioned this at the end of Section 3
 Here, an event is not represented by a specific
-genome: rather, a genome can be associated with (or ``tag'') an event above or below it.
-The gARG representation allows any such genome to be arbitrarily distant in time or number of cell
-divisions from the event itself (see Section~\ref{sec-precision}).
+genome. Rather, a genome can be associated with (or ``tag'') an event above or below it (and as argued in
+Section~\ref{sec-precision}, the gARG representation allows these associated genomes to be arbitrarily distant
+in time or number of cell
+divisions from the event itself).
 
 Thick black lines trace an ARG that describes the ancestry of the lower arm of the
-four sampled chromosomes, and these the lines pass through gARG nodes (green chromosomal regions).
+four sampled chromosomes, and these lines pass through gARG nodes (green chromosomal regions).
 A number of these nodes have only one parent and one child in the ARG; these would often be omitted
 (taken as implicit) in a minimally simplified gARG.
 
@@ -2383,16 +2392,17 @@ polytomies therefore represent a gARG-enabled merging of multiple coalescent eve
 node, just as ARG nodes with more than 2 parents represent a merging of multiple recombination
 events into a younger node.
 
-It is worth noting that ``true'' polytomies in ARGs are a feature of model assumptions
-rather than biological reality. Indeed, given a large enough mutation rate
-(or single cell sequencing at a sufficiently detailed level) it should be possible to
-distinguish sequential rounds of mitosis within a single multicellular organism.
-For example, a mutation in the first cell division of $D_{10}$ could be shared between
+Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example, 
+that a mutation in the first cell division of $D_{10}$ could be shared between
 the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
-the right hand gamete. For an ARG that has been accurately inferred from real data,
-a polytomy is therefore making a (deliberately) imprecise statement about the order
-of coalescence, rather than reflecting of a single instantaneous event; this
-interpretation fits naturally into the gARG framework.
+the right hand gamete. With a high enough germline mutation rate (or equivalently, a long enough genome), each
+round of mitotic genome duplication within a single multicellular organism could
+potentially be distinguished.
+This implies that in ARGs that have been inferred from real data, polytomies represent a lack
+of mutational information (rather than marking a single ``multifurcation event'').
+The ability to represent polytomies, and conceptualise them as a (deliberately) imprecise statement about the order
+of coalescence within and between individuals,
+fits naturally into the gARG framework presented in this paper.
 
 \clearpage
 \renewcommand\thefigure{S\arabic{figure}}
