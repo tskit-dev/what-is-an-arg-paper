@@ -181,6 +181,46 @@ requires precise estimates of each recombination event,
 the gARG encoding allows us to systematically describe uncertainty
 about the temporal ordering of multiple recombinations.
 
+Aside from the stochastic process interpretation, there
+is another concept of an ARG that we must be careful to distinguish,
+that of the \emph{actual} ARG underlying a sample of genomes
+and ultimately an entire species. This ARG is the true history,
+perfectly resolved into binary splits and mergers by
+the cellular processes of meiosis and mitosis, regardless
+of sampling density or population processes
+(Appendix~\ref{sec-cell-lineages-and-args}).
+Just as this true, ideal ARG unquestionably exists it
+can also never be entirely known
+% NOTE: preempting some discussion here:
+% Mutation rate is (a) not high enough in existing species to
+% resolve, (b) probably couldn't be if organisms are to survive,
+% and (c) such a high mutation rate would probably even obscure
+% the more ancient past.
+because of a fundamental lack of mutational information.
+This ideal ARG is also not a sample from the coalescent
+or any other population genetics model: by necessity, and design,
+such mathematical constructs are caricatures of biological reality,
+allowing us to draw general conclusions about population processes
+without the burden of unnecessary detail.
+The scale of present-day datasets breaks fundamental assumptions
+made by such models, and we must therefore be careful to articulate
+our goals in inference.
+Mathematical models are insufficient to describe the complexities
+of biological reality when sampling is at population scale,
+and the true ARG can never be known in its entirity.
+A reasonable goal to set, then, is to estimate \emph{aspects}
+of the true ARG and to capture uncertainty where it inevitably exists.
+This is the approach taken by recent inference
+methods~\citep{kelleher2019inferring,speidel2019method,zhang2023biobank},
+by neither fully imposing the constraints of a mathematical
+model or trying estimate the true ARG is its compete detail, they
+have made substantial progress. However, our vocabularly
+and mathematical formalisms, rooted in both the ideal and
+mathematical concepts of an ARG, are insufficient to capture the
+richness of these new structures.
+
+
+
 % This is nice to have, but probably won't work in the final version
 % without section numbers. Let's deal with that when we get there I guess.
 We begin in Section~\ref{sec-gARG} by providing a precise formal definition
@@ -350,9 +390,9 @@ in many ways simply a clarification of existing treatments
 \cite[e.g.][]{mathieson2020ancestry,shipilina2023origin},
 adding concrete details to describe the
 differential inheritance of genetic material between genomes.
-% This is definitely needed for the Nicks, who are always thinking
-% about the deeper processes and are quite happy being loosey-goosey
-% with representation details
+% % This is definitely needed for the Nicks, who are always thinking
+% % about the deeper processes and are quite happy being loosey-goosey
+% % with representation details
 It is important to note that here, and throughout,
 we are not questioning the form of the
 actual ancestral processes that occur in nature, but rather how we
@@ -1568,8 +1608,8 @@ representing uncertainty over the ordering of coalescence events) or
 out-degree greater than two (representing uncertainty over the ordering
 of multiple recombination events). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
-aspect of future work. 
-% Obvious, but nobody is doing it, so needs to be said. 
+aspect of future work.
+% Obvious, but nobody is doing it, so needs to be said.
 % TODO rephrase to say this is an open question.
 Fully utilising such uncertainty in downstream
 applications is also vital.
@@ -2372,7 +2412,7 @@ In eukaryotes, ARGs are a result of the cellular processes of mitosis
 and meiosis (which leads to recombination, including both crossovers and gene conversion).
 Fig.~\ref{fig-simplification} shows a schematic of the events (coloured red and blue squares) and
 the genomes (chromosome icons) that occur in the cellular germline of a simplified, diploid multicellular
-hermaphrodite eukaryote with partially overlapping generations. 
+hermaphrodite eukaryote with partially overlapping generations.
 % It may be worth putting in something here about events being a slippery concept
 % (we have already mentioned this at the end of Section 3
 Here, an event is not represented by a specific
@@ -2397,7 +2437,7 @@ polytomies therefore represent a gARG-enabled merging of multiple coalescent eve
 node, just as ARG nodes with more than 2 parents represent a merging of multiple recombination
 events into a younger node.
 
-Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example, 
+Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example,
 that a mutation in the first cell division of $D_{10}$ could be shared between
 the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
 the right hand gamete. With a high enough germline mutation rate (or equivalently, a long enough genome), each
