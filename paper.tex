@@ -244,8 +244,9 @@ it is vital that our formal methods and terminology catch up
 with this reality.
 
 We address these problems here by providing a simple formal description of an
-ARG data structure, based on recording specific genomes and their intervals of
-genetic inheritance. We call this the ``genome ARG'', or gARG encoding. We
+ARG data structure, based on recording the intervals of
+genetic inheritance between specific genomes.
+We call this the ``genome ARG'', or gARG encoding. We
 contrast this with the classical formal definition of an ARG, based on
 recording common ancestor and recombination events, which we refer to as the
 ``event ARG'' or eARG encoding. We show that the new gARG encoding it is a
@@ -605,8 +606,8 @@ for a discussion of this important point).
 % eARGs are representationally for limited interchange
 While the Griffiths approach of annotating recombination nodes with a
 breakpoint in an eARG is a concise and elegant way of describing realisations
-of the coalescent with recombination, it has some significant issues when applied to the
-complexities of present-day datasets. The eARG encoding explicitly models only
+of the coalescent, it is inherently limited when
+implemented literally. The eARG encoding explicitly models only
 two different types of event and thus anything that is not a single crossover
 recombination or common ancestor event, must be incorporated
 either in a roundabout way using these
@@ -618,8 +619,23 @@ zero-length edge. From the perspective of practical interchange of data between
 inference methods and downstream applications, both
 workarounds are problematic, and the gARG encoding described in the previous
 section offers a much simpler solution.
-Modern datasets contain many more complexities which the eARG encoding
-is ill-suited to represent (see Discussion).
+
+Aside from these obvious practical challenges arising from a
+literal implementation of the Griffiths approach, there is a deeper
+issue with the implicit strategy of basing an ARG data structure on
+recording events and their properties (e.g.\ the crossover breakpoint
+for a recombination event). The fundamental problem with this approach
+is that it assumes that all events are \emph{knowable}, and does not
+provide any obvious mechanism for either aggregating multiple events
+or expressing uncertainty about them. While this is not a
+problem when describing the results of simulations (where all details
+are perfectly known), it is a major issue when we wish to
+formally describe the output of inference methods, particularly
+as datasets approach the population scale.
+As discussed in the introduction,
+the precise details of all events in these vast ARGs can never be
+known, and a data structure that \emph{enforces} complete
+precision is therefore an impediment to progress.
 
 There is also a certain clarity gained by explicitly modelling nodes
 in the inheritance graph as genomes.
