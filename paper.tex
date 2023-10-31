@@ -229,7 +229,7 @@ and interesting detail between these two extremes.
 Although the term ``ARG'' is now often used in a general
 sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
-as informally
+informally
 encompassing the varied outputs from modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient,
@@ -243,52 +243,25 @@ more than a million SARS-CoV-2 genomes~\citep{zhan2023towards},
 it is vital that our formal methods and terminology catch up
 with this reality.
 
-% % pedantically, ARG is not really a "word"
-% The term ``ARG'' is now frequently used in a general
-% sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
-% schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
-% as a data structure
-% encompassing the varied outputs from modern simulation and
-% inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
-% kelleher2019inferring, speidel2019method, baumdicker2021efficient, zhang2023biobank}.
-% This broad usage is a useful generalisation,
-% but is not compatible with the available formal
-% data structure definitions
-% derived from the original Griffiths approach.
-% This mismatch between usage and definition has led to significant
-% problems, which if not addressed
-% may impede progress in applying ARGs to understand the biological world.
-
-% % % Para 3: what is the problem?
-% The classical formal definition of an ARG is derived from the
-% stochastic process, and expressed in terms of events:
-% the common ancestor and recombination events
-% that occur in the history of a sample. We show that this approach
-% to representing ARGs (which we call the ``event ARG'', or eARG
-% encoding) is inherently limiting, insufficient to represent
-% the complexities of modern datasets, and incompatible with
-% the outputs of modern large-scale simulation and inference
-% methods~\citep{kelleher2016efficient,speidel2019method,
-% kelleher2019inferring,zhang2023biobank}.
-% We address these problems by providing a more flexible formulation
-% of an ARG data structure, which we call the ``genome ARG''
-% or gARG encoding. We show that it is fully compatible with the
-% classical eARG approach, while providing much more flexibility
-% in how genetic inheritance can be represented,
-% and encompasses the outputs of modern methods.
-% Moreover we show that, in contrast with the eARG encoding which
-% requires precise estimates of each recombination event,
-% the gARG encoding allows us to systematically describe uncertainty
-% about the temporal ordering of multiple recombinations.
-
+We address these problems here by providing a simple formal description of an
+ARG data structure, based on recording specific genomes and their intervals of
+genetic inheritance. We call this the ``genome ARG'', or gARG encoding. We
+contrast this with the classical formal definition of an ARG, based on
+recording common ancestor and recombination events, which we refer to as the
+``event ARG'' or eARG encoding. We show that the new gARG encoding it is a
+substantial generalisation of the classical eARG approach,  providing much more
+flexibility in how genetic inheritance can be represented, and encompassing the
+outputs of modern methods. We show that the gARG approach can represent many
+different types of approximation, in particular allowing us to systematically
+describe uncertainty about the temporal ordering of multiple recombinations. It
+is important to note that throughout we are interested in the details of these
+competing mathematical formulations and their practical consequences.
+% Do we need to say this? Probably not?
+We are not questioning the form of the true ARG, or its existance.
 
 % A data structure is a means of encoding information, and
 % a precise description of the structure allows us to mathematically
 % reason about its properties.
-
-
-% We must also distinguish between a specific realisation
-% the \emph{actual} ARG underlying a sample of genomes
 
 % This is nice to have, but probably won't work in the final version
 % without section numbers. Let's deal with that when we get there I guess.
