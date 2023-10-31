@@ -22,6 +22,7 @@
 \newcommand{\tsinfer}[0]{\texttt{tsinfer}}
 \newcommand{\kwarg}[0]{\texttt{KwARG}}
 \newcommand{\argweaver}[0]{\texttt{ARGweaver}}
+\newcommand{\argweaverD}[0]{\texttt{ARGweaver-D}}
 \newcommand{\relate}[0]{\texttt{Relate}}
 \newcommand{\espalier}[0]{\texttt{Espalier}}
 \newcommand{\arbores}[0]{\texttt{Arbores}}
@@ -69,7 +70,7 @@ is usually referred to as an ancestral recombination graph (ARG).
 % Be specific about what we're talking about.
 ARGs are classically defined by the graph of
 % We can play a bit loose here, please don't change to "common ancestor"
-coalescence and recombination events in the history of a sample,
+coalescence and recombination events in the history of a sample of genomes,
 with the differential inheritance structure encoded by the
 crossover breakpoints associated with recombination events.
 We show that this ``event ARG'' (eARG) encoding
@@ -301,7 +302,7 @@ contain both paternal and maternal  genomes
 labelled \noderef{a} to \noderef{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\noderef{a} to \noderef{d}) with their ancestors.
 Genomes \noderef{a} and \noderef{c} are the product of two independent
-recombination events (red) between
+meioses (recombination events in red) between
 the paternal genomes \noderef{e}
 and \noderef{f}, and regions of genome inherited are shown with shaded colour.
 Genomes are shaded such that where, backwards in time,
@@ -1313,13 +1314,13 @@ It consists of 43 biallelic SNPs spanning 2.4Kb of the \emph{D.~melanogaster} AD
 locus on chromosome 2L. Where required for inference purposes we assume
 mutation and recombination rates of $5.49\times10^{-9}$
 and $2.40463\times10^{-9}$ per site per generation
-% NOTE: we should be citing the original sources here too.
 \citep{schrider2013rates,comeron2012many}
 and a constant effective population size of $1720600$ \citep{li2006inferring}, all
 values being taken from the \texttt{stdpopsim} library
 \citep{adrion2020community,lauterbur2023expanding}.
-Full details of the software used and code to generate these
-figures are available on GitHub (see Data Availability).
+Software versions were \kwarg\ v1.0, \argweaverD\ (2019),
+\tsinfer v0.3.1, and \relate v1.1.9: full details and replicable code for generating
+these figures are available on GitHub (see Data Availability).
 
 % Here we describe recombination features
 Considering Fig.~\ref{fig-inferred-args}, we can see that
@@ -1739,7 +1740,9 @@ establish ARG methods within mainstream genetics.
 
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
-for helpful discussions and comments on the manuscript.
+for helpful discussions and comments on the manuscript, and 
+to Iain Mathieson and Aylwyn Scally for interesting discussions that 
+originally motivated this work.
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
 (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
@@ -2355,7 +2358,7 @@ Lines show prospective inheritance paths for all chromosomes. Solid lines show a
 retrospective ancestry paths for four chosen chromosomes (indicated by square black ``sampling events'')
 sampled from 3 diploid individuals ($D_1$, $D_2$, $D_3$) in the current generation.
 Ancestral recombination events and coalescence events are shown as red and blue squares respectively.
-The ARG paths for the lower arm of the sampled chromosomes (green) is highlighted as a
+A realised ARG path for the lower arm of the sampled chromosomes (green) is highlighted as a
 thick solid line and involves a single recombination event and four coalescence events
 (highlighted as deep red and blue squares within individuals $D_5$, $D_{10}$, and $D_{13}$).
 ARG lineages also show gametic genomes, contained within shaded circles.
@@ -2373,10 +2376,12 @@ hermaphrodite eukaryote with partially overlapping generations.
 % It may be worth putting in something here about events being a slippery concept
 % (we have already mentioned this at the end of Section 3
 Here, an event is not represented by a specific
-genome. Rather, a genome can be associated with (or ``tag'') an event above or below it (and as argued in
+genome. Rather, genomes can be associated with (or ``tag'') events above or below them (and as argued in
 Section~\ref{sec-precision}, the gARG representation allows these associated genomes to be arbitrarily distant
 in time or number of cell
-divisions from the event itself).
+divisions from the event itself). For example, tagging the two genomes above a recombination event leads to the
+2 node representation seen in Figs.~\ref{fig-simplification} and \ref{hudson_vs_bigARG}, whereas tagging the genome
+below a recombination event leads to the more conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
 
 Thick black lines trace an ARG that describes the ancestry of the lower arm of the
 four sampled chromosomes, and these lines pass through gARG nodes (green chromosomal regions).
