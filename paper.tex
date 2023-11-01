@@ -685,11 +685,11 @@ will not be relevant to the genetic ancestry of the current population.
 This redundancy is periodically removed using the ``simplify''
 algorithm~\citep{kelleher2018efficient}, which propagates and
 resolves ancestral material.
-Efficient simplification is the key enabling factor for 
+Efficient simplification is the key enabling factor for
 this prospective-ARG based approach to forward-time simulation,
 which can be orders of magnitude faster than standard
 sequence-based methods
-(see Section~\ref{sec-ARG-simplification} for 
+(see Section~\ref{sec-ARG-simplification} for
 other applications).
 % Define "sample-resolved" here for later use
 We refer to a gARG that has been simplified with respect to a set of
@@ -848,7 +848,7 @@ ARGs and local trees.
 Suppose we are given a gARG defined by a set of nodes and edges.
 There is no requirement on the structure of this ARG beyond
 the basic definitions: it could correspond to an ARG in which
-every recombination event is exactly specified 
+every recombination event is exactly specified
 (e.g.\ Fig.~\ref{fig-ancestry-resolution})
 or one in which local trees are entirely disjoint
 (i.e.\ only the sample nodes are shared between them).
@@ -1632,7 +1632,8 @@ High-quality whole genome assemblies are now available
 for many species % Can we say something more concrete here?
 and projects are under way to obtain
 them for tens of thousands more~\citep{darwin2022sequence,lewin2022earth},
-and so we can expect inferred ARGs to routinely span whole chromosomes.
+and so we can expect inferred ARGs to routinely span
+large fractions of a chromosome.
 
 Recent large-scale methods have simplified the inference problem by
 making a single, deterministic best-guess at ARG
@@ -1646,14 +1647,14 @@ it is not clear that generating many guesses
 when sample sizes are large will achieve much.
 At the scale of millions of samples,
 we could only ever explore the tiniest corner of the incomprehensibly
-large space of likely ARGs.
+large space of plausible ARGs.
 Therefore, it is important to systematically
 describe and utilise uncertainty about ARG inference, and to
 incorporate uncertainty encountered during inference into the returned ARG.
 One approach, enabled by the gARG encoding described here, is to allow
-nodes to have (rootward) in-degree greater than two (polytomies
+nodes to have more than two children (polytomies
 representing uncertainty over the ordering of coalescence events) or
-out-degree greater than two (representing uncertainty over the ordering
+more than two parents (representing uncertainty over the ordering
 of multiple recombination events). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
 aspect of future work.
@@ -1667,7 +1668,8 @@ not possible to infer precisely from genome sequencing data. Under
 coalescent-based models, the proportion of recombination events that change the
 ARG topology grows very slowly with sample size \citep{hein2004gene}, and of those
 events only a small proportion are actually detectable from the data, assuming
-human-like mutation and recombination rates \citep{myers2002detection,hayman2023recoverability}.
+human-like mutation and recombination
+rates \citep{myers2002detection,hayman2023recoverability}.
 Even when a recombination event \emph{is} detectable, its timing and breakpoint
 position can only be inferred approximately, depending on how much information
 can be elucidated from mutations in the surrounding genomic region.
@@ -1677,10 +1679,11 @@ can be elucidated from mutations in the surrounding genomic region.
 % even more challenging.
 The fact that the eARG encoding \emph{requires}
 precise information about recombination is therefore a fundamental limitation.
+
 % % Do downstream applications actually make use of such full ARGs?
 Besides the inherent limitations that exist on inferring fully
 precise ARGs from data,
-we should also consider the value that such precise estimates provide
+we should also consider the value that such exact estimates provide
 for downstream applications.
 Many applications work by examining local trees independently,
 making detailed information about recombination events superfluous.
@@ -1703,7 +1706,7 @@ that takes ``temporal'' correlations into account.
 Thus, while SIA takes advantage of information about local tree correlation,
 it is in quite an indirect way, and
 clearly much of the detail about recombination events in an ARG is lost.
-% Mentioning tsdate here doesn't advance the 
+% Mentioning tsdate here doesn't advance the
 % narrative I think.
 % The \texttt{tsdate} algorithm and related naive estimator
 % of ancestral location explicitly use the gARG encoding
@@ -1724,7 +1727,7 @@ In contrast to typical human sequencing datasets, the SARS-CoV-2 data is
 sampled continuously through time, sometimes with tens of thousands of sequences collected per day, with relatively little genetic diversity to
 distinguish them. The reconstructed ARGs thus contain polytomies
 and non-leaf sample nodes (sequences with descendants also present
-in the dataset) many of which only have a single descendant (i.e. are ARG-unary).
+in the dataset) many of which only have a single child (i.e.\ are ARG-unary).
 Recombination is an important factor in the evolution of
 SARS-CoV-2 \citep{vaninsberghe2021recombinant,jackson2021generation,ignatieva2022ongoing},
 % Tried to jazz this up a bit, was quite dry
@@ -1773,7 +1776,8 @@ waiting distances between local trees~\citep{deng2021distribution},
 and the genomic span of an edge or clade of
 samples~\citep{ignatieva2023distribution}.
 In each case, simulation studies demonstrated
-substantial differences between these quantities in simulated and reconstructed ARGs,
+substantial differences between these quantities in simulated and
+reconstructed ARGs
 that were not captured using tree-by-tree comparisons.
 Evaluations to-date have almost all been based
 on ground truth data from highly idealised simulations,
@@ -1785,9 +1789,9 @@ The development of ARG evaluation metrics that take into account more of the
 global topology and can be applied to large ARGs would be a
 valuable and timely addition to the field.
 % Someone should do this!
-Using ARGs simulated from observed pedigree data~\citep{anderson2022genes} as 
-ground-truth would also add a valuable dimension to 
-our understanding of how well methods perform when faced with 
+Using ARGs simulated from observed pedigree data~\citep{anderson2022genes} as
+ground-truth would also add a valuable dimension to
+our understanding of how well methods perform when faced with
 realistic population and family structure.
 
 Interest in ARG inference methods and downstream applications is
@@ -1797,40 +1801,60 @@ on data formats, however, the ARG revolution may falter.
 For ARG-based methods to achieve mainstream status, we require
 a rich supporting software ecosystem.
 Ideally, this would comprise a wide range of
-inference methods specialised to different organisms, types
-and scales of data and
-% I'm thinking about things like Espalier specifically wanting
-% to characterise the recombs, vs Relate mainly wanting to
-% get good local trees
-targeting particular inference goals, sharing a common ARG interchange format.
-The output of these diverse inference methods could then be
-processed by numerous downstream applications,
-enabling users to freely compare the outputs of different
-inference methods on their data, and the result of different
-analyses on these inferences.
+inference methods specialised to different organisms,
+inference goals, and types and scales of data.
+If these diverse inference methods share a common,
+well-defined data format, their outputs could then be
+processed by many different downstream applications
+without the productivity-sapping problems
+of converting between (partially incompatible)
+program output formats~\citep{excoffier2006computer}.
 Earlier efforts to standardise ARG interchange shared this vision,
 but did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
-Without a well-defined and efficient shared format
-for ARG data interchange,
-users will suffer from problems with converting data from one program's
-output to another, an unfortunate hallmark of population genetics
-software for many years~\citep{excoffier2006computer}.
-Current methods tend to tightly couple downstream analysis
-of the inferred ARG with the inference
-itself within the same software package,
+Current methods tend to tightly couple both ARG inference and downstream
+analysis within the same software package,
 which is ultimately not compatible with the widespread use
 of ARGs for routine data analysis, and a healthy and diverse software ecosystem.
 The gARG encoding described here is a significant generalisation
 of classical concepts, capable of describing even the bewildering complexity
-of contemporary datasets and capturing important forms of temporal uncertainty.
-The \texttt{tskit} library is a high-quality open-source gARG implementation,
+of contemporary datasets and encompassing a wide range of approximate
+% Relate, tsinfer, ARGneedle all have different approx structures
+ARG structures, and would be a reasonable basis for such a community
+interchange format.
+
+% This is all a bit boring, maybe, but I think the people we want to
+% influence into using tskit will need to have this spelled out for them.
+Rigorously defining interchange formats~\cite[e.g.][]{kelleher2019htsget}
+is difficult and time-consuming,
+and no matter how precise the specification, in practise
+it is the \emph{implementations} that determines how well methods
+interoperate. The SAM/BAM file format~\citep{li2009sequence}
+is an instructive example. Originally developed as part of the
+1000 Genomes project~\citep{10002015global} to address the fragmented
+software ecosystem that existed at the time~\citep{danecek2021twelve},
+SAM/BAM has since become ubiquitous in bioinformatics pipelines.
+The excellent interoperability between methods
+exchanging alignment data is largely attributable to the
+success of \texttt{htslib}~\citep{bonfield2021htslib}, the
+software library that \emph{implements} SAM/BAM and several other
+foundational bioinformatics file formats.
+Today, there are dozens  % hundreds? Could check on github I guess?
+of tools that use \texttt{htslib} to
+support SAM/BAM and it this shared use of community software
+infrastructure that guarantees the smooth flow of data between
+applications.
+The emerging ARG software ecosystem could similarly benefit
+from the adoption of such shared community infrastructure
+to handle the mundane and time-consuming details of data interchange.
+The \texttt{tskit} library (Section~\ref{sec-efficiency}
+is a high-quality open-source gARG implementation,
 with proven efficiency and
 scalability~\citep[e.g.][]{anderson2022genes,zhan2023towards},
 that is already in widespread use.
-Adopting it as a community standard,
-and utilising its rich suite of operations,
-may accelerate progress and help to
-establish ARG methods within mainstream genetics.
+% TODO needs rephrasing
+Adopting it as a community standard may ease software implementation burden
+on researchers, freeing their time to address the many fascinating open
+questions and challenges that exist.
 
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
