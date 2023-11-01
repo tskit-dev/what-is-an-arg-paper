@@ -254,8 +254,8 @@ of a gARG, illustrated by an example ARG embedded in pedigree.
 We then provide a similar definition of the classical eARG
 approach in Section~\ref{sec-eARG}, and consider its limitations
 in the context of current datasets and research questions.
-We then discuss the important concept of ``ancestral material''
-in Section~\ref{sec-ancestral-material}, and how this relates
+Following this, we discuss the important concept of ``ancestral material''
+in Section~\ref{sec-ancestral-material}, and how it relates
 to the process of converting an eARG to a gARG.
 Using this new definition for the remainder of the paper,
 we continue
@@ -350,15 +350,6 @@ metadata with nodes such as sample identifiers or quality-control metrics.
 It is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
 with which arbitrary additional information can be associated.
-% Note: I don't see why we have to apologise for defining nodes as
-% integers, that's just the definition. I don't think anyone really
-% has a problem with this.
-% Concretely defining nodes as integers in this way has some
-% significant advantages. In particular, it provides a direct link
-% between an ARG and its local trees in terms of a well-defined
-% combinatorial object (Section~\ref{sec-ARG-and-local-trees}),
-% as well as enabling straightforward connection between
-% definitions and practical implementation (Section~\ref{sec-efficiency}).
 
 \begin{figure}
 \begin{center}
@@ -694,11 +685,12 @@ will not be relevant to the genetic ancestry of the current population.
 This redundancy is periodically removed using the ``simplify''
 algorithm~\citep{kelleher2018efficient}, which propagates and
 resolves ancestral material.
-Simplification allows efficient subsetting of ARGs (removing both samples and
-certain levels of detail about recombination, as discussed in
-Section~\ref{sec-ARG-simplification}), and is also the key enabling factor when
-incorporating prospective ARGs into
-forward-time simulation.
+Efficient simplification is the key enabling factor for 
+this prospective-ARG based approach to forward-time simulation,
+which can be orders of magnitude faster than standard
+sequence-based methods
+(see Section~\ref{sec-ARG-simplification} for 
+other applications).
 % Define "sample-resolved" here for later use
 We refer to a gARG that has been simplified with respect to a set of
 samples, such that the inheritance annotations on its edges contain
@@ -853,9 +845,16 @@ samples at a given position (so their corresponding entries in $\pi$ will be zer
 This combinatorial approach provides at least
 one novel insight, clarifying the fundamental relationship between
 ARGs and local trees.
-If we are given the sequence of local trees for a gARG
+Suppose we are given a gARG defined by a set of nodes and edges.
+There is no requirement on the structure of this ARG beyond
+the basic definitions: it could correspond to an ARG in which
+every recombination event is exactly specified 
+(e.g.\ Fig.~\ref{fig-ancestry-resolution})
+or one in which local trees are entirely disjoint
+(i.e.\ only the sample nodes are shared between them).
+If we  are given the sequence of local trees for this gARG
 encoded as an oriented tree, along with the genome interval
-covered by each tree, then we can recover precisely the same ARG.
+covered by each tree, we can recover the original gARG exactly.
 % We do this site-by-site for simplicity, but hopefully it's obvious
 % that this isn't necessary?
 More formally, suppose we are given the local tree $\pi^x_1\dots\pi^x_n$
@@ -881,7 +880,7 @@ This is not the prevailing view, however.
 ``interval-tree'' representation of
 an ARG (the local trees and the genome intervals they cover)
 ``does not contain all of the information in the underlying ARG: it lacks the
-number of recombinations occuring at each site, the times at which
+number of recombinations occurring at each site, the times at which
 recombinations occurred, and the specific sequences involved as recombination
 partners.''
 \cite{shipilina2023origin} discuss the same ideas,
@@ -1683,7 +1682,8 @@ Besides the inherent limitations that exist on inferring fully
 precise ARGs from data,
 we should also consider the value that such precise estimates provide
 for downstream applications.
-Many applications work by examining local trees independently.
+Many applications work by examining local trees independently,
+making detailed information about recombination events superfluous.
 For example, the \relate\ selection test~\citep{speidel2019method}
 obtains $p$-values by computing clade size probabilities conditional
 on the timing of coalescence events in a given local tree.
@@ -1703,11 +1703,11 @@ that takes ``temporal'' correlations into account.
 Thus, while SIA takes advantage of information about local tree correlation,
 it is in quite an indirect way, and
 clearly much of the detail about recombination events in an ARG is lost.
-% You don't even need to define event nodes when using a graph-based
-% algorithm like tsdate
-The \texttt{tsdate} algorithm and related naive estimator
-of ancestral location explicitly use the gARG encoding
-to reason about ancestral nodes~\citep{wohns2022unified}.
+% Mentioning tsdate here doesn't advance the 
+% narrative I think.
+% The \texttt{tsdate} algorithm and related naive estimator
+% of ancestral location explicitly use the gARG encoding
+% to reason about ancestral nodes~\citep{wohns2022unified}.
 The main application for fully precise ARGs thus far has been
 to compute a likelihood under the
 coalescent~\citep[e.g.][]{kuhner2000maximum,mahmoudi2022bayesian,
@@ -1726,7 +1726,7 @@ distinguish them. The reconstructed ARGs thus contain polytomies
 and non-leaf sample nodes (sequences with descendants also present
 in the dataset) many of which only have a single descendant (i.e. are ARG-unary).
 Recombination is an important factor in the evolution of
-SARS-CoV-2~\citep{vaninsberghe2021recombinant,jackson2021generation,ignatieva2022ongoing},
+SARS-CoV-2 \citep{vaninsberghe2021recombinant,jackson2021generation,ignatieva2022ongoing},
 % Tried to jazz this up a bit, was quite dry
 and the inferred ARGs contain an unprecedented level of detail about
 the combined processes of viral mutation and recombination.
@@ -1784,6 +1784,11 @@ at biobank-scale on ARG inference are almost entirely unknown.
 The development of ARG evaluation metrics that take into account more of the
 global topology and can be applied to large ARGs would be a
 valuable and timely addition to the field.
+% Someone should do this!
+Using ARGs simulated from observed pedigree data~\citep{anderson2022genes} as 
+ground-truth would also add a valuable dimension to 
+our understanding of how well methods perform when faced with 
+realistic population and family structure.
 
 Interest in ARG inference methods and downstream applications is
 burgeoning, with exciting developments arriving at ever-increasing pace.
