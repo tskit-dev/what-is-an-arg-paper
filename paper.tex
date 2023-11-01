@@ -68,9 +68,10 @@ downstream applications in population and statistical genetics.
 The structure representing such recombinant genetic ancestry
 is usually referred to as an ancestral recombination graph (ARG).
 % Be specific about what we're talking about.
+% TODO rephrase, this is wooly now
 An ARG is classically defined as a graph of
-% We can play a bit loose here, please don't change to "common ancestor"
 coalescence and recombination events in the history of a sample of genomes,
+% TODO this is vague
 encoding an inheritance structure where
 crossover breakpoints are associated with recombination events.
 We show that this ``event ARG'' (eARG) encoding
@@ -85,8 +86,8 @@ expressed in terms of
 specific genomes and their intervals of genetic inheritance.
 We show that the gARG encoding can fully capture the richness of large-scale datasets
 and is compatible with modern simulation and inference methods.
+% TODO rewrite
 We also show that, unlike the eARG encoding which requires
-% TODO rephrase "to be detailed" is ambiguous
 all recombination events to be encoded,
 the gARG encoding enables fine-grained
 levels of precision about recombination to be represented,
@@ -130,122 +131,104 @@ follow~\citep{harris2019database,harris2023using}.
 Although it is widely accepted that ARGs are important, there is some
 confusion about what, precisely, an ARG \emph{is}.
 % The grammar is a nightmare here - the stochastic process is singular, right?
-In its original form, the ARG is an alternative
+In its original form,
+developed by Griffiths and colleagues,
+the ARG is an alternative
 formulation of the coalescent with recombination~\citep{hudson1983properties},
 where the stochastic process of coalescence and recombination
-among ancestral lineages was formalised as a
-graph by Griffiths and colleagues~\citep{griffiths1991two,
+among ancestral lineages is formalised
+as a graph~\citep{griffiths1991two,
 ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
-Subsequently, ARGs have come to be thought of as a data
+Subsequently, an ARG has come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
 a \emph{realisation} of such a random process,
 or an inferred ancestry of a sample of genomes.
 The distinction between stochastic process
-and data structure is not clear cut, however,
-and subfields use the term
+and data structure is not clear cut, however, and subfields use the term
 differently (Appendix~\ref{sec-arg-history}).
-Another concept of an ARG that we must be careful to distinguish
-is that of the \emph{actual} ARG underlying a sample of genomes
-and ultimately an entire species or higher grouping. 
-This ARG is the true history,
+Other subtly different concepts that we must be careful to distinguish
+are the ``true'' ARG, % I don't see a better word for "true" here
+describing the actual history of a sample of genomes,
+and a ``population'' ARG which is
+the true ARG of every individual in a population.
+% Note: I started off talking about the "ultimate" ARG of everone
+% who ever lived, but didn't find it that helpful.
+True ARGs are the actual history,
 perfectly resolved into binary splits and mergers by
 the cellular processes of meiosis and mitosis, regardless
 of sampling density or population processes
 (Appendix~\ref{sec-cell-lineages-and-args}).
-Just as this true ARG unquestionably exists,
-it can also never be entirely known.
-% TODO: I'm not happy with the phrasing here, anyone want to jump in?
-Even if the mutation rate were high enough to identify every
-recent branching point uniquely (while remaining biologically survivable),
-such a high rate would saturate the genome with mutations, inevitably obscuring
-past history.
-% Must be a citation for this?
-Similarly, it is unlikely that the details
-of ancient recombinations can ever be known with much precision.
+Although population ARGs unquestionably exist,
+they can also never be entirely known because of a fundamental
+lack of mutational information.
+Even if mutation rate were high enough to uniquely identify every
+recent branching point,
+such a high rate would saturate the genome with mutations
+and obscure deeper history.
 
-% Popgen models and the species ARG
-Species-level ARGs may seem fanciful, but the scale of
+% Population ARGs are here, now.
+Population ARGs may seem fanciful, but the scale of
 modern datasets makes it necessary for us to grapple with the idea.
 The UK Biobank (UKB), for example, has
 genotype data for around 500,000 humans~\citep{bycroft2018genome},
 and exome~\citep{backman2021exome} and
 whole genome sequence~\citep{halldorsson2022sequences} data
 for large subsets of this cohort.
-UKB is just one of many such projects~\citep[e.g.][]{turnbull2018hundred,
-karczewski2020mutational,tanjo2021practical}, and
-agricultural datasets are even
-richer in terms of generations~\citep[e.g.][]{hayes20191000,Ros-Freixedes2020}.
-While we are not sequencing entire species,
-we are certainly sampling at a scale where the assumptions of
-population genetics models are substantially broken.
-By necessity and design, such mathematical models are caricatures
-of biological reality,
-allowing us to draw general conclusions about population processes
-without the burden of unnecessary detail.
- % TODO we're singling out the coalescent here, but it's just an 
- % exmaple. The DTWF is no better an approximation of the last 5
- % generations of UKB, e.g.
-The coalescent with recombination (henceforth, ``coalescent'')
-is a powerful model that defines a distribution over ARGs
-for a given set of parameters.
-A key assumption of the coalescent is that
-sample size is much less than the effective population size ($N_e$)
-and although the model has proved surprisingly robust to violations
-of this assumption~\citep{wakeley2012gene,bhaskar2014distortion,
-nelson2020accounting},
-sample size can now be an order of magnitude or more \emph{larger} than the
-usually assumed $N_e$ values.
-A model assuming a single $N_e$ would be a
-drastic over-simplification in these cases of course, but
-even if sufficiently complex demographic models~\citep{gower2022demes}
-encompassing hundreds of populations, explosive growth rates and myriad
-interconnections of migration, were somehow estimated and provided as input,
-ARGs sampled from the coalescent cannot capture the full complexities
-of family structure or the vagaries of history inherent in these
-datasets.
+UKB is just one of many such population-scale sequencing
+projects~\citep[e.g.][]{turnbull2018hundred,
+karczewski2020mutational,tanjo2021practical}.
+Agricultural datasets are on a similar scale,
+and also include dense multi-generational sampling
+and near-perfect pedigree
+information~\citep[e.g.][]{hayes20191000,Ros-Freixedes2020}.
+Recent advances have made it possible to actually
+\emph{estimate} ARGs at population scale:
+ARGs have already been inferred for the 500,000
+humans in UKB~\citep{kelleher2019inferring,zhang2023biobank}
+and over a million SARS-CoV-2 genomes~\citep{zhan2023towards}.
+While this new population-scale reality presents many
+exciting opportunities, it also poses substantial challenges
+to existing methodologies.
 
-% What is the problem?
-The true ARG underlying a modern population-scale dataset
-therefore cannot be known in its entirety, and the value
-% TODO rephrase heavily!
-of attempting to describe the intricate details of the recent past
-through mathematical models is questionable.
-A pragmatic goal that we may set, then, is to infer \emph{aspects}
-of the true ARG and to capture uncertainty where it inevitably exists.
-This is the approach taken by recent inference
-% TODO should we mention SARGE? I don't think it's in the same class, but
-% maybe I'm wrong?
-methods~\citep{kelleher2019inferring,speidel2019method,zhang2023biobank},
-which estimate an approximate version of the true
-ARG, informed, but not strictly constrained, by population genetic
-models and parsimony.
-While these methods have made substantial progress there
-are, however, some significant problems in this emerging field.
-Our terminology and mathematical formalisms for ARGs,
-ultimately derived from the coalescent,
-are ill-suited to describing these approximate structures.
-% TODO add some citations of examples?
-Discussions are forced to contrast a ``full'' ARG, containing
-a precise description of every recombination or coalescence event,
-with a sequence of disconnected local trees.
-This view is depauperate, obscuring many shades of important
-and interesting detail between these two extremes.
+% What's the problem?
+A major problem currently facing the field is that
+classical mathematical formalisms and terminology
+cannot adequately describe these vast inferred ARGs.
+Fundamentally, these formalisms assume that an
+entire ARG is known with complete precision,
+and are not suited to describing partial or approximate knowledge.
+As we are actively inferring ARGs at the population scale,
+and such ARGs can never be known in complete detail,
+there is currently a substantial gap between our theoretical frameworks
+and practical application.
+The breakthroughs in scale achieved by recent
+% Tedious to cite again, but I don't want to leave Relate out of the
+% motivatory discussion
+methods~\citep[e.g.][]{kelleher2019inferring,speidel2019method,zhang2023biobank}
+are all based (in different ways) on inferring
+approximate \emph{structures},
+instead of a complete, fully detailed history.
+% Not sure the point is coming across that well here, but it's a
+% really important point and a significant
+It is important to distinguish here between
+structures and models: whether an inference method is based
+on heuristics or a rigorous mathematical model is orthogonal
+to the level of detail provided in its estimate.
+One could heuristically estimate a fully precise ARG,
+% this would be a cool thing to do!
+or statistically sample a partial,
+approximate ARG under a model
+such as the coalescent. % with recomb is surely unnecessary here
 Although the term ``ARG'' is now often used in a general
 sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
 informally
-encompassing the varied outputs from modern simulation and
+encompassing the varied approximate structures output by modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient,
 zhang2023biobank},
-there is no corresponding mathematical description of an ARG data structure.
-Classical formalisms, based on the Griffiths approach, are insufficient to
-describe these rich details.
-Given that ARGs have already been estimated for the 500,000
-humans in UKB~\citep{kelleher2019inferring,zhang2023biobank} and
-more than a million SARS-CoV-2 genomes~\citep{zhan2023towards},
-it is vital that our formal methods and terminology catch up
-with this reality.
+there is no corresponding mathematical description
+that is sufficiently general.
 
 We address these problems here by providing a simple formal description of an
 ARG data structure, based on recording the intervals of
@@ -261,8 +244,8 @@ different types of approximation, in particular allowing us to systematically
 describe uncertainty about the temporal ordering of multiple recombinations. It
 is important to note that throughout we are interested in the details of these
 competing mathematical formulations and their practical consequences.
-% Do we need to say this? Probably not?
-We are not questioning the form of the true ARG, or its existence.
+% True ARGs, being perfectly resolved, can ultimately be described in
+% either formalism
 
 % This is nice to have, but probably won't work in the final version
 % without section numbers. Let's deal with that when we get there I guess.
@@ -352,8 +335,8 @@ which can be separated by multiple generations.
 We will use these two sets of terms interchangeably.
 
 In many settings, nodes are dated, i.e.\ each
-node $u\in N$ is associated with a time $\tau_u$. 
-A node can represent any genome along a 
+node $u\in N$ is associated with a time $\tau_u$.
+A node can represent any genome along a
 chain of cell divisions~\ref{sec-cell-lineages-and-args},
 or can be interpreted as representing one of ``the'' genomes of an
 individual. How we assign dates will therefore vary according to application.
@@ -649,7 +632,7 @@ Outside of the context of a
 mathematical model, an ``event'' is a slippery concept.
 For example, \emph{which} genome along a chain of cell divisions should be
 regarded as the one where an event occurred,
-or whether multiple coalescences 
+or whether multiple coalescences
 within a single individual should be regarded as one or multiple events are
 debatable points (Appendix~\ref{sec-cell-lineages-and-args}).
 % If we want to have an ARG software ecosystem then such fireside
@@ -832,10 +815,10 @@ genome for a given set of sample nodes.
 Precisely defining the process by which local trees are extracted
 from an ARG is essential to our understanding of how ARGs and local trees
 are related, and we require a concrete mathematical structure
-to describe the local trees. It is important to note that 
-although the following discussion is phrased in terms of the 
+to describe the local trees. It is important to note that
+although the following discussion is phrased in terms of the
 gARG encoding,  the arguments apply equally to eARGs
-because any eARG can be converted to a 
+because any eARG can be converted to a
 % Note, being sample-resolve is not necessary for following argument so omitting
 gARG without loss of information (Section~\ref{sec-ancestral-material}).
 
@@ -1614,43 +1597,43 @@ Importantly, gARGs do not require fully precise estimates of
 ancestral recombination events,
 and allow us to directly express important forms of temporal uncertainty.
 
-% Fully decoupling the general concept of an ARG from the coalescent
-% with recombination (henceforth, ``coalescent'')
-% is an important step.
-% While the coalescent has proven to be a useful and
-% robust
-% model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
-% many modern datasets have properties that grossly
-% violate its assumptions.
-% One key assumption is that
-% sample size $n$ is much less than the effective population size, $N_e$.
-% Several human datasets now consist of hundreds of thousands of
-% genomes~\citep{turnbull2018hundred, bycroft2018genome,
-% karczewski2020mutational,tanjo2021practical,
-% halldorsson2022sequences},
-% and so sample size is an order of magnitude \emph{larger} than the
-% usually assumed $N_e$ values.
-% Agricultural datasets are an even more extreme departure from this
-% assumption, with hundreds of thousands of samples embedded in
-% multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
-% and effective population sizes of 100 and even
-% less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
-% A model assuming a single $N_e$ would be a
-% drastic over-simplification of course, but
-% even if sufficiently complex demographic models~\citep{gower2022demes}
-% encompassing hundreds of populations, explosive growth rates and myriad
-% interconnections of migration, were somehow estimated and provided as input,
-% ARGs sampled from the coalescent cannot capture the complexities
-% of family structure in these
-% datasets~\citep[e.g.][]{turnbull2018hundred,Ros-Freixedes2020}.
-% Another core assumption of the coalescent model is that the genome
-% (or at least the region under study) is short enough that the number of extant
-% lineages remains much smaller than $N_e$ at all times.
-% High-quality whole genome assemblies are now available
-% for many species % Can we say something more concrete here?
-% and projects are under way to obtain
-% them for tens of thousands more~\citep{darwin2022sequence,lewin2022earth},
-% and so we can expect inferred ARGs to routinely span whole chromosomes.
+Fully decoupling the general concept of an ARG from the coalescent
+with recombination (henceforth, ``coalescent'')
+is an important step.
+While the coalescent has proven to be a useful and
+robust
+model~\citep{wakeley2012gene,bhaskar2014distortion,nelson2020accounting},
+many modern datasets have properties that grossly
+violate its assumptions.
+One key assumption is that
+sample size $n$ is much less than the effective population size, $N_e$.
+Several human datasets now consist of hundreds of thousands of
+genomes~\citep{turnbull2018hundred, bycroft2018genome,
+karczewski2020mutational,tanjo2021practical,
+halldorsson2022sequences},
+and so sample size is an order of magnitude \emph{larger} than the
+usually assumed $N_e$ values.
+Agricultural datasets are an even more extreme departure from this
+assumption, with hundreds of thousands of samples embedded in
+multi-generational pedigrees~\citep{hayes20191000,Ros-Freixedes2020}
+and effective population sizes of 100 and even
+less~\citep{MacLeod2013,Makanjuola2020,Hall2016,Porcnic2016}.
+A model assuming a single $N_e$ would be a
+drastic over-simplification of course, but
+even if sufficiently complex demographic models~\citep{gower2022demes}
+encompassing hundreds of populations, explosive growth rates and myriad
+interconnections of migration, were somehow estimated and provided as input,
+ARGs sampled from the coalescent cannot capture the complexities
+of family structure in these
+datasets~\citep[e.g.][]{turnbull2018hundred,Ros-Freixedes2020}.
+Another core assumption of the coalescent model is that the genome
+(or at least the region under study) is short enough that the number of extant
+lineages remains much smaller than $N_e$ at all times.
+High-quality whole genome assemblies are now available
+for many species % Can we say something more concrete here?
+and projects are under way to obtain
+them for tens of thousands more~\citep{darwin2022sequence,lewin2022earth},
+and so we can expect inferred ARGs to routinely span whole chromosomes.
 
 Recent large-scale methods have simplified the inference problem by
 making a single, deterministic best-guess at ARG
@@ -1808,7 +1791,7 @@ Without agreement on basic terminology and some standardisation
 on data formats, however, the ARG revolution may falter.
 For ARG-based methods to achieve mainstream status, we require
 a rich supporting software ecosystem.
-Ideally, this would comprise a wide range of 
+Ideally, this would comprise a wide range of
 inference methods specialised to different organisms, types
 and scales of data and
 % I'm thinking about things like Espalier specifically wanting
@@ -1846,8 +1829,8 @@ establish ARG methods within mainstream genetics.
 
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
-for helpful discussions and comments on the manuscript, and 
-to Iain Mathieson and Aylwyn Scally for interesting discussions that 
+for helpful discussions and comments on the manuscript, and
+to Iain Mathieson and Aylwyn Scally for interesting discussions that
 originally motivated this work.
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
