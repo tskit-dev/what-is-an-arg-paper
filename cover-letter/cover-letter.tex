@@ -1,0 +1,61 @@
+\documentclass{letter}
+
+\signature{Jerome Kelleher}
+
+\address{Big Data Institute\\University of Oxford}
+\begin{document}
+
+\begin{letter}{GENETICS}
+
+\opening{Dear Editors,}
+
+I am writing on behalf of my coauthors to submit our manuscript entitled
+\emph{A general and efficient representation of ancestral recombination graphs}
+for consideration for publication as a
+full-length article in the
+``Theoretical Population and Evolutionary Genetics'' section.
+
+Ancestral recombination graphs (ARGs) are currently the subject of
+intense research interest, with new inference methods, evaluations,
+and applications regularly appearing.
+In their recent preprint\footnote{The era of the ARG:
+an empiricist’s guide to ancestral recombination graphs, \emph{arXiv}, 2023}
+ (a biologically oriented primer
+on ARGs), Lewanski et al.\ have hailed the ``Era of the ARG'', and
+argue eloquently for their widespread application.
+
+Despite this general optimism, however, we believe there is a
+a fundamental problem in the area, which will substantially hamper
+progress if not addressed.
+The crux of the matter is that it is no longer clear
+what an ARG \emph{is}, precisely.
+While the classical Griffiths definition that
+an ARG is the set of coalescence and recombination events
+in the history of a sample is straightforward,
+it is not sufficient to describe the output of methods
+such as \texttt{msprime}, \texttt{tsinfer}, \texttt{Relate}
+or \texttt{ARGneedle} (all of which are now routinely
+referred to as ``ARG'' methods). This mismatch
+between formal definition, informal usage and the
+actual output of current methods is the source of deep
+and persistent confusion.
+
+We show that the classical event-based approach is
+fundamentally limited, and propose a simple new
+formal framework which we call the ``gARG''
+encoding. We demonstrate that it generalises
+the classical definitions, is fully compatible
+with the output of the methods listed above,
+% clarifies inference goals,
+and opens up many avenues for future research.
+
+As this this manuscript addresses a question
+that is central to current research trends,
+we believe that it will be of substantial interest
+to the readers of GENETICS. We hope that you agree.
+
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}
