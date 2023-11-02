@@ -13,10 +13,7 @@
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
 \usepackage[symbol]{footmisc}
-% JK: turning this off for the moment as I keep clicking through on links
-% to the bibliography while reading the text and it's intensely annoying.
-% Can reinstate when we're ready to preprint
-% \usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \newcommand{\noderef}[1]{\textsf{#1}}
 \newcommand{\tsinfer}[0]{\texttt{tsinfer}}
@@ -1826,19 +1823,19 @@ Rigorously defining interchange formats~\cite[e.g.][]{kelleher2019htsget}
 is difficult and time-consuming,
 and no matter how precise the specification, in practise
 it is the \emph{implementations} that determines how well methods
-interoperate. The SAM/BAM file format~\citep{li2009sequence}
+interoperate. The BAM file format~\citep{li2009sequence}
 is an instructive example. Originally developed as part of the
 1000 Genomes project~\citep{10002015global} to address the fragmented
 software ecosystem that existed at the time~\citep{danecek2021twelve},
-SAM/BAM has since become ubiquitous in bioinformatics pipelines.
+BAM has since become ubiquitous in bioinformatics pipelines.
 The excellent interoperability between methods
 exchanging alignment data is largely attributable to the
 success of \texttt{htslib}~\citep{bonfield2021htslib}, the
-software library that \emph{implements} SAM/BAM and several other
+software library that \emph{implements} BAM and several other
 foundational bioinformatics file formats.
-Today, there are dozens  % hundreds? Could check on github I guess?
-of tools that use \texttt{htslib} to
-support SAM/BAM and it this shared use of community software
+Today, there are thousands of software projects
+using \texttt{htslib}~\citep{bonfield2021htslib},
+and it this shared use of community software
 infrastructure that guarantees the smooth flow of data between
 applications.
 The emerging ARG software ecosystem could similarly benefit
