@@ -139,6 +139,7 @@ where the stochastic process of coalescence and recombination
 among ancestral lineages is formalised
 as a graph~\citep{griffiths1991two,
 ethier1990two,griffiths1996ancestral,griffiths1997ancestral}.
+% Move into plural, an ARG is an instance of the data structure in this view
 Subsequently, an ARG has come to be thought of as a data
 structure~\citep{minichiello2006mapping}, i.e.\ describing
 a \emph{realisation} of such a random process,
@@ -151,8 +152,6 @@ are the ``true'' ARG, % I don't see a better word for "true" here
 describing the actual history of a sample of genomes,
 and a ``population'' ARG which is
 the true ARG of every individual in a population.
-% Note: I started off talking about the "ultimate" ARG of everone
-% who ever lived, but didn't find it that helpful.
 True ARGs are the actual history,
 perfectly resolved into binary splits and mergers by
 the cellular processes of meiosis and mitosis, regardless
@@ -171,9 +170,9 @@ Population ARGs may seem fanciful, but the scale of
 modern datasets makes it necessary for us to grapple with the idea.
 The UK Biobank (UKB), for example, has
 genotype data for around 500,000 humans~\citep{bycroft2018genome},
-and exome~\citep{backman2021exome} and
+along with exome~\citep{backman2021exome} and
 whole genome sequence~\citep{halldorsson2022sequences} data
-for large subsets of this cohort.
+for large subsets of the cohort.
 UKB is just one of many such population-scale sequencing
 projects~\citep[e.g.][]{turnbull2018hundred,
 karczewski2020mutational,tanjo2021practical}.
@@ -637,7 +636,9 @@ are unproductive.
 \label{sec-ancestral-material}
 Ancestral material~\citep{wiuf1999ancestry,wiuf1999recombination}
 is a key concept in understanding the overall inheritance structure
-of an ARG. It denotes the genomic intervals ancestral to a set of samples
+of an ARG (here, and throughout, we use the general term ``ARG'' when
+the details of the specific encoding are not important).
+It denotes the genomic intervals ancestral to a set of samples
 on the edges of an ARG.
 For example, in Fig.~\ref{fig-arg-in-pedigree} we have
 four sample genomes, \noderef{a}--\noderef{d}. As we
@@ -860,7 +861,7 @@ covered by each tree, we can recover the original gARG exactly.
 More formally, suppose we are given the local tree $\pi^x_1\dots\pi^x_n$
 for each nucleotide position $1 \leq x \leq L$ on a genome of length $L$.
 Then, the edges of the ``local ARG'' for this tree is given by
-$E^x = \{(u, \pi_u^x, \{x\} \mid \pi_u^x \neq 0\}$. Since the ARG
+$E^x = \{(u, \pi_u^x, \{x\}) \mid \pi_u^x \neq 0\}$. Because the ARG
 edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
 the positions over which node $c$ inherits from parent $p$, we can
 then simply combine the ``local ARGs'' for each position $x$
@@ -1336,19 +1337,6 @@ Fig.~\ref{fig-inferred-args} shows graphical depictions of
 example ARGs produced by four tools using substantially
 different inference strategies.
 
-% Indeed, a
-% common statement in the literature is that modern tools such as
-% \tsinfer~\citep{kelleher2019inferring} and \relate~\citep{speidel2019method}
-% construct not an ARG but ``only'' a sequence of local trees
-% \citep[e.g.][]{hejase2020summary, brandt2021evaluation, ignatieva2021kwarg}.
-% While this statement is correct inasmuch as neither method attempts to infer
-% the explicit recombination events that cause adjacent trees to differ, it is
-% certainly not the case that they infer independent local trees. In fact, both
-% methods take advantage of genome-wide mutation information to construct
-% genealogies, and as a result nodes and edges persist across multiple local
-% trees. Their results can therefore be thought of as an inheritance graph, and
-% represented in the gARG format.
-
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} Inference of sample-resolved ARGs for 11
@@ -1406,8 +1394,9 @@ and $2.40463\times10^{-9}$ per site per generation
 and a constant effective population size of $1720600$ \citep{li2006inferring}, all
 values being taken from the \texttt{stdpopsim} library
 \citep{adrion2020community,lauterbur2023expanding}.
-Software versions were \kwarg\~v1.0, \argweaverD\~(2019),
-\tsinfer\~v0.3.1, and \relate\~v1.1.9: full details and replicable code for generating
+Software versions were \kwarg~v1.0, \argweaverD~(2019),
+\tsinfer~v0.3.1, and \relate~v1.1.9.
+Full details and code for generating
 these figures are available on GitHub (see Data Availability).
 
 % Here we describe recombination features
@@ -1857,15 +1846,14 @@ on researchers, freeing their time to address the many fascinating open
 questions and challenges that exist.
 
 \section*{Acknowledgements}
-We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski and Andrew Vaughan
-for helpful discussions and comments on the manuscript, and
+We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski, Andrew Vaughan
+and Peter Ralph for helpful discussions and comments on the manuscript, and
 to Iain Mathieson and Aylwyn Scally for interesting discussions that
 originally motivated this work.
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
 (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
 % Anastasia Ignatieva acknowledges support from TODO
-% TODO Jerome: add EPSRC and NIH HG011395-0 grants.
 Jerome Kelleher acknowledges support from the Robertson Foundation,
 NIH (research grants HG011395 and HG012473) and
 EPSRC (research grant EP/X024881/1).
@@ -2013,18 +2001,6 @@ other more general types of phylogenetic networks~\citep{huson2010phylogenetic}.
 focus has been on algorithmic and combinatorial results~\citep{gusfield2014recombinatorics}
 that are often not of
 direct relevance to the inference problems described above.
-
-%It is important to note that parsimonious ARGs
-%have quite different properties from realisations of the
-%ARG \emph{process} as modelled by Hudson, Griffiths, and colleagues.
-%Firstly, branch lengths are not typically estimated,
-%% why do we need the following two lines
-%and node times are required in order to compute a likelihood under the
-%coalescent with recombination (see section XXX).
-%Secondly, even if branch lengths were estimated,
-%the realisations would have a very small likelihood since
-%the coalescent with recombination is often highly \emph{un}parsimonious
-%in terms of recombination events.
 
 The goal of this historical overview is to illustrate that the meaning of the term ``ARG" now strongly
 depends on the context in which it is used, and can mean both the
