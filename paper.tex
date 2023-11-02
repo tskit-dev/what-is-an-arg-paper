@@ -70,7 +70,7 @@ the genealogical trees for
 % we're talking about in direct language understandable by population
 % geneticists.
 a sample of sequences vary along the genome.
-The structure capturing the details of these intricately interwoven paths of 
+The structure capturing the details of these intricately interwoven paths of
 inheritance is referred to as an ancestral recombination graph (ARG).
 New developments have made it possible to infer ARGs at scale,
 enabling many new applications in population and statistical genetics.
@@ -339,7 +339,7 @@ We will use these two sets of terms interchangeably.
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
 A node can represent any genome along a
-% A gamete *is* one of the genomes along a chain of cell divisions? 
+% A gamete *is* one of the genomes along a chain of cell divisions?
 % I don't see what adding a gamete clarifies, and we cite Hudson plenty
 chain of cell divisions~\ref{sec-cell-lineages-and-args},
 or can be interpreted as representing one of the genomes of an
@@ -2470,47 +2470,54 @@ shaded by the number of descendant samples.
 }
 \end{figure}
 
-In eukaryotes, ARGs are a result of the cellular processes of mitosis
-(which leads to common ancestry and coalescence)
-and meiosis (which leads to recombination, including both crossovers and gene conversion).
-Fig.~\ref{fig-simplification} shows a schematic of the events (coloured red and blue squares) and
-the genomes (chromosome icons) that occur in the cellular germline of a simplified, diploid multicellular
+In eukaryotes, ARGs are a result of the cellular processes of mitosis and meiosis.
+Mitosis leads to common ancestor events,
+and meiosis leads to recombination events (both crossover and gene conversion).
+Fig.~\ref{fig-simplification} shows a schematic of the events  and
+the genomes (chromosome icons) that occur in the cellular
+germline of a simplified, diploid multicellular
 hermaphrodite eukaryote with partially overlapping generations.
-% It may be worth putting in something here about events being a slippery concept
-% (we have already mentioned this at the end of Section 3
 Here, an event is not represented by a specific
-genome. Rather, genomes can be associated with (or ``tag'') events above or below them (and as argued in
-Section~\ref{sec-precision}, the gARG representation allows these associated genomes to be arbitrarily distant
-in time or number of cell
-divisions from the event itself). For example, tagging the two genomes above a recombination event leads to the
-2 node representation seen in Figs.~\ref{fig-simplification} and \ref{hudson_vs_bigARG}, whereas tagging the genome
-below a recombination event leads to the more conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
+genome. Rather, genomes can be associated with, or ``tag'', events above
+(ancestral to) or below (descended from) them.
+For example, tagging the two genomes above a recombination event leads to the
+two node representation seen in
+Figs.~\ref{fig-simplification} and \ref{hudson_vs_bigARG},
+whereas tagging the genome
+below a recombination event leads to the more
+conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
 
-Thick black lines trace an ARG that describes the ancestry of the lower arm of the
-four sampled chromosomes, and these lines pass through gARG nodes (green chromosomal regions).
-A number of these nodes have only one parent and one child in the ARG; these would often be omitted
-(taken as implicit) in a minimally simplified gARG.
+%% JK:  What does this add that is not in caption?
+% Thick black lines trace an ARG that describes the ancestry of the lower arm of
+% the four sampled chromosomes, and these lines pass through gARG nodes (green
+% chromosomal regions). A number of these nodes have only one parent and one
+% child in the ARG; these would often be omitted (taken as implicit) in a
+% minimally simplified gARG.
 
-In particular, this schematic illustrates a case where three ARG lineages coalesce within
-a single individual ($D_{10}$), corresponding to what is normally represented by a polytomy
-(e.g. Fig.~\ref{fig-simplification} node \noderef{k}). The process that generates
-these three lineages actually consists of two successive bifurcations, reflecting the fact that
-the only known method of reproducing DNA is by (semi-conservative) duplication. Under this schematic,
-polytomies therefore represent a gARG-enabled merging of multiple coalescent events into an older
-node, just as ARG nodes with more than 2 parents represent a merging of multiple recombination
-events into a younger node.
-
-Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example,
-that a mutation in the first cell division of $D_{10}$ could be shared between
-the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
-the right hand gamete. With a high enough mutation rate (or equivalently, a long enough genome), each
+The schematic illustrates an important point about the biological reality of polytomies.
+Three linages coalesce in the left-hand genome of individual $D_{10}$, but do
+so as the result of two successive bifurcations. This is \emph{necessarily} so,
+because the only known method of reproducing DNA is by (semi-conservative) duplication.
+Whether this polytomy is resolvable depends on the available mutational data.
+Mutations can occur along any cell lineages. For example,
+a mutation in the first cell division of $D_{10}$ could be shared between
+the two gametes produced by the cells in the left half of $D_{10}$
+but not shared by the right hand gamete.
+With enough mutations, each
 round of mitotic germline genome duplication within a single multicellular organism could
-potentially be distinguished.
-This implies that in ARGs that have been inferred from real data, polytomies represent a lack
-of mutational information (rather than marking a single ``multifurcation event'').
-The ability to represent polytomies, and conceptualise them as a (deliberately) imprecise statement about the order
-of coalescence within and between individuals,
-fits naturally into the gARG framework presented in this paper.
+in principle be distinguished.
+
+% Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example,
+% that a mutation in the first cell division of $D_{10}$ could be shared between
+% the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
+% the right hand gamete. With a high enough mutation rate (or equivalently, a long enough genome), each
+% round of mitotic germline genome duplication within a single multicellular organism could
+% potentially be distinguished.
+% This implies that in ARGs that have been inferred from real data, polytomies represent a lack
+% of mutational information (rather than marking a single ``multifurcation event'').
+% The ability to represent polytomies, and conceptualise them as a (deliberately) imprecise statement about the order
+% of coalescence within and between individuals,
+% fits naturally into the gARG framework presented in this paper.
 
 \clearpage
 \renewcommand\thefigure{S\arabic{figure}}
