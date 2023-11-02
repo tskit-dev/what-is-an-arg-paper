@@ -62,36 +62,42 @@ Information and Discovery, University of Oxford, UK}
 \vspace{-1em}
 
 \begin{abstract}
-New developments have made it possible to infer genetic genealogies in
-the presence of recombination at scale, enabling many
-downstream applications in population and statistical genetics.
-The structure representing such recombinant genetic ancestry
-is usually referred to as an ancestral recombination graph (ARG).
-% Be specific about what we're talking about.
-% TODO rephrase, this is wooly now
-An ARG is classically defined as a graph of
-coalescence and recombination events in the history of a sample of genomes,
-% TODO this is vague
-encoding an inheritance structure where
-crossover breakpoints are associated with recombination events.
-We show that this ``event ARG'' (eARG) encoding
-is limited in the patterns of genetic inheritance that can be represented,
-being insufficient to describe the outputs of recent ARG simulation
-and inference methods,
-and ill-suited to capturing the complex patterns of
-relatedness that exist in contemporary datasets.
-We propose an alternative ``genome ARG'' (gARG) encoding
-expressed in terms of
+As a result of recombination, adjacent nucleotides can have
+different paths of genetic inheritance and therefore
+the genealogical trees for
+% surely saying nucleotides and "sample of sequences" is concrete enough
+% here? This paper isn't for a general audience, let's just say what
+% we're talking about in direct language understandable by population
+% geneticists.
+a sample of sequences vary along the genome.
+The structure representing this ensemble of correlated local
+trees is usually referred to as an ancestral recombination graph (ARG).
+New developments have made it possible to infer ARGs at scale,
+enabling many new applications in population and statistical genetics.
+This rapid progress, however, has led to a
+% Controversial, perhaps, but true?
+substantial gap opening between theory and practice.
+Standard mathematical formalisms,
+% "detailing" here is intended to convey the we keep details about these
+% events like recomb breakpoint.
+based on exhaustively detailing the ``events'' that occur
+in the history of a sample,
+are insufficient to describe the outputs of current methods.
+We argue, moreover, that the precise estimates of
+\emph{all} events required
+by such formalisms are fundamentally unsuited to the realities
+of modern, population-scale datasets.
+We propose an alternative mathematical formulation that
+encompasses the outputs of recent methods and
+can capture the full richness of modern large-scale datasets.
+By defining this ARG encoding in terms of
 % we haven't define a "genome" yet, so need to give a bit of context
-specific genomes and their intervals of genetic inheritance.
-We show that the gARG encoding can fully capture the richness of large-scale datasets
-and is compatible with modern simulation and inference methods.
-% TODO rewrite
-We also show that, unlike the eARG encoding which requires
-all recombination events to be encoded,
-the gARG encoding enables fine-grained
-levels of precision about recombination to be represented,
-opening up a rich set of additional details.
+specific genomes and their intervals of genetic inheritance,
+we avoid the necessity of exhaustively listing (and estimating)
+\emph{all} events. The effects of multiple events can be
+aggregated in different ways, providing a natural way to express many
+forms of approximate and partial knowledge about the
+recombinant ancestry of a sample.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral recombination graphs
