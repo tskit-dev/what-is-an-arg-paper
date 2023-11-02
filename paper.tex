@@ -70,8 +70,8 @@ the genealogical trees for
 % we're talking about in direct language understandable by population
 % geneticists.
 a sample of sequences vary along the genome.
-The structure representing this ensemble of correlated local
-trees is usually referred to as an ancestral recombination graph (ARG).
+The structure capturing the details of these intricately interwoven paths of 
+inheritance is referred to as an ancestral recombination graph (ARG).
 New developments have made it possible to infer ARGs at scale,
 enabling many new applications in population and statistical genetics.
 This rapid progress, however, has led to a
@@ -164,7 +164,7 @@ the cellular processes of meiosis and mitosis, regardless
 of sampling density or population processes
 (Appendix~\ref{sec-cell-lineages-and-args}).
 Although population ARGs unquestionably exist,
-they can also never be entirely known because of a fundamental
+they can also never be entirely known, in part because of a fundamental
 lack of mutational information.
 Even if mutation rate were high enough to uniquely identify every
 recent branching point,
@@ -200,19 +200,17 @@ A major problem currently facing the field is that
 classical mathematical formalisms and terminology
 cannot adequately describe these vast inferred ARGs.
 Fundamentally, these formalisms assume that an
-entire ARG is known with complete precision,
+ARG is known in complete detail
 and are not suited to describing partial or approximate knowledge.
 As we are actively inferring ARGs at the population scale,
 and such ARGs can never be known in complete detail,
 there is currently a substantial gap between our theoretical frameworks
 and practical application.
 The breakthroughs in scale achieved by recent
-% Tedious to cite again, but I don't want to leave Relate out of the
-% motivatory discussion
 methods~\citep[e.g.][]{kelleher2019inferring,speidel2019method,zhang2023biobank}
-are all based (in different ways) on inferring
-approximate \emph{structures},
-instead of a complete, fully detailed history.
+are all based, in different ways, on inferring
+approximate \emph{structures}
+instead of a complete and fully detailed history.
 % Not sure the point is coming across that well here, but it's a
 % really important point and a significant
 It is important to distinguish here between
@@ -232,10 +230,10 @@ encompassing the varied approximate structures output by modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient,
 zhang2023biobank},
-there is no corresponding mathematical description
+there is no corresponding mathematical definition
 that is sufficiently general.
 
-We address these problems here by providing a simple formal description of an
+We address this problem by providing a simple formal definition of an
 ARG data structure, based on recording the intervals of
 genetic inheritance between specific genomes.
 We call this the ``genome ARG'', or gARG encoding. We
@@ -262,18 +260,17 @@ in the context of current datasets and research questions.
 Following this, we discuss the important concept of ``ancestral material''
 in Section~\ref{sec-ancestral-material}, and how it relates
 to the process of converting an eARG to a gARG.
-Using this new definition for the remainder of the paper,
-we continue
+We continue
 in Section~\ref{sec-ARG-and-local-trees} by considering the relationship
 between an ARG and its local trees. Contrary to the
-prevailing view, we show that a (suitably encoded) sequence of local trees contains
+prevailing view, we show that a suitably encoded sequence of local trees contains
 precisely as much information as the corresponding ARG.
 The gARG encoding opens a rich new set of details about ARGs,
 including the ideas of locally unary nodes
 (Section~\ref{sec-locally-unary-edges}),
 the levels of detail that can be represented in an ARG
 (Section~\ref{sec-ARG-simplification}),
-and (relatedly) the degrees of precision about recombination
+and the degrees of precision about recombination
 that can be stored and we may seek to infer (Section~\ref{sec-precision}).
 These ideas have important practical considerations,
 which we illustrate by examining the qualitative properties of
@@ -342,9 +339,12 @@ We will use these two sets of terms interchangeably.
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$.
 A node can represent any genome along a
+% A gamete *is* one of the genomes along a chain of cell divisions? 
+% I don't see what adding a gamete clarifies, and we cite Hudson plenty
 chain of cell divisions~\ref{sec-cell-lineages-and-args},
-or can be interpreted as representing one of ``the'' genomes of an
-individual. How we assign dates will therefore vary according to application.
+or can be interpreted as representing one of the genomes of an
+individual; how we assign dates  to nodes
+will therefore vary according to application.
 The topological ordering defined by the directed graph structure
 and an arrow of time (telling us which direction is pastwards)
 is sufficient for many applications, however,
@@ -368,7 +368,7 @@ contain both paternal and maternal  genomes
 labelled \noderef{a} to \noderef{p}. Black lines show inheritance paths connecting
 genomes in the current generation (\noderef{a} to \noderef{d}) with their ancestors.
 Genomes \noderef{a} and \noderef{c} are the product of two independent
-meioses (recombination events in red) between
+meioses (recombination events, in red) between
 the paternal genomes \noderef{e}
 and \noderef{f}, and regions of genome inherited are shown with shaded colour.
 Genomes are shaded such that where, backwards in time,
@@ -607,8 +607,8 @@ Aside from these obvious practical challenges arising from a
 literal implementation of the Griffiths approach, there is a deeper
 issue with the implicit strategy of basing an ARG data structure on
 recording events and their properties (e.g.\ the crossover breakpoint
-for a recombination event). The fundamental problem with this approach
-is that it assumes that all events are \emph{knowable}, and does not
+for a recombination event). The fundamental problem
+is that this approach assumes all events are \emph{knowable}, and does not
 provide any obvious mechanism for either aggregating multiple events
 or expressing uncertainty about them. While this is not a
 problem when describing the results of simulations (where all details
@@ -2500,8 +2500,8 @@ events into a younger node.
 Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example,
 that a mutation in the first cell division of $D_{10}$ could be shared between
 the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
-the right hand gamete. With a high enough germline mutation rate (or equivalently, a long enough genome), each
-round of mitotic genome duplication within a single multicellular organism could
+the right hand gamete. With a high enough mutation rate (or equivalently, a long enough genome), each
+round of mitotic germline genome duplication within a single multicellular organism could
 potentially be distinguished.
 This implies that in ARGs that have been inferred from real data, polytomies represent a lack
 of mutational information (rather than marking a single ``multifurcation event'').
