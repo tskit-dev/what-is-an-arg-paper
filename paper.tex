@@ -1434,12 +1434,6 @@ that several multiple-parent nodes must share breakpoint positions.
 There are also ARG nodes with multiple parents and multiple children,
 where one or more recombinations have been pushed down onto a
 more recent node.
-% Several of these nodes have more than two
-% % parents (in red), representing multiple recombinations inferred to have
-% occurred in an unresolvable order.
-% Nevertheless, the number of breakpoints in
-% these two ARGs is smaller than the number of multiple-parent ARG nodes, showing
-% that several multiple-parent nodes must share breakpoint positions.
 As a consequence, it may be difficult to condense each transition between trees
 in these ARGs into a set of SPR operations.
 % The sharing
@@ -1650,9 +1644,9 @@ describe and utilise uncertainty about ARG inference, and to
 incorporate uncertainty encountered during inference into the returned ARG.
 One approach, enabled by the gARG encoding described here, is to allow
 nodes to have more than two children (polytomies
-representing uncertainty over the ordering of coalescence events) or
+representing uncertainty over the ordering of coalescence events, Appendix~\ref{sec-cell-lineages-and-args}) or
 more than two parents (representing uncertainty over the ordering
-of multiple recombination events). Development of other methods to capture, for example,
+of multiple recombination events, Section~\ref{sec-ARG-simplification}). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
 aspect of future work.
 % Obvious, but nobody is doing it, so needs to be said.
