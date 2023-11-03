@@ -703,7 +703,7 @@ this prospective-ARG based approach to forward-time simulation,
 which can be orders of magnitude faster than standard
 sequence-based methods
 (see Section~\ref{sec-ARG-simplification} for
-other applications).
+other applications of ARG simplification).
 % Define "sample-resolved" here for later use
 We refer to a gARG that has been simplified with respect to a set of
 samples, such that the inheritance annotations on its edges contain
@@ -879,7 +879,7 @@ the positions over which node $c$ inherits from parent $p$, we can
 then simply combine the ``local ARGs'' for each position $x$
 % YW: The above "combining" operation isn't obviously lossless to me:
 % we could potentially lose information in the different combinations
-% of intervals (e.g. if we use 2 non-combined intervals to represent a 
+% of intervals (e.g. if we use 2 non-combined intervals to represent a
 % diamond in a 1-RE-node ARG). It seems like we might need an additional
 % gARG spec to define what combinations of intervals are equivalent.
 % But no-one else has commented on this, so I guess we just let it lie.
@@ -963,12 +963,12 @@ into an ARG is then, essentially, to generate labels for
 the internal nodes, and decide which nodes persist
 across multiple local trees.
 \espalier\ approaches this task
-by identifying maximimal subtrees
+by identifying maximal subtrees
 that do not change between pairs of adjacent
 local trees and then
 heuristically exploring the space of possible
 rearrangements of these subtrees.
-To derive precise details about recombination events,
+To derive details about recombination events,
 \espalier\ then attempts to infer
 the precise subtree prune-and-regraft (SPR)
 operations~\citep{hein1990reconstructing,song2003on,song2006properties}
@@ -1088,9 +1088,7 @@ to remove various types of redundancy, much of which
 revolves around the presence of unary nodes (see previous section).
 We illustrate this successive removal of redundancy
 through a series of simplification steps
-in Fig.~\ref{fig-simplification};
-the gARG representation is shown on the left and the corresponding sequence
-of local trees on the right.
+in Fig.~\ref{fig-simplification}.
 
 \begin{figure}
 \centering
@@ -1132,7 +1130,7 @@ Note that in this simulation we do not explicitly
 model recombination \emph{events} via an ARG node, but simply record
 the \emph{outcome} of a recombination via edges to
 the parent's two genomes.
-Thus, a recombinant node such as node \noderef{g} in Fig.~\ref{fig-simplification}
+Thus, a recombinant node such as \noderef{g} in Fig.~\ref{fig-simplification}
 may also correspond to a coalescence.
 The distinction of
 using a single node to represent
@@ -1154,7 +1152,6 @@ less influential (contrast the edge
 $(\noderef{g}, \noderef{h})$
 with $(\noderef{g}, \noderef{i})$
 in Fig.~\ref{fig-simplification}A).
-% FIXME this needs some work
 Secondly, node colours denote the number of parents that they
 have in the graph, allowing us to easily see roots (those
 with zero parents), recombinants (those with two parents)
@@ -1177,8 +1174,6 @@ In Fig.~\ref{fig-simplification}A the local trees (right)
 contain many unary nodes, fewer as  we successively
 simplify (Fig.~\ref{fig-simplification}B,C),
 until we reach Fig.~\ref{fig-simplification}D, where there are none.
-A more detailed version of the displayed ARGs, showing the edge
-intervals, is provided as Supplementary Fig.~\ref{fig-simplification-with-edges}.
 
 The first level of simplification that we can perform is based only
 on the graph topology.
@@ -1403,9 +1398,9 @@ locus on chromosome 2L. Where required for inference purposes we assume
 mutation and recombination rates of $5.49\times10^{-9}$
 and $2.40463\times10^{-9}$ per site per generation
 \citep{schrider2013rates,comeron2012many}
-and a constant effective population size of $1720600$ \citep{li2006inferring}, all
-values being taken from the \texttt{stdpopsim} library
-\citep{adrion2020community,lauterbur2023expanding}.
+and a constant effective population size of 1,720,600 \citep{li2006inferring},
+as provided by the \texttt{stdpopsim}
+catalog~\citep{adrion2020community,lauterbur2023expanding}.
 Software versions were \kwarg~v1.0, \argweaverD~(2019),
 \tsinfer~v0.3.1, and \relate~v1.1.9.
 Full details and code for generating
@@ -1420,9 +1415,9 @@ assumptions~\citep{song2003parsimonious}.
 A sense of the amount of recombination in each ARG is provided by
 the node colouring scheme, which shows the number of parents for each node.
 In Fig.~\ref{fig-inferred-args}A,B, each recombination event
-corresponds to a node with exactly 2 parents and one child.
+corresponds to a node with exactly two parents and one child.
 As these methods explicitly infer a recombination event for each
-breakpoint, the number of breakpoints equals the number of 2-parent
+breakpoint, the number of breakpoints equals the number of two-parent
 (brown) nodes.
 In contrast, Fig.~\ref{fig-inferred-args}C,D do not have this
 straightforward
@@ -1436,10 +1431,6 @@ where one or more recombinations have been pushed down onto a
 more recent node.
 As a consequence, it may be difficult to condense each transition between trees
 in these ARGs into a set of SPR operations.
-% The sharing
-% of breakpoint locations between these nodes indicates that in \tsinfer\ and
-% \relate\ ARGs it may be difficult to condense each transition between trees
-% into a set of simple SPR moves.
 
 % Here we move on to coalescence
 Shading within nodes in Fig.~\ref{fig-inferred-args} indicates the
@@ -1450,7 +1441,7 @@ no local coalescence at these recombination nodes
 (they are ``ARG unary'', and so local coalescence is impossible).
 The significant number of partially shaded nodes in
 Fig.~\ref{fig-inferred-args}A,B and C demonstrates that
-\kwarg, \argweaver\ and \tsinfer\ all contain locally unary nodes.
+the \kwarg, \argweaver\ and \tsinfer\ ARGs all contain locally unary nodes.
 Another difference between methods highlighted in this figure
 is the presence of polytomies, which only
 \tsinfer\ creates. The most obvious example
@@ -1507,7 +1498,8 @@ It was originally developed as part of the \texttt{msprime}
 simulator~\citep{kelleher2016efficient} and has subsequently been
 extended and applied to forward-time
 simulations~\citep{kelleher2018efficient,haller2018tree},
-inference from data~\citep{kelleher2019inferring,wohns2022unified},
+inference from
+data~\citep{kelleher2019inferring,wohns2022unified,zhan2023towards},
 and calculation of population genetics statistics~\citep{ralph2020efficiently}.
 The succinct tree sequence encoding extends the basic definition
 of a gARG provided here by stipulating a
@@ -1527,7 +1519,7 @@ of tools for working with gARGs (encoded as a succinct tree sequence).
 Based on core functionality written
 in C, it provides interfaces in C, Python and Rust.
 Tskit is mature software, widely used in population genetics, and
-has been incorporated into several downstream
+has been incorporated into numerous downstream
 applications~\citep[e.g.,][]{haller2019slim,speidel2019method,
 adrion2020community,
 terasaki2021geonomics,
@@ -1549,7 +1541,7 @@ In the interest of avoiding confusion, however, we list a
 few minor details in which the formal details of gARGs
 provided in Section~\ref{sec-gARG} differ from their practical implementation in
 \texttt{tskit}.
-Firstly, ``edges'' in tree sequence terminology would be perhaps better be
+Firstly, ``edges'' in tree sequence terminology would perhaps be better
 described as ``edge-intervals'', as each describes a single contiguous
 interval of genome inheritance between a pair of nodes.
 This denormalisation of the gARG data model is for efficiency purposes.
@@ -1628,7 +1620,7 @@ large fractions of a chromosome.
 
 Recent large-scale methods have simplified the inference problem by
 making a single, deterministic best-guess at ARG
-inference~\citep{kelleher2019inferring,speidel2019method,zhan2023towards}.
+inference~\citep{kelleher2019inferring,speidel2019method,zhang2023biobank,zhan2023towards}.
 Even under strict parsimony conditions and for small sample sizes, the
 % Citation? This is something people have figured out, right?
 number of plausible ARGs compatible with a given dataset is vast.
@@ -1649,10 +1641,8 @@ more than two parents (representing uncertainty over the ordering
 of multiple recombination events, Section~\ref{sec-ARG-simplification}). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
 aspect of future work.
-% Obvious, but nobody is doing it, so needs to be said.
-% TODO rephrase to say this is an open question.
-Fully utilising such uncertainty in downstream
-applications is also vital.
+How this uncertainty can be utilised in downstream applications
+is an open question.
 
 The timing, positions, and even the number of recombination events is generally
 not possible to infer precisely from genome sequencing data. Under
@@ -1739,8 +1729,7 @@ methods for evaluation.
 In most cases,
 ARG inference is evaluated by simulating data from a known ground truth ARG,
 and comparing this to the inferred version via pairwise comparison of
-local trees along the genome, for example
-using tree distance
+local trees along the genome using tree distance
 metrics~\citep[e.g.][]{robinson1981comparison,kendall2016mapping},
 as described by \citet{kuhner2015assessing}.
 % While this provides valuable insights into the method's performance,
@@ -1751,12 +1740,12 @@ are incorporated in a rather indirect manner through the correlations
 between the local trees, instead of directly taking into account
 the persistence of nodes and edges across multiple trees.
 The performance of tree distance metrics varies by
-application~\citep{kuhner2015assessing}, and the correct approach
+application~\citep{kuhner2015practical}, and the correct approach
 to handling subtleties such as polytomies
 is an open question~\citep{kelleher2019inferring,zhang2023biobank}.
 % Is this true? These guys claim RF takes linear time:
 % https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-020-07011-0
-Tree distance metrics often have at least $O(n^2)$ time complexity
+Tree distance metrics often have $O(n^2)$ time complexity or worse
 and therefore cannot be
 applied to the very large sample sizes currently of interest.
 A recent trend has been to move away from such
@@ -1798,8 +1787,8 @@ If these diverse inference methods share a common,
 well-defined data format, their outputs could then be
 processed by many different downstream applications
 without the productivity-sapping problems
-of converting between (partially incompatible)
-program output formats~\citep{excoffier2006computer}.
+of converting between partially incompatible
+formats~\citep{excoffier2006computer}.
 Earlier efforts to standardise ARG interchange shared this vision,
 but did not succeed~\citep{cardona2008extended,mcgill2013graphml}.
 Current methods tend to tightly couple both ARG inference and downstream
@@ -1818,8 +1807,8 @@ interchange format.
 Rigorously defining interchange formats~\cite[e.g.][]{kelleher2019htsget}
 is difficult and time-consuming,
 and no matter how precise the specification, in practise
-it is the \emph{implementations} that determines how well methods
-interoperate. The BAM file format~\citep{li2009sequence}
+it is the \emph{implementations} that determine how well methods
+interoperate. The BAM read alignment format~\citep{li2009sequence}
 is an instructive example. Originally developed as part of the
 1000 Genomes project~\citep{10002015global} to address the fragmented
 software ecosystem that existed at the time~\citep{danecek2021twelve},
@@ -1842,14 +1831,14 @@ is a high-quality open-source gARG implementation,
 with proven efficiency and
 scalability~\citep[e.g.][]{anderson2022genes,zhan2023towards},
 that is already in widespread use.
-% TODO needs rephrasing
 Adopting it as a community standard may ease software implementation burden
 on researchers, freeing their time to address the many fascinating open
 questions and challenges that exist.
 
 \section*{Acknowledgements}
-We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski, Andrew Vaughan
-and Peter Ralph for helpful discussions and comments on the manuscript, and
+We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski,
+Peter Ralph and Andrew Vaughn
+for helpful discussions and comments on the manuscript, and
 to Iain Mathieson and Aylwyn Scally for interesting discussions that
 originally motivated this work.
 % Ordered alphabetically by surname
