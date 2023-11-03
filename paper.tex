@@ -333,15 +333,19 @@ these nodes respectively represent ancestor and descendant genomes,
 which can be separated by multiple generations.
 We will use these two sets of terms interchangeably.
 
-In many settings, nodes are dated, i.e.\ each
-node $u\in N$ is associated with a time $\tau_u$.
-A node can represent any genome along a
-% A gamete *is* one of the genomes along a chain of cell divisions?
-% I don't see what adding a gamete clarifies, and we cite Hudson plenty
-chain of cell divisions~\ref{sec-cell-lineages-and-args},
+How nodes are interpreted, exactly, is application dependent.
+Following \citet{hudson1983properties}, we can view nodes
+as representing gametes, or we can imagine them representing
+the genomes present in cells immediately before or after
+some instantaneous event (Appendix~\ref{sec-cell-lineages-and-args}).
+A node can represent any genome along a chain of cell divisions
 or can be interpreted as representing one of the genomes of a
-potentially long-lived individual; how we assign precise times to nodes
-will therefore vary according to application.
+potentially long-lived individual. All these interpretations
+are potentially useful, and equally valid under the assumptions
+of the gARG encoding.
+In many settings, nodes are dated, i.e.\ each
+node $u\in N$ is associated with a time $\tau_u$,
+and how we assign precise times will vary by application.
 The topological ordering defined by the directed graph structure
 and an arrow of time (telling us which direction is pastwards)
 is sufficient for many applications, however,
