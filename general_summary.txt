@@ -1,0 +1,8 @@
+Ancestral Recombination Graphs (ARGs) describe the complex web of genetic
+ancestry that results from individuals inheriting parts of their genomes
+through different routes. Classical mathematical formalisms assume that this
+ancestry is fully known. We argue that such complete knowledge is unattainable
+for modern datasets, and show that these formalisms cannot describe the output
+of current methods. We develop an alternative approach that is compatible with
+recent methods, and naturally describes many forms of approximate and partial
+knowledge.
