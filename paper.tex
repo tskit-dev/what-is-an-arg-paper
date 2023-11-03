@@ -463,7 +463,7 @@ At common ancestor nodes, the inbound lineages merge into a
 single ancestral lineage with one parent, and at recombination
 nodes a single lineage is split into two independent
 ancestral lineages. Recombination nodes are annotated with
-the corresponding crossover breakpoints. These breakpoints
+the corresponding crossover breakpoints, and these breakpoints
 are used to construct the local trees.
 This is done by tracing pastwards through the graph from the samples,
 making decisions about which outbound edge to follow through
@@ -476,11 +476,13 @@ eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c}),
 three common ancestor events (\noderef{e}, \noderef{f}, and \noderef{g})
 and a single recombination event (node \noderef{d}) with a breakpoint
 at position $x$.
-We assume here that \noderef{d} inherits genetic material to the
+Assigning a breakpoint to a recombination node is
+not sufficient to uniquely define the local trees, and either
+some additional ordering rules~\citep[e.g.][]{griffiths1996ancestral} or
+explicit information~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}
+is required to distinguish the left and right parents.
+We assume in Fig.~\ref{fig-event-arg} that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
-% Some eARG implementations incorporate additional information to
-% distinguish left and right parents into the
-% encoding~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}.
 
 \begin{figure}
 \centering
