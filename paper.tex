@@ -66,7 +66,7 @@ the genealogical trees for
 % here? This paper isn't for a general audience, let's just say what
 % we're talking about in direct language understandable by population
 % geneticists.
-a sample of sequences vary along the genome.
+a sample of DNA sequences vary along the genome.
 The structure capturing the details of these intricately interwoven paths of
 inheritance is referred to as an ancestral recombination graph (ARG).
 New developments have made it possible to infer ARGs at scale,
@@ -80,7 +80,7 @@ Standard mathematical formalisms,
 based on exhaustively detailing the ``events'' that occur
 in the history of a sample,
 are insufficient to describe the outputs of current methods.
-We argue, moreover, that the precise estimates of
+We argue that the precise estimates of
 \emph{all} events required
 by such formalisms are fundamentally unsuited to the realities
 of modern, population-scale datasets.
@@ -90,7 +90,7 @@ can capture the full richness of modern large-scale datasets.
 By defining this ARG encoding in terms of
 % we haven't define a "genome" yet, so need to give a bit of context
 specific genomes and their intervals of genetic inheritance,
-we avoid the necessity of exhaustively listing (and estimating)
+we avoid the need to exhaustively list (and estimate)
 \emph{all} events. The effects of multiple events can be
 aggregated in different ways, providing a natural way to express many
 forms of approximate and partial knowledge about the
@@ -109,8 +109,7 @@ under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
-caused by recombination, and encodes a sequence of correlated genealogical
-trees along the genome
+caused by recombination, encapsulating the resulting complex web of genetic ancestry
 (see \citet{lewanski2023era} for a biologically oriented introduction).
 Recent breakthroughs
 in large-scale inference
@@ -155,12 +154,12 @@ are the ``true'' ARG, % I don't see a better word for "true" here
 describing the actual history of a sample of genomes,
 and a ``population'' ARG which is
 the true ARG of every individual in a population.
-True ARGs are the actual history,
+True ARGs are the underlying, real history,
 perfectly resolved into binary splits and mergers by
 the cellular processes of meiosis and mitosis, regardless
 of sampling density or population processes
 (Appendix~\ref{sec-cell-lineages-and-args}).
-Although population ARGs unquestionably exist,
+Although true population ARGs unquestionably exist,
 they can also never be entirely known, in part because of a fundamental
 lack of mutational information.
 Even if mutation rate were high enough to uniquely identify every
@@ -339,8 +338,8 @@ A node can represent any genome along a
 % A gamete *is* one of the genomes along a chain of cell divisions?
 % I don't see what adding a gamete clarifies, and we cite Hudson plenty
 chain of cell divisions~\ref{sec-cell-lineages-and-args},
-or can be interpreted as representing one of the genomes of an
-individual; how we assign dates  to nodes
+or can be interpreted as representing one of the genomes of a
+potentially long-lived individual; how we assign precise times to nodes
 will therefore vary according to application.
 The topological ordering defined by the directed graph structure
 and an arrow of time (telling us which direction is pastwards)
@@ -1116,7 +1115,7 @@ backwards-time Wright-Fisher simulation for a sample of two diploid
 individuals (population size $N=10$), and follows a similar process
 to the methods described by~\cite{nelson2020accounting}.
 As we proceed backwards in time, generation by generation, the
-extant lineages chose parents randomly.
+extant lineages choose parents randomly.
 With a certain probability recombination occurs, and the ancestral
 material of a lineage is split between the two parental
 genomes. Local coalescence occurs
@@ -1170,7 +1169,7 @@ redundant (or, from another perspective, unobservable).
 In Fig.~\ref{fig-simplification}A the local trees (right)
 contain many unary nodes, fewer as  we successively
 simplify (Fig.~\ref{fig-simplification}B,C),
-until we reach Fig.~\ref{fig-simplification}D, where are none.
+until we reach Fig.~\ref{fig-simplification}D, where there are none.
 A more detailed version of the displayed ARGs, showing the edge
 intervals, is provided as Supplementary Fig.~\ref{fig-simplification-with-edges}.
 
@@ -1322,7 +1321,7 @@ at position 87 has been lost entirely.
 \label{sec-example-inferred-args}
 The scalability gains made by recent ARG inference methods
 such as \relate~\citep{speidel2019method} and
-\tsinfer~\citep{kelleher2019inferring} have
+\tsinfer~\citep{kelleher2019inferring} 
 have been, in part, due to inferring lower levels of precision about
 recombination than classical methods.
 Neither method infers
@@ -1859,12 +1858,10 @@ originally motivated this work.
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
 (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
-% Anastasia Ignatieva acknowledges support from TODO
 Jerome Kelleher acknowledges support from the Robertson Foundation,
 NIH (research grants HG011395 and HG012473) and
 EPSRC (research grant EP/X024881/1).
 Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
-% Anthony Wilder Wohns acknowledges support from TODO
 
 \section*{Data Availability}
 The public GitHub repository at
@@ -1924,7 +1921,7 @@ as originally described requires exponential time to simulate
 (see Appendix~\ref{sec-big-and-little-arg} for details).
 However, ARGs provided a way
 to reason about and infer recombinant ancestry as a single object,
-in a way that not possible within Hudson's framework, which emphasised
+in a way that is not possible within Hudson's framework, which emphasised
 instead the collection of local trees along the genome
 resulting from recombination.
 
