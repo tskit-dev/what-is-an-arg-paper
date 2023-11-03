@@ -80,9 +80,9 @@ Standard mathematical formalisms,
 based on exhaustively detailing the ``events'' that occur
 in the history of a sample,
 are insufficient to describe the outputs of current methods.
-We argue that the precise estimates of
-\emph{all} events required
-by such formalisms are fundamentally unsuited to the realities
+Moreover, we argue that the underlying assumption
+that all events can be known and precisely estimated
+is fundamentally unsuited to the realities
 of modern, population-scale datasets.
 We propose an alternative mathematical formulation that
 encompasses the outputs of recent methods and
@@ -109,7 +109,8 @@ under the influence of recombination,
 usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
-caused by recombination, encapsulating the resulting complex web of genetic ancestry
+caused by recombination, encapsulating the resulting complex web of genetic
+ancestry
 (see \citet{lewanski2023era} for a biologically oriented introduction).
 Recent breakthroughs
 in large-scale inference
@@ -154,12 +155,12 @@ are the ``true'' ARG, % I don't see a better word for "true" here
 describing the actual history of a sample of genomes,
 and a ``population'' ARG which is
 the true ARG of every individual in a population.
-True ARGs are the underlying, real history,
+True ARGs are the underlying real history of a sample,
 perfectly resolved into binary splits and mergers by
 the cellular processes of meiosis and mitosis, regardless
 of sampling density or population processes
 (Appendix~\ref{sec-cell-lineages-and-args}).
-Although true population ARGs unquestionably exist,
+Although population-scale true ARGs unquestionably exist,
 they can also never be entirely known, in part because of a fundamental
 lack of mutational information.
 Even if mutation rate were high enough to uniquely identify every
@@ -207,9 +208,9 @@ methods~\citep[e.g.][]{kelleher2019inferring,speidel2019method,zhang2023biobank}
 are all based, in different ways, on inferring
 approximate \emph{structures}
 instead of a complete and fully detailed history.
-% Not sure the point is coming across that well here, but it's a
-% really important point and a significant
-It is important to distinguish here between
+% This is a digression from the maing point of the paragraph, so
+% making it a parenthetical aside.
+(Note that it is important to distinguish here between
 structures and models: whether an inference method is based
 on heuristics or a rigorous mathematical model is orthogonal
 to the level of detail provided in its estimate.
@@ -217,7 +218,7 @@ One could heuristically estimate a fully precise ARG,
 % this would be a cool thing to do!
 or statistically sample a partial,
 approximate ARG under a model
-such as the coalescent. % with recomb is surely unnecessary here
+such as the coalescent.)
 Although the term ``ARG'' is now often used in a general
 sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
@@ -237,7 +238,7 @@ contrast this with the classical formal definition of an ARG, based on
 recording common ancestor and recombination events, which we refer to as the
 ``event ARG'' or eARG encoding. We show that the new gARG encoding is a
 substantial generalisation of the classical eARG approach,  providing much more
-flexibility in how genetic inheritance can be represented, and encompassing the
+flexibility in how genetic inheritance can be represented, and encompasses the
 outputs of modern methods. We show that the gARG approach can represent many
 different types of approximation, in particular allowing us to systematically
 describe uncertainty about the temporal ordering of multiple recombinations. It
@@ -253,7 +254,7 @@ of a gARG, illustrated by an example ARG embedded in pedigree.
 We then provide a similar definition of the classical eARG
 approach in Section~\ref{sec-eARG}, and consider its limitations
 in the context of current datasets and research questions.
-Following this, we discuss the important concept of ``ancestral material''
+Following this, we discuss the important concept of ancestral material
 in Section~\ref{sec-ancestral-material}, and how it relates
 to the process of converting an eARG to a gARG.
 We continue
@@ -1321,7 +1322,7 @@ at position 87 has been lost entirely.
 \label{sec-example-inferred-args}
 The scalability gains made by recent ARG inference methods
 such as \relate~\citep{speidel2019method} and
-\tsinfer~\citep{kelleher2019inferring} 
+\tsinfer~\citep{kelleher2019inferring}
 have been, in part, due to inferring lower levels of precision about
 recombination than classical methods.
 Neither method infers
