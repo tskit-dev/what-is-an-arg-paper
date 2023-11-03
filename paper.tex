@@ -274,7 +274,7 @@ which we illustrate by examining the qualitative properties of
 ARGs inferred by four recent methods for a classical benchmark
 dataset in Section~\ref{sec-example-inferred-args}.
 We then discuss how the gARG framework can be
-efficiently implementated in Section~\ref{sec-efficiency},
+efficiently implemented in Section~\ref{sec-efficiency},
 and finish with an assessment of the key challenges facing
 the field in the Discussion.
 Finally, the literature on ARGs is large and
@@ -878,10 +878,10 @@ edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
 the positions over which node $c$ inherits from parent $p$, we can
 then simply combine the ``local ARGs'' for each position $x$
 % YW: The above "combining" operation isn't obviously lossless to me:
-% we could potentially lose information in the different
-% combinations of intervals (e.g. if we use 2 non-combined intervals
-% to represent a diamond in a 1-RE-node ARG). It seems like we might
-% need an additional gARG spec to define what combinations are equivalent.
+% we could potentially lose information in the different combinations
+% of intervals (e.g. if we use 2 non-combined intervals to represent a 
+% diamond in a 1-RE-node ARG). It seems like we might need an additional
+% gARG spec to define what combinations of intervals are equivalent.
 % But no-one else has commented on this, so I guess we just let it lie.
 to recover precisely the same set of edges as the original ARG.
 Thus, under this definition, there
@@ -1446,10 +1446,6 @@ in these ARGs into a set of SPR operations.
 % of breakpoint locations between these nodes indicates that in \tsinfer\ and
 % \relate\ ARGs it may be difficult to condense each transition between trees
 % into a set of simple SPR moves.
-% Overall, Fig.~\ref{fig-inferred-args} shows
-% that \tsinfer\ and \relate\ ARGs contain a level of detail about recombination
-% that lies somewhere between a sequence of unrelated local trees on one extreme
-% and an ARG with precisely specified recombination events on the other.
 
 % Here we move on to coalescence
 Shading within nodes in Fig.~\ref{fig-inferred-args} indicates the
