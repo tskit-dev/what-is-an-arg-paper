@@ -94,7 +94,7 @@ we avoid the need to exhaustively list (and estimate)
 \emph{all} events. The effects of multiple events can be
 aggregated in different ways, providing a natural way to express many
 forms of approximate and partial knowledge about the
-recombinant ancestry of a sample.
+recombinant ancestry of a sample of genomes.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral recombination graphs
@@ -196,19 +196,19 @@ to existing methodologies.
 A major problem currently facing the field is that
 classical mathematical formalisms and terminology
 cannot adequately describe these vast inferred ARGs.
-Fundamentally, these formalisms assume that an
-ARG is known in complete detail
-and are not suited to describing partial or approximate knowledge.
+Fundamentally these formalisms assume that an
+ARG is known in complete detail: they
+are not suited to describing partial or approximate knowledge.
 As we are actively inferring ARGs at the population scale,
-and such ARGs can never be known in complete detail,
-there is currently a substantial gap between our theoretical frameworks
+and such ARGs can never be fully known,
+there is currently a substantial gap between classical representations
 and practical application.
 The breakthroughs in scale achieved by recent
 methods~\citep[e.g.][]{kelleher2019inferring,speidel2019method,zhang2023biobank}
 are all based, in different ways, on inferring
 approximate \emph{structures}
 instead of a complete and fully detailed history.
-% This is a digression from the maing point of the paragraph, so
+% This is a digression from the main point of the paragraph, so
 % making it a parenthetical aside.
 (Note that it is important to distinguish here between
 structures and models: whether an inference method is based
@@ -1062,7 +1062,7 @@ For example, the local trees for the classical event ARG
 depicted in Fig.~\ref{fig-event-arg}B follow the usual conventions
 and do not include any information about the recombination
 that occurred at node \noderef{d}. Given these two local trees
-in isolation
+in isolation,
 % (without further information about the corresponding ARG)
 we lack specific information about the recombination.
 Explicitly recording that node \noderef{d} lies on the
@@ -1410,7 +1410,7 @@ these figures are available on GitHub (see Data Availability).
 Considering Fig.~\ref{fig-inferred-args}, we can see that
 there is substantial variation in the number of recombination breakpoints
 inferred by different methods, with e.g.~\argweaver\ suggesting
-far more than the 7 required for this dataset under minimal parsimony
+far more than the seven required for this dataset under minimal parsimony
 assumptions~\citep{song2003parsimonious}.
 A sense of the amount of recombination in each ARG is provided by
 the node colouring scheme, which shows the number of parents for each node.
@@ -1564,7 +1564,7 @@ As discussed in Appendix~\ref{sec-arg-history}, the term
 subtly different interpretations, depending on context.
 The trend to decouple ARGs from their original definition
 within the context of stochastic
-processes and instead use the term as a more general representation of any
+processes, and instead use the term as a more general representation of any
 recombinant genetic ancestry seems useful; we have
 tried to clarify and systematise it here. Thus
 we can think of an ARG as any structure that encodes the
@@ -1613,7 +1613,7 @@ Another core assumption of the coalescent model is that the genome
 lineages remains much smaller than $N_e$ at all times.
 High-quality whole genome assemblies are now available
 for many species % Can we say something more concrete here?
-and projects are under way to obtain
+with projects under way to obtain
 them for tens of thousands more~\citep{darwin2022sequence,lewin2022earth},
 and so we can expect inferred ARGs to routinely span
 large fractions of a chromosome.
@@ -1625,14 +1625,13 @@ Even under strict parsimony conditions and for small sample sizes, the
 % Citation? This is something people have figured out, right?
 number of plausible ARGs compatible with a given dataset is vast.
 Thus, although it is clearly an oversimplification to arbitrarily
-choose \emph{one} best guess,
-it is not clear that generating many guesses
-when sample sizes are large will achieve much.
+choose \emph{one} best guess, if sample sizes are large
+it is not clear that generating many guesses will achieve much.
 At the scale of millions of samples,
 we could only ever explore the tiniest corner of the incomprehensibly
 large space of plausible ARGs.
 Therefore, it is important to systematically
-describe and utilise uncertainty about ARG inference, and to
+describe and use uncertainty about ARG inference, and to
 incorporate uncertainty encountered during inference into the returned ARG.
 One approach, enabled by the gARG encoding described here, is to allow
 nodes to have more than two children (polytomies
@@ -1641,7 +1640,7 @@ more than two parents (representing uncertainty over the ordering
 of multiple recombination events, Section~\ref{sec-ARG-simplification}). Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
 aspect of future work.
-How this uncertainty can be utilised in downstream applications
+How this uncertainty can be used in downstream applications
 is an open question.
 
 The timing, positions, and even the number of recombination events is generally
