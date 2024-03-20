@@ -434,29 +434,18 @@ how we set our goals for inference and evaluate the success of results.
 
 \section{Event ARGs}
 \label{sec-eARG}
-% Trying to be totally, boringly, abundantly, blatantly clear here what we're
-% talking about.
-In this section we define the classical view of an ARG data structure,
-and illustrate its limitations. We are
-interested in the details of how ARGs are described mathematically,
-and as a consequence, how they are represented in a practical sense
-as the output of inference programs.
-Where details of an ARG data structure (the encoding) are
-% Three papers 10 years apart will do here, right?
-provided~\citep[e.g.][]{
+In this section we define a common (and classical) view of an ARG data structure,
+described explicitly in several publications~\citep[e.g.][]{
 wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability}
-they follow the approach described by Griffiths and colleagues
 (but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
-for notable exceptions), and a large number of
-% Note the "an" here to avoid cases like ARGweaver
-ARG inference methods use it as an output format
+for notable exceptions), and used as an output format by multiple ARG inferences tools
 \citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
 heine2018bridging,ignatieva2021kwarg}.
 % Griffiths never mentions "sampling events", so let's not get
 % into that. It's not an important detail, and we don't want to be
 % overly precise about something that people haven't actually written
 % down.
-In this Griffiths encoding we have two types of internal node in the graph,
+In this encoding we have two types of internal node in the graph,
 representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -470,8 +459,8 @@ making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}.
 Because it is focused on recording events and their properties,
-we will refer to this Griffiths encoding as the ``event ARG'' or eARG
-encoding. Fig.~\ref{fig-event-arg} shows an example of a classical
+we will refer to this encoding as the ``event ARG'' or eARG
+encoding. Fig.~\ref{fig-event-arg} shows an example of an
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c}),
 three common ancestor events (\noderef{e}, \noderef{f}, and \noderef{g})
 and a single recombination event (node \noderef{d}) with a breakpoint
@@ -593,7 +582,7 @@ for a discussion of this important point).
 \end{figure}
 
 % eARGs are representationally for limited interchange
-While the Griffiths approach of annotating recombination nodes with a
+While this approach of annotating recombination nodes with a
 breakpoint in an eARG is a concise and elegant way of describing realisations
 of the coalescent, it is inherently limited when
 implemented literally. The eARG encoding explicitly models only
@@ -604,27 +593,24 @@ events, or by adding new types of event to the encoding. For example, gene
 conversion could be accommodated either by stipulating a third type of event
 (annotated by two breakpoints and corresponding traversal conventions for
 recovering the local trees) or by two recombination nodes joined by a
-zero-length edge. From the perspective of practical interchange of data between
-inference methods and downstream applications, both
-workarounds are problematic, and the gARG encoding described in the previous
-section offers a much simpler solution.
+zero-length edge. The gARG encoding described in the previous
+section offers a simpler and more direct solution.
 
-Aside from these obvious practical challenges arising from a
-literal implementation of the Griffiths approach, there is a deeper
+Aside from these practical challenges, there is also a deeper
 issue with the implicit strategy of basing an ARG data structure on
 recording events and their properties (e.g.\ the crossover breakpoint
-for a recombination event). The fundamental problem
-is that this approach assumes all events are \emph{knowable}, and does not
-provide any obvious mechanism for either aggregating multiple events
+for a recombination event). This approach assumes all events are 
+\emph{knowable}, and does not
+provide an obvious mechanism for either aggregating multiple events
 or expressing uncertainty about them. While this is not a
 problem when describing the results of simulations (where all details
-are perfectly known), it is a major issue when we wish to
+are perfectly known), it is an issue when we wish to
 formally describe the output of inference methods, particularly
 as datasets approach the population scale.
 As discussed in the introduction,
 the precise details of all events in these vast ARGs can never be
-known, and a data structure that \emph{enforces} complete
-precision is therefore an impediment to progress.
+known, so it is disadvantageous to use a data structure that enforces complete
+precision.
 
 There is also a certain clarity gained by explicitly modelling nodes
 in the inheritance graph as genomes.
@@ -639,10 +625,9 @@ within a single individual should be regarded as one or multiple events are
 debatable points (Appendix~\ref{sec-cell-lineages-and-args}).
 % If we want to have an ARG software ecosystem then such fireside
 % discussions won't help.
-From the perspective of a concrete data structure,
-ideally forming the basis of an ecosystem of interoperable
-inference and analysis methods, such debates
-are unproductive.
+The gARG format avoids the need for such considerations,
+so is more naturally compatible with forming an ecosystem of interoperable
+inference and analysis methods.
 
 \section{Ancestral material and sample resolution}
 \label{sec-ancestral-material}
