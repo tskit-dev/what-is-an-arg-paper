@@ -72,10 +72,9 @@ inheritance is referred to as an ancestral recombination graph (ARG).
 New developments have made it possible to infer ARGs at scale,
 enabling many new applications in population and statistical genetics.
 This rapid progress has led to a diversity of ARG definitions and representations.
-
-We show that a synthesis of these views can be achieved by thinking
-in terms of genomes and transmission
-intervals.
+% We show that a synthesis of these views can be achieved by thinking
+% in terms of genomes and transmission
+% intervals.
 % Standard mathematical formalisms,
 % "detailing" here is intended to convey the we keep details about these
 % events like recomb breakpoint.
@@ -113,11 +112,12 @@ goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, encapsulating the resulting complex web of genetic
 ancestry
-(see \citet{lewanski2023era} for a biologically oriented introduction).
+(see \citet{lewanski2024era,brandt2024promise} for biologically oriented
+introductions).
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
-schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards}
+schaefer2021ancestral,wohns2022unified,zhang2023biobank,zhan2023towards,deng2024robust}
 have raised the realistic prospect of ARG-based analysis becoming a standard part
 of the population and statistical genetics toolkit~\citep{hejase2020summary}.
 Applications using inferred ARGs as input have begun to
@@ -128,7 +128,9 @@ guo2022recombination,
 zhang2023biobank,
 nowbandegani2023extremely,
 ignatieva2023distribution,
-fan2023likelihood}
+fan2023likelihood,
+grundler2024geographic,
+huang2024estimating}
 and many more are sure to
 follow~\citep{harris2019database,harris2023using}.
 
@@ -2438,12 +2440,14 @@ fan2022genealogical,
 guo2022recombination,
 korfmann2022weak,
 mahmoudi2022bayesian,
-petr2022slendr,
+petr2023slendr,
 rasmussen2022espalier,
 zhang2023biobank,
 nowbandegani2023extremely,
 ignatieva2023distribution,
-fan2023likelihood}.
+fan2023likelihood,
+tsambos2023link,
+tagami2024tstrait}.
 The technical details of \texttt{tskit}, and how it provides an
 efficient and portable platform for ARG-based analysis, are beyond
 the scope of this manuscript.
