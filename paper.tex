@@ -886,6 +886,72 @@ allows this fundamental uncertainty in inference to be appropriately represented
 %The fact that the eARG encoding \emph{requires}
 %precise information about recombination is therefore a fundamental limitation.
 
+\section{Implementation and efficiency}
+\label{sec-efficiency}
+The gARG encoding defined here
+leads to highly efficient storage and processing of ARG data,
+and has already been in use for several years.
+The succinct tree sequence data structure
+(usually known as a ``tree sequence'' for brevity)
+is a practical gARG implementation focused on efficiency.
+It was originally developed as part of the \texttt{msprime}
+simulator~\citep{kelleher2016efficient} and has subsequently been
+extended and applied to forward-time
+simulations~\citep{kelleher2018efficient,haller2018tree},
+inference from
+data~\citep{kelleher2019inferring,wohns2022unified,zhan2023towards},
+and calculation of population genetics statistics~\citep{ralph2020efficiently}.
+The succinct tree sequence encoding extends the basic definition
+of a gARG provided here by stipulating a
+simple tabular representation of nodes and edges,
+and also defining a concise representation of
+sequence variation using the ``site'' and  ``mutation'' tables.
+The key property of the succinct tree sequence encoding
+that makes it an efficient substrate for defining analysis
+algorithms is that it allows us to sequentially
+recover the local trees along the genome very efficiently,
+and in a way that allows us to reason about the \emph{differences}
+between those trees~\citep{kelleher2016efficient,ralph2020efficiently}.
+
+The \texttt{tskit} library is a liberally
+licensed open source toolkit that provides a comprehensive suite
+of tools for working with gARGs (encoded as a succinct tree sequence).
+Based on core functionality written
+in C, it provides interfaces in C, Python and Rust.
+Tskit is mature software, widely used in population genetics, and
+has been incorporated into numerous downstream
+applications~\citep[e.g.,][]{haller2019slim,speidel2019method,
+adrion2020community,
+terasaki2021geonomics,
+baumdicker2021efficient,
+fan2022genealogical,
+guo2022recombination,
+korfmann2022weak,
+mahmoudi2022bayesian,
+petr2023slendr,
+rasmussen2022espalier,
+zhang2023biobank,
+nowbandegani2023extremely,
+ignatieva2023distribution,
+fan2023likelihood,
+tsambos2023link,
+tagami2024tstrait}.
+The technical details of \texttt{tskit}, and how it provides an
+efficient and portable platform for ARG-based analysis, are beyond
+the scope of this manuscript.
+In the interest of avoiding confusion, however, we list a
+few minor details in which the formal details of gARGs
+provided in Section~\ref{sec-gARG} differ from their practical implementation in
+\texttt{tskit}.
+Firstly, ``edges'' in tree sequence terminology would perhaps be better
+described as ``edge-intervals'', as each describes a single contiguous
+interval of genome inheritance between a pair of nodes.
+This denormalisation of the gARG data model is for efficiency purposes.
+Secondly, zero- rather than one-based indexing is used for
+nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
+roots (rather than $0$ as used here for notational simplicity).
+
+
 \section{Discussion}
 \label{sec-discussion}
 Recent breakthroughs have finally made large-scale ARG inference
@@ -2397,71 +2463,6 @@ and an ARG with precisely specified recombination events on the other
 % \tsinfer\ and \relate\ show a pragmatic representation: we do not expect
 % genetic variation to be very informative about topological relationships
 % between nodes that that are older than the local MRCAs.
-
-\section{Implementation and efficiency}
-\label{sec-efficiency}
-The gARG encoding defined here
-leads to highly efficient storage and processing of ARG data,
-and has already been in use for several years.
-The succinct tree sequence data structure
-(usually known as a ``tree sequence'' for brevity)
-is a practical gARG implementation focused on efficiency.
-It was originally developed as part of the \texttt{msprime}
-simulator~\citep{kelleher2016efficient} and has subsequently been
-extended and applied to forward-time
-simulations~\citep{kelleher2018efficient,haller2018tree},
-inference from
-data~\citep{kelleher2019inferring,wohns2022unified,zhan2023towards},
-and calculation of population genetics statistics~\citep{ralph2020efficiently}.
-The succinct tree sequence encoding extends the basic definition
-of a gARG provided here by stipulating a
-simple tabular representation of nodes and edges,
-and also defining a concise representation of
-sequence variation using the ``site'' and  ``mutation'' tables.
-The key property of the succinct tree sequence encoding
-that makes it an efficient substrate for defining analysis
-algorithms is that it allows us to sequentially
-recover the local trees along the genome very efficiently,
-and in a way that allows us to reason about the \emph{differences}
-between those trees~\citep{kelleher2016efficient,ralph2020efficiently}.
-
-The \texttt{tskit} library is a liberally
-licensed open source toolkit that provides a comprehensive suite
-of tools for working with gARGs (encoded as a succinct tree sequence).
-Based on core functionality written
-in C, it provides interfaces in C, Python and Rust.
-Tskit is mature software, widely used in population genetics, and
-has been incorporated into numerous downstream
-applications~\citep[e.g.,][]{haller2019slim,speidel2019method,
-adrion2020community,
-terasaki2021geonomics,
-baumdicker2021efficient,
-fan2022genealogical,
-guo2022recombination,
-korfmann2022weak,
-mahmoudi2022bayesian,
-petr2023slendr,
-rasmussen2022espalier,
-zhang2023biobank,
-nowbandegani2023extremely,
-ignatieva2023distribution,
-fan2023likelihood,
-tsambos2023link,
-tagami2024tstrait}.
-The technical details of \texttt{tskit}, and how it provides an
-efficient and portable platform for ARG-based analysis, are beyond
-the scope of this manuscript.
-In the interest of avoiding confusion, however, we list a
-few minor details in which the formal details of gARGs
-provided in Section~\ref{sec-gARG} differ from their practical implementation in
-\texttt{tskit}.
-Firstly, ``edges'' in tree sequence terminology would perhaps be better
-described as ``edge-intervals'', as each describes a single contiguous
-interval of genome inheritance between a pair of nodes.
-This denormalisation of the gARG data model is for efficiency purposes.
-Secondly, zero- rather than one-based indexing is used for
-nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
-roots (rather than $0$ as used here for notational simplicity).
 
 
 \section{Cell lineages and ARGs}
