@@ -247,46 +247,6 @@ outputs of modern methods. We show that the gARG approach can represent many
 different types of approximation, in particular allowing us to systematically
 describe uncertainty about the temporal ordering of multiple recombinations.
 
-% This is nice to have, but probably won't work in the final version
-% without section numbers. Let's deal with that when we get there I guess.
-% We begin in Section~\ref{sec-gARG} by providing a precise formal definition
-% of a gARG, illustrated by an example ARG embedded in pedigree.
-% We then provide a similar definition of the classical eARG
-% approach in Section~\ref{sec-eARG}, and consider its limitations
-% in the context of current datasets and research questions.
-% Following this, we discuss the important concept of ancestral material
-% in Section~\ref{sec-ancestral-material}, and how it relates
-% to the process of converting an eARG to a gARG.
-% We continue
-% in Section~\ref{sec-ARG-and-local-trees} by considering the relationship
-% between an ARG and its local trees. Contrary to the
-% prevailing view, we show that a suitably encoded sequence of local trees contains
-% precisely as much information as the corresponding ARG.
-% The gARG encoding opens a rich new set of details about ARGs,
-% including the ideas of locally unary nodes
-% (Section~\ref{sec-locally-unary-edges}),
-% the levels of detail that can be represented in an ARG
-% (Section~\ref{sec-ARG-simplification}),
-% and the degrees of precision about recombination
-% that can be stored and we may seek to infer (Section~\ref{sec-precision}).
-% These ideas have important practical considerations,
-% which we illustrate by examining the qualitative properties of
-% ARGs inferred by four recent methods for a classical benchmark
-% dataset in Section~\ref{sec-example-inferred-args}.
-% We then discuss how the gARG framework can be
-% efficiently implemented in Section~\ref{sec-efficiency},
-% and finish with an assessment of the key challenges facing
-% the field in the Discussion.
-% Finally, the literature on ARGs is large and
-% confusing, and we attempt to clarify some important aspects
-% in appendices, including
-% a brief history of ancestral graphs (Appendix~\ref{sec-arg-history}),
-% a description of the Big and Little ARG stochastic processes
-%  (Appendix~\ref{sec-big-and-little-arg}),
-% a survey of ARG inference methods (Appendix~\ref{sec-survey-arg-infer}),
-% and a discussion of ARGs at an individual vs cell
-% lineage level (Appendix~\ref{sec-cell-lineages-and-args}).
-
 \section{Genome ARGs}
 \label{sec-gARG}
 We define a genome as the complete set of genetic material that a child
@@ -569,7 +529,7 @@ breakpoint $x$ associated with the recombination node \noderef{d}.
 Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 (B) Corresponding local trees to the left and right of breakpoint $x$
 (note these are shown in the conventional form in which only coalescences
-within the local tree are included; see Section~\ref{sec-ARG-and-local-trees}
+within the local tree are included; see Appendix~\ref{sec-ARG-and-local-trees}
 for a discussion of this important point).
 }
 \end{figure}
@@ -680,7 +640,7 @@ Efficient simplification is the key enabling factor for
 this prospective-ARG based approach to forward-time simulation,
 which can be orders of magnitude faster than standard
 sequence-based methods
-(see Section~\ref{sec-ARG-simplification} for
+(see Appendix~\ref{sec-ARG-simplification} for
 other applications of ARG simplification).
 % Define "sample-resolved" here for later use
 We refer to a gARG that has been simplified with respect to a set of
@@ -937,17 +897,17 @@ tagami2024tstrait}.
 The technical details of \texttt{tskit}, and how it provides an
 efficient and portable platform for ARG-based analysis, are beyond
 the scope of this manuscript.
-In the interest of avoiding confusion, however, we list a
-few minor details in which the formal details of gARGs
-provided in Section~\ref{sec-gARG} differ from their practical implementation in
-\texttt{tskit}.
-Firstly, ``edges'' in tree sequence terminology would perhaps be better
-described as ``edge-intervals'', as each describes a single contiguous
-interval of genome inheritance between a pair of nodes.
-This denormalisation of the gARG data model is for efficiency purposes.
-Secondly, zero- rather than one-based indexing is used for
-nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
-roots (rather than $0$ as used here for notational simplicity).
+% In the interest of avoiding confusion, however, we list a
+% few minor details in which the formal details of gARGs
+% provided in Section~\ref{sec-gARG} differ from their practical implementation in
+% \texttt{tskit}.
+% Firstly, ``edges'' in tree sequence terminology would perhaps be better
+% described as ``edge-intervals'', as each describes a single contiguous
+% interval of genome inheritance between a pair of nodes.
+% This denormalisation of the gARG data model is for efficiency purposes.
+% Secondly, zero- rather than one-based indexing is used for
+% nodes in ARGs and oriented trees; consequently  $-1$ is used to denote the presence of
+% roots (rather than $0$ as used here for notational simplicity).
 
 
 \section{Discussion}
@@ -1037,9 +997,11 @@ describe and utilise uncertainty about ARG inference, and to
 incorporate uncertainty encountered during inference into the returned ARG.
 One approach, enabled by the gARG encoding described here, is to allow
 nodes to have more than two children (polytomies
-representing uncertainty over the ordering of coalescence events, Appendix~\ref{sec-cell-lineages-and-args}) or
+representing uncertainty over the ordering of coalescence events, 
+Appendix~\ref{sec-cell-lineages-and-args}) or
 more than two parents (representing uncertainty over the ordering
-of multiple recombination events, Section~\ref{sec-ARG-simplification}). Development of other methods to capture, for example,
+of multiple recombination events, Appendix~\ref{sec-ARG-simplification}). 
+Development of other methods to capture, for example,
 uncertainty about node ages and recombination breakpoint positions, is an important
 aspect of future work.
 How this uncertainty can be utilised in downstream applications
@@ -2121,7 +2083,7 @@ in the classical manner
 It is also possible for sample nodes to be ARG-unary, for example
 in inferences from longitudinal datasets where genetic
 data is sampled at many timepoints and recombination
-is rare (e.g.~SARS-CoV-2; see Discussion).
+is rare, e.g.~SARS-CoV-2~\citep{zhan2023towards}.
 
 % Moving on from ARG-unary to the more general case
 More generally, locally unary nodes,
@@ -2468,7 +2430,7 @@ in these ARGs into a set of SPR operations.
 % Here we move on to coalescence
 Shading within nodes in Fig.~\ref{fig-inferred-args} indicates the
 fraction of the node's span over which it is coalescent
-(Section~\ref{sec-locally-unary-edges}). For example, brown nodes
+(Appendix~\ref{sec-locally-unary-edges}). For example, brown nodes
 in Fig.~\ref{fig-inferred-args}A,B are clear because there is
 no local coalescence at these recombination nodes
 (they are ``ARG unary'', and so local coalescence is impossible).
