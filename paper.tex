@@ -82,11 +82,11 @@ intervals.
 % based on exhaustively detailing the ``events'' that occur
 % in the history of a sample,
 %are insufficient to describe the outputs of current methods.
-Moreover, we argue that the underlying assumption
-that all events can be known and precisely estimated
-is fundamentally unsuited to the realities
+We argue that classical ARG formulations, which assume
+that all events can be known and precisely estimated,
+are fundamentally unsuited to the realities
 of modern, population-scale datasets.
-We propose an alternative mathematical formulation that
+We describe an alternative formulation that
 encompasses the outputs of recent methods and
 can capture the full richness of modern large-scale datasets.
 By defining this ARG encoding in terms of
@@ -214,7 +214,7 @@ approximate \emph{structures}
 instead of a complete and fully detailed history.
 % This is a digression from the maing point of the paragraph, so
 % making it a parenthetical aside.
-(Note that it is important to distinguish here between
+It is important to distinguish here between
 structures and models: whether an inference method is based
 on heuristics or a rigorous mathematical model is orthogonal
 to the level of detail provided in its estimate.
@@ -222,7 +222,7 @@ One could heuristically estimate a fully precise ARG,
 % this would be a cool thing to do!
 or statistically sample a partial,
 approximate ARG under a model
-such as the coalescent.)
+such as the coalescent.
 Although the term ``ARG'' is now often used in a general
 sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
@@ -234,7 +234,7 @@ zhang2023biobank},
 there is no corresponding mathematical definition
 that is sufficiently general.
 
-We address this problem by providing a simple formal definition of an
+We highlight this problem and show how to address it by a simple formal definition of an
 ARG data structure, based on recording the intervals of
 genetic inheritance between specific genomes.
 We call this the ``genome ARG'', or gARG encoding. We
@@ -245,11 +245,7 @@ substantial generalisation of the classical eARG approach,  providing much more
 flexibility in how genetic inheritance can be represented, and encompasses the
 outputs of modern methods. We show that the gARG approach can represent many
 different types of approximation, in particular allowing us to systematically
-describe uncertainty about the temporal ordering of multiple recombinations. It
-is important to note that throughout we are interested in the details of these
-competing mathematical formulations and their practical consequences.
-% True ARGs, being perfectly resolved, can ultimately be described in
-% either formalism
+describe uncertainty about the temporal ordering of multiple recombinations.
 
 % This is nice to have, but probably won't work in the final version
 % without section numbers. Let's deal with that when we get there I guess.
@@ -424,33 +420,29 @@ differential inheritance of genetic material between genomes.
 % % This is definitely needed for the Nicks, who are always thinking
 % % about the deeper processes and are quite happy being loosey-goosey
 % % with representation details
-It is important to note that here, and throughout,
-we are not questioning the form of the
-actual ancestral processes that occur in nature, but rather how we
-\emph{represent} the outcomes of such processes in a practical manner.
+In the next section we contrast this gARG representation with a classical event-based (eARG) representation of the same underlying process. The choice between using a gARG or an eARG to represent the general process of ancestral inheritance has 
 % Again, need to remind the reader that there's an actual point
 % to all this getting stuck into the details.
-These practical details,
-as demonstrated in later sections, have important
-consequences not only for how methods exchange information about
-simulated and inferred ARGs, but more fundamentally in
-how we set our goals for inference and evaluate the success of results.
+important
+consequences not just when addressing the practical need to store and compare ARGs, but more fundamentally when establishing goals for inferring ARGs and evaluating the success of such inferences.
 
 \section{Event ARGs}
 \label{sec-eARG}
-In this section we define a common (and classical) view of an ARG data structure,
+A common, classical view of an ARG data structure,
 described explicitly in several publications~\citep[e.g.][]{
-wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability}
+wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability},
+interprets nodes not as genomes but as historical \emph{events}
 (but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
-for notable exceptions), and used as an output format by multiple ARG inferences tools
+for notable exceptions).
+This eARG encoding is the basis of the output formats created by multiple ARG inference tools
 \citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
 heine2018bridging,ignatieva2021kwarg}.
 % Griffiths never mentions "sampling events", so let's not get
 % into that. It's not an important detail, and we don't want to be
 % overly precise about something that people haven't actually written
 % down.
-In this encoding we have two types of internal node in the graph,
-representing the common ancestor and recombination events
+In this case, two types of internal node exist in the graph. These
+represent the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
 single ancestral lineage with one parent, and at recombination
@@ -461,10 +453,7 @@ are used to construct the local trees.
 This is done by tracing pastwards through the graph from the samples,
 making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
-position~\citep{griffiths1996ancestral}.
-Because it is focused on recording events and their properties,
-we will refer to this encoding as the ``event ARG'' or eARG
-encoding. Fig.~\ref{fig-event-arg} shows an example of an
+position~\citep{griffiths1996ancestral}. Fig.~\ref{fig-event-arg} shows an example of an
 eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c}),
 three common ancestor events (\noderef{e}, \noderef{f}, and \noderef{g})
 and a single recombination event (node \noderef{d}) with a breakpoint
@@ -590,8 +579,8 @@ While this approach of annotating recombination nodes with a
 breakpoint in an eARG is a concise and elegant way of describing realisations
 of the coalescent, it is inherently limited when
 implemented literally. The eARG encoding explicitly models only
-two different types of event and thus anything that is not a single crossover
-recombination or common ancestor event, must be incorporated
+two different types of event; thus anything that is not a single crossover
+recombination or common ancestor event must be incorporated
 either in a roundabout way using these
 events, or by adding new types of event to the encoding. For example, gene
 conversion could be accommodated either by stipulating a third type of event
@@ -649,8 +638,8 @@ material propagating through the graph
 backwards in time. In the region $[2, 7)$, there is a
 local coalescence where nodes \noderef{a} and \noderef{c}
 find a common ancestor in \noderef{f}. Thus, in this region,
-the total number of genome segments that are ancestral to the
-sample is reduced from four to three. Fig.~\ref{fig-arg-in-pedigree}A
+we have three genome segments that are ancestral to the
+four samples. Fig.~\ref{fig-arg-in-pedigree}A
 illustrates this by (shaded) ancestral material being present
 in only three nodes (\noderef{f}, \noderef{g}, and \noderef{h}) in this region,
 while node \noderef{e} is blank
@@ -683,7 +672,7 @@ discussed so far, these methods record an ARG forwards in
 time in a ``prospective'' manner. Genetic inheritance relationships
 and mutations are recorded exhaustively, generation-by-generation,
 leading to a rapid build-up of information, much of which
-will not be relevant to the genetic ancestry of the current population.
+will not be relevant to the genetic ancestry of a future population.
 This redundancy is periodically removed using the ``simplify''
 algorithm~\citep{kelleher2018efficient}, which propagates and
 resolves ancestral material.
@@ -736,9 +725,9 @@ the information in the input eARG. They are also analogous to the
 inheritance intervals we get on the edges in a prospective gARG
 produced by a forward-time simulation, which are concerned with recording
 the direct genetic relationship between a parent and child genome and are not
-necessarily minimal in terms of the resolved ancestral material of a sample.
-Thus, the final step is to use the ``simplify'' algorithm to perform the required
-sample resolution (Fig.~\ref{fig-ancestry-resolution}C).
+necessarily minimal in terms of the ancestral material of a sample.
+Thus, the final step is to use the ``simplify'' algorithm to resolve the
+ancestral material of the samples (Fig.~\ref{fig-ancestry-resolution}C).
 
 The sample-resolved gARG of Fig.~\ref{fig-ancestry-resolution}C
 differs in some important ways to the
@@ -784,10 +773,13 @@ holds.
 
 \section{A diversity of structures}
 
-3 PARAS. - enough outline to let readewr know what's in the appendices.
-
-There are lots of new inference techniques: they all produce slightly different
-structures, all of which can be though of a types of ARGs...
+There are a number of tools for inferring genetic genealogies,
+and the graph structures that they produce differ in important aspects.
+These varying representations have all been termed ``ARGs'' by different authors,
+and each describes more than a simple sequence of uncorrelated trees.
+By way of illustration, Fig.~\ref{fig-inferred-args} depicts the output of four
+different ``ARG inference'' tools run on a common dataset,
+with the resulting ARGs converted into a standard gARG format (cite tskit).
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
@@ -795,8 +787,8 @@ structures, all of which can be though of a types of ARGs...
 \textit{Drosophila melanogaster} DNA sequences over a 2.4kb
 region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods:
-(A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate. See the
-text for details of these methods.
+(A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate, converted to the standard \emph{tskit} gARG encoding. See
+Appendix \ref{sec-example-inferred-args} for details of these methods.
 Edge colours indicate time of the edge's child node
 (lighter: older; darker: younger).
 Vertical and horizontal positions of graph nodes are arbitrary.
@@ -809,9 +801,39 @@ local trees.
 }
 \end{figure}
 
-These give different levels of precision about recombination (see new Appendix X)
+As is well-known (cite, perhaps Gusfield?), many different ancestral graph topologies are compatible with the same resulting
+sequence data. Hence it is unsurprising that the four graphs differ,
+for example in the numbers of nodes and their relationship to each other.
+However, more detailed inspection of Fig.~\ref{fig-inferred-args} reveals a
+diversity of representation that is only possible via the gARG encoding.
+For instance, although the most parsimonious ARG in Fig.~\ref{fig-inferred-args}A
+has far fewer ancestral events than an ARG instance sampled
+from from the coalescent with recombination in Fig.~\ref{fig-inferred-args}B,
+both consist only of nodes with either two parents or two children (but not both).
+These nodes correspond to recombination and common ancestor events in the equivalent eARG.
+In contrast, more scalable heuristic inference methods (Fig.~\ref{fig-inferred-args}C and D)
+create ARGs in which a node can simultaneously have more that than two children and more than two parents.
+Note also that the first three methods infer nodes that have a
+``coalescence span'' of less than 100\%, indicating that in the local trees, ancestral lineages exist 
+that pass through these nodes without the nodes marking a coalescent point. Such ``locally-unary''
+nodes are an notable feature of the local trees defined by an ARG
+(see Appendix \ref{sec-locally-unary-edges}).
 
-You can see this as different levels of detail on the same underlying truth. Here's a figure:
+These differences, in particular the number of parents and children, and the coalescence span, reflect the
+degree of precision represented in the inferred ARGs. Indeed, it is important to note that the gARG encoding
+allows a single underlying genetic genealogy to be represented at
+differing levels of detail. The concept is illustrated in Fig.~\ref{fig-simplification},
+which shows different levels of ``simplification'' (Appendix~\ref{sec-ARG-simplification}) of the
+same underlying simulated ARG. 
+The full ARG, with all coalescent and recombination events represented by
+separate genomes, is shown in Fig.~\ref{fig-simplification}A. Simpler representations can be formed by removing ``unknowable'' nodes (Fig.~\ref{fig-simplification}B) and 
+collapsing multiple recombinations into a single child or multiple coalescences into
+a single parent (Fig.~\ref{fig-simplification}C, also see Appendix~\ref{sec-cell-lineages-and-args}).
+Finally, if we chose to represent only local coalescence points (Fig.~\ref{fig-simplification}D),
+we end up with a ``fully simplified'' ARG
+of the sort inferred in Fig.~\ref{fig-inferred-args}D. Note that in all cases, the equivalent
+trees only differ in the locally-unary nodes they contain; topological relationships
+between the samples remain identical.
 
 \begin{figure}
 \centering
@@ -840,8 +862,10 @@ see the text for more details.
 
 %%% Pasted from previous para
 
-The timing, positions, and even the number of recombination events is generally
-not possible to infer precisely from genome sequencing data. Under
+The ability to represent an ARG to differing degrees of precision is a powerful
+feature of gARGs. In particular, when inferring ARGs from genome
+sequencing data, the timing, positions, and even the number of recombination
+events is generally not possible to infer precisely. For example, under
 coalescent-based models, the proportion of recombination events that change the
 ARG topology grows very slowly with sample size \citep{hein2004gene}, and of those
 events only a small proportion are actually detectable from the data, assuming
@@ -849,14 +873,16 @@ human-like mutation and recombination
 rates \citep{myers2002detection,hayman2023recoverability}.
 Even when a recombination event \emph{is} detectable, its timing and breakpoint
 position can only be inferred approximately, depending on how much information
-can be elucidated from mutations in the surrounding genomic region.
+can be elucidated from mutations in the surrounding genomic region. Because a gARG
+can encode a diversity of ARG structures, it
+allows this fundamental uncertainty in inference to be appropriately represented
+(Appendix~\ref{sec-precision}.
 % For general
 % ARGs, for instance those representing pedigrees, or genealogies of organisms with
 % low mutation rates and complex patterns of recombination, such inference can be
 % even more challenging.
-The fact that the eARG encoding \emph{requires}
-precise information about recombination is therefore a fundamental limitation.
-
+%The fact that the eARG encoding \emph{requires}
+%precise information about recombination is therefore a fundamental limitation.
 
 \section{Discussion}
 \label{sec-discussion}
@@ -868,18 +894,18 @@ and statistical genetics is tantalising,
 but in reality there is substantial work to be done to
 enable this.
 A necessary first step is a degree of terminological clarity.
-As discussed in Appendix~\ref{sec-arg-history}, the term
+As reviewed in Appendix~\ref{sec-arg-history}, the term
 ``ancestral recombination graph" has several
 subtly different interpretations, depending on context.
 The trend to decouple ARGs from their original definition
 within the context of stochastic
 processes and instead use the term as a more general representation of any
-recombinant genetic ancestry seems useful; we have
-tried to clarify and systematise it here. Thus
+recombinant genetic ancestry seems useful.
+Our intent here is to clarify and systematise this decoupling. Thus
 we can think of an ARG as any structure that encodes the
 reticulate genetic ancestry of a sample of colinear sequences under
 the influence of recombination. The ``genome'' ARG (gARG) encoding
-made explicit here is one way we can concretely
+is one way we can concretely
 define such recombinant ancestry, which we have shown is both
 flexible and efficient.
 The flexibility of the gARG encoding contrasts with the classical
@@ -1114,7 +1140,7 @@ software library that \emph{implements} BAM and several other
 foundational bioinformatics file formats.
 Today, there are thousands of software projects
 using \texttt{htslib}~\citep{bonfield2021htslib},
-and it this shared use of community software
+and it is this shared use of community software
 infrastructure that guarantees the smooth flow of data between
 applications.
 The emerging ARG software ecosystem could similarly benefit
@@ -1148,11 +1174,10 @@ The public GitHub repository at
 \url{https://github.com/tskit-dev/what-is-an-arg-paper} can be
 used to reproduce all figures and tables in this paper.
 In particular this includes
-the ARG used in Fig.~\ref{fig-ancestry-resolution};
+the ARG used in Fig.~\ref{fig-ancestry-resolution} as well as
 the simulation code and functions
-used to generate Fig.~\ref{fig-simplification};
-and for Fig.~\ref{fig-inferred-args},
-the software versions, parameter settings, and
+used to generate Fig.~\ref{fig-inferred-args} and Fig.~\ref{fig-simplification}.
+This includes the software versions, parameter settings, and
 (where necessary) functions to convert
 software outputs to the \texttt{tskit} gARG format.
 
@@ -1868,13 +1893,14 @@ directly tell us how many children a particular node has.
 The local tree at a given position records the \emph{path} through
 the ARG; if this path omits nodes that are not
 branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
-we lose information about the ARG.
-We return to this point in the following two sections,
-when we discuss ``locally unary'' nodes and the simplification process.
+information about the ARG is lost.
+We expand on this point in Appendices~\ref{sec-locally-unary-edges} and
+\ref{sec-ARG-simplification}
+where we which discuss ``locally unary'' nodes and the simplification process.
 
-It is important that we make the distinction here between the local
-trees that we can derive from a known ARG (as just discussed),
-and an ARG that we can derive from a sequence of \emph{estimated}
+It is important to make the distinction here between the local
+trees that can be derived from a known ARG (as just discussed),
+and an ARG that can be derived from a sequence of \emph{estimated}
 local trees.
 The ARG inference method
 \espalier~\citep{rasmussen2022espalier} is illustrative in this context.
@@ -1918,7 +1944,7 @@ may help clarify these fundamental questions.
 
 \section{Locally unary nodes}
 \label{sec-locally-unary-edges}
-As discussed in the previous section, the local tree at a given position
+As discussed in Appendix~\ref{sec-ARG-and-local-trees}, the local tree at a given position
 $x$ is best seen as the path through the ARG at that position, defined
 by the oriented tree $\pi^x_1\dots\pi^x_n$. This path does not directly
 contain information about branching points, and defining a
@@ -1934,7 +1960,7 @@ and the local arity of a node may change as we move along the genome.
 This distinction between ARG and local arity is mainly
 of interest when we consider nodes that have
 a single child: those that are \emph{unary}.
-Returning to the example in Fig.~\ref{fig-arg-in-pedigree}, nodes
+For the example in Fig.~\ref{fig-arg-in-pedigree}, nodes
 \noderef{g} and \noderef{h}
 are ARG-unary (Fig.~\ref{fig-arg-in-pedigree}B), and are consequently
 also unary in the local trees (Fig.~\ref{fig-arg-in-pedigree}C).
@@ -1946,7 +1972,7 @@ in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
 but we still record the fact that genome \noderef{c} inherits from \noderef{f}
 in the local tree. Thus, node \noderef{f} has a single child in this
 interval: it is \emph{locally unary}.
-In another example, \noderef{e} is binary in the graph, being a common
+In the same figure, \noderef{e} is binary in the graph, being a common
 ancestor of \noderef{a} and \noderef{c}, but is
 locally unary in all trees in which it is present.
 This is because no ancestral material coalesces in \noderef{e}:
@@ -1979,7 +2005,7 @@ More generally, locally unary nodes,
 which can have one or more children in the graph,
 are a common and important feature
 of many different types of ARG.
-As discussed in the previous section,
+As discussed in Appendix~\ref{sec-ARG-and-local-trees},
 without these nodes marking the passage
 of ancestral material through specific ancestors, the local trees
 lack information about events other than local coalescence.
@@ -2013,9 +2039,9 @@ of removing nodes and re-writing edges (and their inheritance annotations)
 to remove various types of redundancy, much of which
 % We are interested in both graph and local unary, so qualifying this
 % would just make it less readable, IMO
-revolves around the presence of unary nodes (see previous section).
-We illustrate this successive removal of redundancy
-through a series of simplification steps
+revolves around the presence of unary nodes (Appendix~\ref{sec-locally-unary-edges}).
+This successive removal of redundancy
+through a series of simplification steps is shown
 in Fig.~\ref{fig-simplification}.
 
 
@@ -2164,8 +2190,8 @@ unary nodes in local trees is that we lose some information
 about recombination
 events. This is related to the amount of \emph{precision} about
 recombination events that we store and
-can hope to infer from sampled genomes, which is the topic of the next
-section.
+can hope to infer from sampled genomes, which is the topic of
+Appendix~\ref{sec-precision}.
 
 \section{Precision of recombination information}
 \label{sec-precision}
@@ -2247,8 +2273,6 @@ by current methods, and some qualitative differences between them,
 Fig.~\ref{fig-inferred-args} shows graphical depictions of
 example ARGs produced by four tools using substantially
 different inference strategies.
-
-THE FIGURE OF INFERRED ARGS WAS HERE
 
 The first two methods explicitly infer recombination events.
 \kwarg~\citep{ignatieva2021kwarg} is a parsimony based approach
@@ -2464,7 +2488,7 @@ shaded by the number of descendant samples.
 In eukaryotes, ARGs are a result of the cellular processes of mitosis and meiosis.
 Mitosis leads to common ancestor events,
 and meiosis leads to recombination events (both crossover and gene conversion).
-Fig.~\ref{fig-simplification} shows a schematic of the events  and
+Fig.~\ref{fig-cell-lines} shows a schematic of the events  and
 the genomes (chromosome icons) that occur in the cellular
 germline of a simplified, diploid multicellular
 hermaphrodite eukaryote with partially overlapping generations.
@@ -2473,7 +2497,7 @@ genome. Rather, genomes can be associated with, or ``tag'', events above
 (ancestral to) or below (descended from) them.
 For example, tagging the two genomes above a recombination event leads to the
 two node representation seen in
-Figs.~\ref{fig-simplification} and \ref{hudson_vs_bigARG},
+Fig.~\ref{fig-simplification}A and Fig.~\ref{hudson_vs_bigARG},
 whereas tagging the genome
 below a recombination event leads to the more
 conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
