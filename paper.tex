@@ -210,12 +210,10 @@ differently (Appendix~\ref{sec-arg-history}).
 %and practical application.
 
 The breakthroughs in scale achieved by recent
-methods~\citep[e.g.][]{kelleher2019inferring,speidel2019method,zhang2023biobank}
-are all based, in different ways, on inferring
+methods are all based, in different ways, on inferring
 approximate \emph{structures}
-instead of a complete and fully detailed history.
-% This is a digression from the maing point of the paragraph, so
-% making it a parenthetical aside.
+instead of a complete and fully detailed history
+(see Appendix~\ref{sec-survey-arg-infer} for a brief survey).
 It is important to distinguish here between
 structures and models: whether an inference method is based
 on heuristics or a rigorous mathematical model is orthogonal
@@ -408,7 +406,7 @@ sequence of local trees along the
 genome (C).
 The local trees span the three genome regions delineated
 by the two recombination breakpoints that gave rise to these genomes;
-see Section~\ref{sec-ARG-and-local-trees} for details
+see Appendix~\ref{sec-ARG-and-local-trees} for details
 on how local trees are embedded in an ARG.
 
 % % I feel like sophisticated readers would at this point be saying,
@@ -443,7 +441,7 @@ heine2018bridging,ignatieva2021kwarg}.
 % into that. It's not an important detail, and we don't want to be
 % overly precise about something that people haven't actually written
 % down.
-In this case, two types of internal node exist in the graph. These
+In this encoding there are two types of internal node in the graph. These
 represent the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
@@ -620,9 +618,9 @@ within a single individual should be regarded as one or multiple events are
 debatable points (Appendix~\ref{sec-cell-lineages-and-args}).
 % If we want to have an ARG software ecosystem then such fireside
 % discussions won't help.
-The gARG format avoids the need for such considerations,
-so is more naturally compatible with forming an ecosystem of interoperable
-inference and analysis methods.
+% The gARG formulation avoids the need for such considerations,
+% so is more naturally compatible with forming an ecosystem of interoperable
+% inference and analysis methods.
 
 \section{Ancestral material and sample resolution}
 \label{sec-ancestral-material}
@@ -1387,6 +1385,347 @@ wilton2015smc,griffiths2016coalescent},
 as well as, more commonly, the concrete realisation of ancestry from a
 process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
 
+\section{Survey of ARG inference methods}
+\label{sec-survey-arg-infer}
+The problem of reconstructing ARGs for samples of recombining sequences has
+been of interest since the ARG was first defined. Early methods focused on
+finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
+recombination events~\citep{hein1990reconstructing}. Two main approaches
+emerged: ``backwards-in-time''~\citep{lyngso2005minimum} and
+``along-the-genome'' \citep{song2003parsimonious, song2005constructing}.
+Backwards-in-time approaches
+start with a data matrix and reduce it to an empty matrix through row
+and column operations corresponding to coalescence, mutation, and recombination
+events, which construct an ARG from the bottom up~\citep{song2005efficient,
+wu2008association,thao2019hybrid,ignatieva2021kwarg}.
+Along-the-genome approaches
+begin from an initial local tree at a single focal site.
+Moving the focal site along the
+genome changes the local tree via a subtree prune and regraft
+operation whenever a recombination is encountered~\citep{hein1993heuristic,
+wu2011new, mirzaei2017rent}.
+\citet{rasmussen2022espalier} focus on parsimonious fusion of local
+trees into an ARG, while the method described by
+\citet{camara2016inference} is based on topological data analysis.
+% The "most" is understood here, surely
+Reconstructing a parsimonious ARG for a given data set is NP-hard
+\citep{wang2001perfect}, so parsimony-based methods resort to heuristics and
+are limited to analysing at most hundreds of sequences. Hence, a number of
+methods aim to balance computational efficiency with reconstruction of
+``reasonable'', rather than parsimonious ARGs
+% distribution under a population genetics model
+\citep{minichiello2006mapping,
+parida2008estimating, kelleher2019inferring,  speidel2019method,
+schaefer2021ancestral, zhang2023biobank}.
+
+% AI: just to note, these papers do not all agree in their definition of an
+% ARG. I guess this is one of the points of the present paper, but should we
+% mention this fact? Should we also mention that most of these infer just the
+% topology, but some also the times?
+
+An alternative approach is to treat the ARG as a latent parameter to be
+averaged out by Monte Carlo methods, based either on importance sampling
+\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
+or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
+wang2009population, fallon2013acg, vaughan2017inferring, mahmoudi2022bayesian}.
+These methods operate on representations
+of the ``Little ARG'' (see Appendix \ref{sec-big-and-little-arg}), and are computationally expensive, being
+applicable to at most hundreds of samples consisting of tens or hundreds of
+kilobases with human-like parameters.
+State-of-the-art methods rely on cheaper,
+approximate models \citep{didelot2010inference, heine2018bridging,
+hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
+method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
+dozens of mammal-like genomes \citep{hubisz2020inference}.
+
+Methods to sample ARGs generate a ``cloud'' of estimates, and
+\cite{kuhner2017consensus} provide an approach to generate a
+set of consensus breakpoints and local trees from
+such a cloud.
+The approach is based on examining the recombination breakpoints
+in all of the input ARGS, and including those that are
+in at least $k$ of the input ARGs (with some additional
+filtering criteria) in the output.
+Within the resulting intervals, a consensus
+local tree is then generated using standard phylogenetic methods.
+
+% Not sure we want this content now? We're not really talking about
+% evaluation of liklihoods any more.
+% A central quantity
+% in all of these sampling methods is the conditional sampling probability $p(G |
+% D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization of
+% genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
+% of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
+% frequentist regularizer for the ARG $G$.
+
+% The likelihood $p(D | G)$ is effectively always the distribution of a Poisson
+% process on the ancestral material along the edges of $G$ \citep[Eq.\
+% (2)]{mahmoudi2022bayesian}. Hence it is typically straightforward to evaluate
+% in principle, but choosing the right data structure can still have a dramatic
+% effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
+% in the Bayesian case, $p(G)$ is typically specified as the sampling
+% distribution of a stochastic process, such as the coalescent with
+% recombination. Two contemporary examples are \citet{mahmoudi2022bayesian} and
+% \citet{guo2022recombination}. Evaluating the distribution of the coalescent with
+% recombination (or related models) requires knowledge of the number of extant
+% lineages and number of links available for recombination (i.e.\ ones at which a
+% recombination would split ancestral material) at each time \citep[Eq.\
+% (3)]{mahmoudi2022bayesian}. These require a data structure from which shared
+% edges on different trees are easy to identify, and which encodes recombination
+% events and times explicitly, e.g.\ using nodes.
+
+
+\section{Cell lineages and ARGs}
+\label{sec-cell-lineages-and-args}
+\begin{figure}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{illustrations/cell-lines}
+\end{center}
+\caption{\label{fig-cell-lines}
+Cellular inheritance of a single chromosome in a diploid population.
+Individuals (blue) contain diploid cells (white circles enclosing a homologous pair of chromosomes).
+For clarity, only two rounds of mitotic germ-line cell division are shown per individual, and
+meiosis is not illustrated in detail.
+Lines show prospective inheritance paths for all chromosomes. Solid lines show all possible
+retrospective ancestry paths for four chosen chromosomes (indicated by square black ``sampling events'')
+sampled from 3 diploid individuals ($D_1$, $D_2$, $D_3$) in the current generation.
+Ancestral recombination events and coalescence events are shown as red and blue squares respectively.
+A realised ARG path for the lower arm of the sampled chromosomes is highlighted as a
+thick solid line, passing through a set of potential gARG nodes (green). This ARG
+involves a single recombination event and four coalescence events
+(highlighted as deep red and blue squares within individuals $D_5$, $D_{10}$, and $D_{13}$).
+ARG lineages also show gametic genomes, contained within shaded circles.
+As in Fig.~\ref{fig-arg-in-pedigree}A, inherited regions within the sampled chromosome arm are
+shaded by the number of descendant samples.
+}
+\end{figure}
+
+In eukaryotes, ARGs are a result of the cellular processes of mitosis and meiosis.
+Mitosis leads to common ancestor events,
+and meiosis leads to recombination events (both crossover and gene conversion).
+Fig.~\ref{fig-cell-lines} shows a schematic of the events  and
+the genomes (chromosome icons) that occur in the cellular
+germline of a simplified, diploid multicellular
+hermaphrodite eukaryote with partially overlapping generations.
+Here, an event is not represented by a specific
+genome. Rather, genomes can be associated with, or ``tag'', events above
+(ancestral to) or below (descended from) them.
+For example, tagging the two genomes above a recombination event leads to the
+two node representation seen in
+Fig.~\ref{fig-simplification}A and Fig.~\ref{hudson_vs_bigARG},
+whereas tagging the genome
+below a recombination event leads to the more
+conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
+
+The schematic illustrates an important point about the biological reality of polytomies.
+Three lineages coalesce in the left-hand genome of individual $D_{10}$, but do
+so as the result of two successive bifurcations. This is \emph{necessarily} so,
+because the only known method of reproducing DNA is by (semi-conservative) duplication.
+Whether this polytomy is resolvable depends on the available mutational data.
+Mutations can occur along any cell lineages. For example,
+a mutation in the first cell division of $D_{10}$ could be shared between
+the two gametes produced by the cells in the left half of $D_{10}$
+but not shared by the right hand gamete.
+With enough mutations, each
+round of mitotic germline genome duplication within a single multicellular organism could
+in principle be distinguished.
+
+\section{ARGs and local trees}
+\label{sec-ARG-and-local-trees}
+% (We use ``local'' rather than
+% ``marginal''
+% % could list loads here, but not much point.
+% trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping,kelleher2016efficient}
+% to avoid the potential confusion with the
+% statistical concept of marginal distributions.)
+The relationship between an ARG and its corresponding
+local trees is subtle and important.
+A fundamental property of genetics is that a
+given DNA nucleotide is inherited from exactly one parent genome,
+both at an organismal and cell-by-cell level
+(Appendix~\ref{sec-cell-lineages-and-args}).
+These paths of single-parent inheritance give rise,
+by definition, to a tree structure.
+As a result of recombination, adjacent nucleotides can have
+different paths of inheritance, and
+an ARG encodes the entire ensemble of local trees along the
+% Said "sample of genomes" originally, but using term "genome" in two
+% different ways in the same sentence then.
+genome for a given set of sample nodes.
+% This is for Yan - to me this is a given, but maybe some people feel
+% the following is overly formal?
+Precisely defining the process by which local trees are extracted
+from an ARG is essential to our understanding of how ARGs and local trees
+are related, and we require a concrete mathematical structure
+to describe the local trees. It is important to note that
+although the following discussion is phrased in terms of the
+gARG encoding,  the arguments apply equally to eARGs
+because any eARG can be converted to a
+% Note, being sample-resolve is not necessary for following argument so omitting
+gARG without loss of information (Section~\ref{sec-ancestral-material}).
+
+Oriented trees provide a
+convenient formalism to capture these parent-child relationships
+in a well-defined combinatorial object.
+% There's no need for a comma
+Let $\pi_1\dots\pi_n$ be a sequence of integers, such that $\pi_u$
+denotes the parent of node $u$, and $\pi_u = 0$ if $u$ is a
+root~\cite[p.\ 461]{knuth11combinatorial}.
+This encoding is particularly useful to describe
+evolutionary trees because parent-child relationships are
+important but the ordering of children at a node is
+not~\citep{kelleher2013coalescent,kelleher2014coalescent,
+kelleher2016efficient}.
+Thus, for a given gARG with nodes $\{1, \dots, n\}$ and
+edges $E$ (Section~\ref{sec-gARG}), we recover the local tree
+at position $x$ as follows.
+We begin by setting $\pi_u = 0$ for each $1 \leq u \leq n$.
+Then, for each sample node in $S$ we trace its path pastwards through the
+ARG for position $x$, and record this path in $\pi$.
+Specifically, at a given node $u$,
+we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
+$\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
+until either $\pi_u \neq 0$ (indicating we have traversed this section
+of the ARG already on the path from another sample) or there
+is no matching outbound edge (indicating we are at a root).
+Note that the local trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
+because many ancestral nodes will not be reachable from the
+samples at a given position (so their corresponding entries in $\pi$ will be zero).
+
+This combinatorial approach provides at least
+one novel insight, clarifying the fundamental relationship between
+ARGs and local trees.
+Suppose we are given a gARG defined by a set of nodes and edges.
+There is no requirement on the structure of this ARG beyond
+the basic definitions: it could correspond to an ARG in which
+every recombination event is exactly specified
+(e.g.\ Fig.~\ref{fig-ancestry-resolution})
+or one in which local trees are entirely disjoint
+(i.e.\ only the sample nodes are shared between them).
+If we  are given the sequence of local trees for this gARG
+encoded as an oriented tree, along with the genome interval
+covered by each tree, we can recover the original gARG exactly.
+% We do this site-by-site for simplicity, but hopefully it's obvious
+% that this isn't necessary?
+More formally, suppose we are given the local tree $\pi^x_1\dots\pi^x_n$
+for each nucleotide position $1 \leq x \leq L$ on a genome of length $L$.
+Then, the edges of the ``local ARG'' for this tree is given by
+$E^x = \{(u, \pi_u^x, \{x\}) \mid \pi_u^x \neq 0\}$. Because the ARG
+edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
+the positions over which node $c$ inherits from parent $p$, we can
+then simply combine the ``local ARGs'' for each position $x$
+% YW: The above "combining" operation isn't obviously lossless to me:
+% we could potentially lose information in the different combinations
+% of intervals (e.g. if we use 2 non-combined intervals to represent a
+% diamond in a 1-RE-node ARG). It seems like we might need an additional
+% gARG spec to define what combinations of intervals are equivalent.
+% But no-one else has commented on this, so I guess we just let it lie.
+to recover precisely the same set of edges as the original ARG.
+Thus, under this definition, there
+is a one-to-one correspondence between an ARG and
+the sequence of local trees that it encodes.
+
+This is not the prevailing view, however.
+\cite{kuhner2017consensus} argue that the
+``interval-tree'' representation of
+an ARG (the local trees and the genome intervals they cover)
+``does not contain all of the information in the underlying ARG: it lacks the
+number of recombinations occurring at each site, the times at which
+recombinations occurred, and the specific sequences involved as recombination
+partners.''
+\cite{shipilina2023origin} discuss the same ideas,
+and note that the
+``full ARG...~contains more information than the series of tree
+sequences along the genome''.
+These
+% % Could cite some more? E.g. KwARG paper says
+% % "We note that ARGs contain more information than local trees"
+% % Would need a few more examples though, which would require some digging.
+%
+% and similar, \citep[e.g.][]{}
+statements that an ARG
+contains more information than its local trees are true
+if we represent local trees in their conventional forms,
+but these forms discard important information that is
+available in an ARG.
+
+There are two properties of how evolutionary trees are conventionally
+represented that lead to this
+disagreement about the relationship between local trees and an ARG.
+Firstly, the internal nodes of evolutionary trees are usually considered to be
+\emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
+The same canonical labelling cannot be used for internal ARG nodes because the
+leaves they subtend will typically vary by genomic position. If we do not label
+the tree nodes in a way which is persistent across the sequence of local trees
+in the ARG, we lose the fact that the \emph{same} ancestors sometimes persist
+across multiple trees.
+Defining ARG nodes as integers and using the oriented
+tree encoding explicitly labels internal nodes, and makes the relationship
+between tree and ARG nodes clear and precise.
+
+% Note: good to keep to paras here to logically separate the two important
+% points.
+The second property of how evolutionary trees
+are conventionally represented that is unhelpful in the context of ARGs is their
+focus on branching points (coalescences), i.e.\ nodes that have two or more children.
+As the introductory paragraph of this section emphasised,
+parent-child relationships are what fundamentally define a tree,
+and branching points can be seen as incidental. This is reflected
+by the oriented tree encoding which simply stores the local
+parent-child relationships, and does not, for example,
+directly tell us how many children a particular node has.
+The local tree at a given position records the \emph{path} through
+the ARG; if this path omits nodes that are not
+branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
+information about the ARG is lost.
+We expand on this point in Appendices~\ref{sec-locally-unary-edges} and
+\ref{sec-ARG-simplification}
+where we which discuss ``locally unary'' nodes and the simplification process.
+
+It is important to make the distinction here between the local
+trees that can be derived from a known ARG (as just discussed),
+and an ARG that can be derived from a sequence of \emph{estimated}
+local trees.
+The ARG inference method
+\espalier~\citep{rasmussen2022espalier} is illustrative in this context.
+It begins by splitting an input sequence alignment into
+segments that are assumed to be non-recombining. Within
+each segment, an initial local tree is estimated using
+standard phylogenetic methods. By necessity, these local
+trees will contain internal nodes that are unlabelled and
+consist only of branching points: there is no information
+shared between the independent tree estimation steps
+across segments. Part of the task of stitching
+these trees together
+into an ARG is then, essentially, to generate labels for
+the internal nodes, and decide which nodes persist
+across multiple local trees.
+\espalier\ approaches this task
+by identifying maximal subtrees
+that do not change between pairs of adjacent
+local trees and then
+heuristically exploring the space of possible
+rearrangements of these subtrees.
+To derive details about recombination events,
+\espalier\ then attempts to infer
+the precise subtree prune-and-regraft (SPR)
+operations~\citep{hein1990reconstructing,song2003on,song2006properties}
+induced by recombination between these partially reconciled local trees.
+% NOTE: dropping this because it doesn't clarify the actual point.
+% A similar problem is tackled by \arbores~\citep{heine2018bridging}, which
+% explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing
+% and resimulating candidate SPR moves connecting two fixed, leaf-labelled local
+% trees.
+Inferring the SPRs between leaf-labelled trees is
+NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
+but it is unclear what the complexity is when there
+is a degree of internal node sharing between trees.
+% I don't really know if this is true, it's just a way of wrapping the
+% section up by saying that other things we thought were settled might
+% be worth thinking about again.
+The combinatorial formulation of ARGs and local trees provided here
+may help clarify these fundamental questions.
+
 \section{The Big and Little ARG}
 \label{sec-big-and-little-arg}
 Here we review two important stochastic processes that construct ARGs:
@@ -1724,291 +2063,6 @@ Figure \ref{hudson_vs_bigARG} by drawing only one vertical edge between a recomb
 % need not have any genetic material in common with a
 % sequence descended from it.
 
-\section{Survey of ARG inference methods}
-\label{sec-survey-arg-infer}
-
-The problem of reconstructing ARGs for samples of recombining sequences has
-been of interest since the ARG was first defined. Early methods focused on
-finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
-recombination events~\citep{hein1990reconstructing}. Two main approaches
-emerged: ``backwards-in-time''~\citep{lyngso2005minimum} and
-``along-the-genome'' \citep{song2003parsimonious, song2005constructing}.
-Backwards-in-time approaches
-start with a data matrix and reduce it to an empty matrix through row
-and column operations corresponding to coalescence, mutation, and recombination
-events, which construct an ARG from the bottom up~\citep{song2005efficient,
-wu2008association,thao2019hybrid,ignatieva2021kwarg}.
-Along-the-genome approaches
-begin from an initial local tree at a single focal site.
-Moving the focal site along the
-genome changes the local tree via a subtree prune and regraft
-operation whenever a recombination is encountered~\citep{hein1993heuristic,
-wu2011new, mirzaei2017rent}.
-\citet{rasmussen2022espalier} focus on parsimonious fusion of local
-trees into an ARG, while the method described by
-\citet{camara2016inference} is based on topological data analysis.
-% The "most" is understood here, surely
-Reconstructing a parsimonious ARG for a given data set is NP-hard
-\citep{wang2001perfect}, so parsimony-based methods resort to heuristics and
-are limited to analysing at most hundreds of sequences. Hence, a number of
-methods aim to balance computational efficiency with reconstruction of
-``reasonable'', rather than parsimonious ARGs
-% distribution under a population genetics model
-\citep{minichiello2006mapping,
-parida2008estimating, kelleher2019inferring,  speidel2019method,
-schaefer2021ancestral, zhang2023biobank}.
-
-% AI: just to note, these papers do not all agree in their definition of an
-% ARG. I guess this is one of the points of the present paper, but should we
-% mention this fact? Should we also mention that most of these infer just the
-% topology, but some also the times?
-
-An alternative approach is to treat the ARG as a latent parameter to be
-averaged out by Monte Carlo methods, based either on importance sampling
-\citep{griffiths1996ancestral, fearnhead2001estimating, jenkins2011inference}
-or MCMC \citep{kuhner2000maximum, kuhner2006lamarc, nielsen2000estimation, wang2008bayesian,
-wang2009population, fallon2013acg, vaughan2017inferring, mahmoudi2022bayesian}.
-These methods operate on representations
-of the ``Little ARG'' (see Appendix \ref{sec-big-and-little-arg}), and are computationally expensive, being
-applicable to at most hundreds of samples consisting of tens or hundreds of
-kilobases with human-like parameters.
-State-of-the-art methods rely on cheaper,
-approximate models \citep{didelot2010inference, heine2018bridging,
-hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
-method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
-dozens of mammal-like genomes \citep{hubisz2020inference}.
-
-Methods to sample ARGs generate a ``cloud'' of estimates, and
-\cite{kuhner2017consensus} provide an approach to generate a
-set of consensus breakpoints and local trees from
-such a cloud.
-The approach is based on examining the recombination breakpoints
-in all of the input ARGS, and including those that are
-in at least $k$ of the input ARGs (with some additional
-filtering criteria) in the output.
-Within the resulting intervals, a consensus
-local tree is then generated using standard phylogenetic methods.
-
-% Not sure we want this content now? We're not really talking about
-% evaluation of liklihoods any more.
-% A central quantity
-% in all of these sampling methods is the conditional sampling probability $p(G |
-% D) \propto p(D | G) p(G)$ of an ARG $G$ given an observed realization of
-% genetic diversity $D$ at its sampled leaves, where $p(D | G)$ is the likelihood
-% of the data $D$ given $G$, and $p(G)$ is a Bayesian prior distribution or a
-% frequentist regularizer for the ARG $G$.
-
-% The likelihood $p(D | G)$ is effectively always the distribution of a Poisson
-% process on the ancestral material along the edges of $G$ \citep[Eq.\
-% (2)]{mahmoudi2022bayesian}. Hence it is typically straightforward to evaluate
-% in principle, but choosing the right data structure can still have a dramatic
-% effect on the efficiency of evaluation \citep{mahmoudi2022bayesian}. Especially
-% in the Bayesian case, $p(G)$ is typically specified as the sampling
-% distribution of a stochastic process, such as the coalescent with
-% recombination. Two contemporary examples are \citet{mahmoudi2022bayesian} and
-% \citet{guo2022recombination}. Evaluating the distribution of the coalescent with
-% recombination (or related models) requires knowledge of the number of extant
-% lineages and number of links available for recombination (i.e.\ ones at which a
-% recombination would split ancestral material) at each time \citep[Eq.\
-% (3)]{mahmoudi2022bayesian}. These require a data structure from which shared
-% edges on different trees are easy to identify, and which encodes recombination
-% events and times explicitly, e.g.\ using nodes.
-
-\section{ARGs and local trees}
-\label{sec-ARG-and-local-trees}
-% (We use ``local'' rather than
-% ``marginal''
-% % could list loads here, but not much point.
-% trees~\citep[e.g.][]{griffiths1996ancestral,minichiello2006mapping,kelleher2016efficient}
-% to avoid the potential confusion with the
-% statistical concept of marginal distributions.)
-The relationship between an ARG and its corresponding
-local trees is subtle and important.
-A fundamental property of genetics is that a
-given DNA nucleotide is inherited from exactly one parent genome,
-both at an organismal and cell-by-cell level
-(Appendix~\ref{sec-cell-lineages-and-args}).
-These paths of single-parent inheritance give rise,
-by definition, to a tree structure.
-As a result of recombination, adjacent nucleotides can have
-different paths of inheritance, and
-an ARG encodes the entire ensemble of local trees along the
-% Said "sample of genomes" originally, but using term "genome" in two
-% different ways in the same sentence then.
-genome for a given set of sample nodes.
-% This is for Yan - to me this is a given, but maybe some people feel
-% the following is overly formal?
-Precisely defining the process by which local trees are extracted
-from an ARG is essential to our understanding of how ARGs and local trees
-are related, and we require a concrete mathematical structure
-to describe the local trees. It is important to note that
-although the following discussion is phrased in terms of the
-gARG encoding,  the arguments apply equally to eARGs
-because any eARG can be converted to a
-% Note, being sample-resolve is not necessary for following argument so omitting
-gARG without loss of information (Section~\ref{sec-ancestral-material}).
-
-Oriented trees provide a
-convenient formalism to capture these parent-child relationships
-in a well-defined combinatorial object.
-% There's no need for a comma
-Let $\pi_1\dots\pi_n$ be a sequence of integers, such that $\pi_u$
-denotes the parent of node $u$, and $\pi_u = 0$ if $u$ is a
-root~\cite[p.\ 461]{knuth11combinatorial}.
-This encoding is particularly useful to describe
-evolutionary trees because parent-child relationships are
-important but the ordering of children at a node is
-not~\citep{kelleher2013coalescent,kelleher2014coalescent,
-kelleher2016efficient}.
-Thus, for a given gARG with nodes $\{1, \dots, n\}$ and
-edges $E$ (Section~\ref{sec-gARG}), we recover the local tree
-at position $x$ as follows.
-We begin by setting $\pi_u = 0$ for each $1 \leq u \leq n$.
-Then, for each sample node in $S$ we trace its path pastwards through the
-ARG for position $x$, and record this path in $\pi$.
-Specifically, at a given node $u$,
-we find an edge $(c, p, I) \in E$ such that $u = c$ and $x \in I$, and set
-$\pi_c \leftarrow p$. We then set $u \leftarrow p$, and repeat
-until either $\pi_u \neq 0$ (indicating we have traversed this section
-of the ARG already on the path from another sample) or there
-is no matching outbound edge (indicating we are at a root).
-Note that the local trees for an ARG are ``sparse''~\citep{kelleher2016efficient},
-because many ancestral nodes will not be reachable from the
-samples at a given position (so their corresponding entries in $\pi$ will be zero).
-
-This combinatorial approach provides at least
-one novel insight, clarifying the fundamental relationship between
-ARGs and local trees.
-Suppose we are given a gARG defined by a set of nodes and edges.
-There is no requirement on the structure of this ARG beyond
-the basic definitions: it could correspond to an ARG in which
-every recombination event is exactly specified
-(e.g.\ Fig.~\ref{fig-ancestry-resolution})
-or one in which local trees are entirely disjoint
-(i.e.\ only the sample nodes are shared between them).
-If we  are given the sequence of local trees for this gARG
-encoded as an oriented tree, along with the genome interval
-covered by each tree, we can recover the original gARG exactly.
-% We do this site-by-site for simplicity, but hopefully it's obvious
-% that this isn't necessary?
-More formally, suppose we are given the local tree $\pi^x_1\dots\pi^x_n$
-for each nucleotide position $1 \leq x \leq L$ on a genome of length $L$.
-Then, the edges of the ``local ARG'' for this tree is given by
-$E^x = \{(u, \pi_u^x, \{x\}) \mid \pi_u^x \neq 0\}$. Because the ARG
-edges are defined by $(c, p, I)$ tuples, where the set $I$ defines
-the positions over which node $c$ inherits from parent $p$, we can
-then simply combine the ``local ARGs'' for each position $x$
-% YW: The above "combining" operation isn't obviously lossless to me:
-% we could potentially lose information in the different combinations
-% of intervals (e.g. if we use 2 non-combined intervals to represent a
-% diamond in a 1-RE-node ARG). It seems like we might need an additional
-% gARG spec to define what combinations of intervals are equivalent.
-% But no-one else has commented on this, so I guess we just let it lie.
-to recover precisely the same set of edges as the original ARG.
-Thus, under this definition, there
-is a one-to-one correspondence between an ARG and
-the sequence of local trees that it encodes.
-
-This is not the prevailing view, however.
-\cite{kuhner2017consensus} argue that the
-``interval-tree'' representation of
-an ARG (the local trees and the genome intervals they cover)
-``does not contain all of the information in the underlying ARG: it lacks the
-number of recombinations occurring at each site, the times at which
-recombinations occurred, and the specific sequences involved as recombination
-partners.''
-\cite{shipilina2023origin} discuss the same ideas,
-and note that the
-``full ARG...~contains more information than the series of tree
-sequences along the genome''.
-These
-% % Could cite some more? E.g. KwARG paper says
-% % "We note that ARGs contain more information than local trees"
-% % Would need a few more examples though, which would require some digging.
-%
-% and similar, \citep[e.g.][]{}
-statements that an ARG
-contains more information than its local trees are true
-if we represent local trees in their conventional forms,
-but these forms discard important information that is
-available in an ARG.
-
-There are two properties of how evolutionary trees are conventionally
-represented that lead to this
-disagreement about the relationship between local trees and an ARG.
-Firstly, the internal nodes of evolutionary trees are usually considered to be
-\emph{unlabelled}, or equivalently, labelled by the leaves which they subtend.
-The same canonical labelling cannot be used for internal ARG nodes because the
-leaves they subtend will typically vary by genomic position. If we do not label
-the tree nodes in a way which is persistent across the sequence of local trees
-in the ARG, we lose the fact that the \emph{same} ancestors sometimes persist
-across multiple trees.
-Defining ARG nodes as integers and using the oriented
-tree encoding explicitly labels internal nodes, and makes the relationship
-between tree and ARG nodes clear and precise.
-
-% Note: good to keep to paras here to logically separate the two important
-% points.
-The second property of how evolutionary trees
-are conventionally represented that is unhelpful in the context of ARGs is their
-focus on branching points (coalescences), i.e.\ nodes that have two or more children.
-As the introductory paragraph of this section emphasised,
-parent-child relationships are what fundamentally define a tree,
-and branching points can be seen as incidental. This is reflected
-by the oriented tree encoding which simply stores the local
-parent-child relationships, and does not, for example,
-directly tell us how many children a particular node has.
-The local tree at a given position records the \emph{path} through
-the ARG; if this path omits nodes that are not
-branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
-information about the ARG is lost.
-We expand on this point in Appendices~\ref{sec-locally-unary-edges} and
-\ref{sec-ARG-simplification}
-where we which discuss ``locally unary'' nodes and the simplification process.
-
-It is important to make the distinction here between the local
-trees that can be derived from a known ARG (as just discussed),
-and an ARG that can be derived from a sequence of \emph{estimated}
-local trees.
-The ARG inference method
-\espalier~\citep{rasmussen2022espalier} is illustrative in this context.
-It begins by splitting an input sequence alignment into
-segments that are assumed to be non-recombining. Within
-each segment, an initial local tree is estimated using
-standard phylogenetic methods. By necessity, these local
-trees will contain internal nodes that are unlabelled and
-consist only of branching points: there is no information
-shared between the independent tree estimation steps
-across segments. Part of the task of stitching
-these trees together
-into an ARG is then, essentially, to generate labels for
-the internal nodes, and decide which nodes persist
-across multiple local trees.
-\espalier\ approaches this task
-by identifying maximal subtrees
-that do not change between pairs of adjacent
-local trees and then
-heuristically exploring the space of possible
-rearrangements of these subtrees.
-To derive details about recombination events,
-\espalier\ then attempts to infer
-the precise subtree prune-and-regraft (SPR)
-operations~\citep{hein1990reconstructing,song2003on,song2006properties}
-induced by recombination between these partially reconciled local trees.
-% NOTE: dropping this because it doesn't clarify the actual point.
-% A similar problem is tackled by \arbores~\citep{heine2018bridging}, which
-% explores a space of ARGs by fixing a starting ARG, and then repeatedly erasing
-% and resimulating candidate SPR moves connecting two fixed, leaf-labelled local
-% trees.
-Inferring the SPRs between leaf-labelled trees is
-NP-hard~\citep{hein1996complexity,allen2001subtree,bordewich2005computational},
-but it is unclear what the complexity is when there
-is a degree of internal node sharing between trees.
-% I don't really know if this is true, it's just a way of wrapping the
-% section up by saying that other things we thought were settled might
-% be worth thinking about again.
-The combinatorial formulation of ARGs and local trees provided here
-may help clarify these fundamental questions.
 
 \section{Locally unary nodes}
 \label{sec-locally-unary-edges}
@@ -2465,79 +2519,6 @@ and an ARG with precisely specified recombination events on the other
 % between nodes that that are older than the local MRCAs.
 
 
-\section{Cell lineages and ARGs}
-\label{sec-cell-lineages-and-args}
-\begin{figure}
-\begin{center}
-    \includegraphics[width=0.8\textwidth]{illustrations/cell-lines}
-\end{center}
-\caption{\label{fig-cell-lines}
-Cellular inheritance of a single chromosome in a diploid population.
-Individuals (blue) contain diploid cells (white circles enclosing a homologous pair of chromosomes).
-For clarity, only two rounds of mitotic germ-line cell division are shown per individual, and
-meiosis is not illustrated in detail.
-Lines show prospective inheritance paths for all chromosomes. Solid lines show all possible
-retrospective ancestry paths for four chosen chromosomes (indicated by square black ``sampling events'')
-sampled from 3 diploid individuals ($D_1$, $D_2$, $D_3$) in the current generation.
-Ancestral recombination events and coalescence events are shown as red and blue squares respectively.
-A realised ARG path for the lower arm of the sampled chromosomes is highlighted as a
-thick solid line, passing through a set of potential gARG nodes (green). This ARG
-involves a single recombination event and four coalescence events
-(highlighted as deep red and blue squares within individuals $D_5$, $D_{10}$, and $D_{13}$).
-ARG lineages also show gametic genomes, contained within shaded circles.
-As in Fig.~\ref{fig-arg-in-pedigree}A, inherited regions within the sampled chromosome arm are
-shaded by the number of descendant samples.
-}
-\end{figure}
-
-In eukaryotes, ARGs are a result of the cellular processes of mitosis and meiosis.
-Mitosis leads to common ancestor events,
-and meiosis leads to recombination events (both crossover and gene conversion).
-Fig.~\ref{fig-cell-lines} shows a schematic of the events  and
-the genomes (chromosome icons) that occur in the cellular
-germline of a simplified, diploid multicellular
-hermaphrodite eukaryote with partially overlapping generations.
-Here, an event is not represented by a specific
-genome. Rather, genomes can be associated with, or ``tag'', events above
-(ancestral to) or below (descended from) them.
-For example, tagging the two genomes above a recombination event leads to the
-two node representation seen in
-Fig.~\ref{fig-simplification}A and Fig.~\ref{hudson_vs_bigARG},
-whereas tagging the genome
-below a recombination event leads to the more
-conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
-
-%% JK:  What does this add that is not in caption?
-% Thick black lines trace an ARG that describes the ancestry of the lower arm of
-% the four sampled chromosomes, and these lines pass through gARG nodes (green
-% chromosomal regions). A number of these nodes have only one parent and one
-% child in the ARG; these would often be omitted (taken as implicit) in a
-% minimally simplified gARG.
-
-The schematic illustrates an important point about the biological reality of polytomies.
-Three lineages coalesce in the left-hand genome of individual $D_{10}$, but do
-so as the result of two successive bifurcations. This is \emph{necessarily} so,
-because the only known method of reproducing DNA is by (semi-conservative) duplication.
-Whether this polytomy is resolvable depends on the available mutational data.
-Mutations can occur along any cell lineages. For example,
-a mutation in the first cell division of $D_{10}$ could be shared between
-the two gametes produced by the cells in the left half of $D_{10}$
-but not shared by the right hand gamete.
-With enough mutations, each
-round of mitotic germline genome duplication within a single multicellular organism could
-in principle be distinguished.
-
-% Note that mutations can occur along any lineage in Fig.~\ref{fig-cell-lines}. This means, for example,
-% that a mutation in the first cell division of $D_{10}$ could be shared between
-% the two gametes produced by the cells in the left half of $D_{10}$ but not shared by
-% the right hand gamete. With a high enough mutation rate (or equivalently, a long enough genome), each
-% round of mitotic germline genome duplication within a single multicellular organism could
-% potentially be distinguished.
-% This implies that in ARGs that have been inferred from real data, polytomies represent a lack
-% of mutational information (rather than marking a single ``multifurcation event'').
-% The ability to represent polytomies, and conceptualise them as a (deliberately) imprecise statement about the order
-% of coalescence within and between individuals,
-% fits naturally into the gARG framework presented in this paper.
 
 \clearpage
 \renewcommand\thefigure{S\arabic{figure}}
