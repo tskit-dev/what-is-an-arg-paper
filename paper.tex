@@ -58,6 +58,7 @@ Information and Discovery, University of Oxford, UK}
 
 \vspace{-1em}
 
+% NEEDS REWRITE
 \begin{abstract}
 As a result of recombination, adjacent nucleotides can have
 different paths of genetic inheritance and therefore
@@ -680,15 +681,19 @@ each time.
 A key goal of this perspective is to highlight the heterogeneity of
 the graph structures inferred by modern ARG inference methods.
 To illustrate this point, Fig.~\ref{fig-inferred-args} shows the 
-output of four methods run on the 
-\cite{kreitman1983nucleotide} dataset, often used as an
-ARG inference benchmark. One source of differences between 
+output of 
+\kwarg~\citep{ignatieva2021kwarg},
+\argweaver~\citep{rasmussen2014genome},
+\tsinfer~\citep{kelleher2019inferring}
+and \relate~\citep{speidel2019method}
+on the classical \cite{kreitman1983nucleotide} dataset. 
+One source of differences between 
 the inferences is the underlying model. For instance, 
-the ARG in Fig.~\ref{fig-inferred-args}A is inferred by 
-\kwarg\ under parsimony, and therefore has many fewer 
+the ARG in Fig.~\ref{fig-inferred-args}A is inferred 
+under parsimony, and therefore has many fewer 
 ancestral nodes then Fig.~\ref{fig-inferred-args}B, which 
 is sampled from the coalescent with recombination with an 
-appropriate recombination rate parameter. These differences
+appropriate recombination rate parameter. Such differences
 are well understood.
 
 \begin{figure} \begin{center}
@@ -712,7 +717,7 @@ local trees.
 }
 \end{figure}
 
-The differences between ARGs that we wish to draw attention to here 
+[WIP] The differences between ARGs that we wish to draw attention to here 
 are more subtle
 
 As is well-known (cite, perhaps Gusfield?), many different ancestral graph
