@@ -153,45 +153,45 @@ or an inferred ancestry of a sample of genomes.
 The distinction between stochastic process
 and data structure is not clear cut, however, and subfields use the term
 differently (Appendix~\ref{sec-arg-history},\ref{sec-big-and-little-arg}).
-methods are all based, in different ways, on inferring
-approximate \emph{structures}
+% TODO rework these two sentences. Point about models vs structures 
+% is an important one, we need to make that.
+Recent large-scale methods infer approximate \emph{structures}
 instead of a complete and fully detailed history
-(Appendix~\ref{sec-survey-arg-infer}).
-It is important to distinguish here between
-structures and models: whether an inference method is based
+(Appendix~\ref{sec-survey-arg-infer}), and it is
+therefore important to distinguish between
+approximate structures and approximate models.
+Whether an inference method is based
 on heuristics or a rigorous mathematical model is orthogonal
 to the level of detail provided in its estimate.
-One could heuristically estimate a fully precise ARG,
-% this would be a cool thing to do!
-or statistically sample a partial,
-approximate ARG under a model
-such as the coalescent.
-Although the term ``ARG'' is now often used in a general
-sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
+The term ``ARG'' therefore has many different meanings, varying 
+over time and depending on context. 
+There is an emerging consensus to use the term
+in quite a general sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
 informally
-encompassing the varied approximate structures output by modern simulation and
+encompassing the varied structures output by modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient,
-zhang2023biobank},
-there is no corresponding mathematical definition
-that is sufficiently general.
+zhang2023biobank}. 
+However, there is currently no formal definition or systematic 
+discussion that unifies these different structures, 
+ultimately stifling progress in this vibrant research area.
 
-(see \citet{lewanski2024era,brandt2024promise} for biologically oriented
-introductions)
-
-We highlight this problem and show how to address it by a simple formal definition of an
-ARG data structure, based on recording the intervals of
-genetic inheritance between specific genomes.
-We call this the ``genome ARG'', or gARG encoding. We
-contrast this with the classical formal definition of an ARG, based on
-recording common ancestor and recombination events, which we refer to as the
-``event ARG'' or eARG encoding. We show that the new gARG encoding is a
-substantial generalisation of the classical eARG approach,  providing much more
-flexibility in how genetic inheritance can be represented, and encompasses the
-outputs of modern methods. We show that the gARG approach can represent many
-different types of approximation, in particular allowing us to systematically
-describe uncertainty about the temporal ordering of multiple recombinations.
+In this perspective we provide a simple formal definition
+of an ARG data structure, which generalises classical 
+definitions and encompasses the output of modern simulation and inference 
+methods. We show that different levels of approximation
+are possible using this structure, illustrated via examples.
+% This is a bit crap, but do want to make this point about tskit for the 
+% "only read the introduction" crowd.
+The proposed ARG definition is the basis of the widely-used \texttt{tskit}
+library which provides a powerful software platform
+for ARG-based analysis and, we argue, would be a useful community standard.
+This perspective is intended for ``ARG practitioners'', who we hope
+will find the detailed examples and technical appendices useful.
+Readers seeking an introduction to ARGs and their applications are 
+directed to \citet{lewanski2024era}
+and \citet{brandt2024promise}.
 
 \section{Genome ARGs}
 \label{sec-gARG}
