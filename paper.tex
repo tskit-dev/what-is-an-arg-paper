@@ -111,9 +111,7 @@ usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, encapsulating the resulting complex web of genetic
-ancestry
-(see \citet{lewanski2024era,brandt2024promise} for biologically oriented
-introductions).
+ancestry.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -129,6 +127,7 @@ zhang2023biobank,
 nowbandegani2023extremely,
 ignatieva2023distribution,
 fan2023likelihood,
+link2023tree,
 grundler2024geographic,
 huang2024estimating}
 and many more are sure to
@@ -154,62 +153,6 @@ or an inferred ancestry of a sample of genomes.
 The distinction between stochastic process
 and data structure is not clear cut, however, and subfields use the term
 differently (Appendix~\ref{sec-arg-history},\ref{sec-big-and-little-arg}).
-
-%Other subtly different concepts that we must be careful to distinguish
-%are the ``true'' ARG, % I don't see a better word for "true" here
-%describing the actual history of a sample of genomes,
-%and a ``population'' ARG which is
-%the true ARG of every individual in a population.
-%True ARGs are the underlying real history of a sample,
-%perfectly resolved into binary splits and mergers by
-%%the cellular processes of meiosis and mitosis, regardless
-%of sampling density or population processes
-%(Appendix~\ref{sec-cell-lineages-and-args}).
-%Although population-scale true ARGs unquestionably exist,
-%they can also never be entirely known, in part because of a fundamental
-%lack of mutational information.
-%Even if mutation rate were high enough to uniquely identify every
-%recent branching point,
-%such a high rate would saturate the genome with mutations
-%and obscure deeper history.
-
-% Population ARGs are here, now.
-%Population ARGs may seem fanciful, but the scale of
-%modern datasets makes it necessary for us to grapple with the idea.
-%The UK Biobank (UKB), for example, has
-%genotype data for around 500,000 humans~\citep{bycroft2018genome},
-%along with exome~\citep{backman2021exome} and
-%whole genome sequence~\citep{halldorsson2022sequences} data
-%for large subsets of the cohort.
-%UKB is just one of many such population-scale sequencing
-%projects~\citep[e.g.][]{turnbull2018hundred,
-%karczewski2020mutational,tanjo2021practical}.
-%Agricultural datasets are on a similar scale,
-%and also include dense multi-generational sampling
-%and near-perfect pedigree
-%information~\citep[e.g.][]{hayes20191000,Ros-Freixedes2020}.
-%Recent advances have made it possible to actually
-%\emph{estimate} ARGs at population scale:
-%ARGs have already been inferred for the 500,000
-%humans in UKB~\citep{kelleher2019inferring,zhang2023biobank}
-%and over a million SARS-CoV-2 genomes~\citep{zhan2023towards}.
-%While this new population-scale reality presents many
-%exciting opportunities, it also poses substantial challenges
-%to existing methodologies.
-
-% What's the problem?
-%A major problem currently facing the field is that
-%classical mathematical formalisms and terminology
-%cannot adequately describe these vast inferred ARGs.
-%Fundamentally, these formalisms assume that an
-%ARG is known in complete detail
-%and are not suited to describing partial or approximate knowledge.
-%As we are actively inferring ARGs at the population scale,
-%and such ARGs can never be known in complete detail,
-%there is currently a substantial gap between our theoretical frameworks
-%and practical application.
-
-The breakthroughs in scale achieved by recent
 methods are all based, in different ways, on inferring
 approximate \emph{structures}
 instead of a complete and fully detailed history
@@ -233,6 +176,9 @@ kelleher2019inferring, speidel2019method, baumdicker2021efficient,
 zhang2023biobank},
 there is no corresponding mathematical definition
 that is sufficiently general.
+
+(see \citet{lewanski2024era,brandt2024promise} for biologically oriented
+introductions)
 
 We highlight this problem and show how to address it by a simple formal definition of an
 ARG data structure, based on recording the intervals of
@@ -710,7 +656,7 @@ cumulative effects of events over time can be reasoned
 about, without first ``replaying'' those events.
 Many computations
 that we wish to perform on an ARG will require resolving
-the ancestral material with respect to a sample.
+the ancestral material with respect to a set of samples.
 % this is weak, but would be good to emphasise this point.
 % you just end up running simplify lots of times, in your
 % downstream algs
