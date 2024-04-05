@@ -111,9 +111,7 @@ usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, encapsulating the resulting complex web of genetic
-ancestry
-(see \citet{lewanski2024era,brandt2024promise} for biologically oriented
-introductions).
+ancestry.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -129,6 +127,7 @@ zhang2023biobank,
 nowbandegani2023extremely,
 ignatieva2023distribution,
 fan2023likelihood,
+link2023tree,
 grundler2024geographic,
 huang2024estimating}
 and many more are sure to
@@ -154,98 +153,45 @@ or an inferred ancestry of a sample of genomes.
 The distinction between stochastic process
 and data structure is not clear cut, however, and subfields use the term
 differently (Appendix~\ref{sec-arg-history},\ref{sec-big-and-little-arg}).
-
-%Other subtly different concepts that we must be careful to distinguish
-%are the ``true'' ARG, % I don't see a better word for "true" here
-%describing the actual history of a sample of genomes,
-%and a ``population'' ARG which is
-%the true ARG of every individual in a population.
-%True ARGs are the underlying real history of a sample,
-%perfectly resolved into binary splits and mergers by
-%%the cellular processes of meiosis and mitosis, regardless
-%of sampling density or population processes
-%(Appendix~\ref{sec-cell-lineages-and-args}).
-%Although population-scale true ARGs unquestionably exist,
-%they can also never be entirely known, in part because of a fundamental
-%lack of mutational information.
-%Even if mutation rate were high enough to uniquely identify every
-%recent branching point,
-%such a high rate would saturate the genome with mutations
-%and obscure deeper history.
-
-% Population ARGs are here, now.
-%Population ARGs may seem fanciful, but the scale of
-%modern datasets makes it necessary for us to grapple with the idea.
-%The UK Biobank (UKB), for example, has
-%genotype data for around 500,000 humans~\citep{bycroft2018genome},
-%along with exome~\citep{backman2021exome} and
-%whole genome sequence~\citep{halldorsson2022sequences} data
-%for large subsets of the cohort.
-%UKB is just one of many such population-scale sequencing
-%projects~\citep[e.g.][]{turnbull2018hundred,
-%karczewski2020mutational,tanjo2021practical}.
-%Agricultural datasets are on a similar scale,
-%and also include dense multi-generational sampling
-%and near-perfect pedigree
-%information~\citep[e.g.][]{hayes20191000,Ros-Freixedes2020}.
-%Recent advances have made it possible to actually
-%\emph{estimate} ARGs at population scale:
-%ARGs have already been inferred for the 500,000
-%humans in UKB~\citep{kelleher2019inferring,zhang2023biobank}
-%and over a million SARS-CoV-2 genomes~\citep{zhan2023towards}.
-%While this new population-scale reality presents many
-%exciting opportunities, it also poses substantial challenges
-%to existing methodologies.
-
-% What's the problem?
-%A major problem currently facing the field is that
-%classical mathematical formalisms and terminology
-%cannot adequately describe these vast inferred ARGs.
-%Fundamentally, these formalisms assume that an
-%ARG is known in complete detail
-%and are not suited to describing partial or approximate knowledge.
-%As we are actively inferring ARGs at the population scale,
-%and such ARGs can never be known in complete detail,
-%there is currently a substantial gap between our theoretical frameworks
-%and practical application.
-
-The breakthroughs in scale achieved by recent
-methods are all based, in different ways, on inferring
-approximate \emph{structures}
+% TODO rework these two sentences. Point about models vs structures 
+% is an important one, we need to make that.
+Recent large-scale methods infer approximate \emph{structures}
 instead of a complete and fully detailed history
-(Appendix~\ref{sec-survey-arg-infer}).
-It is important to distinguish here between
-structures and models: whether an inference method is based
+(Appendix~\ref{sec-survey-arg-infer}), and it is
+therefore important to distinguish between
+approximate structures and approximate models.
+Whether an inference method is based
 on heuristics or a rigorous mathematical model is orthogonal
 to the level of detail provided in its estimate.
-One could heuristically estimate a fully precise ARG,
-% this would be a cool thing to do!
-or statistically sample a partial,
-approximate ARG under a model
-such as the coalescent.
-Although the term ``ARG'' is now often used in a general
-sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
+The term ``ARG'' therefore has many different meanings, varying 
+over time and depending on context. 
+There is an emerging consensus to use the term
+in quite a general sense~\citep[e.g.][]{mathieson2020ancestry,hejase2020summary,
 schaefer2021ancestral,harris2023using,zhang2023biobank,fan2023likelihood},
 informally
-encompassing the varied approximate structures output by modern simulation and
+encompassing the varied structures output by modern simulation and
 inference methods~\citep{rasmussen2014genome, palamara2016argon, haller2018tree,
 kelleher2019inferring, speidel2019method, baumdicker2021efficient,
-zhang2023biobank},
-there is no corresponding mathematical definition
-that is sufficiently general.
+zhang2023biobank}. 
+However, there is currently no formal definition or systematic 
+discussion that unifies these different structures, 
+ultimately stifling progress in this vibrant research area.
 
-We highlight this problem and show how to address it by a simple formal definition of an
-ARG data structure, based on recording the intervals of
-genetic inheritance between specific genomes.
-We call this the ``genome ARG'', or gARG encoding. We
-contrast this with the classical formal definition of an ARG, based on
-recording common ancestor and recombination events, which we refer to as the
-``event ARG'' or eARG encoding. We show that the new gARG encoding is a
-substantial generalisation of the classical eARG approach,  providing much more
-flexibility in how genetic inheritance can be represented, and encompasses the
-outputs of modern methods. We show that the gARG approach can represent many
-different types of approximation, in particular allowing us to systematically
-describe uncertainty about the temporal ordering of multiple recombinations.
+In this perspective we provide a simple formal definition
+of an ARG data structure, which generalises classical 
+definitions and encompasses the output of modern simulation and inference 
+methods. We show that different levels of approximation
+are possible using this structure, illustrated via examples.
+% This is a bit crap, but do want to make this point about tskit for the 
+% "only read the introduction" crowd.
+The proposed ARG definition is the basis of the widely-used \texttt{tskit}
+library which provides a powerful software platform
+for ARG-based analysis and, we argue, would be a useful community standard.
+This perspective is intended for ``ARG practitioners'', who we hope
+will find the detailed examples and technical appendices useful.
+Readers seeking an introduction to ARGs and their applications are 
+directed to \citet{lewanski2024era}
+and \citet{brandt2024promise}.
 
 \section{Genome ARGs}
 \label{sec-gARG}
@@ -710,7 +656,7 @@ cumulative effects of events over time can be reasoned
 about, without first ``replaying'' those events.
 Many computations
 that we wish to perform on an ARG will require resolving
-the ancestral material with respect to a sample.
+the ancestral material with respect to a set of samples.
 % this is weak, but would be good to emphasise this point.
 % you just end up running simplify lots of times, in your
 % downstream algs
@@ -720,26 +666,31 @@ and to store the result,
 whereas the eARG encoding requires us to repeat the process
 each time.
 
-Note that the \citet{wiuf1999recombination} eARG
-in Fig.~\ref{fig-ancestry-resolution} is not particularly
-representative, because inference or simulation methods usually
-only generate ARGs containing nodes and edges ancestral to the sample
-(but see the discussion of the ``Big ARG'' stochastic process in
-Appendix~\ref{sec-big-and-little-arg}).
-Nonetheless, it is an instructive example from the literature which highlights several
-important properties of ARGs, and the general point about
-the need to resolve ancestral material ``on the fly'' for eARG traversals
-holds.
+% Note that the \citet{wiuf1999recombination} eARG
+% in Fig.~\ref{fig-ancestry-resolution} is not particularly
+% representative, because inference or simulation methods usually
+% only generate ARGs containing nodes and edges ancestral to the sample
+% (but see the discussion of the ``Big ARG'' stochastic process in
+% Appendix~\ref{sec-big-and-little-arg}).
+% Nonetheless, it is an instructive example from the literature which highlights several
+% important properties of ARGs, and the general point about
+% the need to resolve ancestral material ``on the fly'' for eARG traversals
+% holds.
 
 \section{A diversity of structures}
-
-There are a number of tools for inferring genetic genealogies,
-and the graph structures that they produce differ in important aspects.
-These varying representations have all been termed ``ARGs'' by different authors,
-and each describes more than a simple sequence of uncorrelated trees.
-By way of illustration, Fig.~\ref{fig-inferred-args} depicts the output of four
-different ``ARG inference'' tools run on a common dataset,
-with the resulting ARGs converted into a standard gARG format (cite tskit).
+A key goal of this perspective is to highlight the heterogeneity of
+the graph structures inferred by modern ARG inference methods.
+To illustrate this point, Fig.~\ref{fig-inferred-args} shows the 
+output of four methods run on the 
+\cite{kreitman1983nucleotide} dataset, often used as an
+ARG inference benchmark. One source of differences between 
+the inferences is the underlying model. For instance, 
+the ARG in Fig.~\ref{fig-inferred-args}A is inferred by 
+\kwarg\ under parsimony, and therefore has many fewer 
+ancestral nodes then Fig.~\ref{fig-inferred-args}B, which 
+is sampled from the coalescent with recombination with an 
+appropriate recombination rate parameter. These differences
+are well understood.
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
@@ -747,7 +698,8 @@ with the resulting ARGs converted into a standard gARG format (cite tskit).
 \textit{Drosophila melanogaster} DNA sequences over a 2.4kb
 region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods:
-(A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate, converted to the standard \emph{tskit} gARG encoding. See
+(A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate, converted 
+to the standard \emph{tskit} gARG encoding. See
 Appendix \ref{sec-example-inferred-args} for details of these methods.
 Edge colours indicate time of the edge's child node
 (lighter: older; darker: younger).
@@ -761,38 +713,46 @@ local trees.
 }
 \end{figure}
 
-As is well-known (cite, perhaps Gusfield?), many different ancestral graph topologies are compatible with the same resulting
-sequence data. Hence it is unsurprising that the four graphs differ,
-for example in the numbers of nodes and their relationship to each other.
-However, more detailed inspection of Fig.~\ref{fig-inferred-args} reveals a
-diversity of representation that is only possible via the gARG encoding.
-For instance, although the most parsimonious ARG in Fig.~\ref{fig-inferred-args}A
-has far fewer ancestral events than an ARG instance sampled
-from from the coalescent with recombination in Fig.~\ref{fig-inferred-args}B,
-both consist only of nodes with either two parents or two children (but not both).
-These nodes correspond to recombination and common ancestor events in the equivalent eARG.
-In contrast, more scalable heuristic inference methods (Fig.~\ref{fig-inferred-args}C and D)
-create ARGs in which a node can simultaneously have more that than two children and more than two parents.
-Note also that the first three methods infer nodes that have a
-``coalescence span'' of less than 100\%, indicating that in the local trees, ancestral lineages exist 
-that pass through these nodes without the nodes marking a coalescent point. Such ``locally-unary''
-nodes are an notable feature of the local trees defined by an ARG
-(see Appendix \ref{sec-locally-unary-edges}).
+The differences between ARGs that we wish to draw attention to here 
+are more subtle
 
-These differences, in particular the number of parents and children, and the coalescence span, reflect the
-degree of precision represented in the inferred ARGs. Indeed, it is important to note that the gARG encoding
-allows a single underlying genetic genealogy to be represented at
-differing levels of detail. The concept is illustrated in Fig.~\ref{fig-simplification},
-which shows different levels of ``simplification'' (Appendix~\ref{sec-ARG-simplification}) of the
-same underlying simulated ARG. 
-The full ARG, with all coalescent and recombination events represented by
-separate genomes, is shown in Fig.~\ref{fig-simplification}A. Simpler representations can be formed by removing ``unknowable'' nodes (Fig.~\ref{fig-simplification}B) and 
-collapsing multiple recombinations into a single child or multiple coalescences into
-a single parent (Fig.~\ref{fig-simplification}C, also see Appendix~\ref{sec-cell-lineages-and-args}).
-Finally, if we chose to represent only local coalescence points (Fig.~\ref{fig-simplification}D),
-we end up with a ``fully simplified'' ARG
-of the sort inferred in Fig.~\ref{fig-inferred-args}D. Note that in all cases, the equivalent
-trees only differ in the locally-unary nodes they contain; topological relationships
+As is well-known (cite, perhaps Gusfield?), many different ancestral graph
+topologies are compatible with the same resulting sequence data. Hence it is
+unsurprising that the four graphs differ, for example in the numbers of nodes
+and their relationship to each other. However, more detailed inspection of
+Fig.~\ref{fig-inferred-args} reveals a diversity of representation that is only
+possible via the gARG encoding. For instance, although the most parsimonious
+ARG in Fig.~\ref{fig-inferred-args}A has far fewer ancestral events than an ARG
+instance sampled from from the coalescent with recombination in
+Fig.~\ref{fig-inferred-args}B, both consist only of nodes with either two
+parents or two children (but not both). These nodes correspond to recombination
+and common ancestor events in the equivalent eARG. In contrast, more scalable
+heuristic inference methods (Fig.~\ref{fig-inferred-args}C and D) create ARGs
+in which a node can simultaneously have more that than two children and more
+than two parents. Note also that the first three methods infer nodes that have
+a ``coalescence span'' of less than 100\%, indicating that in the local trees,
+ancestral lineages exist that pass through these nodes without the nodes
+marking a coalescent point. Such ``locally-unary'' nodes are an notable feature
+of the local trees defined by an ARG (see Appendix
+\ref{sec-locally-unary-edges}).
+
+These differences, in particular the number of parents and children, and the
+coalescence span, reflect the degree of precision represented in the inferred
+ARGs. Indeed, it is important to note that the gARG encoding allows a single
+underlying genetic genealogy to be represented at differing levels of detail.
+The concept is illustrated in Fig.~\ref{fig-simplification}, which shows
+different levels of ``simplification'' (Appendix~\ref{sec-ARG-simplification})
+of the same underlying simulated ARG. The full ARG, with all coalescent and
+recombination events represented by separate genomes, is shown in
+Fig.~\ref{fig-simplification}A. Simpler representations can be formed by
+removing ``unknowable'' nodes (Fig.~\ref{fig-simplification}B) and collapsing
+multiple recombinations into a single child or multiple coalescences into a
+single parent (Fig.~\ref{fig-simplification}C, also see
+Appendix~\ref{sec-cell-lineages-and-args}). Finally, if we chose to represent
+only local coalescence points (Fig.~\ref{fig-simplification}D), we end up with
+a ``fully simplified'' ARG of the sort inferred in
+Fig.~\ref{fig-inferred-args}D. Note that in all cases, the equivalent trees
+only differ in the locally-unary nodes they contain; topological relationships
 between the samples remain identical.
 
 \begin{figure}
