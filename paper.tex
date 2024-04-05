@@ -58,6 +58,7 @@ Information and Discovery, University of Oxford, UK}
 
 \vspace{-1em}
 
+% NEEDS REWRITE
 \begin{abstract}
 As a result of recombination, adjacent nucleotides can have
 different paths of genetic inheritance and therefore
@@ -246,9 +247,7 @@ for example, the genomes present in cells immediately before or after
 some instantaneous event (Appendix~\ref{sec-cell-lineages-and-args}).
 A node can represent any genome along a chain of cell divisions
 or can be interpreted as representing one of the genomes of a
-potentially long-lived individual. All these interpretations
-are potentially useful, and equally valid under the assumptions
-of the gARG encoding.
+potentially long-lived individual.
 In many settings, nodes are dated, i.e.\ each
 node $u\in N$ is associated with a time $\tau_u$,
 and how we assign precise times will vary by application.
@@ -315,22 +314,22 @@ by the two recombination breakpoints that gave rise to these genomes;
 see Appendix~\ref{sec-ARG-and-local-trees} for details
 on how local trees are embedded in an ARG.
 
-% % I feel like sophisticated readers would at this point be saying,
-% % ah, yeah, that's basically what an ARG is just in different words;
-% % what's the point of this paper?
-The genome ARG framework defined here is
-in many ways simply a clarification of existing treatments
-\cite[e.g.][]{mathieson2020ancestry,shipilina2023origin},
-adding concrete details to describe the
-differential inheritance of genetic material between genomes.
-% % This is definitely needed for the Nicks, who are always thinking
-% % about the deeper processes and are quite happy being loosey-goosey
-% % with representation details
-In the next section we contrast this gARG representation with a classical event-based (eARG) representation of the same underlying process. The choice between using a gARG or an eARG to represent the general process of ancestral inheritance has 
-% Again, need to remind the reader that there's an actual point
-% to all this getting stuck into the details.
-important
-consequences not just when addressing the practical need to store and compare ARGs, but more fundamentally when establishing goals for inferring ARGs and evaluating the success of such inferences.
+% % % I feel like sophisticated readers would at this point be saying,
+% % % ah, yeah, that's basically what an ARG is just in different words;
+% % % what's the point of this paper?
+% The genome ARG framework defined here is
+% in many ways simply a clarification of existing treatments
+% \cite[e.g.][]{mathieson2020ancestry,shipilina2023origin},
+% adding concrete details to describe the
+% differential inheritance of genetic material between genomes.
+% % % This is definitely needed for the Nicks, who are always thinking
+% % % about the deeper processes and are quite happy being loosey-goosey
+% % % with representation details
+% In the next section we contrast this gARG representation with a classical event-based (eARG) representation of the same underlying process. The choice between using a gARG or an eARG to represent the general process of ancestral inheritance has 
+% % Again, need to remind the reader that there's an actual point
+% % to all this getting stuck into the details.
+% important
+% consequences not just when addressing the practical need to store and compare ARGs, but more fundamentally when establishing goals for inferring ARGs and evaluating the success of such inferences.
 
 \section{Event ARGs}
 \label{sec-eARG}
@@ -340,15 +339,16 @@ wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability},
 interprets nodes not as genomes but as historical \emph{events}
 (but see~\citet{parida2011minimal} and \citet{zhang2023biobank}
 for notable exceptions).
-This eARG encoding is the basis of the output formats created by multiple ARG inference tools
+This Event ARG (eARG) encoding is the basis of the output formats 
+created by multiple ARG inference tools
 \citep[e.g.][]{song2004minimum,song2005efficient,rasmussen2014genome,
 heine2018bridging,ignatieva2021kwarg}.
 % Griffiths never mentions "sampling events", so let's not get
 % into that. It's not an important detail, and we don't want to be
 % overly precise about something that people haven't actually written
 % down.
-In this encoding there are two types of internal node in the graph. These
-represent the common ancestor and recombination events
+In this encoding there are two types of internal node in the graph,
+representing the common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
 single ancestral lineage with one parent, and at recombination
@@ -483,13 +483,16 @@ for a discussion of this important point).
 % eARGs are representationally for limited interchange
 While this approach of annotating recombination nodes with a
 breakpoint in an eARG is a concise and elegant way of describing realisations
-of the coalescent, it is inherently limited when
-implemented literally. The eARG encoding explicitly models only
+of the coalescent, it has limitations.
+The eARG encoding explicitly models only
 two different types of event; thus anything that is not a single crossover
 recombination or common ancestor event must be incorporated
 either in a roundabout way using these
 events, or by adding new types of event to the encoding. For example, gene
-conversion could be accommodated either by stipulating a third type of event
+% Graham asked for coalescences with GC papers, but this is the only one
+% I know of?
+conversion~\citep{wiuf2000coalescent} could 
+be accommodated either by stipulating a third type of event
 (annotated by two breakpoints and corresponding traversal conventions for
 recovering the local trees) or by two recombination nodes joined by a
 zero-length edge. The gARG encoding described in the previous
@@ -506,27 +509,27 @@ problem when describing the results of simulations (where all details
 are perfectly known), it is an issue when we wish to
 formally describe the output of inference methods, particularly
 as datasets approach the population scale.
-As discussed in the introduction,
-the precise details of all events in these vast ARGs can never be
-known, so it is disadvantageous to use a data structure that enforces complete
-precision.
+% As discussed in the introduction,
+% the precise details of all events in these vast ARGs can never be
+% known, so it is disadvantageous to use a data structure that enforces complete
+% precision.
 
-There is also a certain clarity gained by explicitly modelling nodes
-in the inheritance graph as genomes.
-Outside of the context of a
-% The point being, events are perfectly well defined in the models
-% but not in reality
-mathematical model, an ``event'' is a slippery concept.
-For example, \emph{which} genome along a chain of cell divisions should be
-regarded as the one where an event occurred,
-or whether multiple coalescences
-within a single individual should be regarded as one or multiple events are
-debatable points (Appendix~\ref{sec-cell-lineages-and-args}).
-% If we want to have an ARG software ecosystem then such fireside
-% discussions won't help.
-% The gARG formulation avoids the need for such considerations,
-% so is more naturally compatible with forming an ecosystem of interoperable
-% inference and analysis methods.
+% There is also a certain clarity gained by explicitly modelling nodes
+% in the inheritance graph as genomes.
+% Outside of the context of a
+% % The point being, events are perfectly well defined in the models
+% % but not in reality
+% mathematical model, an ``event'' is a slippery concept.
+% For example, \emph{which} genome along a chain of cell divisions should be
+% regarded as the one where an event occurred,
+% or whether multiple coalescences
+% within a single individual should be regarded as one or multiple events are
+% debatable points (Appendix~\ref{sec-cell-lineages-and-args}).
+% % If we want to have an ARG software ecosystem then such fireside
+% % discussions won't help.
+% % The gARG formulation avoids the need for such considerations,
+% % so is more naturally compatible with forming an ecosystem of interoperable
+% % inference and analysis methods.
 
 \section{Ancestral material and sample resolution}
 \label{sec-ancestral-material}
@@ -557,11 +560,8 @@ ancestor in node \noderef{n}.
 The process of tracking local coalescences and updating
 segments of ancestral material is a core element of
 Hudson's seminal simulation
-algorithm~\citep{hudson1983testing,kelleher2016efficient},
-and the key distinguishing feature between the
-``Big'' and ``Little'' ARG stochastic processes
-(see Appendix~\ref{sec-big-and-little-arg}).
-The ability to \emph{store} resolved ancestral material
+algorithm~\citep{hudson1983testing,kelleher2016efficient}.
+The ability to store resolved ancestral material
 is also a key distinction between the eARG and gARG
 encodings. Because an eARG stores only the graph topology and
 recombination breakpoints, there is no way to locally
@@ -681,15 +681,19 @@ each time.
 A key goal of this perspective is to highlight the heterogeneity of
 the graph structures inferred by modern ARG inference methods.
 To illustrate this point, Fig.~\ref{fig-inferred-args} shows the 
-output of four methods run on the 
-\cite{kreitman1983nucleotide} dataset, often used as an
-ARG inference benchmark. One source of differences between 
+output of 
+\kwarg~\citep{ignatieva2021kwarg},
+\argweaver~\citep{rasmussen2014genome},
+\tsinfer~\citep{kelleher2019inferring}
+and \relate~\citep{speidel2019method}
+on the classical \cite{kreitman1983nucleotide} dataset. 
+One source of differences between 
 the inferences is the underlying model. For instance, 
-the ARG in Fig.~\ref{fig-inferred-args}A is inferred by 
-\kwarg\ under parsimony, and therefore has many fewer 
+the ARG in Fig.~\ref{fig-inferred-args}A is inferred 
+under parsimony, and therefore has many fewer 
 ancestral nodes then Fig.~\ref{fig-inferred-args}B, which 
 is sampled from the coalescent with recombination with an 
-appropriate recombination rate parameter. These differences
+appropriate recombination rate parameter. Such differences
 are well understood.
 
 \begin{figure} \begin{center}
@@ -713,7 +717,7 @@ local trees.
 }
 \end{figure}
 
-The differences between ARGs that we wish to draw attention to here 
+[WIP] The differences between ARGs that we wish to draw attention to here 
 are more subtle
 
 As is well-known (cite, perhaps Gusfield?), many different ancestral graph
