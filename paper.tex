@@ -1166,7 +1166,7 @@ first incorporated recombination into the coalescent process,
 providing several fundamental analytical results
 and describing the basic simulation algorithm, still in
 widespread use~\citep{hudson2002generating,kelleher2016efficient,
-baumdicker2021efficient}.
+kelleher2020coalescent,baumdicker2021efficient}.
 In the 1990s, Griffiths and colleagues revisited the
 coalescent with recombination from a different perspective,
 formulating it as a stochastic process where each realisation
@@ -1217,12 +1217,9 @@ donnelly1999genealogical,
 fearnhead2001perfect,
 fearnhead2003ancestral,
 etheridge2009coalescent,
+baumdicker2014AGTG,
 gonzalezcasanova2018duality,
 koskela2019robust}.
-% Could mention the Ancestral Gene Transfer graph here too, within
-% something like "Similarly the Ancestral Gene Transfer Graph [cite]
-% and [other ancestral graphs, if they exist?] model genealogical
-% processes in bacteria as a graph.
 
 % Inference of parameters and explicit ARG reconstruction
 Early work on inference under the coalescent with recombination
@@ -1244,7 +1241,7 @@ The related problem of \emph{sampling} genealogies compatible with a given
 dataset under the coalescent with recombination also proved notoriously difficult
 computationally; progress in explicitly inferring genealogies at scale
 has similarly been achieved through resorting to principled
-approximations~\citep{rasmussen2014genome,mahmoudi2022bayesian},
+approximations~\citep{rasmussen2014genome,mahmoudi2022bayesian,deng2024robust},
 or moving away from the coalescent with recombination altogether and seeking
 to infer a single plausible ARG~\citep[e.g.][]{
 minichiello2006mapping,kelleher2019inferring,speidel2019method}.
@@ -1271,7 +1268,7 @@ depends on the context in which it is used, and can mean both the
 stochastic process that generates genealogies in the presence of
 recombination~\citep[e.g.][]{nordborg2000linkage,birkner2013ancestral,
 wilton2015smc,griffiths2016coalescent},
-as well as, more commonly, the concrete realisation of ancestry from a
+as well as the concrete realisation of ancestry from a
 process~\citep[e.g.][]{gusfield2014recombinatorics,mathieson2020ancestry,brandt2021evaluation}.
 
 \section{The Big and Little ARG}
@@ -1283,7 +1280,7 @@ the ``Big" ARG process of \cite{griffiths1997ancestral}, and the ``Little" ARG p
  which contribute no genetic material to the initial sample.
 The Little ARG process avoids non-genetic ancestors at the cost of more complex
 dynamics and state space. We also demonstrate that applications relying on the grouping of inheritance pathways into ancestral lineages, such as likelihood-based inference under the coalescent, requires that the
-gARG (or eARG) data structure be interpreted in a model-specific way.
+ARG data structure be interpreted in a model-specific way.
 
 A generic state of the Little ARG process consists of a finite collection of lineages $L$,
 each of which is a list of disjoint ancestry segments $(\ell, r, a)$, where
@@ -1320,7 +1317,7 @@ Non-overlapping intervals from the two lineages are included
 we find resultant lineages in which all segments have fully coalesced,
 and so the number of extant lineages gradually falls to zero.
 
-In the Griffiths formulation (the Big ARG process), each edge in the graph corresponds to an extant
+In the Big ARG process each edge in the graph corresponds to an extant
 lineage and nodes are events in the process. The $n$ initial leaf nodes are
 sampling events. Common ancestor events occur at rate $\binom{|L|}{2}$.
 When a common ancestor event happens, two uniformly chosen lineages
