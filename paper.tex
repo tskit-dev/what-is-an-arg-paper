@@ -70,33 +70,21 @@ the genealogical trees for
 a sample of DNA sequences vary along the genome.
 The structure capturing the details of these intricately interwoven paths of
 inheritance is referred to as an ancestral recombination graph (ARG).
-New developments have made it possible to infer ARGs at scale,
-enabling many new applications in population and statistical genetics.
-This rapid progress has led to a diversity of ARG definitions and representations.
-% We show that a synthesis of these views can be achieved by thinking
-% in terms of genomes and transmission
-% intervals.
-% Standard mathematical formalisms,
-% "detailing" here is intended to convey the we keep details about these
-% events like recomb breakpoint.
-% based on exhaustively detailing the ``events'' that occur
-% in the history of a sample,
-%are insufficient to describe the outputs of current methods.
-We argue that classical ARG formulations, which assume
-that all events can be known and precisely estimated,
-are fundamentally unsuited to the realities
-of modern, population-scale datasets.
-We describe an alternative formulation that
-encompasses the outputs of recent methods and
-can capture the full richness of modern large-scale datasets.
-By defining this ARG encoding in terms of
-% we haven't define a "genome" yet, so need to give a bit of context
-specific genomes and their intervals of genetic inheritance,
-we avoid the need to exhaustively list (and estimate)
-\emph{all} events. The effects of multiple events can be
-aggregated in different ways, providing a natural way to express many
-forms of approximate and partial knowledge about the
-recombinant ancestry of a sample.
+% New developments have made it possible to infer ARGs at scale,
+% enabling many new applications in population and statistical genetics.
+% This rapid progress has led to a diversity of ARG definitions and representations.
+Classical formalisms have focused on mapping 
+coalescence and recombination events to the nodes in an ARG.
+We show that this approach is out of step with modern developments,
+which do not represent genetic inheritance in terms of these events 
+or explicitly infer them.
+We present a simple formalism that defines an ARG in terms 
+of specific genomes and their intervals of genetic inheritance,
+and show how it generalises these classical treatments and 
+encompasses the outputs of recent methods. We discuss 
+nuances arising from this more general structure, and argue that it
+forms an appropriate basis for a software standard in this rapidly 
+growing field.
 \end{abstract}
 
 \textbf{Keywords:} Ancestral recombination graphs
