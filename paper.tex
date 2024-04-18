@@ -70,7 +70,7 @@ inheritance is referred to as an ancestral recombination graph (ARG).
 % This rapid progress has led to a diversity of ARG definitions and representations.
 Classical formalisms have focused on mapping 
 coalescence and recombination events to the nodes in an ARG.
-We show that this approach is out of step with modern developments,
+This approach is out of step with modern developments,
 which do not represent genetic inheritance in terms of these events 
 or explicitly infer them.
 We present a simple formalism that defines an ARG in terms 
@@ -318,7 +318,7 @@ on how local trees are embedded in an ARG.
 
 \section{Event ARGs}
 \label{sec-eARG}
-A common, classical view of an ARG data structure,
+A classical view of an ARG data structure,
 described explicitly in several publications~\citep[e.g.][]{
 wiuf1999recombination,gusfield2014recombinatorics,hayman2023recoverability},
 interprets nodes not as genomes but as historical \emph{events}
@@ -527,7 +527,7 @@ four sample genomes, \noderef{a}--\noderef{d}. As we
 trace their genetic ancestry into the previous generation
 (\noderef{e}--\noderef{h}), we can think of their ancestral
 material propagating through the graph
-backwards in time. In the region $[2, 7)$, there is a
+pastwards. In the region $[2, 7)$, there is a
 local coalescence where nodes \noderef{a} and \noderef{c}
 find a common ancestor in \noderef{f}. Thus, in this region,
 we have three genome segments that are ancestral to the
@@ -687,7 +687,7 @@ To illustrate this point, Fig.~\ref{fig-inferred-args} shows the
 output of 
 \kwarg~\citep{ignatieva2021kwarg},
 \argweaver~\citep{rasmussen2014genome},
-\tsinfer~\citep{kelleher2019inferring}
+\tsinfer~\citep{kelleher2019inferring},
 and \relate~\citep{speidel2019method}
 on the classical \cite{kreitman1983nucleotide} dataset. 
 The ARGs in Fig.~\ref{fig-inferred-args}A and B are precise 
@@ -1109,7 +1109,8 @@ on researchers, freeing their time to address the many fascinating open
 questions and challenges that exist.
 
 \section*{Acknowledgements}
-We are grateful to Nick Barton, Gideon Bradburd, Alex Lewanski,
+We are grateful to Nick Barton, Gideon Bradburd, 
+Castedo Ellerman, Alex Lewanski,
 Peter Ralph and Andrew Vaughn
 for helpful discussions and comments on the manuscript, and
 to Iain Mathieson and Aylwyn Scally for interesting discussions that
@@ -1613,7 +1614,7 @@ Figure \ref{hudson_vs_bigARG} by drawing only one vertical edge between a recomb
 \label{sec-survey-arg-infer}
 The problem of reconstructing ARGs for samples of recombining sequences has
 been of interest since the ARG was first defined. Early methods focused on
-finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
+finding parsimonious ARGs, i.e.\ those with a minimal number of
 recombination events~\citep{hein1990reconstructing}. Two main approaches
 emerged: ``backwards-in-time''~\citep{lyngso2005minimum} and
 ``along-the-genome'' \citep{song2003parsimonious, song2005constructing}.
@@ -1658,9 +1659,10 @@ applicable to at most hundreds of samples consisting of tens or hundreds of
 kilobases with human-like parameters.
 State-of-the-art methods rely on cheaper,
 approximate models \citep{didelot2010inference, heine2018bridging,
-hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
-method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
-dozens of mammal-like genomes \citep{hubisz2020inference}.
+hubisz2020mapping,hubisz2020inference, medina2020speeding,deng2024robust}. 
+The most scalable
+method, \texttt{SINGER}, can be applied to
+hundreds of human genomes~\citep{deng2024robust}.
 
 Methods to sample ARGs generate a ``cloud'' of estimates, and
 \cite{kuhner2017consensus} provide an approach to generate a
@@ -1735,14 +1737,14 @@ genome. Rather, genomes can be associated with, or ``tag'', events above
 (ancestral to) or below (descended from) them.
 For example, tagging the two genomes above a recombination event leads to the
 two node representation seen in
-Fig.~\ref{fig-simplification}A and Fig.~\ref{hudson_vs_bigARG},
+Fig.~\ref{fig-arg-in-pedigree}A and Fig.~\ref{hudson_vs_bigARG},
 whereas tagging the genome
 below a recombination event leads to the more
 conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
 
 The schematic illustrates an important point about the biological reality of polytomies.
 Three lineages coalesce in the left-hand genome of individual $D_{10}$, but do
-so as the result of two successive bifurcations. This is \emph{necessarily} so,
+so as the result of two successive bifurcations. This is necessarily so,
 because the only known method of reproducing DNA is by (semi-conservative) duplication.
 Whether this polytomy is resolvable depends on the available mutational data.
 Mutations can occur along any cell lineages. For example,
@@ -2031,12 +2033,10 @@ Explicitly recording that node \noderef{d} lies on the
 branch joining \noderef{b} to \noderef{e} in the left hand
 tree, and \noderef{b} to \noderef{f} in the right hand tree
 resolves all ambiguity, and makes the collection of local
-trees exactly equivalent to the corresponding ARG (see previous section).
+trees exactly equivalent to the corresponding ARG.
 Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
-without them. As we see in the next two sections, both ARG and locally
-unary nodes occur in various scenarios, and are
-produced by a range of current inference methods.
+without them.
 
 \section{Levels of simplification}
 \label{sec-ARG-simplification}
@@ -2073,12 +2073,14 @@ may also correspond to a coalescence.
 The distinction of
 using a single node to represent
 a recombination event, as is done in ~Fig.~\ref{fig-ancestry-resolution},
-or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},  is usually not important.
-Either is possible in the gARG encoding, and the most convenient approach will vary by application
-(discussed e.g.\ in Appendix~\ref{sec-big-and-little-arg}).
+or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},  
+is often not important.
+Either is possible in the gARG encoding, and 
+the most convenient approach will vary by application.
 Note also that node \noderef{k} in Fig.~\ref{fig-simplification} has three children.
-Polytomies like this are a natural feature of such a Wright-Fisher model
-(but see Appendix~\ref{sec-cell-lineages-and-args}).
+Polytomies like this are a natural feature of such a Wright-Fisher model.
+See Appendix~\ref{sec-cell-lineages-and-args} for a discussion of the 
+ultimate biological interpretation of these topological considerations.
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
 three novel features which require some explanation.
@@ -2192,14 +2194,6 @@ that are fully simplified (i.e., contain no locally unary nodes).
 It is not difficult, however, to update
 these methods to record information about the passage of ancestral
 material through genomes under a range of conditions.
-
-An important consequence of simplifying ARGs to remove
-unary nodes in local trees is that we lose some information
-about recombination
-events. This is related to the amount of \emph{precision} about
-recombination events that we store and
-can hope to infer from sampled genomes, which is the topic of
-Appendix~\ref{sec-precision}.
 
 \section{Precision of recombination information}
 \label{sec-precision}
