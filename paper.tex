@@ -1613,7 +1613,7 @@ Figure \ref{hudson_vs_bigARG} by drawing only one vertical edge between a recomb
 \label{sec-survey-arg-infer}
 The problem of reconstructing ARGs for samples of recombining sequences has
 been of interest since the ARG was first defined. Early methods focused on
-finding \emph{parsimonious} ARGs, i.e.\ those with a minimal number of
+finding parsimonious ARGs, i.e.\ those with a minimal number of
 recombination events~\citep{hein1990reconstructing}. Two main approaches
 emerged: ``backwards-in-time''~\citep{lyngso2005minimum} and
 ``along-the-genome'' \citep{song2003parsimonious, song2005constructing}.
@@ -1658,9 +1658,10 @@ applicable to at most hundreds of samples consisting of tens or hundreds of
 kilobases with human-like parameters.
 State-of-the-art methods rely on cheaper,
 approximate models \citep{didelot2010inference, heine2018bridging,
-hubisz2020mapping,hubisz2020inference, medina2020speeding}. The most scalable
-method, \texttt{ARGWeaver} \citep{rasmussen2014genome}, can be applied to
-dozens of mammal-like genomes \citep{hubisz2020inference}.
+hubisz2020mapping,hubisz2020inference, medina2020speeding,deng2024robust}. 
+The most scalable
+method, \texttt{SINGER}, can be applied to
+hundreds of human genomes~\citep{deng2024robust}.
 
 Methods to sample ARGs generate a ``cloud'' of estimates, and
 \cite{kuhner2017consensus} provide an approach to generate a
