@@ -15,7 +15,7 @@ ILLUSTRATIONS=\
 	illustrations/cell-lines.pdf \
 	illustrations/simplification-with-edges.pdf \
 
-all: paper.pdf
+all: paper.pdf response-to-reviewers.pdf
 
 paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex -shell-escape paper.tex
@@ -89,3 +89,16 @@ clean:
 
 mrproper: clean
 	rm -f *.ps *.pdf
+
+
+review-diff.tex: paper.tex
+	latexdiff reviewed-paper.tex paper.tex > review-diff.tex
+
+review-diff.pdf: review-diff.tex
+	pdflatex review-diff.tex
+	pdflatex review-diff.tex
+	bibtex review-diff
+	pdflatex review-diff.tex
+
+response-to-reviewers.pdf: response-to-reviewers.tex
+	pdflatex $<

@@ -1,0 +1,339 @@
+% LaTeX rebuttal letter example.
+%
+% Copyright 2019 Friedemann Zenke, fzenke.net
+%
+% Based on examples by Dirk Eddelbuettel, Fran and others from
+% https://tex.stackexchange.com/questions/2317/latex-style-or-macro-for-detailed-response-to-referee-report
+%
+% Licensed under cc by-sa 3.0 with attribution required.
+
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum} % to generate some filler text
+\usepackage{fullpage}
+
+% import Eq and Section references from the main manuscript where needed
+% \usepackage{xr}
+% \externaldocument{manuscript}
+
+% package needed for optional arguments
+\usepackage{xifthen}
+% define counters for reviewers and their points
+\newcounter{reviewer}
+\setcounter{reviewer}{0}
+\newcounter{point}[reviewer]
+\setcounter{point}{0}
+
+% This refines the format of how the reviewer/point reference will appear.
+\renewcommand{\thepoint}{\thereviewer.\arabic{point}}
+
+% command declarations for reviewer points and our responses
+\newcommand{\reviewersection}{\stepcounter{reviewer} \bigskip \hrule
+                  \section*{Reviewer \thereviewer}}
+
+\newenvironment{point}
+   {\refstepcounter{point} \bigskip \noindent {\textbf{Reviewer~Point~\thepoint} } ---\ }
+   {\par }
+
+\newcommand{\shortpoint}[1]{\refstepcounter{point}  \bigskip \noindent
+    {\textbf{Reviewer~Point~\thepoint} } ---~#1\par }
+
+\newenvironment{reply}
+   {\medskip \noindent \begin{sf}\textbf{Reply}:\  }
+   {\medskip \end{sf}}
+
+\newcommand{\shortreply}[2][]{\medskip \noindent \begin{sf}\textbf{Reply}:\  #2
+    \ifthenelse{\equal{#1}{}}{}{ \hfill \footnotesize (#1)}%
+    \medskip \end{sf}}
+
+\begin{document}
+
+\section*{Response to the editor}
+% General intro text goes here
+Thank you for considering this manuscript for publication. 
+
+% Associate Editor's overview & review
+\reviewersection
+
+\begin{point}
+I gained a number of insights from reading the paper, however, I wonder who the
+intended audience of the paper is. It is not a research paper, indeed many of
+the technical details are given in other papers. Nor is it written at a
+particularly accessible level for people trying to understand ARGs and tree
+sequences.The paper is advocating for the adoption of "genome ARG (gARG)" and
+its simplified versions, but the authors need to be much clearer who they want
+to adopt this and in what level. Separating our structure for storing large
+ARGs estimated from data, from the ``true" ARG seems like a very useful argument
+to make but this gets lost a lot in the details.
+\end{point}
+\begin{reply}
+We have clarified the purpose of the article by explicitly identifying 
+``ARG practitioners'' as the intended audience. We hope that it may
+serve to clarify some points of confusion among this community,
+and provide a useful starting point into a large and confusing literature
+for those new to the field.
+\end{reply}
+
+\begin{point}
+The ``event ARG'' is hard for people to grapple with on first brush, however, in
+my view, the authors' presentation here risks making ARGs even less intuitive.
+\end{point}
+\begin{reply}
+We have attempted to simplify this by cutting out extraneous detail and 
+focusing on the most important points that distinguish an Event ARG
+from a Genome ARG.
+\end{reply}
+
+\begin{point}
+My view is that the authors should switch the article to being a "Perspective"
+or "Review" and shorten it by moving a lot of the technical detail to the
+appendices. I suspect this switch will help people understand that this is the
+author's take on a topic, and also help it be read through by a far broader
+audience. People interested in the details can then work through the appendices
+without getting lost in them on the first read through. I would be interested
+to see such an article published in Genetics, as I think it would be an
+important contribution and help clarify a complex field. I'm happy for the
+authors to argue for keeping different sections in the main paper, but in doing
+so they need to be more clearly justified to the reader in the paper.
+\end{point}
+\begin{reply}
+We have followed this approach, and kept only what we regard as sections
+essential to the main messages of the paper in the main text. Briefly,
+we clearly need the Genome ARGs and Event ARGs sections, and the
+Ancestral material and sample resolution section is critical to understanding 
+how they relate to each other. We have added a new ``A Diversity of
+Structures'' section, which highlights some important nuances possible
+when using gARGs as illustrated by Figures 4 and 5. We regard Section 6 as 
+vital, as it explicitly draws the connection between gARGs, eARGs and the 
+tskit library.
+\end{reply}
+
+\begin{point}
+The authors make a strong case that the data does not contain information about
+certain aspects of the ARG, that does not mean that probabilistic statements
+about these events cannot be made under particular models (or that these models
+cannot be learnt from data). Coalescent inference often involves integrating
+out events that we cannot observe in the data and dealing with great
+uncertainty in the timing of events. I think the authors should perhaps be more
+open to the view that for some applications we may want to build back in more
+events even if they are not "needed" in some minimum construction. At the
+moment it reads a little dogmatically, when I suspect that is not the authors
+true position.
+\end{point}
+\begin{reply}
+We have cut this text.
+\end{reply}
+
+\begin{point}
+It seems in general that many in the field, at least methods-savvy folks, are
+on board with tree sequences representation of data. If the "succinct tree
+sequence data structure (usually known as a "tree sequence" for brevity) is a
+practical gARG implementation", why not just leave "tree sequence" as the term
+we use. It is far less clear to me that we need to label yet another object an
+ARG, without muddying the definition of an ARG even further. More justification
+is needed to help the reader understand what the authors are arguing here.
+\end{point}
+\begin{reply}
+This was our initial position, but it has become clear that ``tree sequence''
+is regularly confused with ``a sequence of disconnected trees'' and there 
+are numerous inaccurate statements along these lines in the literature. 
+There was a deep-seated
+confusion about the relationship between what is classically considered an 
+ARG, and the structures that Relate, tsinfer and ARG-Needle produce. We feel
+strongly that the only way to resolve this is to show that ``tree sequences''
+\emph{are} ARGs, and that there needs to be \emph{some} terminology to distinguish
+the classical ``full'' ARG that is driven by events, and the more 
+general structure used by tskit. Thus, in order to tackle this 
+``tree sequences aren't proper ARGs'' sentiment, the terminology must contain
+``ARG''. Our hope is that the term Genome ARG will not be necessary
+in the future, and we will simply say ``ARG''.
+
+We hope that the shorter main text will make the requirement for a 
+simple general definition of an ARG data structure clear, without 
+needing to explicitly mention these concerns in the text.
+\end{reply}
+
+\begin{point}
+ The authors could also do with having a clearer separation of the "gARG" from the
+"fully simplified gARG" as for a lot of the paper it feels like they informally
+move back and forth of arguing the strengths of both without being fully clear
+on which they are talking about.
+\end{point}
+\begin{reply}
+We have clarified this point in several places by stating when we assume a 
+fully simplified ARG and not.
+\end{reply}
+
+\begin{point}
+Introduction
+
+The authors state that concepts : "that we must be careful to distinguish are
+the "true" ARG, describing the actual history of a sample of genomes, and a
+"population" ARG which is the
+true ARG of every individual in a population.". But given that they're both
+"true" ARGs, one for a sample and one for the whole population sample it's not
+clear what is that different here. Also from the description I think the
+authors mean the population ARG to not include every individual who has ever
+lived, but it's not clear.
+
+"population-scale true ARGs unquestionably exist, they can also never be
+entirely known," that's true of all sample ARGs
+
+"perfectly resolved into binary splits and mergers" - not clear which direction
+time is running in this statement.
+\end{point}
+\begin{reply}
+We have cut these passages.
+\end{reply}
+
+\begin{point}
+"For example, gene conversion could be accommodated either by stipulating a
+third type of event (annotated by two breakpoints and corresponding traversal
+conventions for recovering the local trees)" -Cite the coalescent with gene
+conversion papers
+\end{point}
+\begin{reply}
+Thanks for pointing out this omission.
+We have cited Wiuf and Hein, 2000, but are not aware of other coalescent 
+with gene conversion papers. We would be happy to cite others if you 
+provide references.
+\end{reply}
+
+\begin{point}
+"we will refer to this Griffiths encoding as the "event ARG" - It feels a
+little strange to attach a single person's name to an approach that the paper
+takes a fairly negative take on. I understand there's no ill feeling here, but
+it's not clear how well this comes across.
+\end{point}
+\begin{reply}
+Thanks for pointing this out --- you are absolutely right. We only mention
+Griffiths in a few places now, and avoid attaching his name to the structure.
+\end{reply}
+
+\begin{point}
+Briefly define "Big ARG" and "Little ARG" in the main text as they are referred
+to multiple times.
+\end{point}
+\begin{reply}
+They are no longer mentioned in the main text.
+\end{reply}
+
+\begin{point}
+Section 4 and Figure 3. - There's a lot of detail in this section to then get
+to this sentence at the end: "Note that the Wiuf and Hein (1999b) eARG in Fig.
+3 is not particularly representative, because inference or simulation methods
+usually only generate ARGs containing nodes and edges ancestral to the sample".
+So this feels like the authors have attached a lot of baggage to the eARG that
+it didn't actually have.
+\end{point}
+\begin{reply}
+We have cut this paragraph. 
+\end{reply}
+
+\begin{point}
+Sections 5 \& 6 similarly are fairly technical and it's not fully clear who they
+are aimed at, Could these sections be moved to the appendix?
+\end{point}
+\begin{reply}
+This has been done.
+\end{reply}
+
+\begin{point}
+Section 7 and 8: Again there is a lot of detail here, much of which amounts to
+a long description of Figure 4. 
+\end{point}
+\begin{reply}
+We have moved these to appendices.
+\end{reply}
+
+\begin{point}
+It is not fully clear if the authors want the
+bottom graph in Figure 4 to be the end product (a "fully simplified gARG"), if
+that is the case they need to state this up front and label it that way in the
+graph.
+\end{point}
+\begin{reply}
+We have added a clarification to the caption to say that this is `often
+described as ``fully simplified"'.
+\end{reply}
+
+\begin{point}
+ As I mention above, it's not really clear to me that labeling 4D an ARG
+is really useful, given how much has been stripped away.
+\end{point}
+\begin{reply}
+On this point we disagree. As discussed above and argued in the text, 
+we feel that it is imperative
+that there is a simple formal definition of an ARG that corresponds to
+informal usage. Having some arbitrary threshold of ``sufficient structure''
+for something to be considered a `proper' ARG can surely only lead to more
+confusion. The only reasonable path forward is for the term ARG to become
+general, and for the community to invent adjectives to classify
+the different types of ARG.
+\end{reply}
+
+\begin{point}
+Section 9: I'm not sure what the goal of this section is.
+\end{point}
+\begin{reply}
+This section has been moved to an appendix. It is intended to clarify
+the common features of existing ARG inference methods, as well as 
+highlight their differences.
+\end{reply}
+
+\begin{point}
+Discussion:
+"Fully decoupling the general concept of an ARG from the coalescent with
+recombination (hence-forth, "coalescent") is an important step." Not sure it
+matters whether the coalescent
+is a good or bad model for data. What matters is the separation of the idea of
+genetic genealogy from stochastic models that generate such structures. That
+separation occurred long before this paper, and I'm not sure that discussing
+the limitations of the stochastic model adds much to what is already a long
+paper. More generally, please work through the discussion with the aim of
+significantly shortening it.
+\end{point}
+\begin{reply}
+We have cut this passage and several others, substantially shortening 
+the discussion.
+\end{reply}
+
+\begin{point}
+\end{point}
+\begin{reply}
+\end{reply}
+
+\begin{point}
+\end{point}
+\begin{reply}
+\end{reply}
+
+\begin{point}
+\end{point}
+\begin{reply}
+\end{reply}
+
+
+\subsection*{Specific comments}
+% We address your specific comments below:
+% % \reviewersection
+
+\section*{Response to the reviewers}
+% General intro text goes here
+We thank the reviewers for their close reading of our manuscript and
+insightful comments. In the following we address the points raised
+in turn.
+
+% Let's start point-by-point with Reviewer 1
+\reviewersection
+
+% Point one description
+\begin{point}
+STUFF
+\end{point}
+
+\begin{reply}
+Responds
+\end{reply}
+
+\end{document}
