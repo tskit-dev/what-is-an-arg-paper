@@ -1743,7 +1743,7 @@ conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred
 
 The schematic illustrates an important point about the biological reality of polytomies.
 Three lineages coalesce in the left-hand genome of individual $D_{10}$, but do
-so as the result of two successive bifurcations. This is \emph{necessarily} so,
+so as the result of two successive bifurcations. This is necessarily so,
 because the only known method of reproducing DNA is by (semi-conservative) duplication.
 Whether this polytomy is resolvable depends on the available mutational data.
 Mutations can occur along any cell lineages. For example,
@@ -2032,12 +2032,10 @@ Explicitly recording that node \noderef{d} lies on the
 branch joining \noderef{b} to \noderef{e} in the left hand
 tree, and \noderef{b} to \noderef{f} in the right hand tree
 resolves all ambiguity, and makes the collection of local
-trees exactly equivalent to the corresponding ARG (see previous section).
+trees exactly equivalent to the corresponding ARG.
 Unary nodes are a vital link between ARGs and local trees, and we
 cannot fully reason about how a local tree is embedded in an ARG
-without them. As we see in the next two sections, both ARG and locally
-unary nodes occur in various scenarios, and are
-produced by a range of current inference methods.
+without them.
 
 \section{Levels of simplification}
 \label{sec-ARG-simplification}
@@ -2074,12 +2072,14 @@ may also correspond to a coalescence.
 The distinction of
 using a single node to represent
 a recombination event, as is done in ~Fig.~\ref{fig-ancestry-resolution},
-or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},  is usually not important.
-Either is possible in the gARG encoding, and the most convenient approach will vary by application
-(discussed e.g.\ in Appendix~\ref{sec-big-and-little-arg}).
+or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},  
+is often not important.
+Either is possible in the gARG encoding, and 
+the most convenient approach will vary by application.
 Note also that node \noderef{k} in Fig.~\ref{fig-simplification} has three children.
-Polytomies like this are a natural feature of such a Wright-Fisher model
-(but see Appendix~\ref{sec-cell-lineages-and-args}).
+Polytomies like this are a natural feature of such a Wright-Fisher model.
+See Appendix~\ref{sec-cell-lineages-and-args} for a discussion of the 
+ultimate biological interpretation of these topological considerations.
 
 The graph visualisations in Fig.~\ref{fig-simplification} have
 three novel features which require some explanation.
@@ -2193,14 +2193,6 @@ that are fully simplified (i.e., contain no locally unary nodes).
 It is not difficult, however, to update
 these methods to record information about the passage of ancestral
 material through genomes under a range of conditions.
-
-An important consequence of simplifying ARGs to remove
-unary nodes in local trees is that we lose some information
-about recombination
-events. This is related to the amount of \emph{precision} about
-recombination events that we store and
-can hope to infer from sampled genomes, which is the topic of
-Appendix~\ref{sec-precision}.
 
 \section{Precision of recombination information}
 \label{sec-precision}
