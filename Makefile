@@ -89,3 +89,16 @@ clean:
 
 mrproper: clean
 	rm -f *.ps *.pdf
+
+
+review-diff.tex: paper.tex
+	latexdiff reviewed-paper.tex paper.tex > review-diff.tex
+
+review-diff.pdf: review-diff.tex
+	pdflatex review-diff.tex
+	pdflatex review-diff.tex
+	bibtex review-diff
+	pdflatex review-diff.tex
+
+response-to-reviewers.pdf: response-to-reviewers.tex
+	pdflatex $<
