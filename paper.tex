@@ -8,8 +8,6 @@
 \usepackage{tikz}
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
-% \usepackage[symbol]{footmisc}
-% \usepackage[hidelinks]{hyperref}
 
 % Packages from msprime 1.0 paper
 % \usepackage{amsmath,amssymb}%
@@ -22,7 +20,6 @@
 % \usepackage{tikz}
 % \usetikzlibrary{calc,positioning}
 % \usepackage{booktabs}
-
 
 
 \newcommand{\noderef}[1]{\textsf{#1}}
@@ -381,7 +378,7 @@ is required to distinguish the left and right parents.
 We assume in Fig.~\ref{fig-event-arg} that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
 
-\begin{figure*}
+\begin{figure}
 \centering
 \tikzmath{\x1 =0; \x2=8;\xx=12.5; \x3=14; \xt=18;}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
@@ -487,7 +484,7 @@ Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 within the local tree are included; see Appendix~\ref{sec-ARG-and-local-trees}
 for a discussion of this important point).
 }
-\end{figure*}
+\end{figure}
 
 % eARGs are representationally for limited interchange
 While this approach of annotating recombination nodes with a
