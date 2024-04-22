@@ -82,12 +82,12 @@ spellcheck: aspell.conf
 
 clean:
 	rm -f *.pdf
-	rm -f illustrations/*.pdf
-	rm -f illustrations/*.svg
 	rm -f *.log *.dvi *.aux
 	rm -f *.blg *.bbl
 
 mrproper: clean
+	rm -f illustrations/*.pdf
+	rm -f illustrations/*.svg
 	rm -f *.ps *.pdf
 
 

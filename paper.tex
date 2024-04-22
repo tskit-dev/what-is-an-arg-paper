@@ -1,19 +1,29 @@
-\documentclass{article}
-\usepackage[letterpaper,top=2cm,bottom=2.5cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-\usepackage[round]{natbib}
+\documentclass[9pt,twocolumn,twoside]{gsajnl}
+\articletype{inv} % article type
+
+% \usepackage[round]{natbib}
 \usepackage{amsmath,amssymb,amsfonts}%
-\usepackage{geometry}%
-\usepackage{color}
 \usepackage{graphicx}
 \usepackage{authblk}
-\usepackage{nameref}
-\usepackage[right]{lineno}
-\usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
-\usepackage[symbol]{footmisc}
-\usepackage[hidelinks]{hyperref}
+% \usepackage[symbol]{footmisc}
+% \usepackage[hidelinks]{hyperref}
+
+% Packages from msprime 1.0 paper
+% \usepackage{amsmath,amssymb}%
+% \usepackage{graphicx}
+% \usepackage{authblk}
+% \usepackage{dsfont}
+% \usepackage{environ}%
+% \usepackage{caption}
+% \usepackage{subcaption}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,positioning}
+% \usepackage{booktabs}
+
+
 
 \newcommand{\noderef}[1]{\textsf{#1}}
 \newcommand{\tsinfer}[0]{\texttt{tsinfer}}
@@ -24,11 +34,7 @@
 \newcommand{\espalier}[0]{\texttt{Espalier}}
 \newcommand{\arbores}[0]{\texttt{Arbores}}
 
-\begin{document}
-
-
-\title{\vspace{-1.5em} \bf
-A general and efficient representation of ancestral recombination graphs}
+\title{A general and efficient representation of ancestral recombination graphs}
 
 \author[1]{Yan~Wong}
 \author[2,3$\star$]{Anastasia~Ignatieva}
@@ -36,27 +42,22 @@ A general and efficient representation of ancestral recombination graphs}
 \author[6]{Gregor~Gorjanc}
 \author[7,8]{Anthony~W.~Wohns}
 \author[1$\dagger$]{Jerome~Kelleher}
-\affil[ ]{\mbox{}\vspace{-2.5em}}
+% \affil[ ]{\mbox{}\vspace{-2.5em}}
 
-\maketitle
+\affil[1]{Big Data Institute, Li Ka Shing Centre for Health Information and Discovery, University of Oxford, OX3 7LF, UK}
+\affil[2]{School of Mathematics and Statistics, University of Glasgow, UK}
+\affil[3]{Department of Statistics, University of Oxford, UK}
+\affil[4]{School of Mathematics, Statistics and Physics, Newcastle University, UK}
+\affil[5]{Department of Statistics, University of Warwick, UK}
+\affil[6]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, UK}
+\affil[7]{Broad Institute of MIT and Harvard, Cambridge, USA}
+\affil[8]{Department of Genetics, Stanford University School of Medicine, Stanford, USA}
 
-\setlength{\skip\footins}{1em}
-\setlength{\footnotemargin}{0.5em}
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Big Data Institute, Li Ka Shing Centre for Health
-Information and Discovery, University of Oxford, UK}
-\footnotetext[2]{School of Mathematics and Statistics, University of Glasgow, UK}
-\footnotetext[3]{Department of Statistics, University of Oxford, UK}
-\footnotetext[4]{School of Mathematics, Statistics and Physics, Newcastle University, UK}
-\footnotetext[5]{Department of Statistics, University of Warwick, UK}
-\footnotetext[6]{The Roslin Institute and Royal (Dick) School of Veterinary Studies, University of Edinburgh, UK}
-\footnotetext[7]{Broad Institute of MIT and Harvard, Cambridge, USA}
-\footnotetext[8]{Department of Genetics, Stanford University School of Medicine, Stanford, USA}
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]{Joint second author, listed alphabetically}
-\footnotetext[2]{Correspondence: jerome.kelleher@bdi.ox.ac.uk}
 
-\vspace{-1em}
+\keywords{Ancestral Recombination Graphs}
+
+\runningtitle{Ancestral Recombination Graphs}
+\runningauthor{Wong \textit{et al.}}
 
 \begin{abstract}
 As a result of recombination, adjacent nucleotides can have
@@ -82,9 +83,31 @@ forms an appropriate basis for a software standard in this rapidly
 growing field.
 \end{abstract}
 
-\textbf{Keywords:} Ancestral recombination graphs
+\begin{document}
+\maketitle
 
-\linenumbers
+\thispagestyle{firststyle}
+\marginmark
+\firstpagefootnote
+
+% Use the \equalcontrib command to mark authors with equal
+% contributions, using the relevant superscript numbers
+% \equalcontrib{1}
+% \equalcontrib{2}
+\makeatletter
+\newcommand{\equalcontribfirst}[1]{\@authfootnote{#1}{Joint second author,
+listed alphabetically.}}
+\equalcontribfirst{$\star$} % {Denotes shared first authorship, listed alphabetically}
+% \equalcontriblast{$\dagger$} % {Denotes shared senior authorship, listed alphabetically}
+% % \equalcontrib{$\ddagger$}{Denotes corresponding author}
+
+% \footnotetext[1]{}
+\correspondingauthoraffiliation{$\dagger$}{\url{jerome.kelleher@bdi.ox.ac.uk}}
+\vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
+
+% \textbf{Keywords:} Ancestral recombination graphs
+
+% \linenumbers
 \section{Introduction}
 \label{sec-intro}
 % Para 1: ARGs are cool!
@@ -248,7 +271,7 @@ It is therefore best to think of the
 integers used here in the definition of a node as an \emph{identifier},
 with which arbitrary additional information can be associated.
 
-\begin{figure}
+\begin{figure*}
 \begin{center}
     \includegraphics[width=\textwidth]{illustrations/arg-in-pedigree}
 \end{center}
@@ -269,7 +292,7 @@ they merge into a common ancestor, the merged region is darker.
 (partial inheritance in bold).
 (C) The corresponding local trees.
 }
-\end{figure}
+\end{figure*}
 
 As illustrated in Fig.~\ref{fig-arg-in-pedigree},
 the gARG for a given set of individuals is embedded in their pedigree.
@@ -358,7 +381,7 @@ is required to distinguish the left and right parents.
 We assume in Fig.~\ref{fig-event-arg} that \noderef{d} inherits genetic material to the
 left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
 
-\begin{figure}
+\begin{figure*}
 \centering
 \tikzmath{\x1 =0; \x2=8;\xx=12.5; \x3=14; \xt=18;}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
@@ -464,7 +487,7 @@ Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
 within the local tree are included; see Appendix~\ref{sec-ARG-and-local-trees}
 for a discussion of this important point).
 }
-\end{figure}
+\end{figure*}
 
 % eARGs are representationally for limited interchange
 While this approach of annotating recombination nodes with a
@@ -577,7 +600,7 @@ We refer to a gARG that has been simplified with respect to a set of
 samples, such that the inheritance annotations on its edges contain
 no non-ancestral material,  as sample-resolved.
 
-\begin{figure}
+\begin{figure*}
 \centering
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
@@ -599,7 +622,7 @@ Nodes representing recombination events are retained
 for clarity, but could be removed by simplification if
 desired.
 }
-\end{figure}
+\end{figure*}
 
 Any eARG can be converted to a sample-resolved gARG
 via a two-step process illustrated in Fig.~\ref{fig-ancestry-resolution}.
@@ -662,7 +685,7 @@ each time.
 % holds.
 
 \section{A diversity of structures}
-\begin{figure} \begin{center}
+\begin{figure*} \begin{center}
 \includegraphics[width=\textwidth]{illustrations/inference.pdf} \end{center}
 \caption{\label{fig-inferred-args} Inference of sample-resolved ARGs for 11
 \textit{Drosophila melanogaster} DNA sequences over a 2.4kb
@@ -681,7 +704,7 @@ are drawn as horizontal lines, stacked in time order (edges with youngest
 children at the bottom); vertical dashed lines denote breakpoints between
 local trees.
 }
-\end{figure}
+\end{figure*}
 A key goal of this perspective is to highlight the heterogeneity of
 the graph structures inferred by modern ARG inference methods.
 To illustrate this point, Fig.~\ref{fig-inferred-args} shows the 
@@ -705,7 +728,7 @@ a ``coalescence span''  greater than 0 and less than 100\%, indicating that ther
 are nodes that are ``locally unary'' (Appendix~\ref{sec-locally-unary-edges}),
 but mark a coalescence between lineages elsewhere along the sequence.
 
-\begin{figure}
+\begin{figure*}
 \centering
 \includegraphics[width=\textwidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
@@ -729,7 +752,7 @@ Graph nodes are coloured by the number of parents and shaded
 according to the proportion of their span over which they are coalescent;
 see the text for more details.
 }
-\end{figure}
+\end{figure*}
 
 A key feature of the gARG encoding is that it enables these varying levels 
 of precision to be represented, and brings these nuanced features to light.
@@ -1131,7 +1154,7 @@ Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 All code used to generate figures and run analyses is available on GitHub at
 \url{https://github.com/tskit-dev/what-is-an-arg-paper}.
 
-\bibliographystyle{refstyle}
+% \bibliographystyle{refstyle}
 \bibliography{paper}
 
 \setcounter{secnumdepth}{2} % Print out appendix section numbers
@@ -1338,7 +1361,7 @@ and these do not have any bearing on the ancestry of the initial sample.
 Because we don't keep track of the distribution of ancestral material during the process,
 we generate a vastly larger graph.
 
-\begin{figure}
+\begin{figure*}
 \centering
 % FIXME this is a quick nasty hack to make the figure a bit smaller and
 % prevent flushing all the other figures to the end of the document.
@@ -1573,7 +1596,7 @@ along the genome is $y < v < x < w$, of which the first only appears in panel B.
 There are two separate recombination events at link $w$.
 }
 \label{hudson_vs_bigARG}
-\end{figure}
+\end{figure*}
 
 Figure \ref{hudson_vs_bigARG} illustrates the more complex state space
 of the Little ARG process, as well as the extra events which occur in the Big ARG process.
@@ -1696,7 +1719,7 @@ local tree is then generated using standard phylogenetic methods.
 
 \section{Cell lineages and ARGs}
 \label{sec-cell-lineages-and-args}
-\begin{figure}
+\begin{figure*}
 \begin{center}
     \includegraphics[width=0.8\textwidth]{illustrations/cell-lines}
 \end{center}
@@ -1717,7 +1740,7 @@ ARG lineages also show gametic genomes, contained within shaded circles.
 As in Fig.~\ref{fig-arg-in-pedigree}A, inherited regions within the sampled chromosome arm are
 shaded by the number of descendant samples.
 }
-\end{figure}
+\end{figure*}
 
 In eukaryotes, ARGs are a result of the cellular processes of mitosis and meiosis.
 Mitosis leads to common ancestor events,
@@ -2393,7 +2416,6 @@ and an ARG with precisely specified recombination events on the other
 % between nodes that that are older than the local MRCAs.
 
 
-
 \clearpage
 \renewcommand\thefigure{S\arabic{figure}}
 \setcounter{figure}{0}
@@ -2402,7 +2424,7 @@ and an ARG with precisely specified recombination events on the other
 
 \section*{Supplementary Material}
 
-\begin{figure}[ht]
+\begin{figure*}[ht]
 	\begin{center}
 		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
 	\end{center}
@@ -2410,6 +2432,6 @@ and an ARG with precisely specified recombination events on the other
 	Example ARGs Fig.~\ref{fig-simplification}A--D,
     with edges annotated with inheritance intervals.
 	}
-\end{figure}
+\end{figure*}
 
 \end{document}
