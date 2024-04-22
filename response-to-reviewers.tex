@@ -28,11 +28,11 @@
 \renewcommand{\thepoint}{\thereviewer.\arabic{point}}
 
 % command declarations for reviewer points and our responses
-\newcommand{\reviewersection}{\stepcounter{reviewer} \bigskip \hrule
-                  \section*{Reviewer \thereviewer}}
+\newcommand{\reviewersection}{\stepcounter{reviewer} \bigskip \hrule}
+                  % \section*{Reviewer \thereviewer}}
 
 \newenvironment{point}
-   {\refstepcounter{point} \bigskip \noindent {\textbf{Reviewer~Point~\thepoint} } ---\ }
+   {\refstepcounter{point} \bigskip \noindent {\textbf{Point~\thepoint} } ---\ }
    {\par }
 
 \newcommand{\shortpoint}[1]{\refstepcounter{point}  \bigskip \noindent
@@ -50,17 +50,19 @@
 
 \section*{Response to the editor}
 % General intro text goes here
-Thank you for considering this manuscript for publication. 
+Thank you for considering this manuscript for publication.  We have addressed
+the points you and Reviewer 1 raised below in turn.
 
 % Associate Editor's overview & review
 \reviewersection
+\section*{Associate Editor's comments}
 
 \begin{point}
 I gained a number of insights from reading the paper, however, I wonder who the
 intended audience of the paper is. It is not a research paper, indeed many of
 the technical details are given in other papers. Nor is it written at a
 particularly accessible level for people trying to understand ARGs and tree
-sequences.The paper is advocating for the adoption of "genome ARG (gARG)" and
+sequences.The paper is advocating for the adoption of ``genome ARG (gARG)" and
 its simplified versions, but the authors need to be much clearer who they want
 to adopt this and in what level. Separating our structure for storing large
 ARGs estimated from data, from the ``true" ARG seems like a very useful argument
@@ -85,8 +87,8 @@ from a Genome ARG.
 \end{reply}
 
 \begin{point}
-My view is that the authors should switch the article to being a "Perspective"
-or "Review" and shorten it by moving a lot of the technical detail to the
+My view is that the authors should switch the article to being a ``Perspective"
+or ``Review" and shorten it by moving a lot of the technical detail to the
 appendices. I suspect this switch will help people understand that this is the
 author's take on a topic, and also help it be read through by a far broader
 audience. People interested in the details can then work through the appendices
@@ -97,10 +99,12 @@ authors to argue for keeping different sections in the main paper, but in doing
 so they need to be more clearly justified to the reader in the paper.
 \end{point}
 \begin{reply}
-We have followed this approach, and kept only what we regard as sections
+We agree that the article is much more suited to the ``Perspective'' format,
+and have heavily revised it following your suggestions.
+We have kept only what we regard as sections
 essential to the main messages of the paper in the main text. Briefly,
 we clearly need the Genome ARGs and Event ARGs sections, and the
-Ancestral material and sample resolution section is critical to understanding 
+``Ancestral material and sample resolution'' section is critical to understanding 
 how they relate to each other. We have added a new ``A Diversity of
 Structures'' section, which highlights some important nuances possible
 when using gARGs as illustrated by Figures 4 and 5. We regard Section 6 as 
@@ -116,7 +120,7 @@ cannot be learnt from data). Coalescent inference often involves integrating
 out events that we cannot observe in the data and dealing with great
 uncertainty in the timing of events. I think the authors should perhaps be more
 open to the view that for some applications we may want to build back in more
-events even if they are not "needed" in some minimum construction. At the
+events even if they are not ``needed" in some minimum construction. At the
 moment it reads a little dogmatically, when I suspect that is not the authors
 true position.
 \end{point}
@@ -126,9 +130,9 @@ We have cut this text.
 
 \begin{point}
 It seems in general that many in the field, at least methods-savvy folks, are
-on board with tree sequences representation of data. If the "succinct tree
-sequence data structure (usually known as a "tree sequence" for brevity) is a
-practical gARG implementation", why not just leave "tree sequence" as the term
+on board with tree sequences representation of data. If the ``succinct tree
+sequence data structure (usually known as a ``tree sequence" for brevity) is a
+practical gARG implementation", why not just leave ``tree sequence" as the term
 we use. It is far less clear to me that we need to label yet another object an
 ARG, without muddying the definition of an ARG even further. More justification
 is needed to help the reader understand what the authors are arguing here.
@@ -154,8 +158,8 @@ needing to explicitly mention these concerns in the text.
 \end{reply}
 
 \begin{point}
- The authors could also do with having a clearer separation of the "gARG" from the
-"fully simplified gARG" as for a lot of the paper it feels like they informally
+ The authors could also do with having a clearer separation of the ``gARG" from the
+``fully simplified gARG" as for a lot of the paper it feels like they informally
 move back and forth of arguing the strengths of both without being fully clear
 on which they are talking about.
 \end{point}
@@ -165,21 +169,20 @@ fully simplified ARG and not.
 \end{reply}
 
 \begin{point}
-Introduction
-
-The authors state that concepts : "that we must be careful to distinguish are
-the "true" ARG, describing the actual history of a sample of genomes, and a
-"population" ARG which is the
+(Introduction)
+The authors state that concepts : ``that we must be careful to distinguish are
+the ``true" ARG, describing the actual history of a sample of genomes, and a
+``population" ARG which is the
 true ARG of every individual in a population.". But given that they're both
-"true" ARGs, one for a sample and one for the whole population sample it's not
+``true" ARGs, one for a sample and one for the whole population sample it's not
 clear what is that different here. Also from the description I think the
 authors mean the population ARG to not include every individual who has ever
 lived, but it's not clear.
 
-"population-scale true ARGs unquestionably exist, they can also never be
+``population-scale true ARGs unquestionably exist, they can also never be
 entirely known," that's true of all sample ARGs
 
-"perfectly resolved into binary splits and mergers" - not clear which direction
+``perfectly resolved into binary splits and mergers" - not clear which direction
 time is running in this statement.
 \end{point}
 \begin{reply}
@@ -187,7 +190,7 @@ We have cut these passages.
 \end{reply}
 
 \begin{point}
-"For example, gene conversion could be accommodated either by stipulating a
+``For example, gene conversion could be accommodated either by stipulating a
 third type of event (annotated by two breakpoints and corresponding traversal
 conventions for recovering the local trees)" -Cite the coalescent with gene
 conversion papers
@@ -200,7 +203,7 @@ provide references.
 \end{reply}
 
 \begin{point}
-"we will refer to this Griffiths encoding as the "event ARG" - It feels a
+``we will refer to this Griffiths encoding as the ``event ARG" - It feels a
 little strange to attach a single person's name to an approach that the paper
 takes a fairly negative take on. I understand there's no ill feeling here, but
 it's not clear how well this comes across.
@@ -211,7 +214,7 @@ Griffiths in a few places now, and avoid attaching his name to the structure.
 \end{reply}
 
 \begin{point}
-Briefly define "Big ARG" and "Little ARG" in the main text as they are referred
+Briefly define ``Big ARG" and ``Little ARG" in the main text as they are referred
 to multiple times.
 \end{point}
 \begin{reply}
@@ -220,7 +223,7 @@ They are no longer mentioned in the main text.
 
 \begin{point}
 Section 4 and Figure 3. - There's a lot of detail in this section to then get
-to this sentence at the end: "Note that the Wiuf and Hein (1999b) eARG in Fig.
+to this sentence at the end: ``Note that the Wiuf and Hein (1999b) eARG in Fig.
 3 is not particularly representative, because inference or simulation methods
 usually only generate ARGs containing nodes and edges ancestral to the sample".
 So this feels like the authors have attached a lot of baggage to the eARG that
@@ -248,7 +251,7 @@ We have moved these to appendices.
 
 \begin{point}
 It is not fully clear if the authors want the
-bottom graph in Figure 4 to be the end product (a "fully simplified gARG"), if
+bottom graph in Figure 4 to be the end product (a ``fully simplified gARG"), if
 that is the case they need to state this up front and label it that way in the
 graph.
 \end{point}
@@ -269,7 +272,10 @@ informal usage. Having some arbitrary threshold of ``sufficient structure''
 for something to be considered a `proper' ARG can surely only lead to more
 confusion. The only reasonable path forward is for the term ARG to become
 general, and for the community to invent adjectives to classify
-the different types of ARG.
+the different types of ARG. As we point out in the introduction, 
+stuctures like this (the default output of msprime) are
+informally defined as ARGs by emerging consensus, and so the key point 
+of this manuscript is to provide a corresponding formal definition.
 \end{reply}
 
 \begin{point}
@@ -283,8 +289,8 @@ highlight their differences.
 
 \begin{point}
 Discussion:
-"Fully decoupling the general concept of an ARG from the coalescent with
-recombination (hence-forth, "coalescent") is an important step." Not sure it
+``Fully decoupling the general concept of an ARG from the coalescent with
+recombination (hence-forth, ``coalescent") is an important step." Not sure it
 matters whether the coalescent
 is a good or bad model for data. What matters is the separation of the idea of
 genetic genealogy from stochastic models that generate such structures. That
@@ -298,19 +304,9 @@ We have cut this passage and several others, substantially shortening
 the discussion.
 \end{reply}
 
-
-\subsection*{Specific comments}
-% We address your specific comments below:
-% % \reviewersection
-
-\section*{Response to the reviewers}
-% General intro text goes here
-We thank the reviewers for their close reading of our manuscript and
-insightful comments. In the following we address the points raised
-in turn.
-
 % Let's start point-by-point with Reviewer 1
 \reviewersection
+\section*{Reviewer 1}
 
 \begin{point}
 In this article, Wong et al. describe a data structure called the ``genome
@@ -329,7 +325,7 @@ Thank you for the kind words, we are glad you find the exposition clear.
 \begin{point}
 However, I have reservations about categorizing this work as a standalone
 ``Investigation'' article. It seems to align more closely with the nature of a
-review article. While the authors claim to be "proposing an alternative
+review article. While the authors claim to be ``proposing an alternative
 mathematical formulation," this characterization might be somewhat of an
 overstatement. The contribution, while valuable, appears to be more in the
 realm of summarizing and clarifying existing concepts rather than introducing a
