@@ -68,7 +68,7 @@ inheritance is referred to as an ancestral recombination graph (ARG).
 % This rapid progress has led to a diversity of ARG definitions and representations.
 Classical formalisms have focused on mapping 
 coalescence and recombination events to the nodes in an ARG.
-This approach is out of step with modern developments,
+This approach is out of step with many modern developments, however,
 which do not represent genetic inheritance in terms of these events 
 or explicitly infer them.
 We present a simple formalism that defines an ARG in terms 
@@ -115,7 +115,7 @@ usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, encapsulating the resulting complex web of genetic
-ancestry.
+ancestors of a set of samples.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -205,7 +205,7 @@ and \citet{brandt2024promise}.
 We define a genome as the complete set of genetic material that a child
 inherits from one parent. A diploid individual
 % Q: will someone nitpick that we're assuming diploid obligate sexual species?
-therefore carries two genomes, one inherited from each parent (we assume diploids here
+therefore carries two genomes, one inherited from each parent (we assume diploids and consider nuclear autosomal DNA here
 for clarity, but the definitions apply to organisms of arbitrary ploidy).
 We will also use the term ``genome'' in its
 more common sense of ``the genome'' of a species,
@@ -220,14 +220,14 @@ A genome ARG (gARG) is a directed acyclic graph in which nodes represent
 haploid genomes and edges represent
 genetic inheritance between an ancestor and a descendant.
 The topology of a gARG specifies that genetic inheritance
-occurred between particular
+occurred between
 ancestors and descendants, but the graph connectivity
 does not tell us which \emph{parts} of their genomes were inherited.
 In order to capture the effects of recombination
  we ``annotate'' the edges with the genome
 coordinates over which inheritance occurred.
 This is sufficient to describe the effects of inheritance under
-any form of homologous recombination (such as multiple crossovers,
+any form of homologous recombination (such as multiple crossovers during a single round of meiosis,
 gene conversion events, and many forms of bacterial and viral recombination).
 
 We can define a gARG formally as follows.
@@ -354,7 +354,7 @@ heine2018bridging,ignatieva2021kwarg}.
 % overly precise about something that people haven't actually written
 % down.
 In this encoding there are two types of internal node in the graph,
-representing the common ancestor and recombination events
+representing the most recent common ancestor and recombination events
 in the history of a sample.
 At common ancestor nodes, the inbound lineages merge into a
 single ancestral lineage with one parent, and at recombination
@@ -507,13 +507,15 @@ section offers a simpler and more direct solution.
 Aside from these practical challenges, there is also a deeper
 issue with the implicit strategy of basing an ARG data structure on
 recording events and their properties (e.g.\ the crossover breakpoint
-for a recombination event). This approach assumes all events are 
-\emph{knowable}, and does not
+for a recombination event). This approach 
+% assumes all events are \emph{knowable}, and does not
+necessitates that all events are recorded explicitly, and does not 
 provide an obvious mechanism for either aggregating multiple events
 or expressing uncertainty about them. While this is not a
-problem when describing the results of simulations (where all details
+problem when describing the results of simulations, for instance (where all details
 are perfectly known), it is an issue when we wish to
-formally describe the output of inference methods, particularly
+formally describe the output of inference methods which do not
+necessarily attempt to infer events that are not \emph{knowable} from the data, particularly
 as datasets approach the population scale~\citep[e.g.][]{
 turnbull2018hundred, bycroft2018genome,hayes20191000,
 Ros-Freixedes2020,karczewski2020mutational,tanjo2021practical,
@@ -752,13 +754,13 @@ see the text for more details.
 \end{figure*}
 
 A key feature of the gARG encoding is that it enables these varying levels 
-of precision to be represented, and brings these nuanced features to light.
+of precision to be represented.
 These ideas are illustrated in Fig.~\ref{fig-simplification}, which shows
 different levels of ``simplification'' (Appendix~\ref{sec-ARG-simplification})
 of the same underlying simulated ARG. The full ARG, with all coalescent and
 recombination events represented by separate genomes, is shown in
 Fig.~\ref{fig-simplification}A. Simpler representations can be formed by
-removing ``unknowable'' nodes (Fig.~\ref{fig-simplification}B) and collapsing
+removing ``unknowable'' nodes such as those in singly-connected graph components (Fig.~\ref{fig-simplification}B) and collapsing
 multiple recombinations into a single child or multiple coalescences into a
 single parent (Fig.~\ref{fig-simplification}C). 
 Finally, Fig.~\ref{fig-simplification}D is a ``fully simplified''
@@ -778,10 +780,14 @@ human-like mutation and recombination
 rates \citep{myers2002detection,hayman2023recoverability}.
 Even when a recombination event \emph{is} detectable, its timing and breakpoint
 position can only be inferred approximately, depending on how much information
-can be elucidated from mutations in the surrounding genomic region. Because a gARG
-can encode a diversity of ARG structures, it
-allows this fundamental uncertainty in inference to be appropriately represented
-(Appendix~\ref{sec-precision}).
+can be elucidated from mutations in the surrounding genomic region. 
+A gARG can encode a diversity of ARG structures, including 
+those where events \emph{are} recorded explicitly, and those where
+they are treated as fundamentally uncertain and thus not explicitly inferred (Appendix~\ref{sec-precision}).
+% Because a gARG
+% can encode a diversity of ARG structures, it
+% allows this fundamental uncertainty in inference to be appropriately represented
+% (Appendix~\ref{sec-precision})
 
 % For general
 % ARGs, for instance those representing pedigrees, or genealogies of organisms with
@@ -792,7 +798,7 @@ allows this fundamental uncertainty in inference to be appropriately represented
 
 \section{Implementation and efficiency}
 \label{sec-efficiency}
-The gARG encoding leads to highly efficient storage and processing of ARG data,
+The gARG encoding can lead to highly efficient storage and processing of ARG data,
 and has been in use for several years.
 The succinct tree sequence data structure
 (usually known as a ``tree sequence'' for brevity)
@@ -931,7 +937,10 @@ applicable methods available.
 Methods targeting large-scale datasets tend to simplify
 the inference problem by
 making a single, deterministic 
-best-guess~\citep{kelleher2019inferring,speidel2019method,zhang2023biobank,zhan2023towards}.
+best-guess~\citep{kelleher2019inferring,speidel2019method,zhang2023biobank,zhan2023towards} 
+(but see \citep{deng2024robust} for recent
+developments in capturing uncertainty using a Bayesian framework, for relatively small
+sample sizes).
 Even under strict parsimony conditions and for small sample sizes the
 % Citation? This is something people have figured out, right?
 number of plausible ARGs compatible with a given dataset is vast,
