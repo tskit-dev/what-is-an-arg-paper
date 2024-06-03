@@ -1,0 +1,168 @@
+% LaTeX rebuttal letter example.
+%
+% Copyright 2019 Friedemann Zenke, fzenke.net
+%
+% Based on examples by Dirk Eddelbuettel, Fran and others from
+% https://tex.stackexchange.com/questions/2317/latex-style-or-macro-for-detailed-response-to-referee-report
+%
+% Licensed under cc by-sa 3.0 with attribution required.
+
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum} % to generate some filler text
+\usepackage{fullpage}
+
+% import Eq and Section references from the main manuscript where needed
+% \usepackage{xr}
+% \externaldocument{manuscript}
+
+% package needed for optional arguments
+\usepackage{xifthen}
+% define counters for reviewers and their points
+\newcounter{reviewer}
+\setcounter{reviewer}{0}
+\newcounter{point}[reviewer]
+\setcounter{point}{0}
+
+% This refines the format of how the reviewer/point reference will appear.
+\renewcommand{\thepoint}{\thereviewer.\arabic{point}}
+
+% command declarations for reviewer points and our responses
+\newcommand{\reviewersection}{\stepcounter{reviewer} \bigskip \hrule}
+                  % \section*{Reviewer \thereviewer}}
+
+\newenvironment{point}
+   {\refstepcounter{point} \bigskip \noindent {\textbf{Point~\thepoint} } ---\ }
+   {\par }
+
+\newcommand{\shortpoint}[1]{\refstepcounter{point}  \bigskip \noindent
+    {\textbf{Reviewer~Point~\thepoint} } ---~#1\par }
+
+\newenvironment{reply}
+   {\medskip \noindent \begin{sf}\textbf{Reply}:\  }
+   {\medskip \end{sf}}
+
+\newcommand{\shortreply}[2][]{\medskip \noindent \begin{sf}\textbf{Reply}:\  #2
+    \ifthenelse{\equal{#1}{}}{}{ \hfill \footnotesize (#1)}%
+    \medskip \end{sf}}
+
+\begin{document}
+
+\section*{Response to the editor}
+% General intro text goes here
+We thank you again for a careful reading of this manuscript, and the further suggestions for improving its clarity and flow. We have addressed the points you raised below in turn.
+
+% Associate Editor's overview & review
+\reviewersection
+\section*{Associate Editor's comments}
+
+\begin{point}
+My remaining broad concern is that the paper is still in places somewhat narrow about the goals of future ARG development. I certainly see the practical utility of dropping inference down to some minimum "knowable" structure that can be reconstructed using deterministic algorithms for very large datasets. However, probabilistic reconstructions of some form of ARG with more explicit events is also a reasonable goal moving forwards (e.g. for some applications we may want a subset of the recombination events explicitly included). There are a few places where the paper still comes across as overly dogmatic about the minimum "knowable" ARG being the only goal (although the discussion casts a broader view).
+\end{point}
+\begin{reply}
+We have gone through the article and, in addition to the suggestions made below, have rephrased 
+parts to make it clear that a gARG can be used to encode a \emph{variety} of ARG structures, whether events are or are not explicitly inferred by the reconstruction method. We specifically state at the end of \emph{A diversity of structures} that
+\begin{quote}
+A gARG can encode a diversity of ARG structures, including 
+those where events \emph{are} recorded explicitly, and those where
+they are treated as fundamentally uncertain and thus not explicitly inferred (Appendix H).
+\end{quote}
+\end{reply}
+
+\begin{point}
+Abstract: "This approach is out of step with modern developments, which do not represent genetic inheritance in terms of these events or explicitly infer them." So this is on the places where I feel like the authors state things too strongly. The authors, and some others, approaches have taken this path, but folks can agree that the gARG is a good idea and yet think that explicitly inferring details of recombination events is a `modern' goal.
+\end{point}
+\begin{reply}
+We have changed this to "This approach is out of step with many modern developments, however,..."
+\end{reply}
+
+\begin{point}
+"Broadly speaking, an ARG describes the different paths of genetic inheritance caused by recombination, encapsulating the resulting complex web of genetic ancestry " - add "of a set of samples". Also I'd say "genetic ancestors", as ancestry is tied up with genetic ancestry groups in peoples' minds.
+\end{point}
+\begin{reply}
+Amended as suggested.
+\end{reply}
+
+\begin{point}
+"We define a genome as the complete set of genetic material that a child inherits from one parent. A diploid individual therefore carries two genomes, one inherited from each parent (we assume diploids here for clarity, but the definitions apply to organisms of arbitrary ploidy). " -Excludes Y, mtDNA, and X as written, please revise, e.g. talk about autosomal genome.
+\end{point}
+\begin{reply}
+Amended as suggested.
+\end{reply}
+
+\begin{point}
+"The topology of a gARG specifies that genetic inheritance occurred between particular ancestors and descendants, " -struggle slightly with word "particular" here as the identity of the ancestors is not known. Deleting "particular" is likely sufficient.
+\end{point}
+\begin{reply}
+Amended as suggested.
+\end{reply}
+
+\begin{point}
+"This is sufficient to describe the effects of inheritance under any form of homologous recombination (such as multiple crossovers,..." -do you mean multiple crossovers during a single round of meiosis.
+\end{point}
+\begin{reply}
+Yes - amended to clarify this.
+\end{reply}
+
+\begin{point}
+"In this encoding there are two types of internal node in the graph, representing the common ancestor and recombination events in the history of a sample. " stipulate that these are most recent common ancestor events.
+\end{point}
+\begin{reply}
+Amended as suggested.
+\end{reply}
+
+\begin{point}
+"This approach assumes all events are knowable, and does not provide an obvious mechanism for either aggregating multiple events or expressing uncertainty about them. While this is not a problem when describing the results of simulations". -Maybe one way to flip this around would be to say that because it arose from tracking a particular stochastic process it has these properties. Also I don't think it assumes that all events are knowable, eg we could construct some parsimonious ARG or probabilistic ARG. If we wish to express uncertainty about events we usually give draws from the posterior etc. I agree that might be computational prohibitive with large samples etc, but it seems like place to take a broad view. This seems like a place to acknowledge that for some applications we might want to explicitly reconstruct the events.
+\end{point}
+\begin{reply}
+We have rephrased this part to read
+\begin{quote}
+This approach necessitates that all events are recorded explicitly, and does not 
+provide an obvious mechanism for either aggregating multiple events
+or expressing uncertainty about them. While this is not a
+problem when describing the results of simulations, for instance (where all details
+are perfectly known), it is an issue when we wish to
+formally describe the output of inference methods which do not
+necessarily attempt to infer events that are not \emph{knowable} from the data, 
+particularly as datasets approach the population scale...
+\end{quote}
+\end{reply}
+
+\begin{point}
+"A key feature of the gARG encoding is that it enables these varying levels of precision to be represented, and brings these nuanced features to light." -the word nuanced feels strange here.
+\end{point}
+\begin{reply}
+We have deleted the second part of this sentence.
+\end{reply}
+
+\begin{point}
+"Simpler representations can be formed by removing "unknowable" nodes (Fig. 5B)" -unknowable is vague here, do you mean bubbles along a single lineage?
+\end{point}
+\begin{reply}
+We've added a clarification that this refers to nodes such as those in singly-connected graph components.
+\end{reply}
+
+\begin{point}
+"The gARG encoding leads to highly efficient storage and processing of ARG data, "-As gARG has various levels of precision, perhaps this needs to state that the "gARG encoding can lead to..." or be more precise that this is a reduced precision level.
+\end{point}
+\begin{reply}
+Amended as suggested to add "can lead to".
+\end{reply}
+
+\begin{point}
+"The succinct tree sequence data structure (usually known as a "tree sequence" for brevity) is a practical gARG implementation focused on efficiency." - If the tree sequence is focused at a particular level of gARG simplification be precise about this.
+\end{point}
+\begin{reply}
+We have left this sentence as is, since the tree sequence structure can record gARGs at various levels of simplification.
+\end{reply}
+
+\begin{point}
+"Methods targeting large-scale datasets tend to simplify the inference problem by making a single, deterministic best-guess " --I think this is the best guess of the topology, and the uncertainty in times given the ARG is downstream of this. If so please clarify. Also I'd perhaps explicitly acknowledge Deng et al (SINGER), e.g. "deterministic best-guess of the topology (see Deng et al for parallel developments addressing uncertainty with somewhat small sample sizes)" or something like that. While these deterministic approaches are a strong way forward for human biobank scale data, it's good to be highlight parallel developments that might be key to other applications.
+\end{point}
+\begin{reply}
+We have mentioned this as suggested.
+\end{reply}
+
+
+
+\end{document}
