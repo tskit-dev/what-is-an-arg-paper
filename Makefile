@@ -15,7 +15,7 @@ ILLUSTRATIONS=\
 	illustrations/cell-lines.pdf \
 	illustrations/simplification-with-edges.pdf \
 
-all: paper.pdf response-to-reviewers.pdf
+all: paper.pdf response-to-reviewers.pdf response-to-reviewers-2.pdf
 
 paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex -shell-escape paper.tex
