@@ -15,7 +15,7 @@ ILLUSTRATIONS=\
 	illustrations/cell-lines.pdf \
 	illustrations/simplification-with-edges.pdf \
 
-all: paper.pdf response-to-reviewers.pdf
+all: paper.pdf response-to-reviewers.pdf response-to-reviewers-2.pdf
 
 paper.pdf: paper.tex paper.bib ${DATA} ${FIGURES} ${ILLUSTRATIONS}
 	pdflatex -shell-escape paper.tex
@@ -101,4 +101,16 @@ review-diff.pdf: review-diff.tex
 	pdflatex review-diff.tex
 
 response-to-reviewers.pdf: response-to-reviewers.tex
+	pdflatex $<
+
+review-diff-2.tex: paper.tex
+	latexdiff reviewed-paper-2.tex paper.tex > review-diff-2.tex
+
+review-diff-2.pdf: review-diff-2.tex
+	pdflatex review-diff-2.tex
+	pdflatex review-diff-2.tex
+	bibtex review-diff-2
+	pdflatex review-diff-2.tex
+
+response-to-reviewers-2.pdf: response-to-reviewers-2.tex
 	pdflatex $<

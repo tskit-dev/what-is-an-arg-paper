@@ -68,7 +68,7 @@ inheritance is referred to as an ancestral recombination graph (ARG).
 % This rapid progress has led to a diversity of ARG definitions and representations.
 Classical formalisms have focused on mapping 
 coalescence and recombination events to the nodes in an ARG.
-This approach is out of step with many modern developments, however,
+This approach is out of step with some modern developments, however,
 which do not represent genetic inheritance in terms of these events 
 or explicitly infer them.
 We present a simple formalism that defines an ARG in terms 
@@ -507,18 +507,17 @@ section offers a simpler and more direct solution.
 Aside from these practical challenges, there is also a deeper
 issue with the implicit strategy of basing an ARG data structure on
 recording events and their properties (e.g.\ the crossover breakpoint
-for a recombination event). This approach 
+for a recombination event). 
+This approach 
 requires all events to be recorded explicitly, and does not 
-provide an obvious mechanism for either aggregating multiple events
-or expressing uncertainty about them. This is not a
-problem when describing the results of simulations, where all details
-are perfectly known. However, it can be an issue when we wish to
-formally describe the output of various inference methods, particularly
-those that avoid inferring events that are not \emph{knowable} from the data:
-a useful approach as datasets approach the population scale~\citep[e.g.][]{
+provide an obvious mechanism for aggregating multiple, potentially
+unresolvable, events.
+As datasets approach the population scale~\citep[e.g.][]{
 turnbull2018hundred, bycroft2018genome,hayes20191000,
 Ros-Freixedes2020,karczewski2020mutational,tanjo2021practical,
-halldorsson2022sequences}.
+halldorsson2022sequences} representing such uncertainty 
+directly through the data structure is a useful alternative to 
+classical methods based on probabilistic sampling.
 
 % There is also a certain clarity gained by explicitly modelling nodes
 % in the inheritance graph as genomes.
@@ -1129,7 +1128,7 @@ applications.
 The emerging ARG software ecosystem could similarly benefit
 from the adoption of such shared community infrastructure
 to handle the mundane and time-consuming details of data interchange.
-The \texttt{tskit} library (Section~\ref{sec-efficiency})
+The \texttt{tskit} library 
 is a high-quality open-source gARG implementation,
 with proven efficiency and
 scalability~\citep[e.g.][]{anderson2022genes,zhan2023towards},
