@@ -743,7 +743,7 @@ and corresponding local trees on the right.
 % the captions reader" who might not realise that there's an essential
 % ingredient missing from the graph version
 In the interest of visual clarity, inheritance intervals are not shown
-on the graph edges; Supplementary Fig.~\ref{fig-simplification-with-edges}
+on the graph edges; Supplementary Fig.~S1
 shows the graphs with these inheritance intervals included.
 Graph nodes are coloured by the number of parents and shaded
 according to the proportion of their span over which they are coalescent;
@@ -1137,6 +1137,10 @@ Adopting it as a community standard may ease software implementation burden
 on researchers, freeing their time to address the many fascinating open
 questions and challenges that exist.
 
+\section*{Data Availability}
+All code used to generate figures and run analyses is available on GitHub at
+\url{https://github.com/tskit-dev/what-is-an-arg-paper}.
+
 \section*{Acknowledgements}
 We are grateful to Nick Barton, Gideon Bradburd, 
 Castedo Ellerman, Alex Lewanski,
@@ -1146,6 +1150,8 @@ to Iain Mathieson and Aylwyn Scally for interesting discussions that
 originally motivated this work.
 We are particularly grateful to Graham Coop for detailed feedback
 on an earlier version of the manuscript.
+
+\section*{Funding}
 % Ordered alphabetically by surname
 Gregor Gorjanc acknowledges support from the BBSRC ISP grant to The Roslin Institute
 (BBS/E/D/30002275, BBS/E/RL/230001A, and BBS/E/RL/230001C).
@@ -1154,9 +1160,8 @@ NIH (research grants HG011395 and HG012473) and
 EPSRC (research grant EP/X024881/1).
 Jere Koskela acknowledges support from EPSRC research grant EP/V049208/1.
 
-\section*{Data Availability}
-All code used to generate figures and run analyses is available on GitHub at
-\url{https://github.com/tskit-dev/what-is-an-arg-paper}.
+\section*{Conflicts of Interest}
+The authors declare that there is no conflict of interest.
 
 % \bibliographystyle{refstyle}
 \bibliography{paper}
@@ -2420,22 +2425,22 @@ and an ARG with precisely specified recombination events on the other
 % between nodes that that are older than the local MRCAs.
 
 
-\clearpage
-\renewcommand\thefigure{S\arabic{figure}}
-\setcounter{figure}{0}
-\renewcommand\thetable{S\arabic{table}}
-\setcounter{table}{0}
+% \clearpage
+% \renewcommand\thefigure{S\arabic{figure}}
+% \setcounter{figure}{0}
+% \renewcommand\thetable{S\arabic{table}}
+% \setcounter{table}{0}
 
-\section*{Supplementary Material}
+% \section*{Supplementary Material}
 
-\begin{figure*}[ht]
-	\begin{center}
-		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
-	\end{center}
-	\caption{\label{fig-simplification-with-edges}
-	Example ARGs Fig.~\ref{fig-simplification}A--D,
-    with edges annotated with inheritance intervals.
-	}
-\end{figure*}
+% \begin{figure*}[ht]
+% 	\begin{center}
+% 		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
+% 	\end{center}
+% 	\caption{\label{fig-simplification-with-edges}
+% 	Example ARGs Fig.~\ref{fig-simplification}A--D,
+%     with edges annotated with inheritance intervals.
+% 	}
+% \end{figure*}
 
 \end{document}
