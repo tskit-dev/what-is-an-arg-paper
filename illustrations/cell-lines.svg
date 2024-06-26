@@ -5,7 +5,7 @@
    viewBox="-0.5 -0.5 65.390211 75.462597"
    version="1.1"
    id="svg8"
-   inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
    sodipodi:docname="cell-lines-full.svg"
    inkscape:export-filename="cell_lines_full.png"
    inkscape:export-xdpi="299.84"
@@ -295,15 +295,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.4757882"
-     inkscape:cx="179.0746"
-     inkscape:cy="265.09297"
+     inkscape:cx="93.614796"
+     inkscape:cy="206.89093"
      inkscape:document-units="mm"
      inkscape:current-layer="layer9"
      showgrid="false"
-     inkscape:window-width="1394"
+     inkscape:window-width="1400"
      inkscape:window-height="847"
-     inkscape:window-x="46"
-     inkscape:window-y="25"
+     inkscape:window-x="49"
+     inkscape:window-y="37"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -319,7 +319,11 @@
        type="xygrid"
        id="grid815"
        originx="-26.963887"
-       originy="-158.55756" />
+       originy="-158.55756"
+       spacingy="1"
+       spacingx="1"
+       units="mm"
+       visible="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -1565,7 +1569,7 @@
          id="tspan8760-9-4"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="12.959901"
-         y="44.010975">D<tspan
+         y="44.010975">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-5-0">5</tspan></tspan></text>
     <text
@@ -1578,7 +1582,7 @@
          id="tspan8760-9-4-4"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="29.02319"
-         y="24.087839">D<tspan
+         y="24.087839">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-5-0-7">10</tspan></tspan></text>
     <text
@@ -1591,7 +1595,7 @@
          id="tspan8760-9-4-4-6"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="13.521645"
-         y="4.1347251">D<tspan
+         y="4.1347251">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-5-0-7-8">13</tspan></tspan></text>
     <ellipse
@@ -4565,7 +4569,7 @@
          id="tspan8760-1"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="-2.6489336"
-         y="63.612179">D<tspan
+         y="63.612179">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-3">1</tspan></tspan></text>
     <text
@@ -4578,7 +4582,7 @@
          id="tspan8760-9"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="12.958779"
-         y="63.612194">D<tspan
+         y="63.612194">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-5">2</tspan></tspan></text>
     <text
@@ -4591,7 +4595,7 @@
          id="tspan8760-2"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:'serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
          x="29.137877"
-         y="63.597462">D<tspan
+         y="63.597462">d<tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.51218px;font-family:serif;-inkscape-font-specification:serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;baseline-shift:sub;fill:#719fb9;fill-opacity:1;stroke-width:0.266912"
    id="tspan8758-8">3</tspan></tspan></text>
     <text

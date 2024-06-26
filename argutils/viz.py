@@ -227,24 +227,27 @@ def draw(
             nodelist=np.where(use)[0],
         )
 
-    for font_color, labels in labels_by_colour.items():
-        text = nx.draw_networkx_labels(
-            G,
-            pos,
-            font_color=font_color,
-            font_size=font_size,
-            labels=labels,
-            ax=ax,
-        )
-        if rotated_sample_labels:
-            y_below_extra = 0.0145 * np.diff(ax.get_ylim())  # 2% of the y range
-            for nd, t in text.items():
-                if is_sample[nd]:
-                    x, y = t.get_position()
-                    t.set_rotation(-90)
-                    t.set_position((x, y - y_below_extra))
-                    t.set_va('top')
-    # Assign edge colors using the ordering of edges in the networkx representation
+    with mpl.rc_context({'font.style': 'italic'}):
+        for font_color, labels in labels_by_colour.items():
+            text = nx.draw_networkx_labels(
+                G,
+                pos,
+                font_color=font_color,
+                font_size=font_size,
+                font_family="Georgia",
+                labels=labels,
+                ax=ax,
+                verticalalignment="center_baseline",
+            )
+            if rotated_sample_labels:
+                y_below_extra = 0.0145 * np.diff(ax.get_ylim())  # 2% of the y range
+                for nd, t in text.items():
+                    if is_sample[nd]:
+                        x, y = t.get_position()
+                        t.set_rotation(-90)
+                        t.set_position((x, y - y_below_extra))
+                        t.set_va('top')
+        # Assign edge colors using the ordering of edges in the networkx representation
     if edge_colors is not None:
         ordered_edge_color = []
         for edge_id, edge in enumerate(G.edges()):
@@ -282,7 +285,7 @@ def label_nodes(ts, labels=None):
     will be labelled with numbers rather than ascii uppercase letters.
     """
     if labels is None:
-        labels = {i: lab for i, lab in enumerate(string.ascii_lowercase)}
+        labels = {i: lab for i, lab in enumerate(string.ascii_uppercase)}
     tables = ts.dump_tables()
 
     tables.nodes.clear()

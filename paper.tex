@@ -9,6 +9,10 @@
 \usetikzlibrary{math,calc,positioning}
 \usepackage{url}
 
+% Uncommment to extract tikz pictures
+% \usetikzlibrary{external}
+% \tikzexternalize
+
 % Packages from msprime 1.0 paper
 % \usepackage{amsmath,amssymb}%
 % \usepackage{graphicx}
@@ -22,7 +26,7 @@
 % \usepackage{booktabs}
 
 
-\newcommand{\noderef}[1]{\textsf{#1}}
+\newcommand{\noderef}[1]{\textit{#1}}
 \newcommand{\tsinfer}[0]{\texttt{tsinfer}}
 \newcommand{\kwarg}[0]{\texttt{KwARG}}
 \newcommand{\argweaver}[0]{\texttt{ARGweaver}}
@@ -115,7 +119,7 @@ usually known as an Ancestral Recombination Graph (ARG), is a long-standing
 goal in genetics.
 Broadly speaking, an ARG describes the different paths of genetic inheritance
 caused by recombination, encapsulating the resulting complex web of genetic
-ancestors of a set of samples.
+ancestors of a set of sampled genomes.
 Recent breakthroughs
 in large-scale inference
 methods~\citep{rasmussen2014genome,kelleher2019inferring,speidel2019method,
@@ -274,20 +278,20 @@ with which arbitrary additional information can be associated.
 \end{center}
 \caption{\label{fig-arg-in-pedigree}
 An example genome ARG (gARG) embedded in a pedigree.
-(A) Diploid individuals (blue), visualised in a highly inbred pedigree and
-labelled $D_1$ to $D_8$,
+\textbf{a.} Diploid individuals (shaded background squares / circles), visualised in a highly inbred pedigree and
+labelled $d_1$ to $d_8$,
 contain both paternal and maternal  genomes
-labelled \noderef{a} to \noderef{p}. Black lines show inheritance paths connecting
-genomes in the current generation (\noderef{a} to \noderef{d}) with their ancestors.
-Genomes \noderef{a} and \noderef{c} are the product of two independent
-meioses (recombination events, in red) between
-the paternal genomes \noderef{e}
-and \noderef{f}, and regions of genome inherited are shown with shaded colour.
-Genomes are shaded such that where, backwards in time,
-they merge into a common ancestor, the merged region is darker.
-(B) The corresponding gARG along with inheritance annotations on all edges
-(partial inheritance in bold).
-(C) The corresponding local trees.
+labelled \noderef{A} to \noderef{P}. Lines show inheritance paths connecting
+genomes in the current generation (\noderef{A} to \noderef{D}) with their ancestors.
+Genomes \noderef{A} and \noderef{C} are the product of two independent
+meioses (recombination events, with italicised breakpoint positions) between
+the paternal genomes \noderef{E}
+and \noderef{F}; the regions of inherited genome are shaded.
+Further shading highlights genomic regions that merge into a common ancestor:
+merged regions gradually darken until fully coalesced.
+\textbf{b.} The corresponding gARG along with inheritance annotations on all edges
+(partial genomic inheritance in bold).
+\textbf{c.} The corresponding local trees.
 }
 \end{figure*}
 
@@ -297,24 +301,24 @@ The figure shows the pedigree of eight diploid individuals
 and their sixteen constituent genomes (each consisting of a single chromosome),
 along with paths of genetic inheritance.
 Here, and throughout,
-nodes are labelled with lowercase alphabetical letters
+nodes are labelled with uppercase alphabetical letters
 rather than integer identifiers to avoid confusion with genomic intervals.
-Thus individual $D_1$ is composed
-of genomes \noderef{a} and \noderef{b}, which are inherited from its
-two parents $D_3$ and $D_4$. Each inherited genome may be the recombined product
+Thus individual $d_1$ is composed
+of genomes \noderef{A} and \noderef{B}, which are inherited from its
+two parents $d_3$ and $d_4$. Each inherited genome may be the recombined product
 of the two genomes belonging to an individual parent.
 In this example,
-genome \noderef{b} was inherited directly from $D_4$'s genome \noderef{g} without
+genome \noderef{B} was inherited directly from $d_4$'s genome \noderef{G} without
 recombination, whereas
-genome \noderef{a} is the recombinant product of
-$D_2$'s genomes \noderef{e} and \noderef{f} crossing over at position 2.
-Specifically, genome \noderef{a} inherited the (half-closed)
-interval $[0, 2)$ from genome \noderef{e} and $[2, 10)$ from genome \noderef{f}.
+genome \noderef{A} is the recombinant product of
+$d_2$'s genomes \noderef{E} and \noderef{F} crossing over at position 2.
+Specifically, genome \noderef{A} inherited the (half-closed)
+interval $[0, 2)$ from genome \noderef{E} and $[2, 10)$ from genome \noderef{F}.
 These intervals are shown attached to the corresponding graph edges.
 The figure shows the annotated pedigree with realised inheritance of genomes
-between generations (A), the corresponding gARG (B), and finally the corresponding
+between generations (a), the corresponding gARG (b), and finally the corresponding
 sequence of local trees along the
-genome (C).
+genome (c).
 The local trees span the three genome regions delineated
 by the two recombination breakpoints that gave rise to these genomes;
 see Appendix~\ref{sec-ARG-and-local-trees} for details
@@ -366,31 +370,31 @@ This is done by tracing pastwards through the graph from the samples,
 making decisions about which outbound edge to follow through
 recombination nodes based on the breakpoint
 position~\citep{griffiths1996ancestral}. Fig.~\ref{fig-event-arg} shows an example of an
-eARG with three sample genomes (\noderef{a}, \noderef{b}, and \noderef{c}),
-three common ancestor events (\noderef{e}, \noderef{f}, and \noderef{g})
-and a single recombination event (node \noderef{d}) with a breakpoint
+eARG with three sample genomes (\noderef{A}, \noderef{B}, and \noderef{C}),
+three common ancestor events (\noderef{E}, \noderef{F}, and \noderef{G})
+and a single recombination event (node \noderef{D}) with a breakpoint
 at position $x$.
 Assigning a breakpoint to a recombination node is
 not sufficient to uniquely define the local trees, and either
 some additional ordering rules~\citep[e.g.][]{griffiths1996ancestral} or
 explicit information~\citep[e.g.][]{gusfield2014recombinatorics,ignatieva2021kwarg}
 is required to distinguish the left and right parents.
-We assume in Fig.~\ref{fig-event-arg} that \noderef{d} inherits genetic material to the
-left of $x$ from \noderef{e} and to the right of $x$ from \noderef{f}.
+We assume in Fig.~\ref{fig-event-arg} that \noderef{D} inherits genetic material to the
+left of $x$ from \noderef{E} and to the right of $x$ from \noderef{F}.
 
 \begin{figure}
 \centering
-\tikzmath{\x1 =0; \x2=8;\xx=12.5; \x3=14; \xt=18;}
+\tikzmath{\x1 =0; \x2=8.5;\xx=12.5; \x3=13.5; \xt=18;}
 \begin{tikzpicture}[x=5mm, y=5mm, node distance=2mm and 20mm]
 \tikzset{greynode/.style={circle,fill,inner sep=1},
 nodelabel/.style={font=\footnotesize}}
 
 
-\node [anchor=north west] at (\x1,6) {A};
-\node [anchor=north west] at (\x2,6) {B};
+\node [anchor=north west] at (\x1-.5,5.5) {\textsf{\textbf{\LARGE a}}};
+\node [anchor=north west] at (\x2-.5,5.5) {\textsf{\textbf{\LARGE b}}};
 % \node [anchor=north west] at (\xt,6) {C};
 
-%%% (A) ARG
+%%% (a) ARG
 
 \node (s0) [greynode] at (\x1 + 0, 0) {};
 \node (s1) [greynode] at (\x1 + 3, 0) {};
@@ -408,7 +412,7 @@ nodelabel/.style={font=\footnotesize}}
 \draw (s2) |- (s5);
 \draw (s5) |- (s6);
 
-%%% (B) Trees
+%%% (b) Trees
 \node (l0) [greynode] at (\x2 + 0, 0) {};
 \node (l1) [greynode] at (\x2 + 2, 0) {};
 \node (l2) [greynode] at (\x2 + 3, 0) {};
@@ -432,57 +436,57 @@ nodelabel/.style={font=\footnotesize}}
 \draw (r3) |- (r4);
 
 \foreach \u/\lab in {
-        s0/$\noderef{a}$, s1/$\noderef{b}$, s2/$\noderef{c}$,
-        r0/$\noderef{a}$, r1/$\noderef{b}$, r2/$\noderef{c}$,
-        l0/$\noderef{a}$, l1/$\noderef{b}$, l2/$\noderef{c}$}
+        s0/$\noderef{A}$, s1/$\noderef{B}$, s2/$\noderef{B}$,
+        r0/$\noderef{A}$, r1/$\noderef{B}$, r2/$\noderef{B}$,
+        l0/$\noderef{A}$, l1/$\noderef{B}$, l2/$\noderef{B}$}
     \node[nodelabel,anchor=south] at ([yshift=-12pt]\u) {\lab};
 
 \foreach \u/\lab in {
-        s6/$\noderef{g}$,
-        l4/$\noderef{g}$,
-        r4/$\noderef{g}$}
+        s6/$\noderef{G}$,
+        l4/$\noderef{G}$,
+        r4/$\noderef{G}$}
     \node[nodelabel,anchor=south] at (\u) {\lab};
 
 \node [nodelabel,anchor=north west] at ($(s3) + (\x1 + 0,0)$) {$x$};
 \foreach \u/\lab in {
-        s4/$\noderef{e}$,
-        l3/$\noderef{e}$}
+        s4/$\noderef{E}$,
+        l3/$\noderef{E}$}
     \node[nodelabel,anchor=south west] at (\u) {\lab};
 \foreach \u/\lab in {
-        s5/$\noderef{f}$,
-        r3/$\noderef{f}$}
+        s5/$\noderef{F}$,
+        r3/$\noderef{F}$}
     \node[nodelabel,anchor=south east] at (\u) {\lab};
-\foreach \u/\lab in {s3/$\noderef{d}$, s6/$\noderef{g}$}
+\foreach \u/\lab in {s3/$\noderef{D}$, s6/$\noderef{G}$}
     \node[nodelabel,anchor=south] at (\u) {\lab};
 
 \draw[dashed] (\xx,0) -- (\xx, 4);
 \node[nodelabel,anchor=north] at (\xx,0) {$x$};
 
 
-% %%% (C) Encoding
+% %%% (c) Encoding
 % \node [nodelabel,anchor=north west] at ($(\xt,5)$) {
 % \begin{tabular}{c|c|l}
 % % \multicolumn{2}{c}{Breakpoints}\\
 % Node & Breakpoint & Parents\\
 % \hline
-% $\noderef{a}$ & $\varnothing$ & [\noderef{e}]\\
-% $\noderef{b}$ & $\varnothing$ & [\noderef{d}] \\
-% $\noderef{c}$ & $\varnothing$ & [\noderef{f}]\\
-% $\noderef{d}$ & $x$ & [\noderef{e}, \noderef{f}] \\
-% $\noderef{e}$ & $\varnothing$ & [\noderef{g}]\\
-% $\noderef{f}$ & $\varnothing$ & [\noderef{g}]\\
-% $\noderef{g}$ & $\varnothing$ & []\\
+% $\noderef{A}$ & $\varnothing$ & [\noderef{E}]\\
+% $\noderef{B}$ & $\varnothing$ & [\noderef{D}] \\
+% $\noderef{C}$ & $\varnothing$ & [\noderef{F}]\\
+% $\noderef{D}$ & $x$ & [\noderef{E}, \noderef{F}] \\
+% $\noderef{E}$ & $\varnothing$ & [\noderef{G}]\\
+% $\noderef{F}$ & $\varnothing$ & [\noderef{G}]\\
+% $\noderef{G}$ & $\varnothing$ & []\\
 % \end{tabular}};
 
 \end{tikzpicture}
 \caption{\label{fig-event-arg}
-A classical event ARG (eARG). (A) Standard graph depiction with
-breakpoint $x$ associated with the recombination node \noderef{d}.
-Nodes \noderef{e}, \noderef{f} and \noderef{g} are common ancestor events.
-(B) Corresponding local trees to the left and right of breakpoint $x$
+A classical event ARG (eARG). \textbf{a.} Standard graph depiction with
+breakpoint $x$ associated with the recombination node \noderef{D}.
+Nodes \noderef{E}, \noderef{F} and \noderef{G} are common ancestor events.
+\textbf{b.} Corresponding local trees to the left and right of breakpoint $x$
 (note these are shown in the conventional form in which only coalescences
-within the local tree are included; see Appendix~\ref{sec-ARG-and-local-trees}
-for a discussion of this important point).
+within the local tree are included, hence \noderef{D} is omitted; see
+Appendix~\ref{sec-ARG-and-local-trees} for a discussion of this important point).
 }
 \end{figure}
 
@@ -544,22 +548,22 @@ of an ARG.
 It denotes the genomic intervals ancestral to a set of samples
 on the edges of an ARG.
 For example, in Fig.~\ref{fig-arg-in-pedigree} we have
-four sample genomes, \noderef{a}--\noderef{d}. As we
+four sample genomes, \noderef{A}--\noderef{D}. As we
 trace their genetic ancestry into the previous generation
-(\noderef{e}--\noderef{h}), we can think of their ancestral
+(\noderef{E}--\noderef{H}), we can think of their ancestral
 material propagating through the graph
 pastwards. In the region $[2, 7)$, there is a
-local coalescence where nodes \noderef{a} and \noderef{c}
-find a common ancestor in \noderef{f}. Thus, in this region,
+local coalescence where nodes \noderef{A} and \noderef{C}
+find a common ancestor in \noderef{F}. Thus, in this region,
 we have three genome segments that are ancestral to the
-four samples. Fig.~\ref{fig-arg-in-pedigree}A
+four samples. Fig.~\ref{fig-arg-in-pedigree}a
 illustrates this by (shaded) ancestral material being present
-in only three nodes (\noderef{f}, \noderef{g}, and \noderef{h}) in this region,
-while node \noderef{e} is blank
+in only three nodes (\noderef{F}, \noderef{G}, and \noderef{H}) in this region,
+while node \noderef{E} is blank
 as it carries \emph{non-ancestral} material.
 This process of local coalescence continues through the
 graph, until all samples reach their most recent common
-ancestor in node \noderef{n}.
+ancestor in node \noderef{N}.
 
 The process of tracking local coalescences and updating
 segments of ancestral material is a core element of
@@ -602,17 +606,16 @@ no non-ancestral material,  as sample-resolved.
 \includegraphics[width=\textwidth]{illustrations/ancestry-resolution}
 \caption{\label{fig-ancestry-resolution}
 Converting the \citet[][Fig.~1]{wiuf1999recombination} example
-to a sample-resolved gARG. (A) The original eARG; square nodes
-represent sampling (black), common ancestor (blue), and recombination (red) events;
-the latter contain breakpoint positions.
-(B) The corresponding gARG with breakpoints directly converted to
+to a sample-resolved gARG. \textbf{a.} The original eARG; nodes
+represent sampling, common ancestor, and recombination events (small shaded, small blue, and large red rectangles respectively); the latter contain breakpoint positions.
+\textbf{b.} The corresponding gARG with breakpoints directly converted to
 edges annotated with inheritance intervals.
-(C) The sample-resolved gARG resulting from simplifying with respect
-to the sample genomes, \noderef{a}, \noderef{b}, and \noderef{c}.
+\textbf{c.} The sample-resolved gARG resulting from simplifying with respect
+to the sample genomes, \noderef{A}, \noderef{B}, and \noderef{C}.
 Dashed lines show edges that are
-no longer present (in practice, nodes \noderef{g}, \noderef{j}, and \noderef{q} would also be removed).
+no longer present (in practice, nodes \noderef{G}, \noderef{J}, and \noderef{Q} would also be removed).
 Coalescence with respect to the sample is indicated by shaded bars, as
-in Fig.~\ref{fig-arg-in-pedigree}A; nodes \noderef{n}, \noderef{o}, \noderef{p}, \noderef{q} have truncated
+in Fig.~\ref{fig-arg-in-pedigree}a; nodes \noderef{N}, \noderef{O}, \noderef{P}, \noderef{Q} have truncated
 bars showing that local ancestry of entirely coalesced regions is omitted.
 Line thickness is proportional to the genomic span of each edge.
 Nodes representing recombination events are retained
@@ -623,9 +626,9 @@ desired.
 
 Any eARG can be converted to a sample-resolved gARG
 via a two-step process illustrated in Fig.~\ref{fig-ancestry-resolution}.
-The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}A),
+The first step is to take the input eARG (Fig.~\ref{fig-ancestry-resolution}a),
 duplicate its graph topology, and then add inheritance annotations
-to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}B) as follows.
+to each of the gARG's edges (Fig.~\ref{fig-ancestry-resolution}b) as follows.
 If a given node is a common ancestor event, we annotate the single
 outbound edge with the interval $[0,L)$, for a genome of length $L$. If the
 node is a recombination event with a breakpoint $x$, we annotate the two
@@ -637,22 +640,22 @@ produced by a forward-time simulation, which are concerned with recording
 the direct genetic relationship between a parent and child genome and are not
 necessarily minimal in terms of the ancestral material of a sample.
 Thus, the final step is to use the ``simplify'' algorithm to resolve the
-ancestral material of the samples (Fig.~\ref{fig-ancestry-resolution}C).
+ancestral material of the samples (Fig.~\ref{fig-ancestry-resolution}c).
 
-The sample-resolved gARG of Fig.~\ref{fig-ancestry-resolution}C
+The sample-resolved gARG of Fig.~\ref{fig-ancestry-resolution}c
 differs in some important ways to the
-original eARG (Fig.~\ref{fig-ancestry-resolution}A).
+original eARG (Fig.~\ref{fig-ancestry-resolution}a).
 Firstly, we can see that some nodes and edges have been removed entirely
 from the graph.
-The ``grand MRCA'' \noderef{q} is omitted from the
+The ``grand MRCA'' \noderef{Q} is omitted from the
 sample-resolved gARG because all segments of the genome have
-fully coalesced in \noderef{k} and \noderef{p} before \noderef{q} is reached.
+fully coalesced in \noderef{K} and \noderef{P} before \noderef{Q} is reached.
 Likewise, the edge
-between \noderef{g} and \noderef{j} is omitted because the recombination
-event at position $5$ (represented by node \noderef{g})
+between \noderef{G} and \noderef{J} is omitted because the recombination
+event at position $5$ (represented by node \noderef{G})
 fell in non-ancestral material.
 More generally, we can see that the sample resolved
-gARG of Fig.~\ref{fig-ancestry-resolution}C
+gARG of Fig.~\ref{fig-ancestry-resolution}c
 allows for ``local'' inspection
 of an ARG in a way that is not possible in an eARG.
 Because the ancestral material is stored with each edge of a gARG, the
@@ -688,7 +691,7 @@ each time.
 \textit{Drosophila melanogaster} DNA sequences over a 2.4kb
 region of the ADH locus~\citep{kreitman1983nucleotide}.
 Results for four different methods:
-(A) \kwarg; (B) \argweaver; (C) \tsinfer; and (D) \relate, converted 
+\textbf{a.} \kwarg; \textbf{b.} \argweaver; \textbf{c.} \tsinfer; and \textbf{d.} \relate, converted 
 to the standard \emph{tskit} gARG encoding. See
 Appendix \ref{sec-example-inferred-args} for details of these methods.
 Edge colours indicate time of the edge's child node
@@ -711,12 +714,12 @@ output of
 \tsinfer~\citep{kelleher2019inferring},
 and \relate~\citep{speidel2019method}
 on the classical \cite{kreitman1983nucleotide} dataset. 
-The ARGs in Fig.~\ref{fig-inferred-args}A and B are precise 
+The ARGs in Fig.~\ref{fig-inferred-args}a, b are precise 
 estimates (Appendix~\ref{sec-precision}),
 with each node corresponding to a common ancestor 
 or recombination event, or  equivalently, either having two children
 or two parents.
-In contrast the ARGs in Fig.~\ref{fig-inferred-args}C and D do not 
+In contrast the ARGs in Fig.~\ref{fig-inferred-args}c, d do not 
 have this clear-cut interpretation, and the nodes
 can simultaneously have more that than two children and more
 than two parents. Another dimension of variability among the ARGs
@@ -730,12 +733,12 @@ but mark a coalescence between lineages elsewhere along the sequence.
 \includegraphics[width=\textwidth]{illustrations/simplification}
 \caption{\label{fig-simplification}
 Levels of ARG simplification.
-(A) An example gARG simulated from a diploid Wright-Fisher model.
-(B) Remove all
-singly-connected graph components (e.g., diamonds such as \noderef{jlnm}).
-(C) Remove nodes that never represent coalescences,
-i.e.\ are unary everywhere (e.g.\ \noderef{n} and \noderef{r}).
-(D) Rewrite edges to bypass nodes in local trees in which they are unary
+\textbf{a.} An example gARG simulated from a diploid Wright-Fisher model.
+\textbf{b.} Remove all
+singly-connected graph components (e.g., diamonds such as \noderef{JLMN}).
+\textbf{c.} Remove nodes that never represent coalescences,
+i.e.\ are unary everywhere (e.g.\ \noderef{N} and \noderef{R}).
+\textbf{d.} Rewrite edges to bypass nodes in local trees in which they are unary
 (often described as ``fully simplified'').
 In each case, the graph is shown on the left
 and corresponding local trees on the right.
@@ -757,11 +760,11 @@ These ideas are illustrated in Fig.~\ref{fig-simplification}, which shows
 different levels of ``simplification'' (Appendix~\ref{sec-ARG-simplification})
 of the same underlying simulated ARG. The full ARG, with all coalescent and
 recombination events represented by separate genomes, is shown in
-Fig.~\ref{fig-simplification}A. Simpler representations can be formed by
-removing ``unknowable'' nodes such as those in singly-connected graph components (Fig.~\ref{fig-simplification}B) and collapsing
+Fig.~\ref{fig-simplification}a. Simpler representations can be formed by
+removing ``unknowable'' nodes such as those in singly-connected graph components (Fig.~\ref{fig-simplification}b) and collapsing
 multiple recombinations into a single child or multiple coalescences into a
-single parent (Fig.~\ref{fig-simplification}C). 
-Finally, Fig.~\ref{fig-simplification}D is a ``fully simplified''
+single parent (Fig.~\ref{fig-simplification}c). 
+Finally, Fig.~\ref{fig-simplification}d is a ``fully simplified''
 ARG, in which only coalescences in local trees are retained.
 Note that while ARGs of this type (produced by default by the \texttt{msprime}
 simulator, for example) lack a significant level of detail, they still
@@ -1377,7 +1380,7 @@ we generate a vastly larger graph.
 \scalebox{0.54}{
 \begin{tabular}{cc}
 \begin{tikzpicture}
-	\node [anchor=north west] at (-3.5,9.3) {\LARGE \textbf{A}};
+	\node [anchor=north west] at (-3.1,9.3)  {\textsf{\textbf{\huge a}}};
 	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
 	\draw (-0.1, -0.1) -- (-0.1, -0.4);
 	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
@@ -1411,7 +1414,7 @@ we generate a vastly larger graph.
 	\draw (2.1, 2.85) -- (2.4, 2.85);
 
 	\draw (-1, 1.7) -- (-1, 4.5) -- (0,4.5) -- (0,3.1);
-	\node [scale=0.2,label=above left:{\small \noderef{a}}] at (-0.5,4.5) {a};
+	\node [scale=0.2,label=above left:{\small \noderef{A}}] at (-0.5,4.5) {a};
 	\draw (-0.9, 4.3) -- (-0.6, 4.3) -- (-0.6, 4.2) -- (-0.9, 4.2) -- (-0.9, 4.3);
 	\draw (-0.6, 4.25) -- (-0.4, 4.25);
 	\draw (-0.4, 4.3) -- (-0.1, 4.3) -- (-0.1, 4.2) -- (-0.4, 4.2) -- (-0.4, 4.3);
@@ -1419,7 +1422,7 @@ we generate a vastly larger graph.
 	\node [label=below:{\small $x$}] at (-0.5, 4.3) {};
 
 	\draw (4,2.4) -- (4,5.4) -- (2,5.4) -- (2,3.1);
-	\node [scale=0.2,label=above left:{\small \noderef{b}}] at (3,5.4) {b};
+	\node [scale=0.2,label=above left:{\small \noderef{B}}] at (3,5.4) {b};
 	\draw (2.6, 5.2) -- (2.9, 5.2) -- (2.9, 5.1) -- (2.6, 5.1) -- (2.6, 5.2);
 	\draw (2.9, 5.15) -- (3.4, 5.15);
 
@@ -1430,7 +1433,7 @@ we generate a vastly larger graph.
 	\draw (0.4, 5.75) -- (0.9, 5.75);
 
 	\draw (0.5, 6) -- (0.5, 7.2) -- (3,7.2) -- (3,5.4);
-	\node [scale=0.2,label=above:{\small \noderef{c}}] at (1.75,7.2) {c};
+	\node [scale=0.2,label=above:{\small \noderef{C}}] at (1.75,7.2) {c};
 	\draw (1.35, 6.95) -- (2.15, 6.95);
 
 	\draw (-1.5, 6) -- (-1.5, 8);
@@ -1479,10 +1482,10 @@ we generate a vastly larger graph.
 	\draw[color=gray, dashed] (7.5, 5.4) -- (11, 5.4);
 	\draw[color=gray, dashed] (7.5, 6) -- (11, 6);
 	\draw[color=gray, dashed] (7.5, 7.2) -- (11, 7.2);
-\end{tikzpicture}
-&
-\begin{tikzpicture}
-	\node [anchor=north west] at (-3.5,9.3) {\LARGE \textbf{B}};
+
+        \begin{scope}[shift={(15,0)}]
+
+	\node [anchor=north west] at (-3.1,9.3) {\textsf{\textbf{\huge b}}};
 	\draw (-0.4, -0.2) -- (0.4, -0.2) -- (0.4, -0.3) -- (-0.4, -0.3) -- (-0.4, -0.2);
 	\draw (-0.1, -0.1) -- (-0.1, -0.4);
 	\node [label=below:{\small $v$}] at (-0.1, -0.2) {};
@@ -1583,20 +1586,21 @@ we generate a vastly larger graph.
 	\draw[color=gray, dashed] (7.5, 6) -- (9.1, 6);
 	\draw[color=gray, dashed] (7.5, 6.6) -- (9.1, 6.6);
 	\draw[color=gray, dashed] (7.5, 7.2) -- (9.1, 7.2);
+	\end{scope}
 \end{tikzpicture}
 \end{tabular}
 }
-\caption{(A)
+\caption{\textbf{a.}
 A realisation of the graph traversed by Hudson's algorithm started from a
 sample of three chromosomes with $m$ discrete sites each at time $t = 0$, and
 propagated until time $T$. The MRCA on the genetic interval $[v, w)$ is reached
-at event \noderef{b}, while that on $[0, v)$ is reached at event \noderef{c}.
+at event \noderef{B}, while that on $[0, v)$ is reached at event \noderef{C}.
 The non-ancestral segment $[v, w)$ above
-\noderef{a} contributes to the rate of effective recombinations because it
+\noderef{A} contributes to the rate of effective recombinations because it
 is trapped between ancestral segments. The two columns titled CA and RE
 are the respective rates of mergers and recombinations when
 the recombination rate is $\rho$.
-(B) A corresponding realisation of a Big ARG, which augments Hudson's algorithm
+\textbf{b.} A corresponding realisation of a Big ARG, which augments Hudson's algorithm
 by tracking non-ancestral lineages. The result is a simpler state space and
 dynamics, at the cost of extra nodes and edges, highlighted in red, which do
 not affect the local tree at any site.
@@ -1616,13 +1620,13 @@ In order to evaluate these rates, e.g.\ for likelihood-based inference
 it is necessary to know the number of lineages and number of extant links
 available for recombination in each time interval.
 Some representations may not provide this information.
-For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}C,
-it is clear that a recombination takes place between nodes \noderef{i}, \noderef{k} and \noderef{j}.
-But the exact time of the recombination event is ambiguous: it could take place at any time between node \noderef{i} and its parents and produce the same gARG.
+For example, in the gARG encoding depicted in Figure \ref{fig-ancestry-resolution}c,
+it is clear that a recombination takes place between nodes \noderef{I}, \noderef{K} and \noderef{J}.
+But the exact time of the recombination event is ambiguous: it could take place at any time between node \noderef{I} and its parents and produce the same gARG.
 Because a recombination increases the number of extant lineages by one (in the rootward direction of time), the number of lineages during the same time interval is ambiguous as well.
-In fact, this information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}C without an extrinsic convention.
+In fact, this information cannot be recovered from the gARG encoding used in Figure \ref{fig-ancestry-resolution}c without an extrinsic convention.
 For the basic coalescent with recombination,
-it is sufficient to create \emph{two} gARG nodes at the time of the recombination event, with the interpretation that the two rootward edges from node \noderef{i} in Figure \ref{fig-ancestry-resolution}C belong to the same lineage until the time of nodes \noderef{k} and \noderef{j}, and split into two separate lineages at that time point.
+it is sufficient to create \emph{two} gARG nodes at the time of the recombination event, with the interpretation that the two rootward edges from node \noderef{I} in Figure \ref{fig-ancestry-resolution}c belong to the same lineage until the time of nodes \noderef{K} and \noderef{J}, and split into two separate lineages at that time point.
 Similarly, the trapped, non-ancestral links along that lineage remain available for effective recombination (i.e.\ one which splits up ancestral material) for the same time interval.
 This interpretation is highlighted in
 Figure \ref{hudson_vs_bigARG} by drawing only one vertical edge between a recombinant child and its two parents.
@@ -1739,14 +1743,14 @@ For clarity, only two rounds of mitotic germ-line cell division are shown per in
 meiosis is not illustrated in detail.
 Lines show prospective inheritance paths for all chromosomes. Solid lines show all possible
 retrospective ancestry paths for four chosen chromosomes (indicated by square black ``sampling events'')
-sampled from 3 diploid individuals ($D_1$, $D_2$, $D_3$) in the current generation.
+sampled from 3 diploid individuals ($d_1$, $d_2$, $d_3$) in the current generation.
 Ancestral recombination events and coalescence events are shown as red and blue squares respectively.
 A realised ARG path for the lower arm of the sampled chromosomes is highlighted as a
 thick solid line, passing through a set of potential gARG nodes (green). This ARG
 involves a single recombination event and four coalescence events
-(highlighted as deep red and blue squares within individuals $D_5$, $D_{10}$, and $D_{13}$).
+(highlighted as deep red and blue squares within individuals $d_5$, $d_{10}$, and $d_{13}$).
 ARG lineages also show gametic genomes, contained within shaded circles.
-As in Fig.~\ref{fig-arg-in-pedigree}A, inherited regions within the sampled chromosome arm are
+As in Fig.~\ref{fig-arg-in-pedigree}a, inherited regions within the sampled chromosome arm are
 shaded by the number of descendant samples.
 }
 \end{figure*}
@@ -1763,19 +1767,19 @@ genome. Rather, genomes can be associated with, or ``tag'', events above
 (ancestral to) or below (descended from) them.
 For example, tagging the two genomes above a recombination event leads to the
 two node representation seen in
-Fig.~\ref{fig-arg-in-pedigree}A and Fig.~\ref{hudson_vs_bigARG},
+Fig.~\ref{fig-arg-in-pedigree}a and Fig.~\ref{hudson_vs_bigARG},
 whereas tagging the genome
 below a recombination event leads to the more
-conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}A,B.
+conventional graphs in Figs.~\ref{fig-ancestry-resolution} and \ref{fig-inferred-args}a,b.
 
 The schematic illustrates an important point about the biological reality of polytomies.
-Three lineages coalesce in the left-hand genome of individual $D_{10}$, but do
+Three lineages coalesce in the left-hand genome of individual $d_{10}$, but do
 so as the result of two successive bifurcations. This is necessarily so,
 because the only known method of reproducing DNA is by (semi-conservative) duplication.
 Whether this polytomy is resolvable depends on the available mutational data.
 Mutations can occur along any cell lineages. For example,
-a mutation in the first cell division of $D_{10}$ could be shared between
-the two gametes produced by the cells in the left half of $D_{10}$
+a mutation in the first cell division of $d_{10}$ could be shared between
+the two gametes produced by the cells in the left half of $d_{10}$
 but not shared by the right hand gamete.
 With enough mutations, each
 round of mitotic germline genome duplication within a single multicellular organism could
@@ -1927,7 +1931,7 @@ parent-child relationships, and does not, for example,
 directly tell us how many children a particular node has.
 The local tree at a given position records the \emph{path} through
 the ARG; if this path omits nodes that are not
-branching points (such as \noderef{e} in Fig.~\ref{fig-arg-in-pedigree}),
+branching points (such as \noderef{E} in Fig.~\ref{fig-arg-in-pedigree}),
 information about the ARG is lost.
 We expand on this point in Appendices~\ref{sec-locally-unary-edges} and
 \ref{sec-ARG-simplification}
@@ -1997,24 +2001,24 @@ This distinction between ARG and local arity is mainly
 of interest when we consider nodes that have
 a single child: those that are \emph{unary}.
 For the example in Fig.~\ref{fig-arg-in-pedigree}, nodes
-\noderef{g} and \noderef{h}
-are ARG-unary (Fig.~\ref{fig-arg-in-pedigree}B), and are consequently
-also unary in the local trees (Fig.~\ref{fig-arg-in-pedigree}C).
-On the other hand, node \noderef{f} has two children
+\noderef{G} and \noderef{H}
+are ARG-unary (Fig.~\ref{fig-arg-in-pedigree}b), and are consequently
+also unary in the local trees (Fig.~\ref{fig-arg-in-pedigree}c).
+On the other hand, node \noderef{F} has two children
 in the graph, but is binary only
 in the local tree covering the interval $[2, 7)$,
-representing the coalescence of samples \noderef{a} and \noderef{c}
+representing the coalescence of samples \noderef{A} and \noderef{C}
 in this genome region. Over the interval $[0, 2)$ no coalescence occurs,
-but we still record the fact that genome \noderef{c} inherits from \noderef{f}
-in the local tree. Thus, node \noderef{f} has a single child in this
+but we still record the fact that genome \noderef{C} inherits from \noderef{F}
+in the local tree. Thus, node \noderef{F} has a single child in this
 interval: it is \emph{locally unary}.
-In the same figure, \noderef{e} is binary in the graph, being a common
-ancestor of \noderef{a} and \noderef{c}, but is
+In the same figure, \noderef{E} is binary in the graph, being a common
+ancestor of \noderef{A} and \noderef{C}, but is
 locally unary in all trees in which it is present.
-This is because no ancestral material coalesces in \noderef{e}:
-\noderef{a} inherits genetic material from the far left hand end of
-\noderef{e},
-while \noderef{c} only inherits the (disjoint) right hand end.
+This is because no ancestral material coalesces in \noderef{E}:
+\noderef{A} inherits genetic material from the far left hand end of
+\noderef{E},
+while \noderef{C} only inherits the (disjoint) right hand end.
 
 % We get discussion of ARG-unary nodes out of the way first: these are
 % relatively easy to understand (but it's worth emphasising that
@@ -2049,15 +2053,15 @@ lack information about events other than local coalescence.
 % like to contrast with example where we don't use unary nodes to
 % emphasise the point that we lose info
 For example, the local trees for the classical event ARG
-depicted in Fig.~\ref{fig-event-arg}B follow the usual conventions
+depicted in Fig.~\ref{fig-event-arg}b follow the usual conventions
 and do not include any information about the recombination
-that occurred at node \noderef{d}. Given these two local trees
+that occurred at node \noderef{D}. Given these two local trees
 in isolation
 % (without further information about the corresponding ARG)
 we lack specific information about the recombination.
-Explicitly recording that node \noderef{d} lies on the
-branch joining \noderef{b} to \noderef{e} in the left hand
-tree, and \noderef{b} to \noderef{f} in the right hand tree
+Explicitly recording that node \noderef{D} lies on the
+branch joining \noderef{B} to \noderef{E} in the left hand
+tree, and \noderef{B} to \noderef{F} in the right hand tree
 resolves all ambiguity, and makes the collection of local
 trees exactly equivalent to the corresponding ARG.
 Unary nodes are a vital link between ARGs and local trees, and we
@@ -2079,7 +2083,7 @@ through a series of simplification steps is shown
 in Fig.~\ref{fig-simplification}.
 
 
-The ARG in Fig.~\ref{fig-simplification}A is the output of a
+The ARG in Fig.~\ref{fig-simplification}a is the output of a
 backwards-time Wright-Fisher simulation for a sample of two diploid
 individuals (population size $N=10$), and follows a similar process
 to the methods described by~\cite{nelson2020accounting}.
@@ -2094,7 +2098,7 @@ Note that in this simulation we do not explicitly
 model recombination \emph{events} via an ARG node, but simply record
 the \emph{outcome} of a recombination via edges to
 the parent's two genomes.
-Thus, a recombinant node such as \noderef{g} in Fig.~\ref{fig-simplification}
+Thus, a recombinant node such as \noderef{G} in Fig.~\ref{fig-simplification}
 may also correspond to a coalescence.
 The distinction of
 using a single node to represent
@@ -2103,7 +2107,7 @@ or two to represent the parent genomes, as in Fig.~\ref{fig-simplification},
 is often not important.
 Either is possible in the gARG encoding, and 
 the most convenient approach will vary by application.
-Note also that node \noderef{k} in Fig.~\ref{fig-simplification} has three children.
+Note also that node \noderef{K} in Fig.~\ref{fig-simplification} has three children.
 Polytomies like this are a natural feature of such a Wright-Fisher model.
 See Appendix~\ref{sec-cell-lineages-and-args} for a discussion of the 
 ultimate biological interpretation of these topological considerations.
@@ -2115,9 +2119,9 @@ nodes) correspond to the length of the inheritance intervals
 they are annotated with. This allows us to distinguish
 edges that persist across many local trees from those that are
 less influential (contrast the edge
-$(\noderef{g}, \noderef{h})$
-with $(\noderef{g}, \noderef{i})$
-in Fig.~\ref{fig-simplification}A).
+$(\noderef{G}, \noderef{H})$
+with $(\noderef{G}, \noderef{I})$
+in Fig.~\ref{fig-simplification}a).
 Secondly, node colours denote the number of parents that they
 have in the graph, allowing us to easily see roots (those
 with zero parents), recombinants (those with two parents)
@@ -2131,15 +2135,15 @@ whereas nodes in which ancestral material never coalesces have a
 coalescent span of 0\%.
 
 Returning to the main topic of this section,
-Fig.~\ref{fig-simplification}A is the original simulation output, in
+Fig.~\ref{fig-simplification}a is the original simulation output, in
 which we retain all nodes involved in recombination
 or common ancestry events. This is the true history, and contains
 a very high level of detail, some of which may be considered
 redundant (or, from another perspective, unobservable).
-In Fig.~\ref{fig-simplification}A the local trees (right)
+In Fig.~\ref{fig-simplification}a the local trees (right)
 contain many unary nodes, fewer as  we successively
-simplify (Fig.~\ref{fig-simplification}B,C),
-until we reach Fig.~\ref{fig-simplification}D, where there are none.
+simplify (Fig.~\ref{fig-simplification}b,c),
+until we reach Fig.~\ref{fig-simplification}d, where there are none.
 
 The first level of simplification that we can perform is based only
 on the graph topology.
@@ -2147,8 +2151,8 @@ An example of graph topology that we may consider redundant
 (or non-identifiable) is a
 ``diamond''~\citep{rasmussen2014genome}
 in which the two parent nodes of a recombination immediately
-join again into a common ancestor (e.g.~\noderef{j}, \noderef{l}, \noderef{m}
-and \noderef{n} in Fig.~\ref{fig-simplification}A).
+join again into a common ancestor (e.g.~\noderef{J}, \noderef{L}, \noderef{M}
+and \noderef{N} in Fig.~\ref{fig-simplification}a).
 Unless we are specifically
 interested in the recombination event or these ancestral genomes,
 the diamond can be replaced by a single edge without loss of
@@ -2157,31 +2161,31 @@ More generally, any subgraph that is singly-connected in both the leafward and
 rootward direction (a ``super-diamond'') can be replaced by one edge.
 This definition includes the case
 of a node that has one inbound and one outbound edge, such as
-nodes \noderef{f} and \noderef{h}.
+nodes \noderef{F} and \noderef{H}.
 % Note that f and h are only removable because we are using the 2-RE-node
 % representation. That means when we remove these nodes, we lose information about
 % the time of recombination, which we wouldn't do if we were using the
 % 1-RE-node representation (because the node would be multiply connected
 % in the rootward direction). We definitely don't want to get into this
 % level of detail here though, so we'll just pass over it without comment.
-Fig.~\ref{fig-simplification}B shows the result of this type of
+Fig.~\ref{fig-simplification}b shows the result of this type of
 graph topology simplification.
 
 Simplifying away diamonds will remove many unary nodes from the
 local trees, but there can still be nodes that are unary in all
 of the local trees. In particular, a node can represent a recombinant
-with multiple parents in the graph but only a single child (e.g.\ node \noderef{n}
-in Fig.~\ref{fig-simplification}B), or can represent a common ancestor with
+with multiple parents in the graph but only a single child (e.g.\ node \noderef{N}
+in Fig.~\ref{fig-simplification}b), or can represent a common ancestor with
 multiple children in the graph but in which no coalescence takes place
 in the local trees
-(node \noderef{r} in Fig.~\ref{fig-simplification}B).
+(node \noderef{R} in Fig.~\ref{fig-simplification}b).
 The distinction between the ``common ancestry'' of two or more genomes
 in an ancestral genome and the ``coalescence'' which may or may
 not occur in the local trees is
 important~\citep{hudson1983testing,kelleher2016efficient}.
-Consider \noderef{e} in Fig.~\ref{fig-simplification}A,
+Consider \noderef{E} in Fig.~\ref{fig-simplification}a,
 for example. We can see from the graph that it is a common
-ancestor of samples \noderef{a} and \noderef{b}, but
+ancestor of samples \noderef{A} and \noderef{B}, but
 it does not correspond to any coalescence in the
 local trees to the left of position $44$, and is therefore
 unary in these three trees.
@@ -2190,11 +2194,11 @@ all of the local trees.
 The operation to remove them
 therefore requires knowledge not just of the graph topology but also of the
 ancestral material associated with the edges.
-As we see in Fig.~\ref{fig-simplification}C,
+As we see in Fig.~\ref{fig-simplification}c,
 removal of recombinant nodes can produce graph nodes with
-more than two parents (e.g.~node \noderef{e}); and likewise, removal of
+more than two parents (e.g.~node \noderef{E}); and likewise, removal of
 common ancestor but non-coalescent nodes can produce graph nodes with
-more than two children (e.g.~node \noderef{s}). Both cases represent the
+more than two children (e.g.~node \noderef{S}). Both cases represent the
 merged
 \emph{effects} of multiple evolutionary events in a single node (genome), and the
 ARG no longer contains the intermediate genomes corresponding to
@@ -2204,12 +2208,12 @@ The remaining nodes are MRCAs of some subset of the samples
 at \emph{some} positions along the genome. We still have
 some unary nodes in the local trees, but these nodes will
 correspond to a coalescence in at least one other
-local tree. For example, node  \noderef{k} is unary in the fourth tree
-of Fig.~\ref{fig-simplification}C, but is either binary
+local tree. For example, node  \noderef{K} is unary in the fourth tree
+of Fig.~\ref{fig-simplification}c, but is either binary
 or ternary in all other local trees (recall this is a Wright-Fisher
 simulation). The final level of simplification is to alter the edge annotations
 such that, although no nodes are removed from the graph, all
-unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}D).
+unary nodes disappear from the local trees (Fig.~\ref{fig-simplification}d).
 Note that although this last stage produces simpler local trees, by
 removing information about the exact paths taken by lineages through
 the graph, we lose potentially useful information about shared edges
@@ -2229,7 +2233,7 @@ material through genomes under a range of conditions.
 As illustrated in Fig.~\ref{fig-simplification}, successive levels
 of ARG simplification reduce the amount of information about the
 history of the sample that is stored. Some of the information lost,
-e.g.\ ``diamond'' removal (Fig.~\ref{fig-simplification}A),
+e.g.\ ``diamond'' removal (Fig.~\ref{fig-simplification}a),
 seems like a reasonable tradeoff for a simpler structure.
 The consequences of other simplifications, however, are
 more subtle and relate directly to what can be known about
@@ -2241,40 +2245,40 @@ numbers of local trees ($6$, $5$, $5$ and $4$ respectively for A through
 D). When we move from A to B the local trees
 for the intervals $[44,61)$ and $[61,87)$ are merged because
 the only differences between them are their paths through
-nodes \noderef{l} and \noderef{m}. These nodes that participated
+nodes \noderef{L} and \noderef{M}. These nodes that participated
 in the diamond are removed from the ARG, and we have lost
 all information about the corresponding recombination at
-position 61. Other nodes (e.g.\ \noderef{o} and \noderef{p})
+position 61. Other nodes (e.g.\ \noderef{O} and \noderef{P})
 have also been removed but these represent the \emph{parents}
 of recombinants. The recombinant nodes themselves
-(e.g. \noderef{n}) are still present, and represent precise
+(e.g. \noderef{N}) are still present, and represent precise
 information about the time, genomic location and
 lineages involved in the recombination event.
 
-Fig.~\ref{fig-simplification}C has the same number of local trees
-as Fig.~\ref{fig-simplification}B, but has less precise information
+Fig.~\ref{fig-simplification}c has the same number of local trees
+as Fig.~\ref{fig-simplification}b, but has less precise information
 about recombination. Continuing the previous example, node
-\noderef{n} has been removed from the graph because it was unary
-in all of the local trees; its outbound edges to \noderef{s}
-and \noderef{q} have effectively been ``pushed down''
-to \noderef{e} (which is retained because it is the coalescent
-parent of \noderef{a} and \noderef{b} over the interval
+\noderef{N} has been removed from the graph because it was unary
+in all of the local trees; its outbound edges to \noderef{S}
+and \noderef{Q} have effectively been ``pushed down''
+to \noderef{E} (which is retained because it is the coalescent
+parent of \noderef{A} and \noderef{B} over the interval
 $[44, 100)$). We
 have therefore lost precision about
 the \emph{timing} of this recombination event, and know only
-that it must have occurred between the times of node \noderef{e}
-and \noderef{q}.
+that it must have occurred between the times of node \noderef{E}
+and \noderef{Q}.
 
-Fig.~\ref{fig-simplification}D removes all unary nodes from the
+Fig.~\ref{fig-simplification}d removes all unary nodes from the
 local trees, and further reduces the precision of
-recombination information. Node \noderef{e} has not been
+recombination information. Node \noderef{E} has not been
 removed from the graph because it is coalescent in the
 final tree, but we no longer know that the recombination
 event at position 30 was ancestral to it, or have
 any indication of its timings. Furthermore,
 trees for $[44, 87)$ and $[87, 100)$ were only distinguishable
-by the passage of the former tree through nodes \noderef{e}
-and \noderef{q}, and so the recombination on node \noderef{g}
+by the passage of the former tree through nodes \noderef{E}
+and \noderef{Q}, and so the recombination on node \noderef{G}
 at position 87 has been lost entirely.
 
 \section{Example inferred ARGs}
@@ -2352,12 +2356,12 @@ far more than the 7 required for this dataset under minimal parsimony
 assumptions~\citep{song2003parsimonious}.
 A sense of the amount of recombination in each ARG is provided by
 the node colouring scheme, which shows the number of parents for each node.
-In Fig.~\ref{fig-inferred-args}A,B, each recombination event
+In Fig.~\ref{fig-inferred-args}a,b, each recombination event
 corresponds to a node with exactly two parents and one child.
 As these methods explicitly infer a recombination event for each
 breakpoint, the number of breakpoints equals the number of two-parent
 (brown) nodes.
-In contrast, Fig.~\ref{fig-inferred-args}C,D do not have this
+In contrast, Fig.~\ref{fig-inferred-args}c,d do not have this
 straightforward
 relationship between the number of nodes with multiple parents
 and number of breakpoints along the genome.
@@ -2374,11 +2378,11 @@ in these ARGs into a set of SPR operations.
 Shading within nodes in Fig.~\ref{fig-inferred-args} indicates the
 fraction of the node's span over which it is coalescent
 (Appendix~\ref{sec-locally-unary-edges}). For example, brown nodes
-in Fig.~\ref{fig-inferred-args}A,B are clear because there is
+in Fig.~\ref{fig-inferred-args}a,b are clear because there is
 no local coalescence at these recombination nodes
 (they are ``ARG unary'', and so local coalescence is impossible).
 The significant number of partially shaded nodes in
-Fig.~\ref{fig-inferred-args}A,B and C demonstrates that
+Fig.~\ref{fig-inferred-args}a,b and c demonstrates that
 the \kwarg, \argweaver\ and \tsinfer\ ARGs all contain locally unary nodes.
 Another difference between methods highlighted in this figure
 is the presence of polytomies, which only
@@ -2387,12 +2391,12 @@ involves nodes \noderef{Fr-F}, \noderef{Wa-F}, and \noderef{Af-F},
 which happen to have identical sequences.
 Because \kwarg, \argweaver, and \relate\ require
 bifurcating trees by design, each picks an arbitrary order of branching
-(hence Fig.~\ref{fig-inferred-args}A and B disagree
-in this order, and Fig.~\ref{fig-inferred-args}D even shows different
+(hence Fig.~\ref{fig-inferred-args}a and b disagree
+in this order, and Fig.~\ref{fig-inferred-args}d even shows different
 orders in different trees).
 % JK: I don't quite get the commented out sentence below, so readers probably
 % won't either. Let's stick to a few clear messages.
-% More generally, the number of nodes in Fig.~\ref{fig-inferred-args}C
+% More generally, the number of nodes in Fig.~\ref{fig-inferred-args}c
 % that have more than two children hints at considerable uncertainty in
 % the order of branching elsewhere in the ARG.
 
@@ -2414,7 +2418,7 @@ Overall, Fig.~\ref{fig-inferred-args} shows
 that \tsinfer\ and \relate\ ARGs contain a level of detail
 that lies somewhere between a sequence of unrelated local trees on one extreme
 and an ARG with precisely specified recombination events on the other
-(Fig~\ref{fig-inferred-args}A,B).
+(Fig~\ref{fig-inferred-args}a,b).
 % JK: Let's not get into this.
 % This primarily reflects the fact that they do not encode topology
 % above the local MRCAs, also indicated by multiple roots in the ARG
@@ -2425,22 +2429,24 @@ and an ARG with precisely specified recombination events on the other
 % between nodes that that are older than the local MRCAs.
 
 
-% \clearpage
-% \renewcommand\thefigure{S\arabic{figure}}
-% \setcounter{figure}{0}
-% \renewcommand\thetable{S\arabic{table}}
-% \setcounter{table}{0}
+%\clearpage
+%\pagenumbering{gobble} 
+%\renewcommand\thefigure{S\arabic{figure}}
+%\setcounter{figure}{0}
+%\renewcommand\thetable{S\arabic{table}}
+%\setcounter{table}{0}
+%\onecolumn
+%\section*{Supplementary Material {\normalfont for ``A general and efficient representation of ancestral recombination graphs'', Wong \textit{et al.} 2024}}
+%\pagestyle{plain}
+%\begin{figure}[ht]
+%	\begin{center}
+%		\includegraphics[width=0.975\textwidth]{illustrations/simplification-with-edges.pdf}
+%	\end{center}
+%	\caption{
+%		\label{fig-simplification-with-edges}
+%		Example ARGs from Fig.~\ref{fig-simplification}a--d, with edges annotated with inheritance intervals.
+%	}
+%\end{figure}
 
-% \section*{Supplementary Material}
-
-% \begin{figure*}[ht]
-% 	\begin{center}
-% 		\includegraphics[width=0.8\textwidth]{illustrations/simplification-with-edges.pdf}
-% 	\end{center}
-% 	\caption{\label{fig-simplification-with-edges}
-% 	Example ARGs Fig.~\ref{fig-simplification}A--D,
-%     with edges annotated with inheritance intervals.
-% 	}
-% \end{figure*}
 
 \end{document}
