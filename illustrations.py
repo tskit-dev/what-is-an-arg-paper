@@ -47,7 +47,7 @@ def ancestry_resolution():
         if burger_segments is not None:
             icon_size1 = icon_size1 * 0.83
             icon_center1 = icon_size1 / 2.0
-            icon_size2 = icon_size1 * 0.4
+            icon_size2 = icon_size1 * 0.5
             icon_center2 = icon_size2 / 2.0
             a2 = plt.axes([xa - icon_center1 - 0.005/2, ya - icon_center2+0.005/2, icon_size1 + 0.005, icon_size2-0.005])
             for segment in burger_segments:
@@ -69,7 +69,7 @@ def ancestry_resolution():
             
         return a
 
-    def plot_rect(ax, xa, ya, scale=(1, 1), color="k"):
+    def plot_rect(ax, xa, ya, scale=(1, 1), color="k", facecolor='white'):
         icon_size1 = (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.0002 * scale[0]
         icon_center1 = icon_size1 / 2.0
         icon_size2 = icon_size1 * 1.3 * scale[1]
@@ -81,7 +81,7 @@ def ancestry_resolution():
             0.96,
             linewidth=4,
             edgecolor=color,
-            facecolor='white',
+            facecolor=facecolor,
         )
         a.add_patch(icon)
         a.axis("off")
@@ -124,7 +124,7 @@ def ancestry_resolution():
                 hspace = 0, wspace = 0.2)
     plt.margins(0,-0.04)
 
-    ax1.set_title("A", fontsize=32, family="serif", loc="center")
+    ax1.set_title("a", fontsize=48, family="sans-serif", weight="bold", loc="left")
     ts = argutils.viz.label_nodes(argutils.wh99_example(one_node_recombination=True))
     pos, G = argutils.viz.draw(
         ts,
@@ -136,7 +136,7 @@ def ancestry_resolution():
         font_size=12,
     )
 
-    ax2.set_title("B", fontsize=32, family="serif", loc="center")
+    ax2.set_title("b", fontsize=48, family="sans-serif",  weight="bold", loc="left")
     pos, G = argutils.viz.draw(
         ts,
         ax2,
@@ -148,7 +148,7 @@ def ancestry_resolution():
     )
     add_edge_labels(ax2, ts, G, pos)
 
-    ax3.set_title("C", fontsize=32, family="serif", loc="center")
+    ax3.set_title("c", fontsize=48, family="sans-serif",  weight="bold", loc="left")
     edges = nx.draw_networkx_edges(
         G,
         pos,
@@ -181,6 +181,7 @@ def ancestry_resolution():
     for n in G.nodes:
         if G.nodes[n]["flags"] & argutils.ancestry.NODE_IS_RECOMB:
             col = 'tab:red'
+            fc = 'white'
             size = (1.2, 1.2)
             breaks = (edges.left[edges.child == n], edges.right[edges.child == n])
             breaks = np.unique(np.concatenate(breaks))
@@ -190,16 +191,17 @@ def ancestry_resolution():
             breakpoint = breaks[1]
         else:
             col = 'k' if ts.node(n).is_sample() else 'tab:blue'
+            fc = 'gray' if ts.node(n).is_sample() else 'white'
             size = (0.5, 1)
             breakpoint = None
         xf, yf = tr_figure(pos[n])
         xa, ya = tr_axes((xf, yf))
-        a = plot_rect(ax1, xa, ya, size, col)
+        a = plot_rect(ax1, xa, ya, size, col, facecolor=fc)
         if breakpoint is not None:
             a.text(
                 0.4, 0.2,
                 str(int(breakpoint)),
-                fontname="Trebuchet MS",
+                fontname="serif",
                 fontsize=40,
             )
 
@@ -212,11 +214,12 @@ def ancestry_resolution():
         a = plot_ellipse(ts, ax2, xa, ya)
         a.set_title(
             G.nodes[n]["label"],
-            y=0.05,
-            fontname="Trebuchet MS",
+            y=-0.1,
+            fontname="Georgia",
+            style='italic',
             verticalalignment="bottom",
             loc="center",
-            fontsize=24,
+            fontsize=28,
         )
 
     # Panel (c)
@@ -249,11 +252,13 @@ def ancestry_resolution():
             rel_height=1.25)
         a.set_title(
             G.nodes[n]["label"],
-            fontname="Trebuchet MS",
+            fontname="Georgia",
+            style='italic',
             verticalalignment="bottom",
-            y=0.45,
+            y=0,
+            x=1.1,
             loc="center",
-            fontsize="x-large",
+            fontsize=28,
         )
     graph_io = io.StringIO()
     plt.savefig(graph_io, format="svg", bbox_inches="tight", pad_inches=0)
@@ -377,9 +382,9 @@ def draw_simplification_stages(ax1, ax2, ax3, ax4, draw_edge_labels=False):
     tables.sort()
     ts=tables.tree_sequence()
 
-    labels = {i: a for i, a in enumerate(string.ascii_lowercase)}
+    labels = {i: a for i, a in enumerate(string.ascii_uppercase)}
     # relabel the nodes to get samples reading A B C D
-    labels.update({6: "e", 4: "g", 10: "j", 9: "k", 12: "l", 11: "m", 15: "o", 14: "p"})
+    labels.update({6: "E", 4: "G", 10: "J", 9: "K", 12: "L", 11: "M", 15: "O", 14: "P"})
     #labels = {i: i for i in range(26)}  # uncommment to get node IDs for re-positioning
     edge_lab_params = {
         "rotate": False,
@@ -463,7 +468,7 @@ def simplification():
     svg = [
         '<svg width="900" height="820" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
-        "<style>.tree-sequence text {font-family: sans-serif}</style>"
+        "<style>.tree-sequence text {font-family: sans-serif} .node .lab {font-family: Georgia; font-style:italic}</style>"
     ]
     svg.append('<g transform="translate(40, 0) scale(0.87)">' + graph1_svg + "</g>")
 
@@ -481,8 +486,8 @@ def simplification():
             ),
         )
         svg.append(
-            f'<text font-size="2em" font-family="serif" transform="translate(0, {200 * i + 30})">' +
-            f'{string.ascii_uppercase[i]}</text>'
+            f'<text font-size="1.5em" font-family="sans-serif" font-weight="bold" transform="translate(0, {200 * i + 20})">' +
+            f'{string.ascii_lowercase[i]}</text>'
         )
         svg.append(
             f'<g class="subfig{i}" transform="translate(250 {205 * i}) scale(0.83)">' +
@@ -509,8 +514,8 @@ def simplification():
 def simplification_with_edges():
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 15), gridspec_kw=dict(wspace=0, hspace=0))
     ts1, ts2, ts3, ts4 = draw_simplification_stages(ax1, ax2, ax3, ax4, draw_edge_labels=True)
-    for lab, ax in zip("ABCD", (ax1, ax2, ax3, ax4)):
-        ax.text(75, 9.5, lab, fontsize=32)
+    for lab, ax in zip("abcd", (ax1, ax2, ax3, ax4)):
+        ax.text(60, 9.5, lab, family="sans-serif", weight="bold", fontsize=18)
     plt.savefig(f"illustrations/simplification-with-edges.svg", format="svg", bbox_inches="tight")
 
 
@@ -535,16 +540,16 @@ def arg_in_pedigree():
         full_edges = {k: v for k, v in edge_labels.items() if not argutils.is_recombinant(ts.node(k[0]).flags)}
         nx.draw_networkx_edge_labels(
             **params, font_weight="normal", alpha=0.5, edge_labels=full_edges, label_pos=0.6)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.a and k[1]==n.e}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.E}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.35)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.a and k[1]==n.f}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.A and k[1]==n.F}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.3)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.c and k[1]==n.e}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.E}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.7)
-        lab = {k: v for k, v in edge_labels.items() if k[0]==n.c and k[1]==n.f}
+        lab = {k: v for k, v in edge_labels.items() if k[0]==n.C and k[1]==n.F}
         nx.draw_networkx_edge_labels(
             **params, font_weight="bold", edge_labels=lab, label_pos=0.55)
 
@@ -559,7 +564,7 @@ def arg_in_pedigree():
         for individual in range(2):
             i = tables.individuals.add_row()
             for genome in range(2):
-                label = string.ascii_lowercase[tables.nodes.num_rows]
+                label = string.ascii_uppercase[tables.nodes.num_rows]
                 metadata = {
                     "gender": "male" if individual == 0 else "female",
                     "name": label,
@@ -569,7 +574,7 @@ def arg_in_pedigree():
                 flags = 0
                 if gen == 0:
                     flags |= tskit.NODE_IS_SAMPLE
-                if label == "a" or label == "c":
+                if label == "A" or label == "C":
                     flags |= argutils.NODE_IS_RECOMB
                 tables.nodes.add_row(
                     flags=flags,
@@ -581,28 +586,28 @@ def arg_in_pedigree():
     bp = [2, 7]
     tables.edges.clear()
     tables.individuals[0] = tables.individuals[0].replace(parents=[2, 3])
-    tables.edges.add_row(child=n.a, parent=n.e, left=0, right=bp[0])
-    tables.edges.add_row(child=n.a, parent=n.f, left=bp[0], right=l)
-    tables.edges.add_row(child=n.b, parent=n.g, left=0, right=l)
+    tables.edges.add_row(child=n.A, parent=n.E, left=0, right=bp[0])
+    tables.edges.add_row(child=n.A, parent=n.F, left=bp[0], right=l)
+    tables.edges.add_row(child=n.B, parent=n.G, left=0, right=l)
 
     tables.individuals[1] = tables.individuals[1].replace(parents=[2, 3])
-    tables.edges.add_row(child=n.c, parent=n.f, left=0, right=bp[1])
-    tables.edges.add_row(child=n.c, parent=n.e, left=bp[1], right=l)
-    tables.edges.add_row(child=n.d, parent=n.h, left=0, right=l)
+    tables.edges.add_row(child=n.C, parent=n.F, left=0, right=bp[1])
+    tables.edges.add_row(child=n.C, parent=n.E, left=bp[1], right=l)
+    tables.edges.add_row(child=n.D, parent=n.H, left=0, right=l)
 
     tables.individuals[2] = tables.individuals[2].replace(parents=[4, 5])
-    tables.edges.add_row(child=n.e, parent=n.i, left=0, right=l)
-    tables.edges.add_row(child=n.f, parent=n.k, left=0, right=l)
+    tables.edges.add_row(child=n.E, parent=n.I, left=0, right=l)
+    tables.edges.add_row(child=n.F, parent=n.K, left=0, right=l)
 
     tables.individuals[3] = tables.individuals[3].replace(parents=[4, 5])
-    tables.edges.add_row(child=n.g, parent=n.i, left=0, right=l)
-    tables.edges.add_row(child=n.h, parent=n.k, left=0, right=l)
+    tables.edges.add_row(child=n.G, parent=n.I, left=0, right=l)
+    tables.edges.add_row(child=n.H, parent=n.K, left=0, right=l)
 
     tables.individuals[4] = tables.individuals[4].replace(parents=[6, 7])
-    tables.edges.add_row(child=n.i, parent=n.n, left=0, right=l)
+    tables.edges.add_row(child=n.I, parent=n.N, left=0, right=l)
 
     tables.individuals[5] = tables.individuals[5].replace(parents=[6, 7])
-    tables.edges.add_row(child=n.k, parent=n.n, left=0, right=l)
+    tables.edges.add_row(child=n.K, parent=n.N, left=0, right=l)
 
     tables.sort()
     ts = tables.tree_sequence()
@@ -637,6 +642,7 @@ def arg_in_pedigree():
             ".background path {fill: #444444}"
             ".x-axis .tick .lab {font-weight: normal; font-size:12px}"
             " .x-axis .title .lab {font-size:10px}"
+            " .node .lab {font-size: 11px; font-family: Georgia; font-style: italic}"
         )
     )
     # Hack the labels, as inkscape conversion doens't like CSS transforms
@@ -650,12 +656,12 @@ def arg_in_pedigree():
         '<text class="lab" text-anchor="middle" transform="translate(0 -30)">Genome position</text>'
     )
     pedigree_ts = pedigree_ts.replace(
-        '<text class="lab rgt" transform="translate(3 -7.0)">g</text>',
-        '<text class="lab lft" transform="translate(-3.5 -7.0)">g</text>'
+        '<text class="lab rgt" transform="translate(3 -7.0)">G</text>',
+        '<text class="lab lft" transform="translate(-3.5 -7.0)">G</text>'
     )
     pedigree_ts = pedigree_ts.replace(
-        '<text class="lab lft" transform="translate(-3 -7.0)">g</text>',
-        '<text class="lab rgt" transform="translate(3.5 -7.0)">g</text>'
+        '<text class="lab lft" transform="translate(-3 -7.0)">G</text>',
+        '<text class="lab rgt" transform="translate(3.5 -7.0)">G</text>'
     )
     pedigree_ts = pedigree_ts.replace(
         '<rect class="sym"',
@@ -666,12 +672,12 @@ def arg_in_pedigree():
         '<svg width="1100" height="435" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">',
         "<style>.tree-sequence text {font-family: sans-serif}</style>"
-        '<text font-size="2em" font-family="serif" transform="translate(100, 25)">'
-        "A</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(380, 25)">'
-        "B</text>",
-        '<text font-size="2em" font-family="serif" transform="translate(830, 25)">'
-        "C</text>",
+        '<text font-size="2em" font-family="sans" font-weight="bold" transform="translate(0, 25)">'
+        "a</text>",
+        '<text font-size="2em" font-family="sans" font-weight="bold" transform="translate(240, 25)">'
+        "b</text>",
+        '<text font-size="2em" font-family="sans" font-weight="bold" transform="translate(600, 25)">'
+        "c</text>",
         '<g transform="translate(10, 40)">',
     ]
     svg.append('<g transform="scale(0.36)">' + pedigree_svg + "</g>")
@@ -768,13 +774,13 @@ def inference():
     widths = np.ones(len(tree_seqs))
     heights = [1, 0.11]
     fig, axes = plt.subplots(
-        2, len(tree_seqs), figsize=(10, 5.55),
-        gridspec_kw=dict(width_ratios=widths, height_ratios=heights),
+        2, len(tree_seqs), figsize=(10, 5.50), 
+        gridspec_kw=dict(width_ratios=widths, height_ratios=heights, hspace=0.0, wspace=0.08, bottom=0.00, top=0.95),
+        constrained_layout=True,
         # autoscale_on=False
     )
-    tree_seq_positions = []
     max_rank_by_ts = {}
-    for lab, ax, ax_edges, name in zip("ABCD", axes[0], axes[1], tree_seqs.keys()):
+    for lab, ax, ax_edges, name in zip("abcd", axes[0], axes[1], tree_seqs.keys()):
         ts = tree_seqs[name]
         subtitle = f"{ts.num_trees-1} breakpoints"
         params = dict(
@@ -786,6 +792,7 @@ def inference():
             node_arity_colors=True,
             max_edge_width=2,
             tweak_x={},
+            font_size=9,
             #use_ranked_times = False,  # By default use Y axis layout from graphviz dot
         )
         path = pathlib.Path(f"illustrations/assets/{name}.json")
@@ -814,9 +821,9 @@ def inference():
         # params["tweak_x"] = None
         # params["reverse_x_axis"] = None
         # argutils.viz.draw(ts, ax, edge_colors=edge_colors_by_node, pos=pos, **params)
-        ax.text(250, -38, lab, fontsize=20, family="serif")
+        ax.text(200 if lab=="b" else 40, -38, lab, fontsize=16, family="sans-serif", weight="bold")
 
-        ax_edges.set_title(f"{name} ({subtitle})", y=1.05)
+        ax_edges.set_title(f"{name} ({subtitle})", y=1, size=11)
 
         # Add breakpoints and stacked edges below tree sequences, w same colormap as above
         #ax_edges.axis("off")
@@ -859,18 +866,18 @@ def inference():
         ax_edges.set_xticks([0, 1], ["-63", "2357"], fontsize=8)
         ax_edges.set_xlabel("Genomic position (bp)", fontsize=8, labelpad=-7)
     graph_io = io.StringIO()
-    fig.tight_layout()
+    #fig.tight_layout()
     plt.savefig(graph_io, format="svg")
     graph_svg = graph_io.getvalue()
     plt.close()
 
     
     svg = [
-        '<svg width="960" height="500" xmlns="http://www.w3.org/2000/svg" '
+        '<svg width="960" height="520" xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink">'
     ]
-    svg.append('<g transform="translate(0, -19)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
-    svg.append('<g transform="translate(135, 5) scale(0.5)">' + legend_svg() + "</g>")
+    svg.append('<g transform="translate(0, -10)">' + graph_svg[graph_svg.find("<svg"):] + "</g>")
+    svg.append('<g transform="translate(130, 5) scale(0.5)">' + legend_svg() + "</g>")
     svg.append('</svg>')
     top_svg = (
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '

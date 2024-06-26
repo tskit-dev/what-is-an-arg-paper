@@ -37,31 +37,31 @@ inference_outputs: \
 	examples/Kreitman_SNP_relate_merged.trees \
 
 examples/Kreitman_SNP.samples: make_example_inputs.py
-	python3 	make_example_inputs.py tsinfer-input
+	python 	make_example_inputs.py tsinfer-input
 
 examples/Kreitman_SNP.matrix: make_example_inputs.py
-	python3 	make_example_inputs.py kwarg-input
+	python 	make_example_inputs.py kwarg-input
 
 examples/Kreitman_SNP.sites: make_example_inputs.py
-	python3 	make_example_inputs.py argweaver-input
+	python 	make_example_inputs.py argweaver-input
 
 examples/Kreitman_SNP.haps: make_example_inputs.py
-	python3 	make_example_inputs.py relate-input
+	python 	make_example_inputs.py relate-input
 
 examples/Kreitman_SNP_tsinfer.trees: make_example_outputs.py
-	python3 	make_example_outputs.py run-tsinfer
+	python 	make_example_outputs.py run-tsinfer
 
 examples/Kreitman_SNP_kwarg.trees: make_example_outputs.py
-	python3 	make_example_outputs.py run-kwarg
+	python 	make_example_outputs.py run-kwarg
 
 examples/Kreitman_SNP_argweaver.trees: make_example_outputs.py
-	python3 	make_example_outputs.py run-argweaver
+	python 	make_example_outputs.py run-argweaver
 
 examples/Kreitman_SNP_relate_merged.trees: make_example_outputs.py
-	python3 	make_example_outputs.py run-relate
+	python 	make_example_outputs.py run-relate
 
 illustrations/%.svg: illustrations.py
-	python3 illustrations.py $*
+	python illustrations.py $*
 
 %.pdf : %.svg
 	# Needs inkscape >= 1.0
